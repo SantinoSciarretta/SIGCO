@@ -1,44 +1,58 @@
 import { Route, Routes } from 'react-router-dom';
+
 import Layout from './Layout';
-import Inicio from './paginas/Inicio';
+import Login from './paginas/Login';
 import ModuloPendiente from './paginas/ModuloPendiente';
 import NoEncontrado from './paginas/NoEncontrado';
-import { todosLosModulos } from './modulos';
+
+import Tablero from './paginas/dueno/Tablero';
+import DetalleObra from './paginas/dueno/DetalleObra';
+
+import LayoutCapataz from './paginas/capataz/LayoutCapataz';
+import Home from './paginas/capataz/Home';
+import Hitos from './paginas/capataz/Hitos';
+import Materiales from './paginas/capataz/Materiales';
 
 /**
  * Mapa de rutas del sistema.
  *
- * La ruta exterior no tiene direccion propia: solo dibuja el Layout (barra
- * lateral y encabezado). Las rutas de adentro se dibujan en el <Outlet /> de
- * ese Layout, de modo que el marco de la aplicacion se arma una sola vez y al
- * navegar cambia unicamente el contenido central.
+ * Hay tres zonas, y cada una tiene su propio marco:
  *
- * A medida que cada modulo se desarrolla, su linea deja de apuntar a
+ *   /            ingreso, sin marco (pantalla de fondo oscuro)
+ *   /tablero…    rol Dueño, con la barra de navegación de escritorio
+ *   /obra…       rol Capataz, marco angosto pensado para el celular
+ *
+ * Las rutas de adentro se dibujan en el <Outlet /> de su marco, así la
+ * navegación se arma una sola vez y al moverse solo cambia el contenido.
+ *
+ * A medida que cada módulo se desarrolla, su línea deja de apuntar a
  * ModuloPendiente y pasa a apuntar a su pantalla real.
  */
 export default function Router() {
-  // Modulos aun no desarrollados: se generan sus rutas automaticamente a partir
-  // de la lista de modulos, para no repetir una linea igual por cada uno.
-  const modulosPendientes = todosLosModulos.filter((modulo) => !modulo.listo);
-
   return (
     <Routes>
+
+      <Route path="/" element={<Login />} />
+
+      {/* ---------- Rol Dueño ---------- */}
       <Route element={<Layout />}>
-
-        <Route index element={<Inicio />} />
-
-        {modulosPendientes.map((modulo) => (
-          <Route
-            key={modulo.ruta}
-            path={modulo.ruta}
-            element={<ModuloPendiente nombre={modulo.nombre} />}
-          />
-        ))}
-
-        {/* Cualquier direccion que no coincida con las anteriores. */}
-        <Route path="*" element={<NoEncontrado />} />
-
+        <Route path="/tablero" element={<Tablero />} />
+        <Route path="/obras" element={<DetalleObra />} />
+        <Route path="/pedidos" element={<ModuloPendiente nombre="Pedidos" />} />
+        <Route path="/presupuestos" element={<ModuloPendiente nombre="Presupuestación" />} />
+        <Route path="/cobranzas" element={<ModuloPendiente nombre="Cobranzas" />} />
       </Route>
+
+      {/* ---------- Rol Capataz ---------- */}
+      <Route element={<LayoutCapataz />}>
+        <Route path="/obra" element={<Home />} />
+        <Route path="/obra/hitos" element={<Hitos />} />
+        <Route path="/obra/materiales" element={<Materiales />} />
+      </Route>
+
+      {/* Cualquier dirección que no coincida con las anteriores. */}
+      <Route path="*" element={<NoEncontrado />} />
+
     </Routes>
   );
 }

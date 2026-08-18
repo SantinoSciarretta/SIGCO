@@ -1,0 +1,38 @@
+/* Cabecera oscura de las pantallas internas del capataz. */
+
+.cabecera {
+  background: var(--color-accent-900);
+  color: var(--color-sobre-oscuro);
+  padding: 24px 22px 22px;
+}
+
+.fila {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.volver {
+  width: 40px;
+  height: 40px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(242, 242, 243, 0.35);
+  color: var(--color-sobre-oscuro);
+  text-decoration: none;
+}
+
+.volver:hover { background: rgba(242, 242, 243, 0.08); }
+
+.volver:focus-visible {
+  outline: 2px solid var(--color-accent-400);
+  outline-offset: 2px;
+}
+
+.titulo {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(242, 242, 243, 0.6);
+}

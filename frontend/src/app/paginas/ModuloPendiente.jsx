@@ -1,15 +1,21 @@
+import Blueprint from '../../components/ui/Blueprint';
+
 /**
- * Pantalla que se muestra en los modulos todavia no desarrollados.
+ * Pantalla que se muestra en los módulos todavía no desarrollados.
  *
- * Permite que el menu de navegacion este completo desde el comienzo: se puede
- * recorrer el sistema entero y ver como va a estar organizado, aunque las
- * pantallas no existan. Cada modulo reemplaza este marcador cuando le toca.
+ * Permite que la navegación esté completa desde el comienzo: se puede recorrer
+ * el sistema y ver cómo va a estar organizado, aunque las pantallas no existan.
+ * Cada módulo reemplaza este marcador cuando le toca.
  */
 export default function ModuloPendiente({ nombre }) {
   return (
-    <div>
-      <h1>{nombre}</h1>
-      <p>Este modulo todavia no esta desarrollado.</p>
-    </div>
+    <Blueprint style={{ padding: '32px 28px', maxWidth: '52ch' }}>
+      <span className="kicker kicker-acento">Módulo</span>
+      <h2 style={{ margin: '6px 0 10px' }}>{nombre}</h2>
+      <p className="text-muted" style={{ margin: 0 }}>
+        Todavía no está desarrollado. La pantalla se construye cuando le toque
+        el turno en el orden de módulos.
+      </p>
+    </Blueprint>
   );
 }

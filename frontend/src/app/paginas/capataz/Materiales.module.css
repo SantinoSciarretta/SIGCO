@@ -1,0 +1,372 @@
+/* Materiales — pedido y recepción, pantalla del capataz. */
+
+/* ---------- Pestañas ---------- */
+
+.pestanas {
+  display: flex;
+  margin-top: 22px;
+  margin-bottom: -22px;
+}
+
+.pestana {
+  all: unset;
+  box-sizing: border-box;
+  flex: 1;
+  min-height: 60px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 20px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(242, 242, 243, 0.55);
+  border-bottom: 3px solid transparent;
+}
+
+.pestana:focus-visible {
+  outline: 2px solid var(--color-accent-400);
+  outline-offset: -4px;
+}
+
+.pestanaActiva {
+  color: #fff;
+  border-bottom-color: var(--color-accent-400);
+}
+
+/* ---------- Catálogo ---------- */
+
+.catalogoCabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 22px;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+}
+
+.entrega {
+  font-size: 12.5px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  white-space: nowrap;
+}
+
+.catalogo {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.material {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 92px;
+  padding: 10px 22px;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent);
+}
+
+/* Los materiales con cantidad cargada se destacan del resto del catálogo. */
+.materialPedido { background: color-mix(in srgb, var(--color-accent) 8%, transparent); }
+
+.materialTexto {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.materialNombre {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 22px;
+  line-height: 1.1;
+}
+
+.materialUnidad {
+  font-size: 12.5px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  margin-top: 2px;
+}
+
+.contador {
+  display: flex;
+  align-items: center;
+  flex: none;
+  border: 1px solid color-mix(in srgb, var(--color-text) 35%, transparent);
+}
+
+.contadorBoton {
+  all: unset;
+  box-sizing: border-box;
+  width: 52px;
+  height: var(--tactil-min);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: var(--color-text);
+}
+
+.contadorBoton:disabled {
+  color: color-mix(in srgb, var(--color-text) 30%, transparent);
+  cursor: not-allowed;
+}
+
+.contadorBoton:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+
+.contadorMas {
+  background: var(--color-accent);
+  color: var(--color-accent-900);
+}
+
+.contadorValor {
+  width: 56px;
+  height: var(--tactil-min);
+  display: grid;
+  place-items: center;
+  border-left: 1px solid color-mix(in srgb, var(--color-text) 20%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--color-text) 20%, transparent);
+  font-size: 26px;
+}
+
+.contadorVacio { color: color-mix(in srgb, var(--color-text) 35%, transparent); }
+
+/* ---------- Cierre del pedido ---------- */
+
+.cierre { padding: 20px 22px 40px; }
+
+.resumen {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 14px;
+}
+
+.resumenValor { font-size: 24px; }
+
+.enviar {
+  all: unset;
+  box-sizing: border-box;
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 88px;
+  padding: 0 22px;
+  cursor: pointer;
+  background: var(--color-accent);
+  border: 1px solid var(--color-accent-600);
+  color: var(--color-accent-900);
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 28px;
+}
+
+.enviar:hover:not(:disabled) { background: var(--color-accent-500); }
+
+.enviar:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.enviar:focus-visible {
+  outline: 2px solid var(--color-accent-700);
+  outline-offset: 3px;
+}
+
+.nota {
+  margin: 12px 0 0;
+  font-size: 12.5px;
+  color: color-mix(in srgb, var(--color-text) 50%, transparent);
+  text-align: center;
+}
+
+/* ---------- Recepción ---------- */
+
+.recepcion { padding: 22px; }
+
+.pedidoBloque { padding: 16px 18px 14px; }
+
+.pedidoCabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.aprobado {
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-ok);
+}
+
+.pedidoDetalle {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 26px;
+  line-height: 1.15;
+  margin: 8px 0 0;
+}
+
+.pedidoPie {
+  font-size: 12.5px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  margin: 6px 0 0;
+}
+
+.paso {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  margin: 26px 0 10px;
+}
+
+/* Zona de la foto: borde punteado, la convención universal de "poné algo acá". */
+.foto {
+  all: unset;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  text-align: center;
+  padding: 20px;
+  cursor: pointer;
+  border: 2px dashed color-mix(in srgb, var(--color-text) 40%, transparent);
+  color: var(--color-text);
+}
+
+.fotoLista {
+  border-color: var(--color-accent-600);
+  background: color-mix(in srgb, var(--color-accent) 14%, transparent);
+  color: var(--color-accent-800);
+}
+
+.foto:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.fotoTitulo {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 28px;
+  margin-top: 14px;
+}
+
+.fotoSub {
+  font-size: 13px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+.diferencias {
+  display: flex;
+  gap: 10px;
+}
+
+.opcion {
+  all: unset;
+  box-sizing: border-box;
+  flex: 1;
+  min-height: 72px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid color-mix(in srgb, var(--color-text) 40%, transparent);
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 21px;
+  line-height: 1.1;
+  color: var(--color-text);
+}
+
+.opcion:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.opcionSinDif {
+  background: var(--color-ok);
+  border-color: var(--color-ok);
+  color: var(--color-sobre-oscuro);
+}
+
+.opcionConDif {
+  background: var(--color-alerta);
+  border-color: var(--color-alerta);
+  color: var(--color-text);
+}
+
+.nota2 {
+  width: 100%;
+  margin-top: 12px;
+  min-height: 88px;
+  padding: 12px 14px;
+  font-family: var(--font-body);
+  font-size: 16px;
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--color-text) 35%, transparent);
+  border-radius: 0;
+  color: var(--color-text);
+  resize: vertical;
+}
+
+/* Deshabilitado hasta que estén la foto y la respuesta: no se confirma una
+   recepción a medias. */
+.confirmar {
+  all: unset;
+  box-sizing: border-box;
+  position: relative;
+  width: 100%;
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: var(--tactil-accion);
+  padding: 0 22px;
+  cursor: not-allowed;
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--color-text) 25%, transparent);
+  color: color-mix(in srgb, var(--color-text) 40%, transparent);
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 29px;
+  line-height: 1.05;
+}
+
+.confirmarListo {
+  cursor: pointer;
+  background: var(--color-accent);
+  border-color: var(--color-accent-600);
+  color: var(--color-accent-900);
+}
+
+.confirmado {
+  background: var(--color-ok);
+  border-color: var(--color-ok);
+  color: var(--color-sobre-oscuro);
+}
+
+.confirmar:focus-visible {
+  outline: 2px solid var(--color-accent-700);
+  outline-offset: 3px;
+}
+
+.notaFinal {
+  margin: 14px 0 36px;
+  font-size: 12.5px;
+  color: color-mix(in srgb, var(--color-text) 50%, transparent);
+  text-align: center;
+}

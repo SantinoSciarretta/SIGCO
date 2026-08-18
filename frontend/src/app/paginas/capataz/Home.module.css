@@ -1,0 +1,171 @@
+/* Inicio del capataz. */
+
+.cabecera {
+  background: var(--color-accent-900);
+  color: var(--color-sobre-oscuro);
+  padding: 24px 22px 20px;
+}
+
+.cabeceraFila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.marca {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 20px;
+  letter-spacing: 0.16em;
+}
+
+.momento {
+  font-size: 11.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(242, 242, 243, 0.65);
+  white-space: nowrap;
+}
+
+.kicker {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(242, 242, 243, 0.55);
+  margin: 24px 0 0;
+}
+
+.obra {
+  font-size: 34px;
+  line-height: 1.05;
+  margin: 6px 0 0;
+}
+
+.direccion {
+  font-size: 13px;
+  color: rgba(242, 242, 243, 0.65);
+  margin: 6px 0 0;
+}
+
+.cuerpo { padding: 22px; }
+
+/* ---------- Avance ---------- */
+
+.avanceBloque { padding: 18px 20px 16px; }
+
+.avanceCabecera {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.avanceHitos {
+  font-size: 12px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+.avanceCifra {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+/* El número protagonista de la pantalla: se lee de lejos, con el celular
+   apoyado en un tablón. */
+.avanceNumero { font-size: 76px; line-height: 0.9; }
+
+.avanceSimbolo { font-size: 30px; color: var(--color-accent-700); }
+
+.avancePista {
+  height: 18px;
+  border: 1px solid var(--color-divider);
+  position: relative;
+  margin-top: 12px;
+}
+
+.avanceRelleno {
+  position: absolute;
+  inset: 0;
+  background: var(--color-accent-600);
+}
+
+/* ---------- Acciones ---------- */
+
+.acciones {
+  display: grid;
+  gap: 16px;
+  margin-top: 22px;
+}
+
+.accion {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-height: var(--tactil-accion);
+  padding: 0 22px;
+  border: 1px solid color-mix(in srgb, var(--color-text) 45%, transparent);
+  color: var(--color-text);
+  text-decoration: none;
+  background: transparent;
+}
+
+.accion:hover { background: color-mix(in srgb, var(--color-text) 4%, transparent); }
+
+.accionPrimaria {
+  background: var(--color-accent);
+  border-color: var(--color-accent-600);
+  color: var(--color-accent-900);
+}
+
+.accionPrimaria:hover { background: var(--color-accent-500); }
+
+.accionTexto {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 30px;
+  line-height: 1.05;
+}
+
+/* ---------- Novedades ---------- */
+
+.novedades {
+  margin-top: 26px;
+  border-top: 1px solid var(--color-divider);
+  padding-top: 14px;
+}
+
+.novedadesCabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 50%, transparent);
+}
+
+.novedad {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
+}
+
+.novedad:first-of-type { margin-top: 12px; }
+
+.novedadUltima { border-bottom: none; }
+
+.punto { width: 8px; height: 8px; flex: none; }
+
+.novedadTexto { flex: 1; font-size: 14.5px; }
+
+.novedadHora {
+  font-size: 12px;
+  color: color-mix(in srgb, var(--color-text) 50%, transparent);
+  white-space: nowrap;
+}

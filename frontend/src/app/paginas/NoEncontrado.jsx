@@ -1,14 +1,16 @@
 import { Link } from 'react-router-dom';
 
 /**
- * Pantalla para una direccion que no corresponde a ninguna ruta del sistema.
+ * Pantalla para una dirección que no corresponde a ninguna ruta del sistema.
  */
 export default function NoEncontrado() {
   return (
-    <div>
-      <h1>Pagina no encontrada</h1>
-      <p>La direccion ingresada no corresponde a ninguna pantalla del sistema.</p>
-      <Link to="/">Volver al inicio</Link>
+    <div style={{ padding: '64px 28px', maxWidth: '46ch' }}>
+      <h2>Pantalla no encontrada</h2>
+      <p className="text-muted">
+        La dirección ingresada no corresponde a ninguna pantalla del sistema.
+      </p>
+      <p><Link to="/">Volver al ingreso</Link></p>
     </div>
   );
 }

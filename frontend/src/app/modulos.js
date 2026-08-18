@@ -1,59 +1,39 @@
 /**
- * Definicion de los modulos del sistema para la barra de navegacion.
+ * Módulos que aparecen en la navegación, tal como los define el diseño.
  *
- * Se declara en un solo archivo para que el menu y las rutas salgan de la misma
- * fuente: agregar un modulo es agregar una linea aca, no tocar tres archivos.
+ * Se declaran en un solo archivo para que el menú y las rutas salgan de la
+ * misma fuente: agregar un módulo es agregar una línea, no tocar tres archivos.
  *
- * El campo "listo" indica si el modulo ya esta desarrollado. Los que todavia no
- * lo estan muestran una pantalla que lo aclara, de modo que la navegacion
- * funcione completa desde el primer dia y cada modulo simplemente reemplace su
- * marcador de posicion cuando le toque.
- *
- * El orden de esta lista es el orden de uso del sistema (como lo recorre el
- * dueño), que no coincide con el orden en que se desarrollan los modulos.
+ * `listo` indica si el módulo ya está desarrollado contra el backend. Los que
+ * no lo están muestran una pantalla que lo aclara, así la navegación funciona
+ * completa desde el primer día.
  */
-export const gruposDeModulos = [
-  {
-    titulo: 'Principal',
-    modulos: [
-      // En el modulo 12 esta pantalla pasa a ser el Dashboard consolidado.
-      { ruta: '/', nombre: 'Inicio', listo: true },
-    ],
-  },
-  {
-    titulo: 'Gestion',
-    modulos: [
-      { ruta: '/obras', nombre: 'Obras', listo: false },
-      { ruta: '/clientes', nombre: 'Clientes', listo: false },
-      { ruta: '/presupuestos', nombre: 'Presupuestacion', listo: false },
-      { ruta: '/cobros', nombre: 'Cobros', listo: false },
-    ],
-  },
-  {
-    titulo: 'Operacion',
-    modulos: [
-      { ruta: '/seguimiento', nombre: 'Seguimiento de Obras', listo: false },
-      { ruta: '/compras', nombre: 'Compras', listo: false },
-      { ruta: '/gastos', nombre: 'Gastos', listo: false },
-      { ruta: '/personal', nombre: 'Personal', listo: false },
-    ],
-  },
-  {
-    titulo: 'Catalogos',
-    modulos: [
-      { ruta: '/materiales', nombre: 'Materiales', listo: false },
-      { ruta: '/proveedores', nombre: 'Proveedores', listo: false },
-    ],
-  },
-  {
-    titulo: 'Administracion',
-    modulos: [
-      { ruta: '/portfolio', nombre: 'Portfolio Web', listo: false },
-      { ruta: '/usuarios', nombre: 'Usuarios', listo: false },
-      { ruta: '/accesos', nombre: 'Accesos', listo: false },
-    ],
-  },
+
+/** Navegación superior del rol Dueño (pantallas de escritorio). */
+export const MODULOS_DUENO = [
+  { ruta: '/tablero', nombre: 'Tablero', listo: true },
+  { ruta: '/obras', nombre: 'Obras', listo: true },
+  { ruta: '/pedidos', nombre: 'Pedidos', listo: false },
+  { ruta: '/presupuestos', nombre: 'Presupuestos', listo: false },
+  { ruta: '/cobranzas', nombre: 'Cobranzas', listo: false },
 ];
 
-/** Lista plana de todos los modulos, util para armar las rutas. */
-export const todosLosModulos = gruposDeModulos.flatMap((grupo) => grupo.modulos);
+/**
+ * PENDIENTE DE DEFINICIÓN
+ *
+ * El diseño resuelve la navegación de los cinco módulos que el dueño usa a
+ * diario, pero el sistema tiene catorce. Estos nueve todavía no tienen desde
+ * dónde entrar:
+ *
+ *   Clientes · Materiales · Proveedores · Personal · Portfolio Web ·
+ *   Usuarios · Accesos · Gastos (hoy vive dentro del detalle de obra) ·
+ *   Seguimiento (hoy vive dentro del detalle de obra)
+ *
+ * Hay que resolverlo antes de desarrollar el módulo Clientes, que es el
+ * primero de la lista y hoy no tendría dónde ubicarse. La salida más probable
+ * es un menú secundario de administración y catálogos.
+ */
+export const MODULOS_SIN_UBICAR = [
+  'Clientes', 'Materiales', 'Proveedores', 'Personal', 'Portfolio Web',
+  'Usuarios', 'Accesos',
+];

@@ -1,0 +1,305 @@
+/* Detalle de obra. */
+
+/* ---------- Encabezado ---------- */
+
+.encabezado {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-text) 30%, transparent);
+  padding-bottom: 16px;
+}
+
+.nombre { margin: 6px 0 0; font-size: 36px; }
+
+.subtitulo {
+  font-size: 12.5px;
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+  margin-top: 5px;
+}
+
+.totales {
+  display: flex;
+  gap: 34px;
+  text-align: right;
+  flex-wrap: wrap;
+}
+
+.total {
+  font-size: 32px;
+  line-height: 1.1;
+  margin-top: 2px;
+}
+
+/* ---------- Disposición ---------- */
+
+.columnas {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  gap: 26px;
+  margin-top: 26px;
+}
+
+.columnaDerecha {
+  display: grid;
+  gap: 26px;
+  align-content: start;
+  min-width: 0;
+}
+
+.bloque { padding: 20px 22px 18px; }
+
+.bloque h4 { margin: 0; font-size: 19px; }
+
+.bloqueCabecera {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.leyenda {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+}
+
+.leyenda li { display: flex; align-items: center; gap: 6px; }
+
+.muestra { width: 14px; height: 11px; flex: none; }
+
+.muestraTope {
+  width: 2px;
+  height: 14px;
+  flex: none;
+  background: color-mix(in srgb, var(--color-text) 75%, transparent);
+}
+
+/* ---------- Gráfico de torta ---------- */
+
+.tortaMarco {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  max-width: 100%;
+  margin: 14px auto 4px;
+  color: var(--color-text);
+}
+
+.tortaMarco svg { max-width: 100%; height: auto; }
+
+/* Círculos de referencia del gráfico. */
+.guiaTorta { stroke: color-mix(in srgb, var(--color-text) 12%, transparent); }
+.guiaTortaTenue { stroke: color-mix(in srgb, var(--color-text) 8%, transparent); }
+
+.tortaCentro {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.tortaValor { font-size: 42px; }
+
+.tortaPie {
+  font-size: 12px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  margin-top: 2px;
+}
+
+.referencias {
+  display: grid;
+  gap: 7px;
+  margin: 14px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-divider);
+  list-style: none;
+}
+
+.referencias li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12.5px;
+}
+
+.referenciaMuestra { width: 11px; height: 11px; flex: none; }
+
+.referenciaNombre { flex: 1; }
+
+.referenciaValor { font-size: 16px; }
+
+/* ---------- Barras por rubro ---------- */
+
+.rubros {
+  display: grid;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.rubroCabecera {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.rubroNombre {
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.rubroCifras {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.rubroGasto { font-size: 20px; }
+
+.rubroPresupuesto {
+  font-size: 12px;
+  color: color-mix(in srgb, var(--color-text) 50%, transparent);
+  white-space: nowrap;
+}
+
+.rubroEstado {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  /* Ancho fijo para que los tres estados queden alineados entre rubros, y
+     suficiente para que "En presupuesto" entre en una sola línea. */
+  width: 116px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* La pista lleva la trama del presupuesto; el relleno sólido es lo gastado. */
+.rubroBarra {
+  position: relative;
+  height: 26px;
+  border: 1px solid var(--color-divider);
+}
+
+.rubroRelleno {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+}
+
+/* Marca vertical del tope: hasta acá llega lo presupuestado del rubro. */
+.rubroTope {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  width: 2px;
+  background: color-mix(in srgb, var(--color-text) 80%, transparent);
+}
+
+/* ---------- Línea de hitos ---------- */
+
+.linea {
+  position: relative;
+  margin-top: 26px;
+  padding-bottom: 4px;
+}
+
+.lineaBase {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 11px;
+  height: 1px;
+  background: color-mix(in srgb, var(--color-text) 20%, transparent);
+}
+
+.lineaAvance {
+  position: absolute;
+  left: 0;
+  top: 11px;
+  height: 1px;
+  background: var(--color-accent-600);
+}
+
+.hitos { display: flex; }
+
+.hito {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 4px;
+  position: relative;
+}
+
+.hitoMarca {
+  width: 23px;
+  height: 23px;
+  display: grid;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--color-text) 35%, transparent);
+  background: var(--color-bg);
+  color: transparent;
+}
+
+.hitoMarcaOk {
+  border-color: var(--color-accent-700);
+  background: var(--color-accent-700);
+  color: var(--color-sobre-oscuro);
+}
+
+.hitoNombre {
+  font-size: 11.5px;
+  line-height: 1.3;
+  margin-top: 9px;
+  font-weight: 500;
+  text-wrap: pretty;
+}
+
+.hitoPendiente { color: color-mix(in srgb, var(--color-text) 50%, transparent); }
+
+.hitoFecha {
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: color-mix(in srgb, var(--color-text) 45%, transparent);
+  margin-top: 3px;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1040px) {
+  .columnas { grid-template-columns: 1fr; }
+  .tortaMarco { width: 240px; height: 240px; }
+}
+
+@media (max-width: 700px) {
+  .nombre { font-size: 27px; }
+  .totales { gap: 20px; }
+  .total { font-size: 24px; }
+  .rubroEstado { width: auto; }
+  /* En pantalla angosta la línea de hitos pasa a vertical: ocho columnas de
+     11px no se leen en un celular. */
+  .hitos { flex-direction: column; align-items: stretch; gap: 12px; }
+  .hito { flex-direction: row; align-items: center; text-align: left; gap: 12px; padding: 0; }
+  .hitoNombre { margin-top: 0; flex: 1; }
+  .lineaBase, .lineaAvance { display: none; }
+}

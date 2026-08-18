@@ -1,0 +1,20 @@
+/* Marco de las pantallas del capataz. */
+
+.fondo {
+  min-height: 100vh;
+  background: var(--color-neutral-300);
+  display: flex;
+  justify-content: center;
+}
+
+.marco {
+  width: 100%;
+  max-width: 440px;
+  min-height: 100vh;
+  background: var(--color-bg);
+}
+
+/* A ancho de celular el marco ocupa todo: no hay fondo alrededor que mostrar. */
+@media (max-width: 440px) {
+  .fondo { background: var(--color-bg); }
+}

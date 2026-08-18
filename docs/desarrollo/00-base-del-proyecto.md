@@ -437,6 +437,11 @@ seguridad del módulo 14, marcados con `// TODO`:
 
 ### 7.4 Navegación
 
+> **Superado en el paso 3.** Lo que sigue describe la barra lateral con la que
+> se armó el frontend en este paso. El diseño importado desde Claude Design usa
+> navegación horizontal superior y dos marcos distintos según el rol; ver
+> `01-sistema-de-diseno.md`.
+
 `src/app/modulos.js` declara los 14 módulos agrupados por área (Principal,
 Gestión, Operación, Catálogos, Administración). De esa única lista salen tanto
 los enlaces de la barra lateral como las rutas del router, de modo que agregar
@@ -494,5 +499,5 @@ misma estructura sin rehacerla.
 | 0 — Repositorio, estructura y documentación base | Completado |
 | 1 — Configuración base del backend | Completado |
 | 2 — Configuración base del frontend | Completado |
-| 3 — Sistema de diseño (paleta y componentes base) | Pendiente |
+| 3 — Sistema de diseño y pantallas (ver `01-sistema-de-diseno.md`) | Completado |
 | 4 — Módulo Clientes | Pendiente |

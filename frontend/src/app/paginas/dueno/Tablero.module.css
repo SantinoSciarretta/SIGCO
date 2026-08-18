@@ -1,0 +1,290 @@
+/* Tablero del dueño. */
+
+.tituloFila {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.fecha { margin: 0; font-size: 30px; }
+
+/* ---------- Indicadores ---------- */
+
+.indicadores {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px;
+}
+
+.indicador { padding: 16px 18px 14px; }
+
+.indicadorCabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.indicadorCodigo {
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  color: color-mix(in srgb, var(--color-text) 40%, transparent);
+}
+
+.indicadorValorFila {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  margin-top: 12px;
+}
+
+.indicadorValor {
+  font-size: 52px;
+  line-height: 0.86;
+  letter-spacing: -0.01em;
+}
+
+.indicadorUnidad {
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+.indicadorPie {
+  margin: 14px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--color-divider);
+  font-size: 11.5px;
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+}
+
+/* ---------- Bloques ---------- */
+
+.bloque {
+  margin-top: 34px;
+  padding: 20px 22px 16px;
+}
+
+.bloqueCabecera {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.bloqueCabecera h4 { margin: 0; font-size: 21px; }
+
+.leyenda {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+}
+
+.leyenda li { display: flex; align-items: center; gap: 6px; }
+
+.muestra { width: 14px; height: 12px; flex: none; }
+
+.muestraTrama { border: 1px solid var(--color-neutral-500); }
+
+/* ---------- Gráfico de barras ---------- */
+
+.grafico {
+  position: relative;
+  height: 262px;
+  margin-top: 16px;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-text) 35%, transparent);
+  border-left: 1px solid color-mix(in srgb, var(--color-text) 35%, transparent);
+}
+
+.guia {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: color-mix(in srgb, var(--color-text) 8%, transparent);
+}
+
+.barras {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 8px;
+}
+
+/* Cada columna es un botón: se toca para seleccionar la obra. */
+.columna {
+  all: unset;
+  box-sizing: border-box;
+  flex: 1;
+  height: 100%;
+  padding: 0 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 9px;
+}
+
+.columna:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+
+/* Lo presupuestado va en trama: es lo previsto, no lo ejecutado. */
+.barraPresupuesto {
+  width: 46px;
+  border: 1px solid var(--color-neutral-500);
+  border-bottom: 0;
+}
+
+/* Lo gastado va en sólido, con el color del semáforo. */
+.barraGasto {
+  width: 46px;
+  position: relative;
+}
+
+.barraEtiqueta {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 14px;
+}
+
+/* ---------- Eje horizontal ---------- */
+
+.ejeX {
+  display: flex;
+  padding: 8px 8px 0;
+}
+
+.ejeItem {
+  flex: 1;
+  padding: 0 6px;
+  text-align: center;
+  border-top: 1px solid transparent;
+}
+
+/* La obra seleccionada se marca con una línea sobre su nombre. */
+.ejeItemActivo {
+  border-top-color: var(--color-text);
+}
+
+.ejeItemActivo .ejeNombre { color: var(--color-text); }
+
+.ejeNombre {
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+}
+
+.ejeRazon {
+  font-size: 11px;
+  color: color-mix(in srgb, var(--color-text) 50%, transparent);
+  margin-top: 1px;
+}
+
+/* ---------- Tabla de obras ---------- */
+
+.filaActiva { background: color-mix(in srgb, var(--color-accent) 12%, transparent); }
+
+.filaNumero {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 15px;
+  color: color-mix(in srgb, var(--color-text) 45%, transparent);
+}
+
+.obraNombre {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-weight: 500;
+}
+
+.punto { width: 7px; height: 7px; flex: none; }
+
+.obraDir {
+  font-size: 11.5px;
+  color: color-mix(in srgb, var(--color-text) 50%, transparent);
+  margin-left: 16px;
+}
+
+.capataz {
+  font-size: 13px;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+  white-space: nowrap;
+}
+
+.avance {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 200px;
+}
+
+.avancePista {
+  flex: 1;
+  height: 14px;
+  border: 1px solid var(--color-divider);
+  position: relative;
+}
+
+.avanceRelleno {
+  position: absolute;
+  inset: 0;
+  background: var(--color-accent-600);
+}
+
+.avanceTexto {
+  font-size: 20px;
+  width: 52px;
+  text-align: right;
+}
+
+.cobrar {
+  text-align: right;
+  font-size: 19px;
+  white-space: nowrap;
+}
+
+.verCelda { text-align: right; }
+
+.ver {
+  font-size: 11.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+  white-space: nowrap;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1100px) {
+  .indicadores { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+}
+
+@media (max-width: 620px) {
+  .indicadores { grid-template-columns: 1fr; }
+  .fecha { font-size: 24px; }
+  .barraPresupuesto, .barraGasto { width: 22px; }
+  .columna { gap: 5px; padding: 0 3px; }
+  .ejeNombre { font-size: 11px; }
+  .ejeRazon { display: none; }
+}
