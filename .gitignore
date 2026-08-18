@@ -1,0 +1,46 @@
+# ============================================================
+#  SIGCO - Archivos que NO se versionan
+# ============================================================
+
+# ---------- Backend: Java / Maven ----------
+# target/ son las clases compiladas: se regeneran con cada build.
+target/
+*.class
+.mvn/timing.properties
+
+# ---------- Frontend: Node / Vite ----------
+# node_modules/ se reconstruye con "npm install" a partir de package-lock.json.
+# Versionarlo agregaria decenas de miles de archivos al repositorio.
+node_modules/
+dist/
+dist-ssr/
+.vite/
+
+# ---------- Variables de entorno ----------
+# Aca viven las credenciales de la base de datos. NUNCA se versionan.
+# Se versiona unicamente .env.example, que lista los nombres sin los valores.
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# ---------- Entornos de desarrollo (IDE) ----------
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# ---------- Configuracion local de Claude Code ----------
+.claude/settings.local.json
+
+# ---------- Sistema operativo ----------
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# ---------- Logs ----------
+*.log
+npm-debug.log*
