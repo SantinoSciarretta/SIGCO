@@ -384,12 +384,115 @@ tras el despliegue, para confirmar que el servicio levantó correctamente.
 
 ---
 
-## 7. Estado
+## 7. Frontend: configuración base implementada
+
+### 7.1 Versiones
+
+Proyecto generado con Vite: **React 19.2, Vite 8.2, React Router 7.18 y
+Axios 1.19**, en JavaScript. Se eliminaron los archivos de demostración que
+incluye la plantilla de Vite.
+
+### 7.2 Estructura
+
+```
+frontend/
+├── index.html
+├── vite.config.js              puerto 5173 fijo (coincide con el CORS del backend)
+├── .env.development            VITE_API_URL, versionado (no contiene secretos)
+├── .env.example
+└── src/
+    ├── main.jsx                punto de entrada; monta React y BrowserRouter
+    ├── index.css               normalización mínima (la paleta llega en el paso 3)
+    ├── api/
+    │   ├── client.js           instancia única de Axios con interceptores
+    │   └── estadoApi.js        llamadas del endpoint de diagnóstico
+    └── app/
+        ├── router.jsx          mapa de rutas
+        ├── Layout.jsx          barra lateral + encabezado + <Outlet/>
+        ├── Layout.module.css   estilos provisorios, neutros
+        ├── modulos.js          definición de los 14 módulos
+        └── paginas/
+            ├── Inicio.jsx
+            ├── ModuloPendiente.jsx
+            └── NoEncontrado.jsx
+```
+
+### 7.3 Instancia única de Axios
+
+`src/api/client.js` concentra toda la comunicación con el backend. Ningún
+componente importa Axios ni escribe una URL completa: cada módulo tendrá su
+propio archivo de llamadas (como `estadoApi.js`) que expone operaciones con
+nombre, y los componentes las invocan por ese nombre.
+
+La instancia ya tiene declarados los dos interceptores donde se va a integrar la
+seguridad del módulo 14, marcados con `// TODO`:
+
+- **Interceptor de peticiones** — adjuntará el token JWT a cada llamada.
+- **Interceptor de respuestas** — redirigirá al login ante un `401`. Hoy ya
+  cumple otra función: traduce los errores del backend a un objeto uniforme
+  `{ estado, mensaje, camposInvalidos }`, aprovechando que todas las respuestas
+  de error comparten el formato `RespuestaError`. Distingue además el caso en
+  que no hubo respuesta alguna (backend apagado o sin red), que Axios reporta
+  de manera distinta a un error devuelto por el servidor.
+
+### 7.4 Navegación
+
+`src/app/modulos.js` declara los 14 módulos agrupados por área (Principal,
+Gestión, Operación, Catálogos, Administración). De esa única lista salen tanto
+los enlaces de la barra lateral como las rutas del router, de modo que agregar
+un módulo es agregar una línea y no modificar tres archivos.
+
+Cada módulo tiene un campo `listo`. Los que aún no se desarrollaron muestran la
+pantalla `ModuloPendiente` y aparecen marcados en el menú. Esto permite recorrer
+la estructura completa del sistema desde el primer día; cada módulo reemplaza su
+marcador cuando le toca.
+
+El `Layout` es la ruta padre de todas las demás: dibuja la barra lateral y el
+encabezado una sola vez, y el componente `<Outlet />` es el hueco donde React
+Router coloca la pantalla activa. Al navegar cambia únicamente esa parte, sin
+recargar la página. Esa es la característica que hace del sistema una SPA.
+
+### 7.5 Configuración de CORS verificada
+
+El puerto del servidor de desarrollo se fijó explícitamente en `vite.config.js`
+con `strictPort: true`. El motivo es que el backend autoriza el origen
+`http://localhost:5173` de forma concreta: si Vite cambiara de puerto por estar
+ocupado el 5173, el origen dejaría de coincidir con el autorizado y todas las
+llamadas fallarían con un error difícil de asociar a su causa.
+
+Comportamiento verificado con peticiones directas al backend:
+
+| Origen de la petición | Respuesta |
+| --- | --- |
+| `http://localhost:5173` | `200` con la cabecera `Access-Control-Allow-Origin` |
+| `http://sitio-ajeno.com` | `403 Invalid CORS request` |
+
+### 7.6 Estilos: estado provisorio
+
+`index.css` y `Layout.module.css` contienen únicamente una normalización mínima
+y grises neutros. **La identidad visual todavía no está definida**: la paleta, la
+tipografía, los espaciados y los componentes base se establecen en el paso 3 y se
+declaran como variables CSS en `src/styles/tokens.css`, aplicándose sobre esta
+misma estructura sin rehacerla.
+
+### 7.7 Verificación realizada
+
+| Comprobación | Resultado |
+| --- | --- |
+| `npm run build` | 85 módulos transformados, sin errores |
+| `npm run dev` | servidor listo en 226 ms, puerto 5173 |
+| Resolución de módulos | `main.jsx` y sus importaciones se transforman correctamente |
+| CORS desde el origen autorizado | `200` con cabeceras correctas |
+| CORS desde un origen ajeno | `403` |
+
+---
+
+## 8. Estado
 
 | Paso | Estado |
 | --- | --- |
 | 0 — Repositorio, estructura y documentación base | Completado |
 | 1 — Configuración base del backend | Completado |
-| 2 — Configuración base del frontend | Pendiente |
+| 2 — Configuración base del frontend | Completado |
 | 3 — Sistema de diseño (paleta y componentes base) | Pendiente |
 | 4 — Módulo Clientes | Pendiente |

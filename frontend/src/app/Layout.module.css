@@ -1,0 +1,121 @@
+/*
+  Estilos provisorios del marco de la aplicacion.
+
+  Son deliberadamente neutros (solo grises) porque la paleta todavia no esta
+  definida: se elige en el paso 3 y se aplica sobre esta misma estructura
+  reemplazando los valores por variables del sistema de diseño.
+
+  Se usa CSS Modules: los nombres de clase de este archivo quedan aislados y no
+  pueden chocar con los de otro componente, aunque se llamen igual.
+*/
+
+.contenedor {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ---------- Barra lateral ---------- */
+
+.barraLateral {
+  width: 240px;
+  flex-shrink: 0;
+  border-right: 1px solid #e2e4e8;
+  background: #fafbfc;
+  display: flex;
+  flex-direction: column;
+}
+
+.marca {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid #e2e4e8;
+  display: flex;
+  flex-direction: column;
+}
+
+.marcaNombre {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.marcaDescripcion {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.navegacion {
+  padding: 12px 0;
+  overflow-y: auto;
+}
+
+.grupo {
+  margin-bottom: 16px;
+}
+
+.grupoTitulo {
+  margin: 0 0 4px;
+  padding: 0 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #9ca3af;
+}
+
+.enlace {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 20px;
+  font-size: 14px;
+  color: #374151;
+  text-decoration: none;
+}
+
+.enlace:hover {
+  background: #f0f1f3;
+}
+
+.enlaceActivo {
+  font-weight: 600;
+  background: #eceef1;
+}
+
+/* Marca temporal para los modulos todavia no desarrollados. */
+.pendiente {
+  font-size: 10px;
+  color: #9ca3af;
+  border: 1px solid #d8dbe0;
+  border-radius: 3px;
+  padding: 1px 5px;
+}
+
+/* ---------- Area principal ---------- */
+
+.principal {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.encabezado {
+  height: 56px;
+  flex-shrink: 0;
+  border-bottom: 1px solid #e2e4e8;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+}
+
+.encabezadoTitulo {
+  font-size: 14px;
+  color: #4b5563;
+}
+
+.contenido {
+  flex: 1;
+  padding: 24px;
+}
