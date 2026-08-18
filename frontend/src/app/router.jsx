@@ -7,6 +7,7 @@ import NoEncontrado from './paginas/NoEncontrado';
 
 import Tablero from './paginas/dueno/Tablero';
 import DetalleObra from './paginas/dueno/DetalleObra';
+import ClientesPage from '../modules/clientes/ClientesPage';
 
 import LayoutCapataz from './paginas/capataz/LayoutCapataz';
 import Home from './paginas/capataz/Home';
@@ -38,6 +39,7 @@ export default function Router() {
       <Route element={<Layout />}>
         <Route path="/tablero" element={<Tablero />} />
         <Route path="/obras" element={<DetalleObra />} />
+        <Route path="/clientes" element={<ClientesPage />} />
         <Route path="/pedidos" element={<ModuloPendiente nombre="Pedidos" />} />
         <Route path="/presupuestos" element={<ModuloPendiente nombre="Presupuestación" />} />
         <Route path="/cobranzas" element={<ModuloPendiente nombre="Cobranzas" />} />

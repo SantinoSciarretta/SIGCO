@@ -13,6 +13,10 @@
 export const MODULOS_DUENO = [
   { ruta: '/tablero', nombre: 'Tablero', listo: true },
   { ruta: '/obras', nombre: 'Obras', listo: true },
+  // Clientes no estaba en la navegación del diseño. Se agrega porque es el
+  // primer módulo conectado al backend y necesita desde dónde entrar. Los
+  // demás módulos que faltan se suman cuando le toque a cada uno, no antes.
+  { ruta: '/clientes', nombre: 'Clientes', listo: true },
   { ruta: '/pedidos', nombre: 'Pedidos', listo: false },
   { ruta: '/presupuestos', nombre: 'Presupuestos', listo: false },
   { ruta: '/cobranzas', nombre: 'Cobranzas', listo: false },
