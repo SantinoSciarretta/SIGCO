@@ -267,12 +267,129 @@ con una estructura común, es consolidar lo ya escrito.
 
 ---
 
-## 6. Estado
+## 6. Backend: configuración base implementada
+
+### 6.1 Versión de Spring Boot
+
+Se desarrolla sobre **Spring Boot 4.1.0**, la versión vigente al iniciar la
+Etapa 3. Requiere Java 17 como mínimo, por lo que respeta la versión de Java
+declarada en la Propuesta Técnica. Spring Initializr ya no ofrece la rama 3.x,
+cuyo soporte gratuito finalizó a mediados de 2026.
+
+Diferencias relevantes respecto de Spring Boot 3.x, útiles al consultar
+documentación o ejemplos escritos para la versión anterior:
+
+- El starter web se llama `spring-boot-starter-webmvc` (antes `spring-boot-starter-web`).
+- Las dependencias de test están divididas por área (`...-webmvc-test`,
+  `...-data-jpa-test`, `...-validation-test`, `...-flyway-test`) en lugar del
+  único `spring-boot-starter-test`.
+- Incorpora Spring Framework 7, Hibernate 7.4 y Spring Security 7, esta última
+  relevante recién en el módulo 14.
+
+### 6.2 Estructura generada
+
+```
+backend/
+├── pom.xml
+├── mvnw.cmd                    Maven Wrapper (descarga Maven 3.9.16)
+├── .env                        credenciales locales, NO versionado
+├── .env.example                plantilla versionada, sin valores
+└── src/main/
+    ├── java/com/sigco/
+    │   ├── SigcoBackendApplication.java
+    │   └── common/
+    │       ├── EstadoController.java
+    │       ├── config/CorsConfig.java
+    │       └── exception/
+    │           ├── RecursoNoEncontradoException.java
+    │           ├── ReglaDeNegocioException.java
+    │           ├── RespuestaError.java
+    │           └── ManejadorGlobalDeErrores.java
+    └── resources/
+        ├── application.properties
+        ├── application-dev.properties
+        ├── application-prod.properties
+        └── db/migration/
+```
+
+### 6.3 Carga de credenciales sin exponerlas
+
+`application.properties` incluye:
+
+```properties
+spring.config.import=optional:file:.env[.properties]
+```
+
+Spring lee el archivo `.env` como una fuente de propiedades más, de modo que
+`${DB_PASSWORD}` se resuelve sin que ningún valor real quede escrito en un
+archivo versionado. El prefijo `optional:` es necesario porque en producción no
+existe ese archivo: allí las variables las inyecta Railway desde su panel, y sin
+ese prefijo la aplicación se negaría a arrancar por no encontrarlo.
+
+### 6.4 Manejo centralizado de errores
+
+`ManejadorGlobalDeErrores` es un `@RestControllerAdvice` que **extiende
+`ResponseEntityExceptionHandler`**, la clase base de Spring.
+
+La herencia no es decorativa: durante las pruebas se detectó que un
+`@ExceptionHandler(Exception.class)` usado como red de contención interceptaba
+también las excepciones propias de Spring MVC (URL inexistente, método HTTP no
+permitido, JSON mal formado), que ya traen su código HTTP correcto, y las
+degradaba todas a 500. Extendiendo la clase base, esos casos los resuelve Spring
+con su código correspondiente, y el manejador propio se ocupa únicamente de:
+
+| Situación | Código HTTP | Excepción |
+| --- | --- | --- |
+| Registro inexistente | 404 | `RecursoNoEncontradoException` |
+| Regla de negocio violada | 409 | `ReglaDeNegocioException` |
+| Datos con formato inválido | 400 | `MethodArgumentNotValidException` |
+| Error no previsto | 500 | cualquier otra |
+
+La distinción entre 400 y 409 es deliberada: un 400 significa que los datos
+están mal escritos (falta un campo obligatorio, un texto excede el largo
+permitido) y lo detecta Bean Validation; un 409 significa que los datos son
+correctos pero la operación contradice una regla de Granica SRL, como eliminar
+un cliente que tiene obras asociadas. Son problemas distintos y el frontend debe
+poder reaccionar de manera distinta a cada uno.
+
+Se redefine además `handleExceptionInternal` para que los errores que resuelve
+Spring salgan con el mismo formato `RespuestaError` que los propios. De esa
+forma **todos** los errores de la API tienen una única estructura y el frontend
+los interpreta en un solo lugar.
+
+### 6.5 Endpoint de diagnóstico
+
+`GET /api/estado` no pertenece a ningún módulo funcional. Devuelve el estado de
+la API y de la conexión con la base de datos:
+
+```json
+{"aplicacion":"SIGCO","api":"operativa","baseDatos":"conectada","momento":"..."}
+```
+
+Sirve para verificar que el frontend alcanza al backend sin problemas de CORS y,
+tras el despliegue, para confirmar que el servicio levantó correctamente.
+
+### 6.6 Verificación realizada
+
+| Comprobación | Resultado |
+| --- | --- |
+| Compilación (`mvnw compile`) | BUILD SUCCESS |
+| Arranque de la aplicación | Iniciada en 3,1 s, perfil `dev` activo |
+| Conexión a la base | `jdbc:postgresql://localhost:5432/sigco_dev` (PostgreSQL 17.11) |
+| Flyway | Creó `flyway_schema_history`; sin migraciones aún |
+| `GET /api/estado` | 200, `baseDatos: conectada` |
+| URL inexistente | 404 con formato `RespuestaError` |
+| Método HTTP no permitido | 405 con formato `RespuestaError` |
+| Tests (`mvnw test`) | 1 test, 0 fallos, BUILD SUCCESS |
+
+---
+
+## 7. Estado
 
 | Paso | Estado |
 | --- | --- |
 | 0 — Repositorio, estructura y documentación base | Completado |
-| 1 — Configuración base del backend | Pendiente |
+| 1 — Configuración base del backend | Completado |
 | 2 — Configuración base del frontend | Pendiente |
 | 3 — Sistema de diseño (paleta y componentes base) | Pendiente |
 | 4 — Módulo Clientes | Pendiente |

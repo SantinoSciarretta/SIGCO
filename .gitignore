@@ -7,6 +7,8 @@
 target/
 *.class
 .mvn/timing.properties
+# El Maven Wrapper descarga este binario solo la primera vez que se ejecuta.
+.mvn/wrapper/maven-wrapper.jar
 
 # ---------- Frontend: Node / Vite ----------
 # node_modules/ se reconstruye con "npm install" a partir de package-lock.json.
