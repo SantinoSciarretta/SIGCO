@@ -13,6 +13,7 @@ import CatalogoPage from '../modules/presupuestacion/CatalogoPage';
 import PresupuestosPage from '../modules/presupuestacion/PresupuestosPage';
 import PresupuestoDetalle from '../modules/presupuestacion/PresupuestoDetalle';
 import MaterialesPage from '../modules/materiales/MaterialesPage';
+import ProveedoresPage from '../modules/proveedores/ProveedoresPage';
 
 import LayoutCapataz from './paginas/capataz/LayoutCapataz';
 import Home from './paginas/capataz/Home';
@@ -56,6 +57,7 @@ export default function Router() {
         <Route path="/presupuestos/catalogo" element={<CatalogoPage />} />
         <Route path="/presupuestos/:id" element={<PresupuestoDetalle />} />
         <Route path="/materiales" element={<MaterialesPage />} />
+        <Route path="/proveedores" element={<ProveedoresPage />} />
         <Route path="/cobranzas" element={<ModuloPendiente nombre="Cobranzas" />} />
       </Route>
 

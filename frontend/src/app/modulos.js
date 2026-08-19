@@ -20,6 +20,7 @@ export const MODULOS_DUENO = [
   // Materiales entra al menú porque es un módulo propio del informe y lo
   // consultan tanto Presupuestación como Compras.
   { ruta: '/materiales', nombre: 'Materiales', listo: true },
+  { ruta: '/proveedores', nombre: 'Proveedores', listo: true },
   { ruta: '/pedidos', nombre: 'Pedidos', listo: false },
   { ruta: '/presupuestos', nombre: 'Presupuestos', listo: true },
   { ruta: '/cobranzas', nombre: 'Cobranzas', listo: false },
@@ -39,6 +40,6 @@ export const MODULOS_DUENO = [
  * cargada y probablemente convenga un menú secundario de administración.
  */
 export const MODULOS_SIN_UBICAR = [
-  'Proveedores', 'Personal', 'Portfolio Web',
+  'Personal', 'Portfolio Web',
   'Usuarios', 'Accesos',
 ];
