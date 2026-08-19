@@ -63,6 +63,21 @@ export async function cambiarEstadoPresupuesto(id, estado) {
   return respuesta.data;
 }
 
+/**
+ * Dirección del PDF del presupuesto.
+ *
+ * Se abre en una pestaña nueva en lugar de descargarse con Axios: el documento
+ * lo arma el servidor y el navegador ya sabe mostrarlo. Traerlo por Axios
+ * obligaría a manejar el binario y crear una URL temporal, sin ninguna ventaja.
+ *
+ * OJO: cuando exista la autenticación del módulo 14, esta dirección va a
+ * necesitar el token, que un enlace directo no envía. En ese momento habrá que
+ * pedirlo con Axios y abrir el resultado, o usar una URL firmada.
+ */
+export function urlDelPdf(id) {
+  return `${import.meta.env.VITE_API_URL}/presupuestos/${id}/pdf`;
+}
+
 export const TIPOS = ['Cotización inicial', 'Anteproyecto', 'Definitivo', 'Adicional'];
 export const ESTADOS = ['Borrador', 'Enviado', 'Aprobado', 'Rechazado'];
 

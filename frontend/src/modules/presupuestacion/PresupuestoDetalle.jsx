@@ -5,7 +5,7 @@ import Modal from '../../components/ui/Modal';
 import { listarRubros } from './catalogoApi';
 import {
   UNIDADES, agregarItem, actualizarItem, cambiarEstadoPresupuesto, definirPlanDePago,
-  duplicarPresupuesto, estadosPosiblesDesde, obtenerPresupuesto, pesos, quitarItem,
+  duplicarPresupuesto, estadosPosiblesDesde, obtenerPresupuesto, pesos, quitarItem, urlDelPdf,
 } from './presupuestosApi';
 import estilos from './Presupuestos.module.css';
 
@@ -142,6 +142,12 @@ export default function PresupuestoDetalle() {
         <button type="button" className={estilos.botonSecundario} onClick={() => setDuplicarAbierto(true)}>
           Usar como base
         </button>
+        {/* Se abre en una pestaña: el PDF lo arma el servidor y el navegador
+            ya sabe mostrarlo. */}
+        <a className={estilos.botonSecundario} href={urlDelPdf(id)}
+           target="_blank" rel="noreferrer">
+          Ver PDF
+        </a>
       </div>
 
       {!editable && (

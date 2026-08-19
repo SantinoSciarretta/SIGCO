@@ -35,6 +35,7 @@ public class PresupuestoService {
 
     private static final long TODAS_LAS_OBRAS = 0L;
 
+    private final GeneradorDePdf generadorDePdf;
     private final PresupuestoRepository repositorio;
     private final ItemPresupuestoRepository itemRepositorio;
     private final ObraRepository obraRepositorio;
@@ -45,7 +46,9 @@ public class PresupuestoService {
                               ItemPresupuestoRepository itemRepositorio,
                               ObraRepository obraRepositorio,
                               RubroRepository rubroRepositorio,
-                              SubrubroRepository subrubroRepositorio) {
+                              SubrubroRepository subrubroRepositorio,
+                              GeneradorDePdf generadorDePdf) {
+        this.generadorDePdf = generadorDePdf;
         this.repositorio = repositorio;
         this.itemRepositorio = itemRepositorio;
         this.obraRepositorio = obraRepositorio;
@@ -71,6 +74,23 @@ public class PresupuestoService {
     @Transactional(readOnly = true)
     public PresupuestoRespuesta obtener(Long id) {
         return PresupuestoRespuesta.completa(buscarCompletoOFallar(id));
+    }
+
+    /**
+     * Arma el PDF del presupuesto para enviarle al cliente.
+     *
+     * La consulta trae la obra, el cliente y los items en una sola vez, porque
+     * el generador los recorre todos. Sin eso, armar el documento dispararia
+     * una consulta por item.
+     *
+     * El PDF no se guarda en ningun lado: se regenera a partir de los datos
+     * cada vez que se lo pide. Guardarlo obligaria a regenerarlo ante cualquier
+     * cambio y a resolver donde almacenarlo, sin ninguna ventaja: el documento
+     * pesa unos pocos kilobytes y se arma en milisegundos.
+     */
+    @Transactional(readOnly = true)
+    public byte[] generarPdf(Long id) {
+        return generadorDePdf.generar(buscarCompletoOFallar(id));
     }
 
     // ------------------------------------------------------------------

@@ -9,6 +9,8 @@ import com.sigco.presupuestacion.dto.PresupuestoRespuesta;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -85,6 +87,28 @@ public class PresupuestoController {
         return ResponseEntity
                 .created(URI.create("/api/presupuestos/" + creado.idPresupuesto()))
                 .body(creado);
+    }
+
+    /**
+     * GET /api/presupuestos/{id}/pdf
+     *
+     * Devuelve el presupuesto como PDF con el membrete de la empresa, listo
+     * para enviarle al cliente. Los precios unitarios NO aparecen: solo el
+     * subtotal de cada rubro, como pide el informe.
+     *
+     * Content-Disposition inline hace que el navegador lo abra en una pestaña
+     * en lugar de descargarlo directamente, que es lo comodo para revisarlo
+     * antes de mandarlo.
+     */
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> generarPdf(@PathVariable Long id) {
+        byte[] pdf = servicio.generarPdf(id);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "inline; filename=\"presupuesto-" + id + ".pdf\"")
+                .body(pdf);
     }
 
     // ---------- Items ----------

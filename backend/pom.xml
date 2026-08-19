@@ -109,9 +109,34 @@
 		</dependency>
 
 		<!--
-			PENDIENTES (se agregan cuando entra el modulo que las necesita):
+			OpenPDF: genera el PDF del presupuesto que se le envia al cliente.
+			Entra ahora porque es el modulo que la necesita.
+
+			Lleva version explicita, a diferencia del resto: el parent de Spring
+			Boot no administra esta libreria, asi que no hay una version que
+			heredar.
+
+			Se eligio OpenPDF y no iText por licencia: iText paso a AGPL, que
+			obliga a publicar el codigo de cualquier sistema que la use. OpenPDF
+			es su bifurcacion bajo LGPL/MPL, sin esa restriccion.
+
+			NO ACTUALIZAR a 2.1.0 o posterior sin subir antes la version de Java.
+			Desde la 2.1.0 la libreria se compila para Java 21, y este proyecto
+			usa Java 17 (el que declara la Propuesta Tecnica). Con una version
+			mas nueva el proyecto COMPILA pero falla al arrancar, con
+			"UnsupportedClassVersionError: class file version 65.0, this version
+			of the Java Runtime only recognizes class file versions up to 61.0".
+			La 2.0.5 es la ultima compilada para Java 17.
+		-->
+		<dependency>
+			<groupId>com.github.librepdf</groupId>
+			<artifactId>openpdf</artifactId>
+			<version>2.0.5</version>
+		</dependency>
+
+		<!--
+			PENDIENTE (se agrega cuando entra el modulo que la necesita):
 			  - spring-boot-starter-security  -> modulo 14 (Accesos)
-			  - openpdf                       -> modulo 4  (Presupuestacion)
 		-->
 
 	</dependencies>
