@@ -17,27 +17,28 @@ export const MODULOS_DUENO = [
   // primer módulo conectado al backend y necesita desde dónde entrar. Los
   // demás módulos que faltan se suman cuando le toque a cada uno, no antes.
   { ruta: '/clientes', nombre: 'Clientes', listo: true },
+  // Materiales entra al menú porque es un módulo propio del informe y lo
+  // consultan tanto Presupuestación como Compras.
+  { ruta: '/materiales', nombre: 'Materiales', listo: true },
   { ruta: '/pedidos', nombre: 'Pedidos', listo: false },
-  { ruta: '/presupuestos', nombre: 'Presupuestos', listo: false },
+  { ruta: '/presupuestos', nombre: 'Presupuestos', listo: true },
   { ruta: '/cobranzas', nombre: 'Cobranzas', listo: false },
 ];
 
 /**
- * PENDIENTE DE DEFINICIÓN
+ * Módulos que todavía no tienen entrada en la navegación.
  *
- * El diseño resuelve la navegación de los cinco módulos que el dueño usa a
- * diario, pero el sistema tiene catorce. Estos nueve todavía no tienen desde
- * dónde entrar:
+ * El diseño resolvió el menú de los cinco módulos que el dueño usa a diario,
+ * pero el sistema tiene catorce. Cada módulo se suma al menú cuando se
+ * desarrolla, no antes: así la navegación nunca ofrece algo que no existe.
  *
- *   Clientes · Materiales · Proveedores · Personal · Portfolio Web ·
- *   Usuarios · Accesos · Gastos (hoy vive dentro del detalle de obra) ·
- *   Seguimiento (hoy vive dentro del detalle de obra)
+ * Gastos y Seguimiento son un caso aparte: no van a tener entrada propia
+ * porque viven dentro de la ficha de obra, que es donde tienen sentido.
  *
- * Hay que resolverlo antes de desarrollar el módulo Clientes, que es el
- * primero de la lista y hoy no tendría dónde ubicarse. La salida más probable
- * es un menú secundario de administración y catálogos.
+ * Cuando queden cuatro o cinco módulos más, la barra va a empezar a quedar
+ * cargada y probablemente convenga un menú secundario de administración.
  */
 export const MODULOS_SIN_UBICAR = [
-  'Clientes', 'Materiales', 'Proveedores', 'Personal', 'Portfolio Web',
+  'Proveedores', 'Personal', 'Portfolio Web',
   'Usuarios', 'Accesos',
 ];

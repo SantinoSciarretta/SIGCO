@@ -1,0 +1,271 @@
+/* Módulo Materiales — catálogo compartido con Presupuestación y Compras. */
+
+/* ---------- Cabecera ---------- */
+
+.cabecera {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.titulo { margin: 4px 0 0; font-size: 30px; }
+
+.herramientas {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ---------- Controles ---------- */
+
+.buscador,
+.filtro,
+.control {
+  min-height: 38px;
+  padding: 6px 10px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-text);
+  background: transparent;
+  border: 1px solid var(--color-divider);
+  border-radius: 0;
+}
+
+.buscador { width: 210px; }
+
+.buscador::placeholder { color: color-mix(in srgb, var(--color-text) 45%, transparent); }
+
+.buscador:hover,
+.filtro:hover,
+.control:hover {
+  border-color: color-mix(in srgb, var(--color-text) 45%, transparent);
+}
+
+.buscador:focus-visible,
+.filtro:focus-visible,
+.control:focus-visible {
+  border-color: var(--color-accent);
+  outline: 2px solid var(--color-accent);
+  outline-offset: 0;
+}
+
+/* ---------- Botones ---------- */
+
+.botonPrimario,
+.botonSecundario {
+  all: unset;
+  box-sizing: border-box;
+  min-height: 38px;
+  padding: 0 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  border: 1px solid var(--color-divider);
+}
+
+.botonPrimario {
+  background: var(--color-accent);
+  border-color: var(--color-accent-600);
+  color: var(--color-accent-900);
+}
+
+.botonPrimario:hover { background: var(--color-accent-500); }
+
+.botonPrimario:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.botonSecundario:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+
+.botonPrimario:focus-visible,
+.botonSecundario:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ---------- Bloque del listado ---------- */
+
+.bloque { padding: 14px 16px; }
+
+.aviso,
+.errorGeneral {
+  margin: 0;
+  padding: 14px 6px;
+  font-size: 14px;
+}
+
+.aviso { color: color-mix(in srgb, var(--color-text) 55%, transparent); }
+
+.errorGeneral {
+  color: var(--color-excedido);
+  border-left: 3px solid var(--color-excedido);
+  padding-left: 12px;
+  margin-bottom: 12px;
+}
+
+/* ---------- Estado vacio ---------- */
+
+.vacio {
+  padding: 44px 20px;
+  text-align: center;
+}
+
+.vacioTitulo {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 21px;
+  margin: 0 0 4px;
+}
+
+.vacioTexto {
+  margin: 0;
+  font-size: 14px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+/* ---------- Tabla ---------- */
+
+.nombre { font-weight: 500; }
+
+.dato {
+  font-size: 13.5px;
+  color: color-mix(in srgb, var(--color-text) 75%, transparent);
+}
+
+
+.activo,
+.inactivo {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+}
+
+.activo {
+  color: var(--color-ok);
+  background: color-mix(in srgb, var(--color-ok) 12%, transparent);
+}
+
+.inactivo {
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  border: 1px solid var(--color-divider);
+}
+
+
+.acciones {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.accion {
+  all: unset;
+  cursor: pointer;
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+  padding: 4px 6px;
+}
+
+.accion:hover { text-decoration: underline; }
+
+.accion:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+/* ---------- Formulario ---------- */
+
+.campo { margin-bottom: 14px; }
+
+.dosColumnas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.etiqueta {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 5px;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+}
+
+.obligatorio { color: var(--color-excedido); }
+
+.control { width: 100%; }
+
+.controlConError { border-color: var(--color-excedido); }
+
+.errorCampo {
+  margin: 5px 0 0;
+  font-size: 12px;
+  color: var(--color-excedido);
+}
+
+/* Nombre propio, distinto del .acciones de la tabla: dos clases con el mismo
+   nombre para cosas distintas terminan peleandose por especificidad. */
+.accionesFormulario {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-divider);
+}
+
+@media (max-width: 620px) {
+  .dosColumnas { grid-template-columns: 1fr; }
+  .herramientas { width: 100%; }
+  .buscador { flex: 1; width: auto; min-width: 140px; }
+}
+
+
+/* ---------- Propio de Materiales ---------- */
+
+.bajada {
+  margin: 4px 0 0;
+  font-size: 13.5px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+/* Aviso de que falta el catálogo de rubros, que es prerrequisito. */
+.avisoBloque {
+  padding: 24px 20px;
+  margin-bottom: 20px;
+  border-color: var(--color-alerta);
+}
+
+.avisoTitulo {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 19px;
+  margin: 0 0 4px;
+}
+
+/* Un material bajo un rubro inactivo no se ofrece aunque figure Activo. */
+.rubroInactivo {
+  display: block;
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-alerta);
+}
+
+.ayuda {
+  margin: 5px 0 0;
+  font-size: 11.5px;
+  color: color-mix(in srgb, var(--color-text) 50%, transparent);
+}
