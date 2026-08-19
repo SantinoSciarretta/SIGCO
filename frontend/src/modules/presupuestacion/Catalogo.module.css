@@ -1,0 +1,265 @@
+/* Catálogo de rubros y subrubros. */
+
+/* ---------- Cabecera ---------- */
+
+.cabecera {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.titulo { margin: 4px 0 0; font-size: 30px; }
+
+.bajada {
+  margin: 4px 0 0;
+  font-size: 13.5px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  max-width: 52ch;
+}
+
+.herramientas {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ---------- Controles ---------- */
+
+.buscador,
+.filtro,
+.control {
+  min-height: 38px;
+  padding: 6px 10px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-text);
+  background: transparent;
+  border: 1px solid var(--color-divider);
+  border-radius: 0;
+}
+
+.buscador { width: 200px; }
+.control { width: 100%; }
+
+.buscador::placeholder,
+.control::placeholder {
+  color: color-mix(in srgb, var(--color-text) 45%, transparent);
+}
+
+.buscador:hover,
+.filtro:hover,
+.control:hover {
+  border-color: color-mix(in srgb, var(--color-text) 45%, transparent);
+}
+
+.buscador:focus-visible,
+.filtro:focus-visible,
+.control:focus-visible {
+  border-color: var(--color-accent);
+  outline: 2px solid var(--color-accent);
+  outline-offset: 0;
+}
+
+/* ---------- Botones ---------- */
+
+.botonPrimario,
+.botonSecundario {
+  all: unset;
+  box-sizing: border-box;
+  min-height: 38px;
+  padding: 0 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  border: 1px solid var(--color-divider);
+  white-space: nowrap;
+}
+
+.botonPrimario {
+  background: var(--color-accent);
+  border-color: var(--color-accent-600);
+  color: var(--color-accent-900);
+}
+
+.botonPrimario:hover { background: var(--color-accent-500); }
+.botonPrimario:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.botonSecundario:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+
+.botonPrimario:focus-visible,
+.botonSecundario:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ---------- Avisos ---------- */
+
+.aviso {
+  font-size: 14px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+.errorGeneral {
+  color: var(--color-excedido);
+  border-left: 3px solid var(--color-excedido);
+  padding-left: 12px;
+  margin: 0 0 16px;
+  font-size: 14px;
+}
+
+.vacio { padding: 44px 20px; text-align: center; }
+
+.vacioTitulo {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 21px;
+  margin: 0 0 4px;
+}
+
+.vacioTexto {
+  margin: 0 auto;
+  max-width: 56ch;
+  font-size: 14px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+/* ---------- Árbol del catálogo ---------- */
+
+.lista {
+  display: grid;
+  gap: 22px;
+}
+
+.rubro { padding: 14px 18px 12px; }
+
+.rubroCabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.rubroTitulo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.rubroNombre { margin: 0; font-size: 21px; }
+
+.conteo {
+  font-size: 11.5px;
+  color: color-mix(in srgb, var(--color-text) 50%, transparent);
+}
+
+.activo,
+.inactivo {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 9px;
+  white-space: nowrap;
+}
+
+.activo {
+  color: var(--color-ok);
+  background: color-mix(in srgb, var(--color-ok) 12%, transparent);
+}
+
+.inactivo {
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  border: 1px solid var(--color-divider);
+}
+
+.acciones {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+}
+
+.accion {
+  all: unset;
+  cursor: pointer;
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+  padding: 4px 6px;
+  white-space: nowrap;
+}
+
+.accion:hover { text-decoration: underline; }
+
+.accion:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+/* ---------- Subrubros ---------- */
+
+.subrubros {
+  margin: 12px 0 0;
+  padding: 10px 0 0;
+  list-style: none;
+  border-top: 1px solid var(--color-divider);
+}
+
+.subrubro {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0 6px 18px;
+  /* Sangría con línea: marca la pertenencia al rubro sin usar viñetas. */
+  border-left: 1px solid var(--color-divider);
+  margin-left: 4px;
+}
+
+.subrubroNombre { flex: 1; font-size: 14px; }
+
+.subrubroAcciones {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+}
+
+/* ---------- Formulario ---------- */
+
+.campo { margin-bottom: 14px; }
+
+.etiqueta {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 5px;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+}
+
+.obligatorio { color: var(--color-excedido); }
+
+.accionesFormulario {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-divider);
+}
+
+@media (max-width: 620px) {
+  .herramientas { width: 100%; }
+  .buscador { flex: 1; width: auto; min-width: 140px; }
+  .rubroCabecera { align-items: flex-start; }
+  .subrubro { flex-wrap: wrap; }
+}
