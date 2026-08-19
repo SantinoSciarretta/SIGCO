@@ -1,4 +1,4 @@
-import { Link, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 
 import Layout from './Layout';
 import Login from './paginas/Login';
@@ -10,6 +10,8 @@ import DetalleObra from './paginas/dueno/DetalleObra';
 import ClientesPage from '../modules/clientes/ClientesPage';
 import ObrasPage from '../modules/obras/ObrasPage';
 import CatalogoPage from '../modules/presupuestacion/CatalogoPage';
+import PresupuestosPage from '../modules/presupuestacion/PresupuestosPage';
+import PresupuestoDetalle from '../modules/presupuestacion/PresupuestoDetalle';
 
 import LayoutCapataz from './paginas/capataz/LayoutCapataz';
 import Home from './paginas/capataz/Home';
@@ -49,22 +51,9 @@ export default function Router() {
             información. No forma parte de la navegación. */}
         <Route path="/vista-diseno/obra" element={<DetalleObra />} />
         <Route path="/pedidos" element={<ModuloPendiente nombre="Pedidos" />} />
-        {/* De Presupuestación está construida la primera parte: el catálogo
-            de rubros y subrubros, que es el paso 1 de su circuito y el
-            prerrequisito de todo lo demás. Los presupuestos en sí (tres
-            instancias, versionado, plan de pago y PDF) son la parte siguiente. */}
-        <Route
-          path="/presupuestos"
-          element={(
-            <ModuloPendiente nombre="Presupuestación">
-              <p style={{ margin: '14px 0 0' }}>
-                Lo que ya está disponible:{' '}
-                <Link to="/presupuestos/catalogo">Catálogo de rubros y subrubros</Link>
-              </p>
-            </ModuloPendiente>
-          )}
-        />
+        <Route path="/presupuestos" element={<PresupuestosPage />} />
         <Route path="/presupuestos/catalogo" element={<CatalogoPage />} />
+        <Route path="/presupuestos/:id" element={<PresupuestoDetalle />} />
         <Route path="/cobranzas" element={<ModuloPendiente nombre="Cobranzas" />} />
       </Route>
 
