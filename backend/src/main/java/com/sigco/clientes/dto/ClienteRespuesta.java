@@ -13,9 +13,9 @@ import java.time.LocalDateTime;
  * que segun el informe no debe llegar al cliente) y evita los ciclos infinitos
  * al convertir a JSON una relacion de ida y vuelta como cliente-obras.
  *
- * PENDIENTE: el informe pide mostrar en el listado la cantidad de obras de
- * cada cliente. Ese campo se agrega al desarrollar el modulo Obras; no se
- * incluye ahora devolviendo un cero fijo, porque seria un dato falso.
+ * La cantidad de obras no sale de la entidad Cliente: la aporta el modulo
+ * Obras, que es el que tiene ese dato. Por eso se recibe como parametro en
+ * lugar de leerse del objeto.
  */
 public record ClienteRespuesta(
         Long idCliente,
@@ -25,10 +25,11 @@ public record ClienteRespuesta(
         String origenRecomendacion,
         String recomendadoPor,
         String estado,
-        LocalDateTime fechaAlta) {
+        LocalDateTime fechaAlta,
+        long cantidadObras) {
 
     /** Convierte la entidad en su representacion de salida. */
-    public static ClienteRespuesta desde(Cliente cliente) {
+    public static ClienteRespuesta desde(Cliente cliente, long cantidadObras) {
         return new ClienteRespuesta(
                 cliente.getIdCliente(),
                 cliente.getNombreApellido(),
@@ -37,6 +38,7 @@ public record ClienteRespuesta(
                 cliente.getOrigenRecomendacion(),
                 cliente.getRecomendadoPor(),
                 cliente.getEstado(),
-                cliente.getFechaAlta());
+                cliente.getFechaAlta(),
+                cantidadObras);
     }
 }

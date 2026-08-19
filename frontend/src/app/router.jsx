@@ -8,6 +8,7 @@ import NoEncontrado from './paginas/NoEncontrado';
 import Tablero from './paginas/dueno/Tablero';
 import DetalleObra from './paginas/dueno/DetalleObra';
 import ClientesPage from '../modules/clientes/ClientesPage';
+import ObrasPage from '../modules/obras/ObrasPage';
 
 import LayoutCapataz from './paginas/capataz/LayoutCapataz';
 import Home from './paginas/capataz/Home';
@@ -38,8 +39,14 @@ export default function Router() {
       {/* ---------- Rol Dueño ---------- */}
       <Route element={<Layout />}>
         <Route path="/tablero" element={<Tablero />} />
-        <Route path="/obras" element={<DetalleObra />} />
+        <Route path="/obras" element={<ObrasPage />} />
         <Route path="/clientes" element={<ClientesPage />} />
+
+        {/* Pantalla del diseño original, con datos de muestra. Se conserva
+            como referencia de cómo va a quedar la ficha de obra cuando existan
+            Gastos y Seguimiento, que son los módulos que producen esa
+            información. No forma parte de la navegación. */}
+        <Route path="/vista-diseno/obra" element={<DetalleObra />} />
         <Route path="/pedidos" element={<ModuloPendiente nombre="Pedidos" />} />
         <Route path="/presupuestos" element={<ModuloPendiente nombre="Presupuestación" />} />
         <Route path="/cobranzas" element={<ModuloPendiente nombre="Cobranzas" />} />

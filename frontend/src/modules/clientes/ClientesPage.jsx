@@ -148,6 +148,7 @@ export default function ClientesPage() {
                   <th>Teléfono</th>
                   <th>Correo</th>
                   <th>Cómo llegó</th>
+                  <th style={{ textAlign: 'right' }}>Obras</th>
                   <th>Estado</th>
                   <th />
                 </tr>
@@ -164,6 +165,9 @@ export default function ClientesPage() {
                         <span className={estilos.recomendadoPor}>{cliente.recomendadoPor}</span>
                       )}
                     </td>
+                    {/* La cantidad de obras la aporta el módulo Obras, en una
+                        sola consulta agrupada para toda la lista. */}
+                    <td className={`cifra ${estilos.obras}`}>{cliente.cantidadObras}</td>
                     <td>
                       <span className={cliente.estado === 'Activo' ? estilos.activo : estilos.inactivo}>
                         {cliente.estado}

@@ -46,6 +46,17 @@ class ClienteRepositoryTest {
     @Autowired
     private ClienteRepository repositorio;
 
+    /**
+     * Traduce "sin filtro" a la cadena vacia que espera la consulta. Ningun
+     * parametro puede ir en null (ver el comentario del repositorio).
+     */
+    private List<Cliente> buscar(String busqueda, String origen, String estado) {
+        return repositorio.buscar(
+                busqueda != null ? busqueda : "",
+                origen != null ? origen : "",
+                estado != null ? estado : "");
+    }
+
     @BeforeEach
     void cargarClientes() {
         repositorio.save(new Cliente("Marcela Ferrari", "11 4023-7788",
@@ -63,7 +74,7 @@ class ClienteRepositoryTest {
     @Test
     @DisplayName("Sin filtros devuelve todos los clientes ordenados por nombre")
     void sinFiltrosDevuelveTodo() {
-        List<Cliente> resultado = repositorio.buscar(null, null, null);
+        List<Cliente> resultado = buscar(null, null, null);
 
         assertThat(resultado).hasSize(3);
         assertThat(resultado).extracting(Cliente::getNombreApellido)
@@ -73,11 +84,11 @@ class ClienteRepositoryTest {
     @Test
     @DisplayName("La busqueda por nombre no distingue mayusculas ni pide el nombre completo")
     void busquedaParcialSinDistinguirMayusculas() {
-        assertThat(repositorio.buscar("ROSSI", null, null))
+        assertThat(buscar("ROSSI", null, null))
                 .extracting(Cliente::getNombreApellido)
                 .containsExactly("Estudio Rossi Arquitectura");
 
-        assertThat(repositorio.buscar("ferrari", null, null))
+        assertThat(buscar("ferrari", null, null))
                 .extracting(Cliente::getNombreApellido)
                 .containsExactly("Marcela Ferrari");
     }
@@ -85,7 +96,7 @@ class ClienteRepositoryTest {
     @Test
     @DisplayName("Se puede filtrar por origen de la recomendacion")
     void filtraPorOrigen() {
-        List<Cliente> resultado = repositorio.buscar(null, Cliente.ORIGEN_ARQUITECTO, null);
+        List<Cliente> resultado = buscar(null, Cliente.ORIGEN_ARQUITECTO, null);
 
         assertThat(resultado).hasSize(1);
         assertThat(resultado.get(0).getNombreApellido()).isEqualTo("Estudio Rossi Arquitectura");
@@ -94,14 +105,14 @@ class ClienteRepositoryTest {
     @Test
     @DisplayName("Se puede filtrar por estado")
     void filtraPorEstado() {
-        assertThat(repositorio.buscar(null, null, Cliente.ESTADO_ACTIVO)).hasSize(2);
-        assertThat(repositorio.buscar(null, null, Cliente.ESTADO_INACTIVO)).hasSize(1);
+        assertThat(buscar(null, null, Cliente.ESTADO_ACTIVO)).hasSize(2);
+        assertThat(buscar(null, null, Cliente.ESTADO_INACTIVO)).hasSize(1);
     }
 
     @Test
     @DisplayName("Los filtros se combinan entre si")
     void filtrosCombinados() {
-        List<Cliente> resultado = repositorio.buscar(
+        List<Cliente> resultado = buscar(
                 "a", Cliente.ORIGEN_CLIENTE_ANTERIOR, Cliente.ESTADO_ACTIVO);
 
         assertThat(resultado).hasSize(1);
@@ -111,6 +122,6 @@ class ClienteRepositoryTest {
     @Test
     @DisplayName("Una busqueda sin coincidencias devuelve la lista vacia, no un error")
     void busquedaSinResultados() {
-        assertThat(repositorio.buscar("no existe ningun cliente asi", null, null)).isEmpty();
+        assertThat(buscar("no existe ningun cliente asi", null, null)).isEmpty();
     }
 }

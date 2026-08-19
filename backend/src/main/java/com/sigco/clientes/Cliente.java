@@ -61,8 +61,15 @@ public class Cliente {
     @Column(name = "fecha_alta", nullable = false)
     private LocalDateTime fechaAlta;
 
-    // TODO: al desarrollar el modulo Obras, agregar aca la relacion
-    //       @OneToMany(mappedBy = "cliente") para el historial de obras.
+    // Deliberadamente NO hay una relacion @OneToMany hacia obras.
+    //
+    // El listado de clientes muestra cuantas obras tiene cada uno, pero ese
+    // numero se obtiene con una consulta agrupada desde ObraRepository, no
+    // cargando la coleccion. Traer todas las obras de un cliente solo para
+    // contarlas seria traer datos que nadie va a usar, y ademas obligaria a
+    // cuidar el ciclo cliente -> obras -> cliente al convertir a JSON.
+    //
+    // El historial de obras de un cliente se pide a GET /api/obras?cliente={id}.
 
     /** JPA necesita un constructor sin argumentos para reconstruir la entidad. */
     protected Cliente() {

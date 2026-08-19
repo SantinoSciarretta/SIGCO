@@ -48,7 +48,7 @@ class ClienteControllerTest {
     private ClienteRespuesta clienteDeEjemplo() {
         return new ClienteRespuesta(1L, "Marcela Ferrari", "11 4023-7788",
                 "marcela@ejemplo.com", "Cliente anterior", "Hernan Dominguez",
-                "Activo", LocalDateTime.now());
+                "Activo", LocalDateTime.now(), 0L);
     }
 
     @Test

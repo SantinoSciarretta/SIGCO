@@ -18,19 +18,27 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
      * Busqueda del listado, con los tres filtros del informe combinables entre
      * si: texto del nombre, origen de la recomendacion y estado.
      *
-     * Cada condicion se anula sola cuando su parametro llega en null
-     * (:parametro IS NULL OR ...), de modo que una sola consulta cubre las ocho
-     * combinaciones posibles de filtros sin armar SQL a mano.
+     * NINGUN PARAMETRO PUEDE LLEGAR EN NULL. La ausencia de filtro se expresa
+     * con la cadena vacia, y el motivo es un problema real de PostgreSQL:
+     * cuando un parametro aparece unicamente en "? IS NULL", la base no tiene
+     * de donde deducir su tipo, le asigna uno por defecto (bytea) y despues
+     * falla al usarlo, con errores del estilo "no existe la funcion
+     * lower(bytea)". Lo peligroso es que no falla siempre: depende de como
+     * resuelva la inferencia en cada conexion, asi que puede pasar los tests y
+     * romper en produccion.
+     *
+     * Con la cadena vacia como valor de "sin filtro", todos los parametros
+     * viajan tipados como texto y la consulta es estable. La busqueda por
+     * nombre no necesita condicion aparte: LIKE '%%' coincide con todo.
      *
      * Usa parametros con nombre, nunca concatenacion de texto: es lo que
      * previene la inyeccion de SQL que menciona el informe.
      */
     @Query("""
             SELECT c FROM Cliente c
-            WHERE (:busqueda IS NULL
-                   OR LOWER(c.nombreApellido) LIKE LOWER(CONCAT('%', :busqueda, '%')))
-              AND (:origen IS NULL OR c.origenRecomendacion = :origen)
-              AND (:estado IS NULL OR c.estado = :estado)
+            WHERE LOWER(c.nombreApellido) LIKE LOWER(CONCAT('%', :busqueda, '%'))
+              AND (:origen = '' OR c.origenRecomendacion = :origen)
+              AND (:estado = '' OR c.estado = :estado)
             ORDER BY c.nombreApellido ASC
             """)
     List<Cliente> buscar(@Param("busqueda") String busqueda,

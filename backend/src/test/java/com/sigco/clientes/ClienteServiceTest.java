@@ -34,6 +34,14 @@ class ClienteServiceTest {
     @Mock
     private ClienteRepository repositorio;
 
+    /**
+     * Clientes consulta a Obras para contar los proyectos de cada uno. Como
+     * aca no se prueba ese conteo, el doble devuelve sus valores por defecto
+     * (lista vacia y cero), que es justo lo que corresponde.
+     */
+    @Mock
+    private com.sigco.obras.ObraRepository obraRepositorio;
+
     @InjectMocks
     private ClienteService servicio;
 
@@ -99,13 +107,19 @@ class ClienteServiceTest {
     @Test
     @DisplayName("Un filtro vacio se trata igual que un filtro ausente")
     void filtroVacioNoFiltra() {
-        when(repositorio.buscar(null, null, null)).thenReturn(List.of());
+        when(repositorio.buscar("", "", "")).thenReturn(List.of());
 
         servicio.listar("   ", "", null);
 
-        // Si el usuario borra lo que escribio en el buscador espera ver todo,
-        // no una lista vacia.
-        verify(repositorio).buscar(null, null, null);
+        // Dos cosas se verifican aca a la vez:
+        //
+        // 1. Si el usuario borra lo que escribio en el buscador espera ver
+        //    todo, no una lista vacia. Espacios en blanco y null son lo mismo.
+        // 2. Los filtros ausentes viajan como cadena vacia y NUNCA como null.
+        //    No es un detalle de estilo: un parametro nulo en la consulta hace
+        //    que PostgreSQL no pueda deducir su tipo y falle de forma
+        //    intermitente (ver el comentario en ClienteRepository.buscar).
+        verify(repositorio).buscar("", "", "");
     }
 
     // ------------------------------------------------------------------

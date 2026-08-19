@@ -3,7 +3,10 @@ package com.sigco.clientes;
 import com.sigco.clientes.dto.ClienteRespuesta;
 import com.sigco.clientes.dto.ClienteSolicitud;
 import com.sigco.common.exception.RecursoNoEncontradoException;
+import com.sigco.obras.ObraRepository;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,14 +16,20 @@ import org.springframework.transaction.annotation.Transactional;
  * Es la capa donde viven las reglas. El controlador solo traduce HTTP y el
  * repositorio solo habla con la base; toda decision sobre que se puede y que no
  * se puede hacer esta aca, del lado del servidor.
+ *
+ * Consulta ademas al repositorio de Obras para contar cuantos proyectos tiene
+ * cada cliente, que es un dato que el informe pide mostrar en el listado. Es la
+ * unica dependencia de este modulo hacia otro, y es de solo lectura.
  */
 @Service
 public class ClienteService {
 
     private final ClienteRepository repositorio;
+    private final ObraRepository obraRepositorio;
 
-    public ClienteService(ClienteRepository repositorio) {
+    public ClienteService(ClienteRepository repositorio, ObraRepository obraRepositorio) {
         this.repositorio = repositorio;
+        this.obraRepositorio = obraRepositorio;
     }
 
     /**
@@ -31,15 +40,27 @@ public class ClienteService {
      */
     @Transactional(readOnly = true)
     public List<ClienteRespuesta> listar(String busqueda, String origen, String estado) {
-        return repositorio.buscar(normalizar(busqueda), normalizar(origen), normalizar(estado))
-                .stream()
-                .map(ClienteRespuesta::desde)
+        // Los filtros ausentes viajan como cadena vacia, nunca como null
+        // (ver el comentario de ClienteRepository.buscar).
+        List<Cliente> clientes = repositorio.buscar(
+                sinFiltro(busqueda), sinFiltro(origen), sinFiltro(estado));
+
+        // Una sola consulta agrupada para todos los clientes de la lista, en
+        // lugar de preguntar uno por uno: con cien clientes serian cien
+        // consultas extra (el problema N+1).
+        Map<Long, Long> obrasPorCliente = contarObrasPorCliente();
+
+        return clientes.stream()
+                .map(cliente -> ClienteRespuesta.desde(
+                        cliente,
+                        obrasPorCliente.getOrDefault(cliente.getIdCliente(), 0L)))
                 .toList();
     }
 
     @Transactional(readOnly = true)
     public ClienteRespuesta obtener(Long id) {
-        return ClienteRespuesta.desde(buscarOFallar(id));
+        Cliente cliente = buscarOFallar(id);
+        return ClienteRespuesta.desde(cliente, obraRepositorio.countByClienteIdCliente(id));
     }
 
     /**
@@ -59,7 +80,8 @@ public class ClienteService {
                 normalizar(solicitud.origenRecomendacion()),
                 normalizar(solicitud.recomendadoPor()));
 
-        return ClienteRespuesta.desde(repositorio.save(cliente));
+        // Un cliente recien creado no tiene obras todavia.
+        return ClienteRespuesta.desde(repositorio.save(cliente), 0L);
     }
 
     /**
@@ -82,14 +104,13 @@ public class ClienteService {
         // No hace falta llamar a save(): dentro de una transaccion, Hibernate
         // detecta el cambio sobre una entidad que ya esta en su contexto y
         // escribe el UPDATE al cerrar. Se lo llama "dirty checking".
-        return ClienteRespuesta.desde(cliente);
+        return ClienteRespuesta.desde(cliente, obraRepositorio.countByClienteIdCliente(id));
     }
 
     /**
      * Marca el cliente como activo o inactivo.
      *
-     * El informe es explicito: un cliente NO se elimina, se desactiva. Aunque
-     * hoy nada impediria borrarlo (todavia no existe el modulo Obras), la baja
+     * El informe es explicito: un cliente NO se elimina, se desactiva. La baja
      * fisica romperia la trazabilidad de los proyectos anteriores, que es
      * justamente lo que este modulo viene a resolver. Por eso el servicio no
      * expone ninguna operacion de borrado.
@@ -104,10 +125,19 @@ public class ClienteService {
             cliente.desactivar();
         }
 
-        return ClienteRespuesta.desde(cliente);
+        return ClienteRespuesta.desde(cliente, obraRepositorio.countByClienteIdCliente(id));
     }
 
     // ------------------------------------------------------------------
+
+    /** Arma el mapa cliente -> cantidad de obras a partir de la consulta agrupada. */
+    private Map<Long, Long> contarObrasPorCliente() {
+        Map<Long, Long> conteo = new HashMap<>();
+        for (Object[] fila : obraRepositorio.contarPorCliente()) {
+            conteo.put((Long) fila[0], (Long) fila[1]);
+        }
+        return conteo;
+    }
 
     /** Busca el cliente o lanza el error que el manejador global traduce a 404. */
     private Cliente buscarOFallar(Long id) {
@@ -126,6 +156,17 @@ public class ClienteService {
     private String normalizar(String texto) {
         if (texto == null || texto.isBlank()) {
             return null;
+        }
+        return texto.trim();
+    }
+
+    /**
+     * Valor de un filtro para la consulta: el texto recortado, o cadena vacia
+     * cuando no hay filtro. Nunca null, por lo explicado en el repositorio.
+     */
+    private String sinFiltro(String texto) {
+        if (texto == null || texto.isBlank()) {
+            return "";
         }
         return texto.trim();
     }

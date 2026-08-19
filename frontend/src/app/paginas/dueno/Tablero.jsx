@@ -27,7 +27,10 @@ export default function Tablero() {
 
   const irAlDetalle = (indice) => {
     seleccionarObra(indice);
-    navegar('/obras');
+    // El detalle de obra del diseño todavía muestra datos de muestra: la
+    // información que consolida (gastos por rubro, hitos) la producen módulos
+    // que aún no existen.
+    navegar('/vista-diseno/obra');
   };
 
   const indicadores = [

@@ -67,8 +67,9 @@ uno porque el código Java usa camelCase y la base snake_case.
 
 - `@GeneratedValue(strategy = GenerationType.IDENTITY)` — delega la generación
   del número a la base, que es lo que hace el tipo `BIGSERIAL` de la migración.
-- Todavía no tiene relaciones. Queda marcado con un `// TODO` el lugar donde va
-  la relación `@OneToMany` hacia obras.
+- No tiene relación `@OneToMany` hacia obras, y es deliberado: la cantidad de
+  obras se obtiene con una consulta agrupada en lugar de cargar la colección
+  entera solo para contarla (ver sección 11).
 
 La entidad **no tiene setters sueltos**. En su lugar expone operaciones con
 nombre propio: `actualizarDatos(...)`, `activar()`, `desactivar()`. La diferencia
@@ -254,10 +255,30 @@ Obras, que es el módulo siguiente.
 
 ## 10. Pendientes
 
-| Pendiente | Se resuelve en |
+| Pendiente | Estado |
 | --- | --- |
-| Ficha de cliente con historial de obras | Módulo Obras |
-| Columna "cantidad de obras" en el listado | Módulo Obras |
-| Formulario de alta rápida desde Obras | Módulo Obras |
-| Relación `@OneToMany` hacia obras en la entidad | Módulo Obras |
+| Columna "cantidad de obras" en el listado | **Resuelto** en el módulo Obras |
+| Formulario de alta rápida desde Obras | **Resuelto** en el módulo Obras |
+| Ficha de cliente con historial de obras | Pendiente: el endpoint ya existe (`GET /api/obras?cliente={id}`), falta la pantalla |
 | Restringir el módulo al rol Dueño (hoy accede cualquiera) | Módulo Accesos |
+
+---
+
+## 11. Corrección posterior a la entrega del módulo
+
+Al desarrollar Obras se detectó que **la consulta del listado de clientes tenía
+un fallo intermitente** que no se había manifestado durante las pruebas de este
+módulo.
+
+El patrón `(:busqueda IS NULL OR LOWER(nombre) LIKE ...)` hace que PostgreSQL no
+pueda deducir el tipo del parámetro cuando llega en null, le asigne `bytea` por
+defecto y falle con `no existe la función lower(bytea)`. Que funcionara o no
+dependía de cómo resolviera la inferencia cada conexión, así que pasó todas las
+pruebas de este módulo y rompió después.
+
+La consulta se corrigió: los filtros ausentes viajan como cadena vacía y nunca
+como null. El detalle completo está en `03-obras.md`, sección 9.
+
+La entidad `Cliente` **no** recibió la relación `@OneToMany` hacia obras: la
+cantidad se resuelve con una consulta agrupada desde `ObraRepository`, que evita
+cargar la colección entera solo para contarla.
