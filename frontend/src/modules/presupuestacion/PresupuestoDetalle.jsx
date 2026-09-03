@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Blueprint from '../../components/ui/Blueprint';
 import Modal from '../../components/ui/Modal';
+import { listarMaterialesDisponibles } from '../materiales/materialesApi';
 import { listarRubros } from './catalogoApi';
 import {
   UNIDADES, agregarItem, actualizarItem, cambiarEstadoPresupuesto, definirPlanDePago,
@@ -27,6 +28,7 @@ export default function PresupuestoDetalle() {
 
   const [presupuesto, setPresupuesto] = useState(null);
   const [rubros, setRubros] = useState([]);
+  const [materiales, setMateriales] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
 
@@ -67,6 +69,11 @@ export default function PresupuestoDetalle() {
     let vigente = true;
     listarRubros({ estado: 'Activo' })
       .then((datos) => { if (vigente) setRubros(datos); })
+      .catch(() => {});
+    // El catálogo de materiales alimenta el selector del ítem. Si falla, el
+    // formulario sigue sirviendo: el material es opcional.
+    listarMaterialesDisponibles()
+      .then((datos) => { if (vigente) setMateriales(datos); })
       .catch(() => {});
     return () => { vigente = false; };
   }, []);
@@ -212,7 +219,18 @@ export default function PresupuestoDetalle() {
                           <div className={estilos.subrubroNombre}>{item.nombreSubrubro}</div>
                         )}
                       </td>
-                      <td className={estilos.dato}>{item.descripcion}</td>
+                      <td className={estilos.dato}>
+                        {item.descripcion}
+                        {/* Señal de que el ítem salió del catálogo y no de
+                            texto libre. Es lo que permite después agrupar el
+                            gasto del mismo insumo entre obras distintas. */}
+                        {item.nombreMaterial && (
+                          <span className={estilos.materialVinculado}
+                                title="Vinculado al catálogo de Materiales">
+                            {item.nombreMaterial}
+                          </span>
+                        )}
+                      </td>
                       <td className={`cifra ${estilos.numero}`}>{item.cantidad}</td>
                       <td className={estilos.dato}>{item.unidadMedida}</td>
                       <td className={`cifra ${estilos.numero} ${estilos.interno}`}>
@@ -291,6 +309,7 @@ export default function PresupuestoDetalle() {
           idPresupuesto={id}
           item={itemEnEdicion}
           rubros={rubros}
+          materiales={materiales}
           onCerrar={() => setFormularioItem(false)}
           onGuardado={(actualizado) => { setPresupuesto(actualizado); setFormularioItem(false); }}
         />
@@ -318,10 +337,11 @@ export default function PresupuestoDetalle() {
 /* ========================================================================== */
 
 /** Alta y edición de un ítem. El subrubro se limita al rubro elegido. */
-function ItemModal({ idPresupuesto, item, rubros, onCerrar, onGuardado }) {
+function ItemModal({ idPresupuesto, item, rubros, materiales, onCerrar, onGuardado }) {
   const [datos, setDatos] = useState({
     idRubro: item ? String(item.idRubro) : '',
     idSubrubro: item?.idSubrubro ? String(item.idSubrubro) : '',
+    idMaterial: item?.idMaterial ? String(item.idMaterial) : '',
     descripcion: item?.descripcion ?? '',
     unidadMedida: item?.unidadMedida ?? 'm²',
     cantidad: item?.cantidad ?? '',
@@ -339,13 +359,40 @@ function ItemModal({ idPresupuesto, item, rubros, onCerrar, onGuardado }) {
     ? rubroElegido.subrubros.filter((s) => s.estado === 'Activo')
     : [];
 
+  // Cada material pertenece a un rubro, así que solo se ofrecen los del rubro
+  // elegido. El backend valida lo mismo y rechaza la combinación inválida.
+  const materialesDisponibles = rubroElegido
+    ? materiales.filter((m) => m.idRubro === rubroElegido.idRubro)
+    : [];
+
+  /**
+   * Al elegir un material del catálogo se completan descripción y unidad.
+   *
+   * Quedan editables a propósito: la descripción es lo que ve el cliente en el
+   * PDF y suele necesitar más detalle que el nombre del catálogo ("Cemento CP40
+   * para la carpeta del baño"). Lo que se guarda vinculado es el material; el
+   * texto es lo que se imprime.
+   */
+  const elegirMaterial = (e) => {
+    const valor = e.target.value;
+    const material = materiales.find((m) => String(m.idMaterial) === valor);
+    setDatos((previo) => ({
+      ...previo,
+      idMaterial: valor,
+      descripcion: material && !previo.descripcion ? material.nombreMaterial : previo.descripcion,
+      unidadMedida: material ? material.unidadMedida : previo.unidadMedida,
+    }));
+    setError(null);
+  };
+
   const cambiar = (campo) => (e) => {
     const valor = e.target.value;
     setDatos((previo) => ({
       ...previo,
       [campo]: valor,
-      // Al cambiar de rubro, el subrubro anterior deja de tener sentido.
-      ...(campo === 'idRubro' ? { idSubrubro: '' } : {}),
+      // Al cambiar de rubro, el subrubro y el material anteriores dejan de
+      // pertenecer a él.
+      ...(campo === 'idRubro' ? { idSubrubro: '', idMaterial: '' } : {}),
     }));
     setCamposInvalidos((previo) => ({ ...previo, [campo]: undefined }));
   };
@@ -363,6 +410,7 @@ function ItemModal({ idPresupuesto, item, rubros, onCerrar, onGuardado }) {
     const cuerpo = {
       idRubro: Number(datos.idRubro),
       idSubrubro: datos.idSubrubro ? Number(datos.idSubrubro) : null,
+      idMaterial: datos.idMaterial ? Number(datos.idMaterial) : null,
       descripcion: datos.descripcion,
       unidadMedida: datos.unidadMedida,
       cantidad: datos.cantidad,
@@ -408,6 +456,26 @@ function ItemModal({ idPresupuesto, item, rubros, onCerrar, onGuardado }) {
               ))}
             </select>
           </div>
+        </div>
+
+        <div className={estilos.campo}>
+          <label className={estilos.etiqueta} htmlFor="idMaterial">Material del catálogo</label>
+          <select id="idMaterial" className={estilos.control} value={datos.idMaterial}
+                  onChange={elegirMaterial} disabled={!rubroElegido}>
+            <option value="">Sin material del catálogo</option>
+            {materialesDisponibles.map((m) => (
+              <option key={m.idMaterial} value={m.idMaterial}>
+                {m.nombreMaterial} — por {m.unidadMedida}
+              </option>
+            ))}
+          </select>
+          <p className={estilos.ayuda}>
+            {!rubroElegido
+              ? 'Elegí primero el rubro.'
+              : materialesDisponibles.length === 0
+                ? `Todavía no hay materiales cargados en ${rubroElegido.nombreRubro}.`
+                : 'Opcional: no todo ítem es un material. La mano de obra o la dirección de obra van sin material.'}
+          </p>
         </div>
 
         <div className={estilos.campo}>

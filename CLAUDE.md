@@ -168,7 +168,12 @@ Documentar a medida que se desarrolla es un requisito central del proyecto (insu
 - En construcción nueva, el sistema no habilita generar anteproyecto (el `tipo_obra` lo determina).
 - El definitivo toma como base el anteproyecto sin sobreescribirlo: ambos quedan como registros independientes vinculados por `id_presupuesto_base`.
 - Solo el rol dueño puede pasar un presupuesto a "Aprobado" (no delegable).
-- No se elimina un presupuesto, solo se marca "Rechazado".
+- No se elimina un presupuesto, solo se marca "Rechazado". **Desvío vigente:** a pedido de
+  Santino se implementó `DELETE /api/presupuestos/{id}`, que admite incluso los aprobados, para
+  poder probar sin arrastrar registros. La regla sigue siendo el criterio de uso recomendado (así
+  lo dice la pantalla de confirmación), pero el impedimento técnico se levantó a propósito: **no
+  revertir esta decisión.** Justificación completa y efectos sobre la obra en
+  `docs/desarrollo/05-presupuestacion-presupuestos.md`, sección 8b.
 - No se puede eliminar un rubro/subrubro ya usado en algún presupuesto, solo desactivarlo.
 - Un subrubro pertenece a un único rubro; no se puede elegir un subrubro que no corresponda al rubro del ítem.
 - No se permiten dos rubros con el mismo nombre.
@@ -231,7 +236,17 @@ Nombres, tipos PostgreSQL, PK/FK exactos del Diccionario de Datos. **Respetar es
 - **rubro**: `id_rubro` (PK), `nombre_rubro` (VARCHAR 100, único), `estado` (VARCHAR 10)
 - **subrubro**: `id_subrubro` (PK), `id_rubro` (FK→rubro), `nombre_subrubro` (VARCHAR 100), `estado` (VARCHAR 10)
 - **presupuesto**: `id_presupuesto` (PK), `id_obra` (FK→obra), `tipo_presupuesto` (VARCHAR 20), `id_presupuesto_base` (FK→presupuesto, autorreferencia), `version` (INTEGER), `estado` (VARCHAR 15), `metros_cuadrados` (NUMERIC 10,2), `valor_por_m2` (NUMERIC 12,2), `total_presupuesto` (NUMERIC 14,2), `anticipo_porcentaje` (NUMERIC 5,2), `cantidad_cuotas` (INTEGER), `plazo_estimado_obra` (VARCHAR 100), `fecha_creacion` (TIMESTAMP)
-- **item_presupuesto**: `id_item` (PK), `id_presupuesto` (FK→presupuesto), `id_rubro` (FK→rubro), `id_subrubro` (FK→subrubro), `descripcion` (VARCHAR 250), `unidad_medida` (VARCHAR 20), `cantidad` (NUMERIC 12,2), `valor_unitario` (NUMERIC 12,2, interno), `subtotal` (NUMERIC 14,2)
+- **item_presupuesto**: `id_item` (PK), `id_presupuesto` (FK→presupuesto), `id_rubro` (FK→rubro), `id_subrubro` (FK→subrubro), `id_material` (FK→material, opcional — **agregado en V7**, ver nota abajo), `descripcion` (VARCHAR 250), `unidad_medida` (VARCHAR 20), `cantidad` (NUMERIC 12,2), `valor_unitario` (NUMERIC 12,2, interno), `subtotal` (NUMERIC 14,2)
+
+> **Nota sobre `item_presupuesto.id_material` (agregado en `V7`).** El Diccionario
+> original no incluía esta columna, pero la prosa del informe describe que los
+> ítems del presupuesto se eligen del catálogo de Materiales. Sin la columna ese
+> vínculo no podía existir y la descripción quedaba como texto libre —
+> reproduciendo el problema que Materiales viene a resolver. Es **nullable**
+> porque no todo ítem es un material (mano de obra, dirección de obra). El
+> material debe pertenecer al rubro del ítem y no puede estar inactivo.
+> Justificación completa en `docs/desarrollo/05-presupuestacion-presupuestos.md`,
+> sección 2b.
 
 ### Módulo Materiales
 - **material**: `id_material` (PK), `nombre_material` (VARCHAR 150), `id_rubro` (FK→rubro), `unidad_medida` (VARCHAR 20), `estado` (VARCHAR 10), `fecha_alta` (TIMESTAMP)

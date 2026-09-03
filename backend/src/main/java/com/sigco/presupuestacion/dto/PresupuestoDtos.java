@@ -78,6 +78,14 @@ public final class PresupuestoDtos {
             /** Opcional: el anteproyecto se carga solo a nivel de rubro. */
             Long idSubrubro,
 
+            /**
+             * Opcional: material del catalogo al que refiere el item.
+             *
+             * No todo item es un material (mano de obra, direccion de obra),
+             * asi que no puede ser obligatorio.
+             */
+            Long idMaterial,
+
             @NotBlank(message = "La descripción del ítem es obligatoria")
             @Size(max = 250, message = "La descripción no puede superar los 250 caracteres")
             String descripcion,

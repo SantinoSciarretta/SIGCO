@@ -404,3 +404,90 @@
   .herramientas { width: 100%; }
   .plan, .previa { gap: 24px; }
 }
+
+/* --------------------------------------------------------------------------
+   Baja de un presupuesto
+
+   Reusa --color-excedido, el rojo del semáforo de Gastos. Es el único rojo del
+   sistema y acá significa lo mismo que allá —algo que hay que mirar dos veces—,
+   así que introducir un segundo rojo solo para esto sumaría ruido.
+   -------------------------------------------------------------------------- */
+
+.accionPeligro {
+  all: unset;
+  cursor: pointer;
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-excedido);
+  padding: 4px 6px;
+  margin-left: 4px;
+}
+
+.accionPeligro:hover { text-decoration: underline; }
+
+.accionPeligro:focus-visible {
+  outline: 2px solid var(--color-excedido);
+  outline-offset: 1px;
+}
+
+.botonPeligro {
+  all: unset;
+  box-sizing: border-box;
+  min-height: 38px;
+  padding: 0 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  border: 1px solid color-mix(in srgb, var(--color-excedido) 80%, #000);
+  background: var(--color-excedido);
+  color: var(--color-sobre-oscuro);
+}
+
+.botonPeligro:hover {
+  background: color-mix(in srgb, var(--color-excedido) 85%, #000);
+}
+
+.botonPeligro:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.botonPeligro:focus-visible {
+  outline: 2px solid var(--color-excedido);
+  outline-offset: 2px;
+}
+
+.confirmacion {
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0 0 10px;
+}
+
+/* Aviso de un efecto sobre otro módulo que desde esta pantalla no se ve. */
+.advertencia {
+  font-size: 13.5px;
+  line-height: 1.55;
+  margin: 0 0 10px;
+  padding: 10px 12px;
+  background: color-mix(in srgb, var(--color-alerta) 12%, transparent);
+  border-left: 3px solid var(--color-alerta);
+}
+
+/* Marca de que el ítem está vinculado al catálogo de Materiales. */
+.materialVinculado {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+}
+
+.materialVinculado::before {
+  content: "◆ ";
+  font-size: 9px;
+}

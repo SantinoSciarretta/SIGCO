@@ -4,11 +4,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.sigco.clientes.Cliente;
 import com.sigco.common.exception.RecursoNoEncontradoException;
 import com.sigco.common.exception.ReglaDeNegocioException;
+import com.sigco.materiales.Material;
+import com.sigco.materiales.MaterialRepository;
 import com.sigco.obras.Obra;
 import com.sigco.obras.ObraRepository;
 import com.sigco.presupuestacion.dto.PresupuestoDtos.CambioEstadoPresupuesto;
@@ -19,6 +23,7 @@ import com.sigco.presupuestacion.dto.PresupuestoDtos.PlanDePago;
 import com.sigco.presupuestacion.dto.PresupuestoRespuesta;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -42,6 +47,7 @@ class PresupuestoServiceTest {
     @Mock private PresupuestoRepository repositorio;
     @Mock private ItemPresupuestoRepository itemRepositorio;
     @Mock private ObraRepository obraRepositorio;
+    @Mock private MaterialRepository materialRepositorio;
     @Mock private RubroRepository rubroRepositorio;
     @Mock private SubrubroRepository subrubroRepositorio;
 
@@ -70,6 +76,12 @@ class PresupuestoServiceTest {
         Presupuesto p = new Presupuesto(obra, tipo, 1, null, null);
         asignarId(p, "idPresupuesto", id);
         return p;
+    }
+
+    private Material material(String nombre, Rubro rubro, Long id) {
+        Material m = new Material(nombre, rubro, "bolsa");
+        asignarId(m, "idMaterial", id);
+        return m;
     }
 
     private Rubro rubro(String nombre, Long id) {
@@ -220,7 +232,7 @@ class PresupuestoServiceTest {
             when(repositorio.buscarCompleto(10L)).thenReturn(Optional.of(cotizacion));
 
             assertThatThrownBy(() -> servicio.agregarItem(10L, new ItemSolicitud(
-                    1L, null, "Algo", "m2", BigDecimal.ONE, BigDecimal.TEN)))
+                    1L, null, null, "Algo", "m2", BigDecimal.ONE, BigDecimal.TEN)))
                     .isInstanceOf(ReglaDeNegocioException.class)
                     .hasMessageContaining("no lleva ítems");
         }
@@ -247,10 +259,10 @@ class PresupuestoServiceTest {
             when(rubroRepositorio.findById(1L)).thenReturn(Optional.of(albanileria));
 
             servicio.agregarItem(10L, new ItemSolicitud(
-                    1L, null, "Contrapiso", "m2", new BigDecimal("40.00"), new BigDecimal("12500.00")));
+                    1L, null, null, "Contrapiso", "m2", new BigDecimal("40.00"), new BigDecimal("12500.00")));
 
             PresupuestoRespuesta r = servicio.agregarItem(10L, new ItemSolicitud(
-                    1L, null, "Revoque", "m2", new BigDecimal("60.00"), new BigDecimal("8000.00")));
+                    1L, null, null, "Revoque", "m2", new BigDecimal("60.00"), new BigDecimal("8000.00")));
 
             // 40 x 12.500 = 500.000 ; 60 x 8.000 = 480.000
             assertThat(r.items()).hasSize(2);
@@ -268,16 +280,83 @@ class PresupuestoServiceTest {
             when(rubroRepositorio.findById(2L)).thenReturn(Optional.of(plomeria));
 
             servicio.agregarItem(10L, new ItemSolicitud(
-                    1L, null, "Contrapiso", "m2", new BigDecimal("10"), new BigDecimal("1000")));
+                    1L, null, null, "Contrapiso", "m2", new BigDecimal("10"), new BigDecimal("1000")));
             servicio.agregarItem(10L, new ItemSolicitud(
-                    1L, null, "Revoque", "m2", new BigDecimal("10"), new BigDecimal("2000")));
+                    1L, null, null, "Revoque", "m2", new BigDecimal("10"), new BigDecimal("2000")));
             PresupuestoRespuesta r = servicio.agregarItem(10L, new ItemSolicitud(
-                    2L, null, "Desagüe", "ml", new BigDecimal("5"), new BigDecimal("3000")));
+                    2L, null, null, "Desagüe", "ml", new BigDecimal("5"), new BigDecimal("3000")));
 
             assertThat(r.subtotalesPorRubro()).hasSize(2);
             assertThat(r.subtotalesPorRubro().get(0).nombreRubro()).isEqualTo("Albañilería");
             assertThat(r.subtotalesPorRubro().get(0).subtotal()).isEqualByComparingTo("30000");
             assertThat(r.subtotalesPorRubro().get(1).subtotal()).isEqualByComparingTo("15000");
+        }
+
+        @Test
+        @DisplayName("Se puede vincular el ítem a un material del catálogo")
+        void vinculaMaterialDelCatalogo() {
+            definitivoEnBorrador();
+            Rubro albanileria = rubro("Albañilería", 1L);
+            when(rubroRepositorio.findById(1L)).thenReturn(Optional.of(albanileria));
+            when(materialRepositorio.findById(3L))
+                    .thenReturn(Optional.of(material("Cemento CP40", albanileria, 3L)));
+
+            PresupuestoRespuesta r = servicio.agregarItem(10L, new ItemSolicitud(
+                    1L, null, 3L, "Cemento CP40 para la carpeta del baño", "bolsa",
+                    new BigDecimal("20"), new BigDecimal("15000")));
+
+            assertThat(r.items().get(0).idMaterial()).isEqualTo(3L);
+            assertThat(r.items().get(0).nombreMaterial()).isEqualTo("Cemento CP40");
+            // La descripcion no se pisa con el nombre del catalogo: es lo que
+            // se imprime en el PDF y puede llevar mas detalle.
+            assertThat(r.items().get(0).descripcion())
+                    .isEqualTo("Cemento CP40 para la carpeta del baño");
+        }
+
+        @Test
+        @DisplayName("El material tiene que pertenecer al rubro del ítem")
+        void materialDebeCorresponderAlRubro() {
+            definitivoEnBorrador();
+            Rubro albanileria = rubro("Albañilería", 1L);
+            Rubro plomeria = rubro("Plomería", 2L);
+            when(rubroRepositorio.findById(1L)).thenReturn(Optional.of(albanileria));
+            when(materialRepositorio.findById(4L))
+                    .thenReturn(Optional.of(material("Caño PVC 110", plomeria, 4L)));
+
+            assertThatThrownBy(() -> servicio.agregarItem(10L, new ItemSolicitud(
+                    1L, null, 4L, "Algo", "unidad", BigDecimal.ONE, BigDecimal.TEN)))
+                    .isInstanceOf(ReglaDeNegocioException.class)
+                    .hasMessageContaining("pertenece al rubro");
+        }
+
+        @Test
+        @DisplayName("Un material inactivo no entra en un presupuesto nuevo")
+        void materialInactivoNoSePuedeUsar() {
+            definitivoEnBorrador();
+            Rubro albanileria = rubro("Albañilería", 1L);
+            Material viejo = material("Cal hidratada", albanileria, 5L);
+            viejo.desactivar();
+            when(rubroRepositorio.findById(1L)).thenReturn(Optional.of(albanileria));
+            when(materialRepositorio.findById(5L)).thenReturn(Optional.of(viejo));
+
+            assertThatThrownBy(() -> servicio.agregarItem(10L, new ItemSolicitud(
+                    1L, null, 5L, "Algo", "bolsa", BigDecimal.ONE, BigDecimal.TEN)))
+                    .isInstanceOf(ReglaDeNegocioException.class)
+                    .hasMessageContaining("inactivo");
+        }
+
+        @Test
+        @DisplayName("El ítem sin material sigue siendo válido: no todo ítem es un material")
+        void itemSinMaterialEsValido() {
+            definitivoEnBorrador();
+            when(rubroRepositorio.findById(1L))
+                    .thenReturn(Optional.of(rubro("Albañilería", 1L)));
+
+            PresupuestoRespuesta r = servicio.agregarItem(10L, new ItemSolicitud(
+                    1L, null, null, "Mano de obra de albañilería", "jornal",
+                    new BigDecimal("15"), new BigDecimal("45000")));
+
+            assertThat(r.items().get(0).idMaterial()).isNull();
         }
 
         @Test
@@ -291,7 +370,7 @@ class PresupuestoServiceTest {
                     .thenReturn(Optional.of(subrubro(plomeria, "Desagües", 7L)));
 
             assertThatThrownBy(() -> servicio.agregarItem(10L, new ItemSolicitud(
-                    1L, 7L, "Algo", "m2", BigDecimal.ONE, BigDecimal.TEN)))
+                    1L, 7L, null, "Algo", "m2", BigDecimal.ONE, BigDecimal.TEN)))
                     .isInstanceOf(ReglaDeNegocioException.class)
                     .hasMessageContaining("pertenece al rubro");
         }
@@ -303,7 +382,7 @@ class PresupuestoServiceTest {
             p.enviar();
 
             assertThatThrownBy(() -> servicio.agregarItem(10L, new ItemSolicitud(
-                    1L, null, "Algo", "m2", BigDecimal.ONE, BigDecimal.TEN)))
+                    1L, null, null, "Algo", "m2", BigDecimal.ONE, BigDecimal.TEN)))
                     .isInstanceOf(ReglaDeNegocioException.class)
                     .hasMessageContaining("Generá una versión nueva");
         }
@@ -321,7 +400,7 @@ class PresupuestoServiceTest {
             Obra obra = obra(Obra.TIPO_REFORMA, 1L);
             Presupuesto anteproyecto = presupuesto(obra, Presupuesto.TIPO_ANTEPROYECTO, 10L);
             Rubro albanileria = rubro("Albañilería", 1L);
-            anteproyecto.agregarItem(new ItemPresupuesto(anteproyecto, albanileria, null,
+            anteproyecto.agregarItem(new ItemPresupuesto(anteproyecto, albanileria, null, null,
                     "Contrapiso", "m2", new BigDecimal("40"), new BigDecimal("12500")));
 
             when(repositorio.buscarCompleto(10L)).thenReturn(Optional.of(anteproyecto));
@@ -366,7 +445,7 @@ class PresupuestoServiceTest {
         private Presupuesto definitivoConItem() {
             Obra obra = obra(Obra.TIPO_CONSTRUCCION, 1L);
             Presupuesto p = presupuesto(obra, Presupuesto.TIPO_DEFINITIVO, 10L);
-            p.agregarItem(new ItemPresupuesto(p, rubro("Albañilería", 1L), null,
+            p.agregarItem(new ItemPresupuesto(p, rubro("Albañilería", 1L), null, null,
                     "Contrapiso", "m2", new BigDecimal("10"), new BigDecimal("1000")));
             lenient().when(repositorio.buscarCompleto(10L)).thenReturn(Optional.of(p));
             return p;
@@ -458,7 +537,7 @@ class PresupuestoServiceTest {
         private Presupuesto conTotal(String total) {
             Obra obra = obra(Obra.TIPO_CONSTRUCCION, 1L);
             Presupuesto p = presupuesto(obra, Presupuesto.TIPO_DEFINITIVO, 10L);
-            p.agregarItem(new ItemPresupuesto(p, rubro("Albañilería", 1L), null,
+            p.agregarItem(new ItemPresupuesto(p, rubro("Albañilería", 1L), null, null,
                     "Obra", "gl", BigDecimal.ONE, new BigDecimal(total)));
             lenient().when(repositorio.buscarCompleto(10L)).thenReturn(Optional.of(p));
             return p;
@@ -520,5 +599,140 @@ class PresupuestoServiceTest {
         assertThatThrownBy(() -> servicio.obtener(999L))
                 .isInstanceOf(RecursoNoEncontradoException.class)
                 .hasMessageContaining("Presupuesto");
+    }
+
+    /**
+     * Baja definitiva de un presupuesto.
+     *
+     * Es una extension sobre lo que pide el informe (que dice marcar Rechazado
+     * y no eliminar), asi que lo que mas importa probar son los dos bloqueos:
+     * sin ellos, borrar dejaria un derivado sin origen o una obra en ejecucion
+     * sin el presupuesto que la justifica.
+     */
+    @Nested
+    @DisplayName("Eliminar")
+    class Eliminar {
+
+        @Test
+        @DisplayName("Un borrador sin derivados se elimina")
+        void borradorSeElimina() {
+            Presupuesto p = presupuesto(obra(Obra.TIPO_REFORMA, 1L),
+                    Presupuesto.TIPO_ANTEPROYECTO, 5L);
+            when(repositorio.findById(5L)).thenReturn(Optional.of(p));
+            when(repositorio.existsByPresupuestoBaseIdPresupuesto(5L)).thenReturn(false);
+
+            servicio.eliminar(5L);
+
+            verify(repositorio).delete(p);
+        }
+
+        @Test
+        @DisplayName("Un rechazado también se elimina: ya no sostiene nada")
+        void rechazadoSeElimina() {
+            Presupuesto p = presupuesto(obra(Obra.TIPO_REFORMA, 1L),
+                    Presupuesto.TIPO_DEFINITIVO, 6L);
+            p.enviar();
+            p.rechazar();
+            when(repositorio.findById(6L)).thenReturn(Optional.of(p));
+            when(repositorio.existsByPresupuestoBaseIdPresupuesto(6L)).thenReturn(false);
+
+            servicio.eliminar(6L);
+
+            verify(repositorio).delete(p);
+        }
+
+        @Test
+        @DisplayName("No se elimina si otro presupuesto lo tiene como base")
+        void conDerivadoNoSeElimina() {
+            Presupuesto p = presupuesto(obra(Obra.TIPO_REFORMA, 1L),
+                    Presupuesto.TIPO_ANTEPROYECTO, 7L);
+            when(repositorio.findById(7L)).thenReturn(Optional.of(p));
+            when(repositorio.existsByPresupuestoBaseIdPresupuesto(7L)).thenReturn(true);
+
+            assertThatThrownBy(() -> servicio.eliminar(7L))
+                    .isInstanceOf(ReglaDeNegocioException.class)
+                    .hasMessageContaining("otro presupuesto se generó a partir de este");
+
+            verify(repositorio, never()).delete(any());
+        }
+
+        @Test
+        @DisplayName("Un definitivo aprobado se elimina y devuelve la obra a presupuestación")
+        void aprobadoSeEliminaYRevierteLaObra() {
+            Obra obra = obra(Obra.TIPO_REFORMA, 1L);
+            Presupuesto p = presupuesto(obra, Presupuesto.TIPO_DEFINITIVO, 8L);
+            p.enviar();
+            p.aprobar();
+            obra.pasarAEjecucion();
+            obra.registrarInicioReal(LocalDate.of(2026, 5, 4));
+
+            when(repositorio.findById(8L)).thenReturn(Optional.of(p));
+            when(repositorio.existsByPresupuestoBaseIdPresupuesto(8L)).thenReturn(false);
+            when(repositorio.findByObraIdObraAndTipoPresupuestoAndEstado(
+                    1L, Presupuesto.TIPO_DEFINITIVO, Presupuesto.ESTADO_APROBADO))
+                    .thenReturn(List.of(p));
+
+            servicio.eliminar(8L);
+
+            verify(repositorio).delete(p);
+            assertThat(obra.estaEnPresupuestacion()).isTrue();
+            // La fecha de inicio dependia de esa aprobacion: sin ella no se sostiene.
+            assertThat(obra.getFechaInicioReal()).isNull();
+        }
+
+        @Test
+        @DisplayName("Si queda otro definitivo aprobado, la obra sigue en ejecución")
+        void conOtroAprobadoLaObraNoSeRevierte() {
+            Obra obra = obra(Obra.TIPO_REFORMA, 1L);
+            Presupuesto aEliminar = presupuesto(obra, Presupuesto.TIPO_DEFINITIVO, 8L);
+            aEliminar.enviar();
+            aEliminar.aprobar();
+            Presupuesto otro = presupuesto(obra, Presupuesto.TIPO_DEFINITIVO, 9L);
+            otro.enviar();
+            otro.aprobar();
+            obra.pasarAEjecucion();
+
+            when(repositorio.findById(8L)).thenReturn(Optional.of(aEliminar));
+            when(repositorio.existsByPresupuestoBaseIdPresupuesto(8L)).thenReturn(false);
+            when(repositorio.findByObraIdObraAndTipoPresupuestoAndEstado(
+                    1L, Presupuesto.TIPO_DEFINITIVO, Presupuesto.ESTADO_APROBADO))
+                    .thenReturn(List.of(aEliminar, otro));
+
+            servicio.eliminar(8L);
+
+            verify(repositorio).delete(aEliminar);
+            assertThat(obra.estaEnEjecucion()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Eliminar un anteproyecto aprobado no toca el estado de la obra")
+        void anteproyectoAprobadoNoTocaLaObra() {
+            Obra obra = obra(Obra.TIPO_REFORMA, 1L);
+            Presupuesto p = presupuesto(obra, Presupuesto.TIPO_ANTEPROYECTO, 8L);
+            p.enviar();
+            p.aprobar();
+            obra.pasarAEjecucion();
+
+            when(repositorio.findById(8L)).thenReturn(Optional.of(p));
+            when(repositorio.existsByPresupuestoBaseIdPresupuesto(8L)).thenReturn(false);
+
+            servicio.eliminar(8L);
+
+            // Solo el definitivo pone la obra en ejecucion, asi que solo el
+            // definitivo puede deshacerlo.
+            assertThat(obra.estaEnEjecucion()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Eliminar uno inexistente devuelve el error que se traduce a 404")
+        void inexistenteNoSeElimina() {
+            when(repositorio.findById(999L)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> servicio.eliminar(999L))
+                    .isInstanceOf(RecursoNoEncontradoException.class)
+                    .hasMessageContaining("Presupuesto");
+
+            verify(repositorio, never()).delete(any());
+        }
     }
 }

@@ -64,6 +64,17 @@ export async function cambiarEstadoPresupuesto(id, estado) {
 }
 
 /**
+ * Baja definitiva de un presupuesto.
+ *
+ * El informe pide marcar Rechazado en lugar de eliminar. Esta operación existe
+ * para depurar los presupuestos de prueba, y el backend la acota: rechaza con
+ * 409 si el presupuesto está aprobado o si otro se generó a partir de él.
+ */
+export async function eliminarPresupuesto(id) {
+  await client.delete(`/presupuestos/${id}`);
+}
+
+/**
  * Dirección del PDF del presupuesto.
  *
  * Se abre en una pestaña nueva en lugar de descargarse con Axios: el documento

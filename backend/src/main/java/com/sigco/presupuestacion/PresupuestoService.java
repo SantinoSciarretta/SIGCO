@@ -2,6 +2,8 @@ package com.sigco.presupuestacion;
 
 import com.sigco.common.exception.RecursoNoEncontradoException;
 import com.sigco.common.exception.ReglaDeNegocioException;
+import com.sigco.materiales.Material;
+import com.sigco.materiales.MaterialRepository;
 import com.sigco.obras.Obra;
 import com.sigco.obras.ObraRepository;
 import com.sigco.presupuestacion.dto.PresupuestoDtos.CambioEstadoPresupuesto;
@@ -39,12 +41,14 @@ public class PresupuestoService {
     private final PresupuestoRepository repositorio;
     private final ItemPresupuestoRepository itemRepositorio;
     private final ObraRepository obraRepositorio;
+    private final MaterialRepository materialRepositorio;
     private final RubroRepository rubroRepositorio;
     private final SubrubroRepository subrubroRepositorio;
 
     public PresupuestoService(PresupuestoRepository repositorio,
                               ItemPresupuestoRepository itemRepositorio,
                               ObraRepository obraRepositorio,
+                              MaterialRepository materialRepositorio,
                               RubroRepository rubroRepositorio,
                               SubrubroRepository subrubroRepositorio,
                               GeneradorDePdf generadorDePdf) {
@@ -52,6 +56,7 @@ public class PresupuestoService {
         this.repositorio = repositorio;
         this.itemRepositorio = itemRepositorio;
         this.obraRepositorio = obraRepositorio;
+        this.materialRepositorio = materialRepositorio;
         this.rubroRepositorio = rubroRepositorio;
         this.subrubroRepositorio = subrubroRepositorio;
     }
@@ -170,8 +175,9 @@ public class PresupuestoService {
         // presupuesto del que salieron.
         for (ItemPresupuesto item : origen.getItems()) {
             copia.agregarItem(new ItemPresupuesto(
-                    copia, item.getRubro(), item.getSubrubro(), item.getDescripcion(),
-                    item.getUnidadMedida(), item.getCantidad(), item.getValorUnitario()));
+                    copia, item.getRubro(), item.getSubrubro(), item.getMaterial(),
+                    item.getDescripcion(), item.getUnidadMedida(),
+                    item.getCantidad(), item.getValorUnitario()));
         }
 
         return PresupuestoRespuesta.completa(repositorio.save(copia));
@@ -189,9 +195,10 @@ public class PresupuestoService {
 
         Rubro rubro = buscarRubroOFallar(solicitud.idRubro());
         Subrubro subrubro = resolverSubrubro(solicitud.idSubrubro(), rubro);
+        Material material = resolverMaterial(solicitud.idMaterial(), rubro);
 
         presupuesto.agregarItem(new ItemPresupuesto(
-                presupuesto, rubro, subrubro, solicitud.descripcion().trim(),
+                presupuesto, rubro, subrubro, material, solicitud.descripcion().trim(),
                 solicitud.unidadMedida().trim(), solicitud.cantidad(), solicitud.valorUnitario()));
 
         return PresupuestoRespuesta.completa(presupuesto);
@@ -206,8 +213,9 @@ public class PresupuestoService {
         ItemPresupuesto item = buscarItemOFallar(presupuesto, idItem);
         Rubro rubro = buscarRubroOFallar(solicitud.idRubro());
         Subrubro subrubro = resolverSubrubro(solicitud.idSubrubro(), rubro);
+        Material material = resolverMaterial(solicitud.idMaterial(), rubro);
 
-        item.actualizar(rubro, subrubro, solicitud.descripcion().trim(),
+        item.actualizar(rubro, subrubro, material, solicitud.descripcion().trim(),
                 solicitud.unidadMedida().trim(), solicitud.cantidad(), solicitud.valorUnitario());
         presupuesto.recalcularTotal();
 
@@ -339,6 +347,80 @@ public class PresupuestoService {
     }
 
     // ------------------------------------------------------------------
+    //  Baja
+    // ------------------------------------------------------------------
+
+    /**
+     * Elimina un presupuesto de forma definitiva.
+     *
+     * ATENCION: el informe establece que un presupuesto no se elimina, solo se
+     * marca Rechazado. Esta operacion es una extension pedida expresamente para
+     * poder hacer pruebas sin arrastrar registros, e incluye los aprobados.
+     *
+     * Queda un unico bloqueo, y no es una regla de negocio sino integridad
+     * referencial: si otro presupuesto lo tiene como base, borrarlo cortaria la
+     * cadena de versionado y el derivado quedaria sin origen. La clave foranea
+     * de la base lo rechazaria igual; el control existe para devolver un 409
+     * con un mensaje util en lugar de un error de restriccion.
+     *
+     * Los items se van con el presupuesto: la relacion es cascade = ALL con
+     * orphanRemoval, porque un item no existe fuera de su presupuesto.
+     */
+    @Transactional
+    public void eliminar(Long id) {
+        Presupuesto presupuesto = repositorio.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Presupuesto", id));
+
+        if (repositorio.existsByPresupuestoBaseIdPresupuesto(id)) {
+            throw new ReglaDeNegocioException(
+                    "No se puede eliminar: otro presupuesto se generó a partir de este. "
+                    + "Eliminá primero el que deriva de él.");
+        }
+
+        deshacerEfectoSobreLaObra(presupuesto);
+
+        repositorio.delete(presupuesto);
+    }
+
+    /**
+     * Devuelve la obra a presupuestacion si el que se elimina era el definitivo
+     * aprobado que la habia puesto en ejecucion.
+     *
+     * Aprobar un definitivo arrastra un cambio de estado de la obra. Eliminarlo
+     * sin deshacer ese cambio dejaria una obra "En ejecucion" sin ningun
+     * presupuesto aprobado detras: Gastos no tendria contra que comparar y el
+     * listado de obras mostraria un estado que ningun registro justifica.
+     *
+     * Solo se revierte si no queda otro definitivo aprobado en la obra, y solo
+     * desde "En ejecucion". Una obra Finalizada o Cancelada se deja como esta:
+     * llego a ese estado por otro camino (el ultimo hito, o una decision del
+     * dueño) y no le corresponde a esta operacion deshacerlo.
+     */
+    private void deshacerEfectoSobreLaObra(Presupuesto presupuesto) {
+        if (!presupuesto.esDefinitivo() || !presupuesto.estaAprobado()) {
+            return;
+        }
+
+        Obra obra = presupuesto.getObra();
+
+        if (!obra.estaEnEjecucion()) {
+            return;
+        }
+
+        boolean quedaOtroAprobado = repositorio
+                .findByObraIdObraAndTipoPresupuestoAndEstado(
+                        obra.getIdObra(),
+                        Presupuesto.TIPO_DEFINITIVO,
+                        Presupuesto.ESTADO_APROBADO)
+                .stream()
+                .anyMatch(otro -> !otro.getIdPresupuesto().equals(presupuesto.getIdPresupuesto()));
+
+        if (!quedaOtroAprobado) {
+            obra.volverAPresupuestacion();
+        }
+    }
+
+    // ------------------------------------------------------------------
     //  Reglas del circuito
     // ------------------------------------------------------------------
 
@@ -409,6 +491,42 @@ public class PresupuestoService {
      * item de rubro Albanileria con subrubro Desagues, y el agrupamiento por
      * rubro dejaria de tener sentido.
      */
+    /**
+     * El material elegido tiene que pertenecer al rubro del item.
+     *
+     * Es la misma regla que ya se aplica al subrubro y por el mismo motivo: si
+     * un item de rubro Albanileria pudiera referir a un material de Plomeria,
+     * el agrupamiento por rubro dejaria de significar algo, y Gastos compararia
+     * contra un presupuesto mal clasificado.
+     *
+     * Tambien se rechaza un material inactivo: si se dio de baja del catalogo,
+     * no deberia poder entrar en un presupuesto nuevo. Los items ya cargados
+     * que lo referencian no se tocan, porque son historia.
+     */
+    private Material resolverMaterial(Long idMaterial, Rubro rubro) {
+        if (idMaterial == null) {
+            return null;
+        }
+
+        Material material = materialRepositorio.findById(idMaterial)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Material", idMaterial));
+
+        if (!material.getRubro().getIdRubro().equals(rubro.getIdRubro())) {
+            throw new ReglaDeNegocioException(
+                    "El material \"" + material.getNombreMaterial() + "\" pertenece al rubro "
+                    + material.getRubro().getNombreRubro() + ", no a "
+                    + rubro.getNombreRubro() + ".");
+        }
+
+        if (!material.estaActivo()) {
+            throw new ReglaDeNegocioException(
+                    "El material \"" + material.getNombreMaterial()
+                    + "\" está inactivo en el catálogo y no se puede usar en un presupuesto.");
+        }
+
+        return material;
+    }
+
     private Subrubro resolverSubrubro(Long idSubrubro, Rubro rubro) {
         if (idSubrubro == null) {
             return null;

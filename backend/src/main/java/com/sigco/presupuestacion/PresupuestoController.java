@@ -26,13 +26,16 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * API REST del modulo Presupuestacion.
  *
- * No existe DELETE de presupuestos: el informe establece que no se eliminan,
- * solo se marcan Rechazado, para conservar la trazabilidad completa de la
- * negociacion con el cliente.
+ * El informe establece que un presupuesto no se elimina, solo se marca
+ * Rechazado, para conservar la trazabilidad de la negociacion con el cliente.
+ * El DELETE de presupuestos es una extension pedida para poder probar sin
+ * arrastrar registros, e incluye los aprobados. El unico caso que rechaza es
+ * el presupuesto que sea base de otro, y eso es integridad referencial, no una
+ * regla de negocio. Ver PresupuestoService.eliminar.
  *
- * Si existe DELETE de items, y no es una contradiccion: un item se puede quitar
- * unicamente mientras el presupuesto esta en Borrador, es decir antes de que el
- * cliente lo haya visto.
+ * El DELETE de items es mas antiguo y no contradice nada: un item se puede
+ * quitar unicamente mientras el presupuesto esta en Borrador, es decir antes de
+ * que el cliente lo haya visto.
  */
 @RestController
 @RequestMapping("/api/presupuestos")
@@ -152,5 +155,20 @@ public class PresupuestoController {
     public PresupuestoRespuesta cambiarEstado(
             @PathVariable Long id, @Valid @RequestBody CambioEstadoPresupuesto cambio) {
         return servicio.cambiarEstado(id, cambio);
+    }
+
+    /**
+     * DELETE /api/presupuestos/{id}
+     *
+     * Devuelve 204 sin cuerpo si se elimino, 404 si no existe y 409 si otro
+     * presupuesto lo tiene como base.
+     *
+     * Si el eliminado era el definitivo aprobado, la obra vuelve a
+     * "En presupuestacion" y pierde su fecha de inicio real.
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        servicio.eliminar(id);
+        return ResponseEntity.noContent().build();
     }
 }

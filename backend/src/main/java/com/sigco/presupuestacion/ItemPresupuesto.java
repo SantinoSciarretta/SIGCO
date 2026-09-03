@@ -1,5 +1,6 @@
 package com.sigco.presupuestacion;
 
+import com.sigco.materiales.Material;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -47,6 +48,21 @@ public class ItemPresupuesto {
     @JoinColumn(name = "id_subrubro")
     private Subrubro subrubro;
 
+    /**
+     * Material del catalogo al que refiere el item. Opcional.
+     *
+     * No todo item es un material: "Mano de obra de albanileria" o "Direccion
+     * de obra" son items legitimos que no salen del catalogo. Cuando si lo es,
+     * este vinculo permite responder en que presupuestos se uso un material y
+     * evita que el mismo insumo se escriba distinto en cada obra.
+     *
+     * La descripcion se guarda igual: es lo que se imprime en el PDF y puede
+     * necesitar mas detalle que el nombre del catalogo.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_material")
+    private Material material;
+
     @Column(name = "descripcion", nullable = false, length = 250)
     private String descripcion;
 
@@ -67,11 +83,12 @@ public class ItemPresupuesto {
     }
 
     public ItemPresupuesto(Presupuesto presupuesto, Rubro rubro, Subrubro subrubro,
-                           String descripcion, String unidadMedida,
+                           Material material, String descripcion, String unidadMedida,
                            BigDecimal cantidad, BigDecimal valorUnitario) {
         this.presupuesto = presupuesto;
         this.rubro = rubro;
         this.subrubro = subrubro;
+        this.material = material;
         this.descripcion = descripcion;
         this.unidadMedida = unidadMedida;
         this.cantidad = cantidad;
@@ -86,10 +103,12 @@ public class ItemPresupuesto {
      * valor unitario. Si llegara como dato, un pedido mal armado podria guardar
      * un total que no se corresponde con sus partes.
      */
-    public void actualizar(Rubro rubro, Subrubro subrubro, String descripcion,
-                           String unidadMedida, BigDecimal cantidad, BigDecimal valorUnitario) {
+    public void actualizar(Rubro rubro, Subrubro subrubro, Material material,
+                           String descripcion, String unidadMedida,
+                           BigDecimal cantidad, BigDecimal valorUnitario) {
         this.rubro = rubro;
         this.subrubro = subrubro;
+        this.material = material;
         this.descripcion = descripcion;
         this.unidadMedida = unidadMedida;
         this.cantidad = cantidad;
@@ -123,6 +142,10 @@ public class ItemPresupuesto {
 
     public Subrubro getSubrubro() {
         return subrubro;
+    }
+
+    public Material getMaterial() {
+        return material;
     }
 
     public String getDescripcion() {

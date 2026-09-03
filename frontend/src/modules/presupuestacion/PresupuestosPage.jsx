@@ -4,7 +4,7 @@ import Blueprint from '../../components/ui/Blueprint';
 import Modal from '../../components/ui/Modal';
 import { listarObras } from '../obras/obrasApi';
 import {
-  ESTADOS, TIPOS, crearPresupuesto, listarPresupuestos, pesos,
+  ESTADOS, TIPOS, crearPresupuesto, eliminarPresupuesto, listarPresupuestos, pesos,
 } from './presupuestosApi';
 import estilos from './Presupuestos.module.css';
 
@@ -24,6 +24,7 @@ export default function PresupuestosPage() {
   const [tipo, setTipo] = useState('');
   const [estado, setEstado] = useState('');
   const [altaAbierta, setAltaAbierta] = useState(false);
+  const [aEliminar, setAEliminar] = useState(null);
 
   const [recarga, setRecarga] = useState(0);
 
@@ -144,6 +145,10 @@ export default function PresupuestosPage() {
                       <Link className={estilos.accion} to={`/presupuestos/${p.idPresupuesto}`}>
                         Abrir
                       </Link>
+                      <button type="button" className={estilos.accionPeligro}
+                              onClick={() => setAEliminar(p)}>
+                        Eliminar
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -153,6 +158,14 @@ export default function PresupuestosPage() {
         )}
       </Blueprint>
 
+      {aEliminar && (
+        <ConfirmarEliminacion
+          presupuesto={aEliminar}
+          onCerrar={() => setAEliminar(null)}
+          onEliminado={() => { setAEliminar(null); recargar(); }}
+        />
+      )}
+
       {altaAbierta && (
         <NuevoPresupuestoModal
           onCerrar={() => setAltaAbierta(false)}
@@ -160,6 +173,74 @@ export default function PresupuestosPage() {
         />
       )}
     </>
+  );
+}
+
+/**
+ * Confirmación de baja.
+ *
+ * Pide confirmar porque la baja es definitiva y no hay papelera: a diferencia
+ * del resto del sistema, acá el registro desaparece de verdad.
+ *
+ * El error del backend se muestra tal cual llega. Es el que explica el motivo
+ * real cuando no se puede borrar (por ejemplo, que otro presupuesto se generó a
+ * partir de éste), y duplicar esa regla acá la dejaría desactualizada.
+ */
+function ConfirmarEliminacion({ presupuesto, onCerrar, onEliminado }) {
+  const [error, setError] = useState(null);
+  const [eliminando, setEliminando] = useState(false);
+
+  const esDefinitivoAprobado = presupuesto.tipoPresupuesto === 'Definitivo'
+    && presupuesto.estado === 'Aprobado';
+
+  const confirmar = async () => {
+    setEliminando(true);
+    setError(null);
+    try {
+      await eliminarPresupuesto(presupuesto.idPresupuesto);
+      onEliminado();
+    } catch (fallo) {
+      setError(fallo.mensaje);
+    } finally {
+      setEliminando(false);
+    }
+  };
+
+  return (
+    <Modal abierto onCerrar={onCerrar} titulo="Eliminar presupuesto">
+      <p className={estilos.confirmacion}>
+        Se va a eliminar el{' '}
+        <b>{presupuesto.tipoPresupuesto.toLowerCase()} v{presupuesto.version}</b>
+        {' '}de <b>{presupuesto.direccionObra}</b>, junto con todos sus ítems.
+      </p>
+      {/* Aprobar el definitivo puso la obra en ejecución. Al eliminarlo el
+          backend deshace ese cambio, y conviene avisarlo antes: es un efecto
+          sobre otro módulo que desde esta pantalla no se ve. */}
+      {esDefinitivoAprobado && (
+        <p className={estilos.advertencia}>
+          Es el definitivo aprobado de esta obra. Al eliminarlo, la obra vuelve
+          a <b>En presupuestación</b> y se borra su fecha de inicio real.
+        </p>
+      )}
+
+      <p className={estilos.ayuda}>
+        La baja es definitiva y no se puede deshacer. Si el presupuesto quedó sin
+        efecto pero querés conservar el registro, marcalo como Rechazado desde su
+        pantalla en lugar de eliminarlo.
+      </p>
+
+      {error && <p className={estilos.errorGeneral}>{error}</p>}
+
+      <div className={estilos.accionesFormulario}>
+        <button type="button" className={estilos.botonSecundario} onClick={onCerrar}>
+          Cancelar
+        </button>
+        <button type="button" className={estilos.botonPeligro} onClick={confirmar}
+                disabled={eliminando}>
+          {eliminando ? 'Eliminando…' : 'Eliminar'}
+        </button>
+      </div>
+    </Modal>
   );
 }
 

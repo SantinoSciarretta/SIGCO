@@ -58,6 +58,79 @@ espera cualquiera que revise la cuenta a mano.
 
 ---
 
+## 2b. El vínculo con Materiales — corrección del Diccionario de Datos
+
+**Migración:** `V7__item_presupuesto_material.sql`
+
+### El problema: los dos documentos no coincidían
+
+- **La prosa del informe** describe que los ítems del presupuesto se eligen del
+  catálogo de Materiales. Ése es el problema que el módulo Materiales existe
+  para resolver: que "cemento", "Cemento CP40" y "bolsa cemento" dejen de ser
+  tres cosas distintas escritas a mano en cada obra.
+- **El Diccionario de Datos** define `item_presupuesto` sin columna
+  `id_material`, así que el vínculo no podía existir.
+
+Como el Diccionario manda para el esquema, la tabla salió sin la relación y la
+descripción del ítem quedaba como texto libre — reproduciendo exactamente el
+problema que había que eliminar. **El Diccionario se corrige con esta columna.**
+
+### Por qué es opcional
+
+No todo ítem de un presupuesto es un material. *"Mano de obra de albañilería"* o
+*"Dirección de obra"* son ítems legítimos que no salen del catálogo. Hacerla
+obligatoria forzaría a inventar materiales falsos para poder cargarlos.
+
+### La descripción se sigue guardando
+
+Elegir un material **no reemplaza** la descripción, la sugiere. La descripción
+es lo que se imprime en el PDF del cliente y suele necesitar más detalle que el
+nombre del catálogo: *"Cemento CP40 para la carpeta del baño"*. Lo que queda
+vinculado es el material; el texto es lo que se ve.
+
+### Reglas
+
+| Regla | Respuesta |
+| --- | --- |
+| El material tiene que pertenecer al rubro del ítem | `409` |
+| No se puede usar un material inactivo | `409` |
+| El material no existe | `404` |
+| Sin material | válido |
+
+La primera es la misma regla que ya se aplicaba al subrubro y por el mismo
+motivo: si un ítem de Albañilería pudiera referir a un material de Plomería, el
+agrupamiento por rubro dejaría de significar algo y Gastos compararía contra un
+presupuesto mal clasificado.
+
+Los ítems ya cargados que referencian un material que después se desactiva **no
+se tocan**: son historia. La restricción aplica solo al alta y la edición.
+
+### Al duplicar, el material se copia
+
+`PresupuestoService.duplicar` copia `id_material` junto con el resto del ítem.
+Sin eso, el definitivo generado desde un anteproyecto perdería el vínculo y
+volvería a ser texto libre.
+
+### En pantalla
+
+El modal del ítem tiene un selector **Material del catálogo**, filtrado por el
+rubro elegido y deshabilitado hasta que haya rubro. Al elegir uno se completan
+descripción (solo si estaba vacía) y unidad de medida, ambas editables. En la
+tabla de ítems, los que están vinculados muestran el nombre del catálogo debajo
+de la descripción.
+
+### Verificación manual
+
+| Caso | Resultado |
+| --- | --- |
+| Ítem con material del rubro correcto | `200`, `idMaterial` y `nombreMaterial` en la respuesta, descripción intacta |
+| Ítem sin material ("Mano de obra") | `200`, `idMaterial` nulo |
+| Material de otro rubro (Caño corrugado/Electricidad en ítem de Albañilería) | `409` con el rubro real en el mensaje |
+| Material inactivo, con su rubro correcto | `409` "está inactivo en el catálogo" |
+| Material inexistente | `404` |
+
+---
+
 ## 3. Las tres instancias del proceso
 
 ```
@@ -255,6 +328,97 @@ ventaja: pesa menos de 10 KB y se arma en milisegundos.
 | PUT | `/api/presupuestos/{id}/plan-de-pago` | Anticipo y cuotas |
 | PATCH | `/api/presupuestos/{id}/estado` | Enviar / aprobar / rechazar |
 | GET | `/api/presupuestos/{id}/pdf` | Documento para el cliente |
+| DELETE | `/api/presupuestos/{id}` | Baja definitiva, incluidos los aprobados — ver sección 8b |
+
+---
+
+## 8b. Baja de presupuestos — desvío respecto del informe
+
+**Esto se aparta de lo que dice el informe y hay que poder justificarlo.**
+
+La sección 8 del informe establece: *"No se elimina un presupuesto, solo se
+marca Rechazado"*. El sistema expone `DELETE /api/presupuestos/{id}` y **admite
+también los aprobados**.
+
+### Por qué
+
+Se pidió expresamente para poder probar el circuito completo sin arrastrar
+registros. Marcar Rechazado no alcanza: deja los presupuestos de prueba
+mezclados en el listado y hace que "Rechazado" signifique dos cosas distintas
+—*el cliente lo rechazó* y *esto era una prueba*—, lo que ensucia más que la
+baja.
+
+Es una decisión consciente sobre una regla del informe, no un descuido. La
+regla sigue vigente como **criterio de uso** (para dar de baja algo que quedó
+sin efecto, lo correcto es Rechazado, y así lo dice la pantalla de
+confirmación); lo que se levantó es el impedimento técnico.
+
+### El único bloqueo que queda no es una regla, es integridad referencial
+
+| Caso | Respuesta |
+| --- | --- |
+| Otro presupuesto lo tiene como base | `409` |
+| No existe | `404` |
+| Cualquier otro, incluido `Aprobado` | `204` |
+
+Si otro presupuesto tiene a éste como base, borrarlo cortaría la cadena de
+versionado y el derivado quedaría sin origen. **La clave foránea de la base lo
+rechazaría igual**: el control en el servicio existe para devolver un `409` con
+un mensaje que dice qué hay que borrar primero, en lugar de un error de
+restricción de PostgreSQL.
+
+Para borrar una cadena hay que ir del derivado hacia el origen: primero el
+definitivo, después el anteproyecto del que salió.
+
+### El efecto sobre la obra, que es lo que había que resolver
+
+Aprobar un presupuesto definitivo **pone la obra en "En ejecución"**. Eliminarlo
+sin deshacer ese cambio dejaría una obra en ejecución sin ningún presupuesto
+aprobado detrás: Gastos no tendría contra qué comparar, y el listado de obras
+mostraría un estado que ningún registro justifica.
+
+Por eso `PresupuestoService.deshacerEfectoSobreLaObra` revierte la obra a
+"En presupuestación" y **borra `fecha_inicio_real`** (el informe condiciona esa
+fecha a que exista un definitivo aprobado; sin la aprobación, pierde
+fundamento). Para eso se agregó `Obra.volverAPresupuestacion()`, que no es una
+transición del circuito normal y existe solo para este caso.
+
+La reversión está acotada por tres condiciones:
+
+| Condición | Por qué |
+| --- | --- |
+| Solo si el eliminado es **Definitivo** y está **Aprobado** | Es el único que pone la obra en ejecución |
+| Solo si **no queda otro definitivo aprobado** en la obra | Si queda otro, la obra sigue justificada |
+| Solo desde **"En ejecución"** | Una obra Finalizada o Cancelada llegó ahí por otro camino (el último hito, o una decisión del dueño) y no le corresponde a esta operación deshacerlo |
+
+Los ítems se eliminan con el presupuesto: la relación es `cascade = ALL` con
+`orphanRemoval`, porque un ítem no existe fuera de su presupuesto.
+
+### En pantalla
+
+El botón **Eliminar** aparece en todas las filas. La confirmación avisa que la
+baja es definitiva y sugiere Rechazado como alternativa; cuando el presupuesto
+es el definitivo aprobado, suma una advertencia explícita de que **la obra
+vuelve a "En presupuestación" y pierde su fecha de inicio**. Es un efecto sobre
+otro módulo que desde esa pantalla no se ve, así que conviene anticiparlo.
+
+### Pendiente
+
+`// TODO`: al desarrollar **Cobros**, decidir qué pasa con las cuotas ya
+generadas cuando se elimina el definitivo que las originó. Con la regla actual
+—que permite borrar aprobados— esto **deja de estar cubierto de forma
+indirecta** y necesita una decisión explícita: bloquear la baja si hay cuotas
+abonadas, o eliminarlas junto con el presupuesto.
+
+### Verificación manual
+
+| Caso | Resultado |
+| --- | --- |
+| `DELETE` de un anteproyecto que es base de un definitivo | `409` |
+| `DELETE` de un id inexistente | `404` |
+| `DELETE` de un borrador recién creado | `204`, y el `GET` siguiente da `404` |
+| `DELETE` de un adicional con 1 ítem | `204`, ítems 5 → 4, huérfanos 0 |
+| `DELETE` de un **definitivo aprobado** de la obra 4 | `204`; la obra pasó de "En ejecución" con fecha 2026-06-10 a **"En presupuestación" con fecha nula**; huérfanos 0 |
 
 ---
 

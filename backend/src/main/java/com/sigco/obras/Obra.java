@@ -135,6 +135,23 @@ public class Obra {
         this.estado = ESTADO_EN_EJECUCION;
     }
 
+    /**
+     * Devuelve la obra a presupuestacion y borra la fecha de inicio real.
+     *
+     * No es una transicion del circuito normal: existe unicamente para deshacer
+     * el efecto de aprobar un presupuesto definitivo cuando ese presupuesto se
+     * elimina. Sin esto la obra quedaria "En ejecucion" sin ningun presupuesto
+     * aprobado que la respalde.
+     *
+     * La fecha de inicio real se limpia porque el informe la condiciona a que
+     * exista un definitivo aprobado. Si esa aprobacion se deshace, la fecha
+     * pierde su fundamento.
+     */
+    public void volverAPresupuestacion() {
+        this.estado = ESTADO_EN_PRESUPUESTACION;
+        this.fechaInicioReal = null;
+    }
+
     public void finalizar() {
         this.estado = ESTADO_FINALIZADA;
     }
@@ -155,6 +172,10 @@ public class Obra {
 
     public boolean estaEnPresupuestacion() {
         return ESTADO_EN_PRESUPUESTACION.equals(this.estado);
+    }
+
+    public boolean estaEnEjecucion() {
+        return ESTADO_EN_EJECUCION.equals(this.estado);
     }
 
     // ---------- Metodos de acceso ----------
