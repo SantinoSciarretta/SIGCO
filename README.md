@@ -13,6 +13,20 @@ avance de obra y cobros.
 
 ---
 
+## Diagramas
+
+| Documento | Contiene |
+| --- | --- |
+| **[Modelo de datos](docs/diagramas/modelo-de-datos.md)** | Diagrama entidad-relación de las 28 tablas, mapa por módulos y el detalle de cada área con todos los campos |
+| **[Proceso de Presupuestación](docs/diagramas/proceso-presupuestacion.md)** | Casos de uso, actividad, estados y secuencia del proceso core del sistema |
+
+Los diagramas se renderizan al abrir esos archivos. Las imágenes sueltas en PNG
+están en [`docs/diagramas/img/`](docs/diagramas/img/), y el entidad-relación
+tiene además su fuente Graphviz en
+[`entidad-relacion.dot`](docs/diagramas/entidad-relacion.dot).
+
+---
+
 ## Stack tecnológico
 
 | Capa | Tecnología |
@@ -38,7 +52,8 @@ y las validaciones se ejecutan en el backend.
 ├── frontend/           Aplicación React + Vite (SPA)
 ├── docs/
 │   ├── informe-sigco.md        Informe consolidado del proyecto
-│   └── desarrollo/             Documentación técnica por módulo
+│   ├── desarrollo/             Documentación técnica por módulo
+│   └── diagramas/              Modelo de datos y diagramas de proceso
 └── CLAUDE.md           Contexto del proyecto para el asistente de desarrollo
 ```
 
@@ -113,15 +128,18 @@ cd backend
 
 ## Estado del desarrollo
 
+**5 de 14 módulos** desarrollados de punta a punta (base de datos, lógica de
+negocio, API y pantalla). Las 28 tablas del modelo están creadas.
+
 | # | Módulo | Estado |
 | --- | --- | --- |
-| 0 | Base del proyecto y sistema de diseño | En curso |
-| 1 | Clientes | Pendiente |
-| 2 | Obras | Pendiente |
-| 3 | Presupuestación | Pendiente |
-| 4 | Materiales | Pendiente |
-| 5 | Proveedores | Pendiente |
-| 6 | Compras | Pendiente |
+| 0 | Base del proyecto y sistema de diseño | ✅ Terminado |
+| 1 | Clientes | ✅ Terminado |
+| 2 | Obras | ✅ Terminado |
+| 3 | Presupuestación | ✅ Terminado |
+| 4 | Materiales | ✅ Terminado |
+| 5 | Proveedores | ✅ Terminado |
+| 6 | Compras | Siguiente |
 | 7 | Gastos | Pendiente |
 | 8 | Personal | Pendiente |
 | 9 | Seguimiento de Obras | Pendiente |
@@ -130,3 +148,10 @@ cd backend
 | 12 | Dashboard | Pendiente |
 | 13 | Usuarios | Pendiente |
 | 14 | Accesos | Pendiente |
+
+El orden sigue las dependencias de datos, no la numeración del informe. Usuarios
+y Accesos van últimos por decisión de método: se desarrolla toda la lógica de
+negocio primero y la capa de seguridad se activa al final sobre todo lo
+construido. **Hasta entonces el sistema no tiene autenticación.**
+
+123 tests automáticos, sin fallos.
