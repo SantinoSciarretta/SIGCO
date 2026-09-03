@@ -2689,7 +2689,8 @@ Tabla: item\_presupuesto
 | id\_presupuesto | BIGINT | FK | Presupuesto al que pertenece el ítem. Referencia a presupuesto. Obligatorio. |
 | id\_rubro | BIGINT | FK | Rubro del ítem. Referencia a rubro. Obligatorio. |
 | id\_subrubro | BIGINT | FK | Subrubro del ítem. Referencia a subrubro. |
-| descripcion | VARCHAR(250) |  | Descripción del trabajo puntual. Obligatorio. |
+| id\_material | BIGINT | FK | Material del catálogo al que refiere el ítem. Referencia a material. Opcional: no todo ítem es un material (mano de obra, dirección de obra). El material debe pertenecer al mismo rubro del ítem. |
+| descripcion | VARCHAR(250) |  | Descripción del trabajo puntual. Obligatorio. Se conserva aunque el ítem esté vinculado a un material, porque es el texto que se imprime en el PDF del cliente y suele llevar más detalle que el nombre del catálogo. |
 | unidad\_medida | VARCHAR(20) |  | Unidad (metros cuadrados / metros lineales / unidades). Obligatorio. |
 | cantidad | NUMERIC(12,2) |  | Cantidad presupuestada del ítem. Obligatorio. |
 | valor\_unitario | NUMERIC(12,2) |  | Precio unitario, de uso interno, no visible en el PDF del cliente. |
