@@ -15,7 +15,52 @@ la base en cualquier momento.
 
 ---
 
-## 1. Mapa general
+## 1. Diagrama entidad-relación
+
+Las 28 entidades y sus 40 relaciones, en notación pata de gallo (*crow's foot*).
+
+![Diagrama entidad-relación de SIGCO](img/entidad-relacion.svg)
+
+> Si el diagrama no se ve, está también en
+> [`img/entidad-relacion.png`](img/entidad-relacion.png).
+
+**Cómo leerlo**
+
+| Símbolo | Significa |
+| --- | --- |
+| Trazo perpendicular (⊢) | Lado «uno» de la relación |
+| Pata de gallo (⋔) | Lado «muchos» |
+| Círculo (○) | Opcional: puede no haber ninguno |
+| Línea llena | Relación del negocio |
+| Línea punteada | Trazabilidad: qué usuario registró el movimiento |
+| Borde azul marcado | Entidad de un módulo ya desarrollado |
+| Borde gris | Tabla creada, módulo pendiente |
+
+**Qué se ve a simple vista**
+
+`obra` es el centro del sistema: de ella cuelgan presupuestos, pedidos, gastos,
+hitos, cuotas, asignaciones de personal y la publicación del portfolio. Es la
+razón por la que Obras es el segundo módulo del orden de desarrollo y por la que
+casi ningún otro puede funcionar sin él.
+
+`rubro` es el segundo punto de convergencia: clasifica ítems de presupuesto,
+materiales y gastos. Esa clasificación compartida es lo que hace posible
+comparar lo presupuestado contra lo gastado, que es el corazón del módulo Gastos.
+
+Las cuatro relaciones punteadas hacia `usuario` se dibujan aparte a propósito:
+son trazabilidad («quién cargó esto»), no relaciones del negocio, y mezclarlas
+con las llenas haría ilegible el diagrama sin agregar información.
+
+`registro_cac` aparece suelta porque lo está: guarda el índice de la Cámara
+Argentina de la Construcción mes a mes y no pertenece a ninguna obra en
+particular, sirve a todas.
+
+**Fuente:** [`entidad-relacion.dot`](entidad-relacion.dot), en formato Graphviz.
+Se regenera con `dot -Kneato -Tsvg entidad-relacion.dot -o img/entidad-relacion.svg`.
+
+---
+
+## 2. Mapa por módulos
 
 Las 28 entidades y sus relaciones, agrupadas por módulo.
 
@@ -122,7 +167,7 @@ flowchart LR
 
 ---
 
-## 2. Núcleo del negocio — Clientes, Obras y Presupuestación
+## 3. Núcleo del negocio — Clientes, Obras y Presupuestación
 
 Es el corazón del sistema: sin obra no hay presupuesto, y sin presupuesto no hay
 contra qué comparar los gastos ni de dónde sacar el plan de cobro.
@@ -214,7 +259,7 @@ cuando cada versión pisa el archivo de Excel anterior.
 
 ---
 
-## 3. Cadena de abastecimiento — Materiales, Proveedores y Compras
+## 4. Cadena de abastecimiento — Materiales, Proveedores y Compras
 
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'fontSize':'20px','primaryColor':'#eef6ff','primaryBorderColor':'#5980a6','lineColor':'#5980a6','textColor':'#1d1f20','background':'#ffffff'}}}%%
@@ -292,7 +337,7 @@ tiene de ninguna forma.
 
 ---
 
-## 4. Ejecución y control — Gastos, Personal y Seguimiento
+## 5. Ejecución y control — Gastos, Personal y Seguimiento
 
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'fontSize':'20px','primaryColor':'#eef6ff','primaryBorderColor':'#5980a6','lineColor':'#5980a6','textColor':'#1d1f20','background':'#ffffff'}}}%%
@@ -384,7 +429,7 @@ su propia lista de rubros, la comparación no existiría.
 
 ---
 
-## 5. Cobranza y difusión — Cobros y Portfolio
+## 6. Cobranza y difusión — Cobros y Portfolio
 
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'fontSize':'20px','primaryColor':'#eef6ff','primaryBorderColor':'#5980a6','lineColor':'#5980a6','textColor':'#1d1f20','background':'#ffffff'}}}%%
@@ -435,7 +480,7 @@ ninguna obra en particular: sirve a todas.
 
 ---
 
-## 6. Seguridad — Usuarios y Accesos
+## 7. Seguridad — Usuarios y Accesos
 
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'fontSize':'20px','primaryColor':'#eef6ff','primaryBorderColor':'#5980a6','lineColor':'#5980a6','textColor':'#1d1f20','background':'#ffffff'}}}%%
@@ -492,7 +537,7 @@ sin ser operario.
 
 ---
 
-## 7. Restricciones que el diagrama no muestra
+## 8. Restricciones que el diagrama no muestra
 
 Un diagrama entidad-relación muestra estructura, no reglas. Éstas están en la
 base como `CHECK` e índices únicos, y son parte del modelo tanto como las FK.
@@ -538,7 +583,7 @@ a efectos de a quién pedirle, son proveedores diferentes.
 
 ---
 
-## 8. Cómo verificar este diagrama contra la base
+## 9. Cómo verificar este diagrama contra la base
 
 En **pgAdmin 4**: clic derecho sobre la base `sigco_dev` → **«ERD For Database»**.
 Genera el diagrama desde el esquema real y permite exportarlo como imagen.
@@ -551,7 +596,7 @@ psql -U postgres -d sigco_dev -c "\d+ presupuesto"
 
 ---
 
-## 9. Migraciones que construyen este modelo
+## 10. Migraciones que construyen este modelo
 
 | Migración | Crea |
 | --- | --- |

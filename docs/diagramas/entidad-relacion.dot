@@ -1,0 +1,97 @@
+digraph SIGCO {
+  layout=neato;
+  overlap="prism";
+  overlap_scaling=-8;
+  sep="+22";
+  esep="+10";
+  splines=true;
+  K=1.5;
+  bgcolor="white";
+  fontname="Barlow, Segoe UI, sans-serif";
+
+  node [shape=box, style="filled,rounded", fillcolor="#eef6ff",
+        color="#5980a6", penwidth=1.4, fontname="Barlow, Segoe UI, sans-serif",
+        fontsize=15, fontcolor="#1d2d3d", height=0.42, margin="0.18,0.10"];
+
+  edge [color="#5d6b7a", penwidth=1.1, dir=both,
+        arrowtail=tee, arrowhead=crow, arrowsize=0.9,
+        fontname="Barlow, Segoe UI, sans-serif", fontsize=11, fontcolor="#5d6b7a"];
+
+  /* ---- entidades ya implementadas: borde mas marcado ---- */
+  cliente     [fillcolor="#dceafa", penwidth=2];
+  obra        [fillcolor="#dceafa", penwidth=2];
+  presupuesto [fillcolor="#dceafa", penwidth=2];
+  item_presupuesto [fillcolor="#dceafa", penwidth=2, label="item_presupuesto"];
+  rubro       [fillcolor="#dceafa", penwidth=2];
+  subrubro    [fillcolor="#dceafa", penwidth=2];
+  material    [fillcolor="#dceafa", penwidth=2];
+  proveedor   [fillcolor="#dceafa", penwidth=2];
+  cotizacion  [fillcolor="#dceafa", penwidth=2];
+  observacion_proveedor [fillcolor="#dceafa", penwidth=2];
+
+  /* ---- pendientes: gris ---- */
+  node [fillcolor="#f4f5f7", color="#a8adb5", fontcolor="#4a4f57", penwidth=1.2];
+  pedido; pedido_material; gasto;
+  operario; operario_obra; inasistencia;
+  hito; plantilla_hito; plantilla_hito_detalle;
+  cuota; registro_cac;
+  publicacion_portfolio; imagen_portfolio;
+  usuario; rol; permiso; rol_permiso; registro_auditoria;
+
+  /* =================== Negocio =================== */
+  cliente -> obra                       [label="contrata"];
+  obra -> presupuesto                   [label="recibe"];
+  presupuesto -> presupuesto            [label="versiona"];
+  presupuesto -> item_presupuesto       [label="detalla"];
+
+  rubro -> subrubro                     [label="agrupa"];
+  rubro -> item_presupuesto             [label="clasifica"];
+  subrubro -> item_presupuesto          [label="clasifica"];
+  rubro -> material                     [label="clasifica"];
+  material -> item_presupuesto          [label="se presupuesta"];
+
+  /* =================== Abastecimiento =================== */
+  proveedor -> cotizacion               [label="informa"];
+  material -> cotizacion                [label="se cotiza"];
+  obra -> pedido                        [label="genera"];
+  proveedor -> pedido                   [label="abastece"];
+  pedido -> pedido_material             [label="detalla"];
+  material -> pedido_material           [label="figura en"];
+  proveedor -> observacion_proveedor    [label="registra"];
+  pedido -> observacion_proveedor       [label="origina"];
+
+  /* =================== Ejecucion =================== */
+  obra -> gasto                         [label="acumula"];
+  rubro -> gasto                        [label="clasifica"];
+  subrubro -> gasto                     [label="clasifica"];
+  pedido -> gasto                       [label="origina"];
+  operario -> gasto                     [label="se imputa"];
+
+  obra -> operario_obra                 [label="asigna"];
+  operario -> operario_obra             [label="se asigna"];
+  obra -> inasistencia                  [label="registra"];
+  operario -> inasistencia              [label="falta"];
+
+  obra -> hito                          [label="avanza por"];
+  plantilla_hito -> plantilla_hito_detalle [label="define"];
+
+  /* =================== Cobros y difusion =================== */
+  obra -> cuota                         [label="se cobra en"];
+  obra -> publicacion_portfolio         [label="se publica", arrowhead=tee];
+  publicacion_portfolio -> imagen_portfolio [label="muestra"];
+
+  /* =================== Seguridad =================== */
+  rol -> rol_permiso                    [label="tiene"];
+  permiso -> rol_permiso                [label="se asigna"];
+  rol -> usuario                        [label="define"];
+  operario -> usuario                   [label="accede como", arrowtail=odot, arrowhead=odot];
+  usuario -> registro_auditoria         [label="genera"];
+
+  /* Auditoria transversal: quien registro cada movimiento. Se dibujan
+     punteadas para no confundirlas con las relaciones del negocio. */
+  edge [style=dashed, color="#b0b6bd", fontcolor="#98a0a8"];
+  usuario -> pedido                     [label="solicita"];
+  usuario -> gasto                      [label="registra"];
+  usuario -> hito                       [label="completa"];
+  usuario -> inasistencia               [label="carga"];
+}
