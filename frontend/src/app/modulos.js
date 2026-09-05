@@ -25,6 +25,10 @@ export const MODULOS_DUENO = [
   // Gastos entra al menú con entrada propia: el informe le da vistas de
   // listado y de reporte que exceden la ficha de una obra.
   { ruta: '/gastos', nombre: 'Gastos', listo: true },
+  // Seguimiento entra con entrada propia: el informe le da una vista de
+  // todas las obras activas, que excede la ficha de una sola.
+  { ruta: '/seguimiento', nombre: 'Avance', listo: true },
+  { ruta: '/personal', nombre: 'Personal', listo: true },
   { ruta: '/presupuestos', nombre: 'Presupuestos', listo: true },
   { ruta: '/cobranzas', nombre: 'Cobranzas', listo: false },
 ];
@@ -36,13 +40,9 @@ export const MODULOS_DUENO = [
  * pero el sistema tiene catorce. Cada módulo se suma al menú cuando se
  * desarrolla, no antes: así la navegación nunca ofrece algo que no existe.
  *
- * Seguimiento es un caso aparte: no va a tener entrada propia porque vive
- * dentro de la ficha de obra, que es donde tiene sentido.
- *
  * Cuando queden cuatro o cinco módulos más, la barra va a empezar a quedar
  * cargada y probablemente convenga un menú secundario de administración.
  */
 export const MODULOS_SIN_UBICAR = [
-  'Personal', 'Portfolio Web',
-  'Usuarios', 'Accesos',
+  'Portfolio Web', 'Usuarios', 'Accesos',
 ];

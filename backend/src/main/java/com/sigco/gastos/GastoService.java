@@ -281,6 +281,32 @@ public class GastoService {
     }
 
     /**
+     * Porcentaje del presupuesto ya consumido, o cero si no se puede calcular.
+     *
+     * Existe para que Seguimiento pueda cruzar el avance financiero contra el
+     * fisico sin depender de una excepcion.
+     *
+     * NO se resuelve llamando a estadoFinanciero() y atrapando la excepcion:
+     * ese metodo es @Transactional, y cuando lanza una RuntimeException Spring
+     * marca la transaccion como rollback-only. Atraparla afuera no deshace esa
+     * marca, y la transaccion del llamador explota al confirmar con un
+     * UnexpectedRollbackException. Una excepcion no sirve como control de flujo
+     * cruzando un limite transaccional.
+     */
+    @Transactional(readOnly = true)
+    public BigDecimal porcentajeConsumidoOCero(Long idObra) {
+        List<Presupuesto> aprobados = presupuestoRepositorio
+                .findByObraIdObraAndTipoPresupuestoAndEstado(
+                        idObra, Presupuesto.TIPO_DEFINITIVO, Presupuesto.ESTADO_APROBADO);
+
+        if (aprobados.isEmpty()) {
+            return BigDecimal.ZERO;
+        }
+        return calcularPorcentaje(repositorio.totalGastado(idObra),
+                                  aprobados.get(0).getTotalPresupuesto());
+    }
+
+    /**
      * Umbrales del semaforo, textuales del informe: "verde mientras el gasto
      * acumulado no supere el noventa por ciento del monto presupuestado,
      * amarillo entre el noventa y el cien por ciento, y rojo al superar el

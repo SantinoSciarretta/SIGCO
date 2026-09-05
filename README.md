@@ -128,7 +128,7 @@ cd backend
 
 ## Estado del desarrollo
 
-**7 de 14 módulos** desarrollados de punta a punta (base de datos, lógica de
+**9 de 14 módulos** desarrollados de punta a punta (base de datos, lógica de
 negocio, API y pantalla). Las 28 tablas del modelo están creadas.
 
 | # | Módulo | Estado |
@@ -141,9 +141,9 @@ negocio, API y pantalla). Las 28 tablas del modelo están creadas.
 | 5 | Proveedores | ✅ Terminado |
 | 6 | Compras | ✅ Terminado |
 | 7 | Gastos | ✅ Terminado |
-| 8 | Personal | Siguiente |
-| 9 | Seguimiento de Obras | Pendiente |
-| 10 | Cobros | Pendiente |
+| 8 | Personal | ✅ Terminado |
+| 9 | Seguimiento de Obras | ✅ Terminado |
+| 10 | Cobros | Siguiente |
 | 11 | Portfolio Web | Pendiente |
 | 12 | Dashboard | Pendiente |
 | 13 | Usuarios | Pendiente |
@@ -154,4 +154,4 @@ y Accesos van últimos por decisión de método: se desarrolla toda la lógica d
 negocio primero y la capa de seguridad se activa al final sobre todo lo
 construido. **Hasta entonces el sistema no tiene autenticación.**
 
-156 tests automáticos, sin fallos.
+180 tests automáticos, sin fallos.

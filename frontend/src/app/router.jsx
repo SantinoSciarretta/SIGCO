@@ -13,6 +13,8 @@ import CatalogoPage from '../modules/presupuestacion/CatalogoPage';
 import PresupuestosPage from '../modules/presupuestacion/PresupuestosPage';
 import PresupuestoDetalle from '../modules/presupuestacion/PresupuestoDetalle';
 import PedidosPage from '../modules/compras/PedidosPage';
+import PersonalPage from '../modules/personal/PersonalPage';
+import SeguimientoPage from '../modules/seguimiento/SeguimientoPage';
 import GastosPage from '../modules/gastos/GastosPage';
 import MaterialesPage from '../modules/materiales/MaterialesPage';
 import ProveedoresPage from '../modules/proveedores/ProveedoresPage';
@@ -56,6 +58,8 @@ export default function Router() {
         <Route path="/vista-diseno/obra" element={<DetalleObra />} />
         <Route path="/pedidos" element={<PedidosPage />} />
         <Route path="/gastos" element={<GastosPage />} />
+        <Route path="/personal" element={<PersonalPage />} />
+        <Route path="/seguimiento" element={<SeguimientoPage />} />
         <Route path="/presupuestos" element={<PresupuestosPage />} />
         <Route path="/presupuestos/catalogo" element={<CatalogoPage />} />
         <Route path="/presupuestos/:id" element={<PresupuestoDetalle />} />
