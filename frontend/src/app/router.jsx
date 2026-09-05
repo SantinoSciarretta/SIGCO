@@ -12,6 +12,8 @@ import ObrasPage from '../modules/obras/ObrasPage';
 import CatalogoPage from '../modules/presupuestacion/CatalogoPage';
 import PresupuestosPage from '../modules/presupuestacion/PresupuestosPage';
 import PresupuestoDetalle from '../modules/presupuestacion/PresupuestoDetalle';
+import PedidosPage from '../modules/compras/PedidosPage';
+import GastosPage from '../modules/gastos/GastosPage';
 import MaterialesPage from '../modules/materiales/MaterialesPage';
 import ProveedoresPage from '../modules/proveedores/ProveedoresPage';
 
@@ -52,7 +54,8 @@ export default function Router() {
             Gastos y Seguimiento, que son los módulos que producen esa
             información. No forma parte de la navegación. */}
         <Route path="/vista-diseno/obra" element={<DetalleObra />} />
-        <Route path="/pedidos" element={<ModuloPendiente nombre="Pedidos" />} />
+        <Route path="/pedidos" element={<PedidosPage />} />
+        <Route path="/gastos" element={<GastosPage />} />
         <Route path="/presupuestos" element={<PresupuestosPage />} />
         <Route path="/presupuestos/catalogo" element={<CatalogoPage />} />
         <Route path="/presupuestos/:id" element={<PresupuestoDetalle />} />

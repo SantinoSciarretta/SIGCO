@@ -1,6 +1,7 @@
 package com.sigco.proveedores;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -58,5 +59,26 @@ public interface CotizacionRepository extends JpaRepository<Cotizacion, Long> {
     List<Cotizacion> historialDeProveedor(@Param("idProveedor") Long idProveedor);
 
     /** Cuantas cotizaciones tiene un proveedor. */
+    /**
+     * Ultima cotizacion de un proveedor para un material.
+     *
+     * La usa Compras al aprobar un pedido, para proponer el precio de cada
+     * material en lugar de que el dueño lo escriba de memoria.
+     *
+     * Ordena por id y no por fecha por el mismo motivo que el comparador: la
+     * fecha la pone el sistema al insertar, asi que el orden es el mismo, pero
+     * el id es unico y la fecha no. Con dos cotizaciones en el mismo instante,
+     * ordenar por fecha no garantiza cual vuelve primero.
+     */
+    @Query("""
+            SELECT c FROM Cotizacion c
+            WHERE c.proveedor.idProveedor = :idProveedor
+              AND c.material.idMaterial = :idMaterial
+            ORDER BY c.idCotizacion DESC
+            LIMIT 1
+            """)
+    Optional<Cotizacion> ultimaDe(@Param("idProveedor") Long idProveedor,
+                                  @Param("idMaterial") Long idMaterial);
+
     long countByProveedorIdProveedor(Long idProveedor);
 }

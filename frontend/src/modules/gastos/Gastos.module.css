@@ -1,0 +1,616 @@
+/* Módulo Presupuestación — listado y detalle de presupuestos. */
+
+/* ---------- Cabecera ---------- */
+
+.cabecera {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.titulo { margin: 4px 0 0; font-size: 30px; }
+
+.bajada {
+  margin: 4px 0 0;
+  font-size: 13.5px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+.herramientas {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.volver { margin: 0 0 12px; font-size: 13px; }
+
+/* ---------- Encabezado del detalle ---------- */
+
+.encabezado {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-text) 30%, transparent);
+  padding-bottom: 16px;
+  margin-bottom: 18px;
+}
+
+.tituloDetalle { margin: 6px 0 0; font-size: 30px; }
+
+.subtitulo {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+}
+
+.totalBloque {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.totalCifra { font-size: 34px; }
+
+.barraAcciones {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.avisoCongelado {
+  margin: 0 0 18px;
+  padding: 10px 14px;
+  font-size: 13.5px;
+  border-left: 3px solid var(--color-accent-600);
+  background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+}
+
+/* ---------- Controles ---------- */
+
+.filtro,
+.control {
+  min-height: 38px;
+  padding: 6px 10px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-text);
+  background: transparent;
+  border: 1px solid var(--color-divider);
+  border-radius: 0;
+}
+
+.control { width: 100%; }
+
+.control::placeholder { color: color-mix(in srgb, var(--color-text) 45%, transparent); }
+
+.filtro:hover,
+.control:hover { border-color: color-mix(in srgb, var(--color-text) 45%, transparent); }
+
+.filtro:focus-visible,
+.control:focus-visible {
+  border-color: var(--color-accent);
+  outline: 2px solid var(--color-accent);
+  outline-offset: 0;
+}
+
+.control:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ---------- Botones ---------- */
+
+.botonPrimario,
+.botonSecundario {
+  all: unset;
+  box-sizing: border-box;
+  min-height: 38px;
+  padding: 0 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  border: 1px solid var(--color-divider);
+  white-space: nowrap;
+}
+
+.botonPrimario {
+  background: var(--color-accent);
+  border-color: var(--color-accent-600);
+  color: var(--color-accent-900);
+}
+
+.botonPrimario:hover { background: var(--color-accent-500); }
+.botonPrimario:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.botonSecundario:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+
+.botonPrimario:focus-visible,
+.botonSecundario:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ---------- Bloques ---------- */
+
+.bloque { padding: 14px 18px; margin-bottom: 22px; }
+
+.bloqueCabecera {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.bloqueTitulo { margin: 0; font-size: 19px; }
+
+.aviso {
+  margin: 0;
+  padding: 14px 6px;
+  font-size: 14px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+.errorGeneral {
+  color: var(--color-excedido);
+  border-left: 3px solid var(--color-excedido);
+  padding-left: 12px;
+  margin: 0 0 16px;
+  font-size: 14px;
+}
+
+.vacio { padding: 44px 20px; text-align: center; }
+
+.vacioTitulo {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 21px;
+  margin: 0 0 4px;
+}
+
+.vacioTexto {
+  margin: 0;
+  font-size: 14px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+/* ---------- Tabla ---------- */
+
+.filaAprobada { background: color-mix(in srgb, var(--color-ok) 8%, transparent); }
+
+.obra { font-weight: 500; }
+
+.cliente {
+  font-size: 11.5px;
+  color: color-mix(in srgb, var(--color-text) 50%, transparent);
+}
+
+.dato {
+  font-size: 13.5px;
+  color: color-mix(in srgb, var(--color-text) 75%, transparent);
+}
+
+.version { font-size: 16px; white-space: nowrap; }
+
+/* Marca de qué presupuesto salió éste: la cadena de versiones. */
+.base {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 10.5px;
+  color: color-mix(in srgb, var(--color-text) 45%, transparent);
+}
+
+.total,
+.numero {
+  text-align: right;
+  white-space: nowrap;
+  font-size: 15px;
+}
+
+/* El valor unitario es un dato interno: se atenúa para recordarlo. */
+.interno { color: color-mix(in srgb, var(--color-text) 55%, transparent); }
+
+.rubroNombre { font-weight: 500; font-size: 13.5px; }
+
+.subrubroNombre {
+  font-size: 11.5px;
+  color: color-mix(in srgb, var(--color-text) 50%, transparent);
+}
+
+.estadoBorrador,
+.estadoEnviado,
+.estadoAprobado,
+.estadoRechazado {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+
+.estadoBorrador {
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+  border: 1px solid var(--color-divider);
+}
+
+.estadoEnviado {
+  color: var(--color-alerta);
+  background: color-mix(in srgb, var(--color-alerta) 14%, transparent);
+}
+
+.estadoAprobado {
+  color: var(--color-ok);
+  background: color-mix(in srgb, var(--color-ok) 12%, transparent);
+}
+
+.estadoRechazado {
+  color: var(--color-excedido);
+  background: color-mix(in srgb, var(--color-excedido) 10%, transparent);
+}
+
+.acciones { text-align: right; white-space: nowrap; }
+
+.accion {
+  all: unset;
+  cursor: pointer;
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+  padding: 4px 6px;
+}
+
+.accion:hover { text-decoration: underline; }
+
+.accion:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+/* ---------- Cálculo de la cotización inicial ---------- */
+
+.calculo {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 8px 0;
+}
+
+.calculoValor { font-size: 24px; }
+
+.calculoOperador {
+  font-size: 20px;
+  color: color-mix(in srgb, var(--color-text) 45%, transparent);
+}
+
+.calculoTotal { font-size: 32px; }
+
+/* ---------- Subtotales por rubro ---------- */
+
+.subtotales {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.subtotales li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 7px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
+  font-size: 14px;
+}
+
+.subtotalTotal {
+  border-bottom: none;
+  border-top: 1px solid var(--color-divider);
+  margin-top: 4px;
+  padding-top: 10px;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 18px;
+}
+
+/* ---------- Plan de pago ---------- */
+
+.plan,
+.previa {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+  margin: 8px 0;
+}
+
+.previa {
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  border: 1px dashed var(--color-divider);
+}
+
+.planCifra { font-size: 26px; margin-top: 2px; }
+
+/* ---------- Formularios ---------- */
+
+.campo { margin-bottom: 14px; }
+
+.dosColumnas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.tresColumnas {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+}
+
+.etiqueta {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 5px;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+}
+
+.obligatorio { color: var(--color-excedido); }
+
+.errorCampo {
+  margin: 5px 0 0;
+  font-size: 12px;
+  color: var(--color-excedido);
+}
+
+.ayuda {
+  margin: 5px 0 0;
+  font-size: 11.5px;
+  color: color-mix(in srgb, var(--color-text) 50%, transparent);
+}
+
+.subtotalPreview {
+  margin: 4px 0 0;
+  font-size: 14px;
+}
+
+.accionesFormulario {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-divider);
+}
+
+@media (max-width: 700px) {
+  .dosColumnas,
+  .tresColumnas { grid-template-columns: 1fr; }
+  .herramientas { width: 100%; }
+  .plan, .previa { gap: 24px; }
+}
+
+/* --------------------------------------------------------------------------
+   Baja de un presupuesto
+
+   Reusa --color-excedido, el rojo del semáforo de Gastos. Es el único rojo del
+   sistema y acá significa lo mismo que allá —algo que hay que mirar dos veces—,
+   así que introducir un segundo rojo solo para esto sumaría ruido.
+   -------------------------------------------------------------------------- */
+
+.accionPeligro {
+  all: unset;
+  cursor: pointer;
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-excedido);
+  padding: 4px 6px;
+  margin-left: 4px;
+}
+
+.accionPeligro:hover { text-decoration: underline; }
+
+.accionPeligro:focus-visible {
+  outline: 2px solid var(--color-excedido);
+  outline-offset: 1px;
+}
+
+.botonPeligro {
+  all: unset;
+  box-sizing: border-box;
+  min-height: 38px;
+  padding: 0 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  border: 1px solid color-mix(in srgb, var(--color-excedido) 80%, #000);
+  background: var(--color-excedido);
+  color: var(--color-sobre-oscuro);
+}
+
+.botonPeligro:hover {
+  background: color-mix(in srgb, var(--color-excedido) 85%, #000);
+}
+
+.botonPeligro:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.botonPeligro:focus-visible {
+  outline: 2px solid var(--color-excedido);
+  outline-offset: 2px;
+}
+
+.confirmacion {
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0 0 10px;
+}
+
+/* Aviso de un efecto sobre otro módulo que desde esta pantalla no se ve. */
+.advertencia {
+  font-size: 13.5px;
+  line-height: 1.55;
+  margin: 0 0 10px;
+  padding: 10px 12px;
+  background: color-mix(in srgb, var(--color-alerta) 12%, transparent);
+  border-left: 3px solid var(--color-alerta);
+}
+
+/* Marca de que el ítem está vinculado al catálogo de Materiales. */
+.materialVinculado {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+}
+
+.materialVinculado::before {
+  content: "◆ ";
+  font-size: 9px;
+}
+
+/* ==========================================================================
+   Semáforo de desvío
+
+   Los colores son los funcionales del sistema, NO los de la marca: acá el
+   color es información, no decoración. Es la diferencia entre una obra que
+   viene bien y una que está perdiendo plata.
+   ========================================================================== */
+
+.semaforoVerde,
+.semaforoAmarillo,
+.semaforoRojo,
+.semaforoSinPresupuesto {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.semaforoVerde::before,
+.semaforoAmarillo::before,
+.semaforoRojo::before,
+.semaforoSinPresupuesto::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.semaforoVerde { color: var(--color-ok); }
+.semaforoVerde::before { background: var(--color-ok); }
+
+.semaforoAmarillo { color: var(--color-alerta); }
+.semaforoAmarillo::before { background: var(--color-alerta); }
+
+.semaforoRojo { color: var(--color-excedido); font-weight: 600; }
+.semaforoRojo::before { background: var(--color-excedido); }
+
+/* No es un desvío: es gasto en algo que nadie presupuestó. Merece un aviso
+   distinto del rojo. */
+.semaforoSinPresupuesto { color: var(--color-neutral-600); }
+.semaforoSinPresupuesto::before {
+  background: transparent;
+  border: 1.5px dashed var(--color-neutral-500);
+}
+
+/* Barra de consumo del rubro: el porcentaje también se ve, no solo se lee. */
+.barra {
+  position: relative;
+  height: 6px;
+  background: var(--color-neutral-200);
+  margin-top: 5px;
+  overflow: hidden;
+}
+
+.barraRelleno {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--color-ok);
+}
+
+.barraRelleno[data-semaforo="Amarillo"] { background: var(--color-alerta); }
+.barraRelleno[data-semaforo="Rojo"] { background: var(--color-excedido); }
+.barraRelleno[data-semaforo="Sin presupuesto"] { background: var(--color-neutral-400); }
+
+/* Tarjetas del resumen financiero de la obra. */
+.resumen {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+  gap: 1px;
+  background: var(--color-divider);
+  border: 1px solid var(--color-divider);
+  margin-bottom: 20px;
+}
+
+.tarjeta {
+  background: var(--color-bg);
+  padding: 14px 16px;
+}
+
+.tarjetaValor {
+  display: block;
+  font-size: 27px;
+  line-height: 1;
+}
+
+.tarjetaEtiqueta {
+  display: block;
+  font-size: 10.5px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+  margin-top: 5px;
+}
+
+/* Ganancia negativa: la obra está perdiendo plata. */
+.negativo { color: var(--color-excedido); }
+.positivo { color: var(--color-ok); }
+
+.tipoHormiga {
+  color: var(--color-alerta);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.filaAnulada { opacity: 0.55; }
+.filaAnulada .monto { text-decoration: line-through; }
+
+.monto { white-space: nowrap; }
+
+.origenPedido {
+  display: block;
+  font-size: 10.5px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+  margin-top: 2px;
+}

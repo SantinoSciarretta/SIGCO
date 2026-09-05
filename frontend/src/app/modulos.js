@@ -21,7 +21,10 @@ export const MODULOS_DUENO = [
   // consultan tanto Presupuestación como Compras.
   { ruta: '/materiales', nombre: 'Materiales', listo: true },
   { ruta: '/proveedores', nombre: 'Proveedores', listo: true },
-  { ruta: '/pedidos', nombre: 'Pedidos', listo: false },
+  { ruta: '/pedidos', nombre: 'Pedidos', listo: true },
+  // Gastos entra al menú con entrada propia: el informe le da vistas de
+  // listado y de reporte que exceden la ficha de una obra.
+  { ruta: '/gastos', nombre: 'Gastos', listo: true },
   { ruta: '/presupuestos', nombre: 'Presupuestos', listo: true },
   { ruta: '/cobranzas', nombre: 'Cobranzas', listo: false },
 ];
@@ -33,8 +36,8 @@ export const MODULOS_DUENO = [
  * pero el sistema tiene catorce. Cada módulo se suma al menú cuando se
  * desarrolla, no antes: así la navegación nunca ofrece algo que no existe.
  *
- * Gastos y Seguimiento son un caso aparte: no van a tener entrada propia
- * porque viven dentro de la ficha de obra, que es donde tienen sentido.
+ * Seguimiento es un caso aparte: no va a tener entrada propia porque vive
+ * dentro de la ficha de obra, que es donde tiene sentido.
  *
  * Cuando queden cuatro o cinco módulos más, la barra va a empezar a quedar
  * cargada y probablemente convenga un menú secundario de administración.
