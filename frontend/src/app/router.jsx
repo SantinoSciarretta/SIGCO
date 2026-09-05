@@ -2,7 +2,6 @@ import { Route, Routes } from 'react-router-dom';
 
 import Layout from './Layout';
 import Login from './paginas/Login';
-import ModuloPendiente from './paginas/ModuloPendiente';
 import NoEncontrado from './paginas/NoEncontrado';
 
 import Tablero from './paginas/dueno/Tablero';
@@ -13,7 +12,9 @@ import CatalogoPage from '../modules/presupuestacion/CatalogoPage';
 import PresupuestosPage from '../modules/presupuestacion/PresupuestosPage';
 import PresupuestoDetalle from '../modules/presupuestacion/PresupuestoDetalle';
 import PedidosPage from '../modules/compras/PedidosPage';
+import CobrosPage from '../modules/cobros/CobrosPage';
 import PersonalPage from '../modules/personal/PersonalPage';
+import PortfolioPage from '../modules/portfolio/PortfolioPage';
 import SeguimientoPage from '../modules/seguimiento/SeguimientoPage';
 import GastosPage from '../modules/gastos/GastosPage';
 import MaterialesPage from '../modules/materiales/MaterialesPage';
@@ -23,6 +24,12 @@ import LayoutCapataz from './paginas/capataz/LayoutCapataz';
 import Home from './paginas/capataz/Home';
 import Hitos from './paginas/capataz/Hitos';
 import Materiales from './paginas/capataz/Materiales';
+
+/**
+ * NOTA: ya no se usa ModuloPendiente. Los doce módulos del menú están
+ * desarrollados contra el backend. El componente sigue en el proyecto por si
+ * se suma alguna pantalla nueva antes de tener su backend.
+ */
 
 /**
  * Mapa de rutas del sistema.
@@ -65,7 +72,8 @@ export default function Router() {
         <Route path="/presupuestos/:id" element={<PresupuestoDetalle />} />
         <Route path="/materiales" element={<MaterialesPage />} />
         <Route path="/proveedores" element={<ProveedoresPage />} />
-        <Route path="/cobranzas" element={<ModuloPendiente nombre="Cobranzas" />} />
+        <Route path="/cobranzas" element={<CobrosPage />} />
+        <Route path="/portfolio" element={<PortfolioPage />} />
       </Route>
 
       {/* ---------- Rol Capataz ---------- */}

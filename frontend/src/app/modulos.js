@@ -30,7 +30,8 @@ export const MODULOS_DUENO = [
   { ruta: '/seguimiento', nombre: 'Avance', listo: true },
   { ruta: '/personal', nombre: 'Personal', listo: true },
   { ruta: '/presupuestos', nombre: 'Presupuestos', listo: true },
-  { ruta: '/cobranzas', nombre: 'Cobranzas', listo: false },
+  { ruta: '/cobranzas', nombre: 'Cobranzas', listo: true },
+  { ruta: '/portfolio', nombre: 'Portfolio', listo: true },
 ];
 
 /**
@@ -44,5 +45,5 @@ export const MODULOS_DUENO = [
  * cargada y probablemente convenga un menú secundario de administración.
  */
 export const MODULOS_SIN_UBICAR = [
-  'Portfolio Web', 'Usuarios', 'Accesos',
+  'Usuarios', 'Accesos',
 ];
