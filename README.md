@@ -17,13 +17,22 @@ avance de obra y cobros.
 
 | Documento | Contiene |
 | --- | --- |
-| **[Modelo de datos](docs/diagramas/modelo-de-datos.md)** | Diagrama entidad-relación de las 28 tablas, mapa por módulos y el detalle de cada área con todos los campos |
+| **[Diccionario de Datos](docs/diagramas/diccionario-de-datos.md)** | Las 28 tablas con sus 180 columnas: tipo, obligatoriedad, claves y qué significa cada campo. Incluye el diagrama entidad-relación |
+| **[Modelo de datos](docs/diagramas/modelo-de-datos.md)** | Mapa por módulos y el detalle de cada área con todos los campos |
 | **[Proceso de Presupuestación](docs/diagramas/proceso-presupuestacion.md)** | Casos de uso, actividad, estados y secuencia del proceso core del sistema |
 
-Los diagramas se renderizan al abrir esos archivos. Las imágenes sueltas en PNG
-están en [`docs/diagramas/img/`](docs/diagramas/img/), y el entidad-relación
-tiene además su fuente Graphviz en
-[`entidad-relacion.dot`](docs/diagramas/entidad-relacion.dot).
+El entidad-relación completo, con el nombre de cada tabla en la cabecera y las
+flechas de las claves foráneas, está en
+[`img/entidad-relacion-tablas.png`](docs/diagramas/img/entidad-relacion-tablas.png)
+(hay una versión vectorial `.svg` al lado, para imprimir sin que se pixele).
+
+Los diagramas en Mermaid se renderizan al abrir esos archivos; las imágenes
+sueltas en PNG están en [`docs/diagramas/img/`](docs/diagramas/img/).
+
+> **El diagrama y el diccionario se generan leyendo la base real**, con los
+> scripts de [`docs/diagramas/scripts/`](docs/diagramas/scripts/). No se
+> escriben a mano, así que no pueden quedar desactualizados respecto del
+> esquema: si una migración agrega una columna, aparece sola al regenerarlos.
 
 ---
 
