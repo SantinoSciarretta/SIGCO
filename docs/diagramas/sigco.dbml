@@ -1,0 +1,578 @@
+// ===========================================================================
+// SIGCO - Sistema Integral de Gestion de Obras | Granica SRL
+// Modelo entidad-relacion: 28 tablas, 180 columnas, 41 claves foraneas.
+//
+// Generado desde el esquema real de PostgreSQL con
+// docs/diagramas/scripts/generar-dbml.py
+//
+// Para verlo: entrar a https://dbdiagram.io/d , borrar el ejemplo que trae
+// y pegar todo este archivo.
+// ===========================================================================
+
+
+// ---------------------------------------------------------------------------
+// CLIENTES
+// ---------------------------------------------------------------------------
+
+Table cliente {
+  id_cliente bigserial [pk, note: 'Identificador del cliente.']
+  nombre_apellido varchar(150) [not null, note: 'Nombre y apellido completo.']
+  telefono_contacto varchar(30) [note: 'Teléfono de contacto.']
+  email_contacto varchar(100) [note: 'Correo electrónico de contacto.']
+  origen_recomendacion varchar(20) [note: 'Por qué canal llegó. Todos los clientes llegan por referido. Valores: Cliente anterior / Arquitecto / Otro.']
+  recomendado_por varchar(150) [note: 'Quién lo recomendó, en texto libre.']
+  estado varchar(10) [not null, note: 'Activo / Inactivo. Un cliente no se elimina: se desactiva, para conservar sus obras.']
+  fecha_alta timestamp [not null, note: 'Momento en que se dio de alta en el sistema.']
+
+  Note: 'Clientes de la empresa, con el origen de la recomendación por la que llegaron.'
+}
+
+
+// ---------------------------------------------------------------------------
+// OBRAS
+// ---------------------------------------------------------------------------
+
+Table obra {
+  id_obra bigserial [pk, note: 'Identificador de la obra. Es la entidad núcleo del sistema.']
+  id_cliente bigint [not null, note: 'Cliente al que pertenece.']
+  direccion_obra varchar(200) [not null, note: 'Dirección donde se ejecuta el trabajo.']
+  tipo_inmueble varchar(15) [not null, note: 'Casa / Departamento / Local.']
+  tipo_obra varchar(15) [not null, note: 'Construcción o Reforma. Determina el circuito de presupuestación y queda bloqueado apenas existe un anteproyecto o definitivo.']
+  fecha_inicio_real date [note: 'Fecha real de arranque. No se carga hasta que el presupuesto definitivo está aprobado.']
+  fecha_fin_estimada date [note: 'Fecha estimada de finalización.']
+  notas text [note: 'Observaciones generales de la obra.']
+  estado varchar(20) [not null, note: 'En presupuestación → En ejecución → Finalizada / Cancelada. Cambia solo al aprobarse el definitivo y al completarse el último hito.']
+  motivo_cancelacion varchar(200) [note: 'Por qué se canceló. Una obra no se elimina, solo se cancela.']
+  fecha_creacion timestamp [not null, note: 'Momento en que se creó el registro.']
+
+  Note: 'Entidad núcleo del sistema. Todo lo demás cuelga de una obra.'
+}
+
+
+// ---------------------------------------------------------------------------
+// PRESUPUESTACIÓN
+// ---------------------------------------------------------------------------
+
+Table rubro {
+  id_rubro bigserial [pk, note: 'Identificador del rubro.']
+  nombre_rubro varchar(100) [not null, note: 'Nombre del rubro (Albañilería, Electricidad, Plomería…).']
+  estado varchar(10) [not null, note: 'Un rubro ya usado en un presupuesto no se elimina: se desactiva. Valores: Activo / Inactivo.']
+
+  indexes {
+    nombre_rubro [unique]
+  }
+
+  Note: 'Catálogo de rubros de trabajo. Es el eje sobre el que se comparan presupuesto y gastos.'
+}
+
+Table subrubro {
+  id_subrubro bigserial [pk, note: 'Identificador del subrubro.']
+  id_rubro bigint [not null, note: 'Rubro al que pertenece. Un subrubro pertenece a un único rubro.']
+  nombre_subrubro varchar(100) [not null, note: 'Nombre del subrubro.']
+  estado varchar(10) [not null, note: 'Igual que en rubro: se desactiva, no se borra. Valores: Activo / Inactivo.']
+
+  indexes {
+    (id_rubro, nombre_subrubro) [unique]
+  }
+
+  Note: 'Desagregación de un rubro. Pertenece a un único rubro.'
+}
+
+Table presupuesto {
+  id_presupuesto bigserial [pk, note: 'Identificador del presupuesto.']
+  id_obra bigint [not null, note: 'Obra a la que pertenece.']
+  tipo_presupuesto varchar(20) [not null, note: 'Cotización inicial / Anteproyecto / Definitivo / Adicional. Son las tres instancias reales del proceso, más los adicionales.']
+  id_presupuesto_base bigint [note: 'Presupuesto del que deriva (autorreferencia). Así el definitivo toma el anteproyecto como base sin sobreescribirlo: quedan los dos.']
+  version integer [not null, note: 'Número de versión dentro de la cadena de revisiones.']
+  estado varchar(15) [not null, note: 'Borrador / Enviado / Aprobado / Rechazado. Solo el dueño aprueba.']
+  metros_cuadrados numeric(10,2) [note: 'Metros cuadrados. Solo se usa en la cotización inicial (m² × valor/m²).']
+  valor_por_m2 numeric(12,2) [note: 'Valor del metro cuadrado usado en la cotización inicial.']
+  total_presupuesto numeric(14,2) [note: 'Total. En el definitivo sale de sumar los ítems; en la cotización inicial, de m² × valor/m².']
+  anticipo_porcentaje numeric(5,2) [note: 'Porcentaje que se cobra como anticipo. Es la cuota cero del plan de cobro.']
+  cantidad_cuotas integer [note: 'Cantidad de cuotas del plan, sin contar el anticipo.']
+  plazo_estimado_obra varchar(100) [note: 'Plazo estimado, en texto (por ejemplo "4 meses").']
+  fecha_creacion timestamp [not null, note: 'Momento en que se creó el registro.']
+
+  Note: 'Cabecera del presupuesto, en cualquiera de sus tres instancias.'
+}
+
+Table item_presupuesto {
+  id_item bigserial [pk, note: 'Identificador del ítem.']
+  id_presupuesto bigint [not null, note: 'Presupuesto al que pertenece el ítem.']
+  id_rubro bigint [not null, note: 'Rubro al que corresponde.']
+  id_subrubro bigint [note: 'Subrubro al que corresponde.']
+  descripcion varchar(250) [not null, note: 'Qué se cotiza. Es lo único de esta tabla que ve el cliente en el PDF.']
+  unidad_medida varchar(20) [not null, note: 'Unidad en que se mide (m², bolsa, unidad, jornal…).']
+  cantidad numeric(12,2) [not null, note: 'Cantidad cotizada.']
+  valor_unitario numeric(12,2) [not null, note: 'Precio unitario. Es información interna: no aparece en el PDF del cliente, que muestra solo subtotales por rubro.']
+  subtotal numeric(14,2) [not null, note: 'cantidad × valor_unitario. Se guarda calculado para que el total del presupuesto no dependa de recalcularlo en cada consulta.']
+  id_material bigint [note: 'Material del catálogo, si el ítem es un material. Columna agregada en V7, ausente en el Diccionario original: sin ella la descripción quedaba como texto libre y se reproducía el problema que Materiales viene a resolver. Es opcional porque no todo ítem es un material (mano de obra, dirección de obra).']
+
+  Note: 'Renglones del presupuesto definitivo, con su precio unitario interno.'
+}
+
+
+// ---------------------------------------------------------------------------
+// MATERIALES
+// ---------------------------------------------------------------------------
+
+Table material {
+  id_material bigserial [pk, note: 'Identificador del material.']
+  nombre_material varchar(150) [not null, note: 'Nombre del material. Reemplaza los nombres escritos a mano, distintos en cada obra.']
+  id_rubro bigint [not null, note: 'Rubro al que pertenece el material.']
+  unidad_medida varchar(20) [not null, note: 'Unidad de compra (bolsa, m², unidad…). Lista abierta a propósito.']
+  estado varchar(10) [not null, note: 'Un material usado en presupuestos o pedidos no se elimina: se desactiva. Valores: Activo / Inactivo.']
+  fecha_alta timestamp [not null, note: 'Momento en que se dio de alta en el sistema.']
+
+  indexes {
+    (id_rubro, nombre_material) [unique]
+  }
+
+  Note: 'Catálogo único de materiales, del que eligen Presupuestación y Compras.'
+}
+
+
+// ---------------------------------------------------------------------------
+// PROVEEDORES
+// ---------------------------------------------------------------------------
+
+Table proveedor {
+  id_proveedor bigserial [pk, note: 'Identificador del proveedor.']
+  nombre_proveedor varchar(150) [not null, note: 'Nombre del corralón o proveedor.']
+  zona_cobertura varchar(100) [not null, note: 'Zona geográfica donde entrega. Es el criterio con el que hoy se elige a quién pedirle.']
+  telefono_contacto varchar(30) [note: 'Teléfono de contacto.']
+  email_contacto varchar(100) [note: 'Correo electrónico de contacto.']
+  estado varchar(10) [not null, note: 'Estado del registro. Valores: Activo / Inactivo.']
+  fecha_alta timestamp [not null, note: 'Momento en que se dio de alta en el sistema.']
+
+  indexes {
+    (nombre_proveedor, zona_cobertura) [unique]
+  }
+
+  Note: 'Corralones y proveedores, organizados por zona de cobertura.'
+}
+
+Table cotizacion {
+  id_cotizacion bigserial [pk, note: 'Identificador de la cotización.']
+  id_proveedor bigint [not null, note: 'Proveedor asociado.']
+  id_material bigint [not null, note: 'Material del catálogo.']
+  precio_cotizado numeric(12,2) [not null, note: 'Precio que cotizó ese proveedor para ese material.']
+  fecha_cotizacion timestamp [not null, note: 'Cuándo se registró. Se guarda el historial completo: no se pisa la cotización anterior.']
+
+  Note: 'Historial de precios cotizados por proveedor y material.'
+}
+
+Table observacion_proveedor {
+  id_observacion bigserial [pk, note: 'Identificador de la observación.']
+  id_proveedor bigint [not null, note: 'Proveedor asociado.']
+  id_pedido bigint [note: 'Pedido que originó la observación, si la hubo.']
+  descripcion varchar(300) [not null, note: 'Comportamiento observado: demoras, faltantes, diferencias de precio.']
+  fecha timestamp [not null, note: 'Cuándo se registró la observación.']
+
+  Note: 'Comportamiento observado de un proveedor: demoras, faltantes, diferencias.'
+}
+
+
+// ---------------------------------------------------------------------------
+// COMPRAS
+// ---------------------------------------------------------------------------
+
+Table pedido {
+  id_pedido bigserial [pk, note: 'Identificador del pedido. Reemplaza el pedido por WhatsApp, que no dejaba registro.']
+  id_obra bigint [not null, note: 'Obra a la que pertenece.']
+  id_proveedor bigint [note: 'Proveedor al que se le compra. Es opcional al crear el pedido: el dueño elige el proveedor recién al aprobarlo.']
+  id_usuario_solicita bigint [note: 'Quién pidió (normalmente el capataz). Pendiente hasta Accesos.']
+  id_usuario_recibe bigint [note: 'Quién confirmó la recepción en obra. Pendiente hasta Accesos.']
+  estado varchar(25) [not null, note: 'Pendiente de Aprobación → Enviado al Proveedor → Recibido Completo / Recibido con Diferencias / Anulado.']
+  foto_remito varchar(255) [note: 'Referencia de la foto del remito en Supabase Storage. La base guarda la URL, nunca la imagen.']
+  nota_diferencia varchar(300) [note: 'Qué faltó o llegó distinto. Obligatoria si hubo diferencias, y es lo que determina el estado de recepción.']
+  fecha_solicitud timestamp [not null, note: 'Cuándo se generó el pedido.']
+  fecha_aprobacion timestamp [note: 'Cuándo lo aprobó el dueño. La aprobación no es delegable.']
+  fecha_recepcion timestamp [note: 'Cuándo se confirmó la recepción en obra.']
+  motivo_anulacion varchar(200) [note: 'Motivo por el que se anuló. Obligatorio al anular.']
+
+  Note: 'Pedido de materiales: el circuito que reemplaza al WhatsApp.'
+}
+
+Table pedido_material {
+  id_pedido bigint [not null, note: 'Pedido de materiales asociado.']
+  id_material bigint [not null, note: 'Material del catálogo.']
+  cantidad numeric(12,2) [not null, note: 'Cantidad pedida de ese material.']
+  precio_unitario numeric(12,2) [note: 'Precio unitario acordado. Agregado en V9: sin él no había de dónde sacar el monto del gasto que se genera al recibir el pedido.']
+
+  indexes {
+    (id_pedido, id_material) [pk]
+  }
+
+  Note: 'Qué materiales y en qué cantidad tiene cada pedido.'
+}
+
+
+// ---------------------------------------------------------------------------
+// GASTOS
+// ---------------------------------------------------------------------------
+
+Table gasto {
+  id_gasto bigserial [pk, note: 'Identificador del gasto.']
+  id_obra bigint [not null, note: 'Obra a la que pertenece.']
+  id_rubro bigint [not null, note: 'Rubro al que corresponde.']
+  id_subrubro bigint [note: 'Subrubro al que corresponde.']
+  tipo_gasto varchar(15) [not null, note: 'Material / Mano de Obra / Gasto Hormiga / Otro. El Gasto Hormiga son los gastos chicos que hoy se pierden: es el problema central que el módulo resuelve.']
+  monto numeric(14,2) [not null, note: 'Importe del gasto.']
+  fecha_gasto date [not null, note: 'Cuándo se hizo el gasto.']
+  fecha_carga timestamp [not null, note: 'Cuándo se cargó en el sistema. Puede ser posterior a fecha_gasto.']
+  id_pedido bigint [note: 'Pedido que lo originó, si el gasto vino de una recepción de materiales.']
+  id_operario bigint [note: 'Operario al que corresponde, si es mano de obra.']
+  descripcion varchar(250) [note: 'Texto libre descriptivo.']
+  comprobante_adjunto varchar(255) [note: 'Referencia del comprobante en Supabase Storage.']
+  id_usuario_registro bigint [note: 'Usuario que cargó el registro. Pendiente hasta el módulo Accesos.']
+  estado varchar(12) [not null, note: 'Confirmado / Anulado. Un gasto no se elimina: se anula con motivo, para no romper la comparación contra el presupuesto.']
+  motivo_anulacion varchar(200) [note: 'Motivo por el que se anuló. Obligatorio al anular.']
+
+  Note: 'Cada gasto de la obra, clasificado por rubro y tipo, para comparar contra lo presupuestado.'
+}
+
+
+// ---------------------------------------------------------------------------
+// PERSONAL
+// ---------------------------------------------------------------------------
+
+Table operario {
+  id_operario bigserial [pk, note: 'Identificador del operario. Distinto de usuario: acá se registran todos, trabajen o no con el sistema.']
+  nombre_apellido varchar(150) [not null, note: 'Nombre y apellido completo.']
+  telefono_contacto varchar(30) [note: 'Teléfono de contacto.']
+  estado varchar(10) [not null, note: 'Al pasar a Inactivo se lo desvincula de las obras activas, pero se conserva su historial. Valores: Activo / Inactivo.']
+  fecha_alta timestamp [not null, note: 'Momento en que se dio de alta en el sistema.']
+
+  Note: 'Operarios de la empresa, trabajen o no con el sistema.'
+}
+
+Table operario_obra {
+  id_operario bigint [not null, note: 'Operario al que corresponde.']
+  id_obra bigint [not null, note: 'Obra a la que pertenece.']
+  fecha_asignacion date [not null, note: 'Desde cuándo trabaja en esa obra.']
+  fecha_desasignacion date [note: 'Hasta cuándo. Agregada en V11: desasignar borrando la fila destruía el historial que el informe pide conservar.']
+
+  indexes {
+    (id_operario, id_obra) [pk]
+  }
+
+  Note: 'Qué operarios están asignados a qué obras, y desde cuándo hasta cuándo.'
+}
+
+Table inasistencia {
+  id_inasistencia bigserial [pk, note: 'Identificador de la inasistencia.']
+  id_operario bigint [not null, note: 'Operario al que corresponde.']
+  id_obra bigint [not null, note: 'Obra a la que pertenece.']
+  fecha_falta date [not null, note: 'Día que faltó.']
+  motivo varchar(200) [note: 'Motivo de la falta. No es obligatorio: muchas veces no se sabe.']
+  id_usuario_registro bigint [note: 'Usuario que cargó el registro. Pendiente hasta el módulo Accesos.']
+
+  indexes {
+    (id_operario, id_obra, fecha_falta) [unique]
+  }
+
+  Note: 'Faltas de un operario en una obra determinada.'
+}
+
+
+// ---------------------------------------------------------------------------
+// SEGUIMIENTO DE OBRAS
+// ---------------------------------------------------------------------------
+
+Table hito {
+  id_hito bigserial [pk, note: 'Identificador del hito.']
+  id_obra bigint [not null, note: 'Obra a la que pertenece.']
+  nombre_hito varchar(150) [not null, note: 'Nombre del hito (Demolición, Instalación eléctrica, Terminaciones…).']
+  ponderacion numeric(5,2) [not null, note: 'Cuánto pesa este hito en el avance total. La suma de los hitos de una obra debe dar 100.']
+  orden integer [not null, note: 'Orden de ejecución dentro de la obra.']
+  estado varchar(12) [not null, note: 'Pendiente / Completado. El porcentaje de avance sale de los hitos completados por su ponderación.']
+  fecha_cumplimiento date [note: 'Cuándo se completó. Obligatoria al marcarlo como Completado.']
+  observacion varchar(250) [note: 'Comentario del capataz al completar el hito.']
+  id_usuario_completa bigint [note: 'Quién lo marcó como completado. Pendiente hasta Accesos.']
+
+  indexes {
+    (id_obra, orden) [unique]
+    (id_obra, nombre_hito) [unique]
+  }
+
+  Note: 'Hitos ponderados de una obra. De acá sale el porcentaje de avance físico.'
+}
+
+Table plantilla_hito {
+  id_plantilla bigserial [pk, note: 'Identificador de la plantilla.']
+  nombre_plantilla varchar(100) [not null, note: 'Nombre de la plantilla, reutilizable en obras similares.']
+  fecha_creacion timestamp [not null, note: 'Momento en que se creó el registro.']
+
+  indexes {
+    nombre_plantilla [unique]
+  }
+
+  Note: 'Plantillas de hitos reutilizables para obras similares.'
+}
+
+Table plantilla_hito_detalle {
+  id_detalle bigserial [pk, note: 'Identificador de la línea de la plantilla.']
+  id_plantilla bigint [not null, note: 'Plantilla a la que pertenece.']
+  nombre_hito varchar(150) [not null, note: 'Nombre del hito que se va a crear al aplicar la plantilla.']
+  ponderacion numeric(5,2) [not null, note: 'Ponderación con la que se crea el hito.']
+  orden integer [not null, note: 'Posición dentro de la secuencia.']
+
+  Note: 'Hitos que compone cada plantilla.'
+}
+
+
+// ---------------------------------------------------------------------------
+// COBROS
+// ---------------------------------------------------------------------------
+
+Table cuota {
+  id_cuota bigserial [pk, note: 'Identificador de la cuota.']
+  id_obra bigint [not null, note: 'Obra a la que pertenece.']
+  numero_cuota integer [not null, note: 'El anticipo es la cuota cero. Vive en la misma tabla que el resto para que el saldo salga de una sola consulta.']
+  monto_cuota numeric(14,2) [not null, note: 'Importe de la cuota. Se recalcula al aplicar el índice CAC, solo si está pendiente.']
+  fecha_vencimiento date [not null, note: 'Cuándo vence. Las cuotas son quincenales.']
+  estado varchar(12) [not null, note: 'Pendiente / Abonada / Vencida. Vencida se deriva del calendario, nadie la marca a mano.']
+  fecha_pago date [note: 'Cuándo se cobró. Obligatoria al marcarla Abonada.']
+  medio_pago varchar(15) [note: 'Transferencia / Efectivo / Cheque.']
+  comprobante_emitido varchar(20) [note: 'Qué se le entregó al cliente: Mensaje / Recibo / Planilla.']
+  motivo_anulacion varchar(200) [note: 'Motivo al anular un pago. Lo que se anula es el pago: la cuota vuelve a Pendiente y se sigue debiendo.']
+
+  indexes {
+    (id_obra, numero_cuota) [unique]
+  }
+
+  Note: 'Plan de cobro de la obra. El anticipo es la cuota cero.'
+}
+
+Table registro_cac {
+  id_cac bigserial [pk, note: 'Identificador del registro del índice.']
+  mes_correspondiente date [not null, note: 'Mes al que corresponde el índice.']
+  valor_indice numeric(8,4) [not null, note: 'Valor del índice CAC. Es un número absoluto: el ajuste sale de dividirlo por el del mes anterior. Se carga a mano.']
+  fecha_carga timestamp [not null, note: 'Cuándo se cargó el valor.']
+
+  indexes {
+    mes_correspondiente [unique]
+  }
+
+  Note: 'Índice CAC por mes, cargado a mano, para actualizar el saldo.'
+}
+
+
+// ---------------------------------------------------------------------------
+// PORTFOLIO WEB
+// ---------------------------------------------------------------------------
+
+Table publicacion_portfolio {
+  id_publicacion bigserial [pk, note: 'Identificador de la publicación.']
+  id_obra bigint [not null, note: 'Obra que se publica. Solo obras finalizadas, y una obra no puede tener dos publicaciones.']
+  tipo_trabajo varchar(30) [not null, note: 'Cómo se agrupa en la vidriera (Construcción, Refacción, Decoración de local…). Lista abierta.']
+  estado varchar(15) [not null, note: 'Publicada / Despublicada. La publicación nace despublicada: primero se cargan las fotos.']
+  fecha_publicacion timestamp [not null, note: 'Cuándo se publicó.']
+
+  indexes {
+    id_obra [unique]
+  }
+
+  Note: 'Obra terminada publicada en la vidriera.'
+}
+
+Table imagen_portfolio {
+  id_imagen bigserial [pk, note: 'Identificador de la imagen.']
+  id_publicacion bigint [not null, note: 'Publicación a la que pertenece.']
+  url_imagen varchar(255) [not null, note: 'Referencia de la imagen en Supabase Storage.']
+  orden integer [not null, note: 'Orden en que se muestra en la galería.']
+
+  Note: 'Fotos de una publicación.'
+}
+
+
+// ---------------------------------------------------------------------------
+// USUARIOS Y ACCESOS
+// ---------------------------------------------------------------------------
+
+Table usuario {
+  id_usuario bigserial [pk, note: 'Identificador de la cuenta de acceso.']
+  nombre_usuario varchar(50) [not null, note: 'Nombre con el que ingresa al sistema.']
+  contrasena_hash varchar(255) [not null, note: 'Contraseña cifrada con BCrypt (hash + sal). Nunca se guarda en texto plano.']
+  id_rol bigint [not null, note: 'Rol que determina qué puede hacer.']
+  id_operario bigint [note: 'Vínculo opcional con el registro de Personal, para que un capataz confirme recepciones desde el celular.']
+  estado varchar(10) [not null, note: 'Activo / Inactivo. Una cuenta no se elimina: se desactiva, para conservar la auditoría.']
+  ultima_fecha_acceso timestamp [note: 'Último ingreso al sistema.']
+  fecha_alta timestamp [not null, note: 'Momento en que se dio de alta en el sistema.']
+
+  indexes {
+    id_operario [unique]
+    nombre_usuario [unique]
+  }
+
+  Note: 'Cuentas de acceso al sistema.'
+}
+
+Table rol {
+  id_rol bigserial [pk, note: 'Identificador del rol.']
+  nombre_rol varchar(50) [not null, note: 'Dueño / Capataz General / Capataz de Obra.']
+  descripcion varchar(200) [note: 'Qué alcance tiene el rol.']
+
+  indexes {
+    nombre_rol [unique]
+  }
+
+  Note: 'Roles del sistema.'
+}
+
+Table permiso {
+  id_permiso bigserial [pk, note: 'Identificador del permiso.']
+  nombre_permiso varchar(100) [not null, note: 'Acción concreta que habilita.']
+  modulo varchar(50) [not null, note: 'Módulo sobre el que aplica.']
+  descripcion varchar(200) [note: 'Qué habilita hacer.']
+
+  indexes {
+    nombre_permiso [unique]
+  }
+
+  Note: 'Permisos individuales que se agrupan en roles.'
+}
+
+Table rol_permiso {
+  id_rol bigint [not null]
+  id_permiso bigint [not null]
+
+  indexes {
+    (id_rol, id_permiso) [pk]
+  }
+
+  Note: 'Qué permisos tiene cada rol (relación muchos a muchos).'
+}
+
+Table registro_auditoria {
+  id_auditoria bigserial [pk, note: 'Identificador del registro de auditoría.']
+  id_usuario bigint [not null, note: 'Quién hizo la acción.']
+  accion_realizada varchar(150) [not null, note: 'Qué hizo.']
+  modulo_afectado varchar(50) [not null, note: 'Sobre qué módulo.']
+  fecha_hora timestamp [not null, note: 'Cuándo. Solo se auditan las acciones sensibles.']
+
+  Note: 'Traza de las acciones sensibles: quién, qué, dónde y cuándo.'
+}
+
+
+// ---------------------------------------------------------------------------
+// RELACIONES  (de la clave foranea hacia la clave primaria que referencia)
+//
+// Todas son de muchos a uno: el simbolo > se lee "muchos de la izquierda
+// corresponden a uno de la derecha".
+// ---------------------------------------------------------------------------
+
+Ref: cotizacion.id_material > material.id_material
+Ref: cotizacion.id_proveedor > proveedor.id_proveedor
+Ref: cuota.id_obra > obra.id_obra
+Ref: gasto.id_obra > obra.id_obra
+Ref: gasto.id_operario > operario.id_operario
+Ref: gasto.id_pedido > pedido.id_pedido
+Ref: gasto.id_rubro > rubro.id_rubro
+Ref: gasto.id_subrubro > subrubro.id_subrubro
+Ref: gasto.id_usuario_registro > usuario.id_usuario
+Ref: hito.id_obra > obra.id_obra
+Ref: hito.id_usuario_completa > usuario.id_usuario
+Ref: imagen_portfolio.id_publicacion > publicacion_portfolio.id_publicacion
+Ref: inasistencia.id_obra > obra.id_obra
+Ref: inasistencia.id_operario > operario.id_operario
+Ref: inasistencia.id_usuario_registro > usuario.id_usuario
+Ref: item_presupuesto.id_material > material.id_material
+Ref: item_presupuesto.id_presupuesto > presupuesto.id_presupuesto
+Ref: item_presupuesto.id_rubro > rubro.id_rubro
+Ref: item_presupuesto.id_subrubro > subrubro.id_subrubro
+Ref: material.id_rubro > rubro.id_rubro
+Ref: obra.id_cliente > cliente.id_cliente
+Ref: observacion_proveedor.id_pedido > pedido.id_pedido
+Ref: observacion_proveedor.id_proveedor > proveedor.id_proveedor
+Ref: operario_obra.id_obra > obra.id_obra
+Ref: operario_obra.id_operario > operario.id_operario
+Ref: pedido.id_obra > obra.id_obra
+Ref: pedido.id_proveedor > proveedor.id_proveedor
+Ref: pedido.id_usuario_recibe > usuario.id_usuario
+Ref: pedido.id_usuario_solicita > usuario.id_usuario
+Ref: pedido_material.id_material > material.id_material
+Ref: pedido_material.id_pedido > pedido.id_pedido
+Ref: plantilla_hito_detalle.id_plantilla > plantilla_hito.id_plantilla
+Ref: presupuesto.id_obra > obra.id_obra
+Ref: presupuesto.id_presupuesto_base > presupuesto.id_presupuesto
+Ref: publicacion_portfolio.id_obra > obra.id_obra
+Ref: registro_auditoria.id_usuario > usuario.id_usuario
+Ref: rol_permiso.id_permiso > permiso.id_permiso
+Ref: rol_permiso.id_rol > rol.id_rol
+Ref: subrubro.id_rubro > rubro.id_rubro
+Ref: usuario.id_operario > operario.id_operario
+Ref: usuario.id_rol > rol.id_rol
+
+
+// ---------------------------------------------------------------------------
+// AGRUPAMIENTO POR MODULO
+//
+// dbdiagram.io usa los grupos para acomodar juntas las tablas de cada modulo.
+// ---------------------------------------------------------------------------
+
+TableGroup Clientes {
+  cliente
+}
+
+TableGroup Obras {
+  obra
+}
+
+TableGroup Presupuestacion {
+  rubro
+  subrubro
+  presupuesto
+  item_presupuesto
+}
+
+TableGroup Materiales {
+  material
+}
+
+TableGroup Proveedores {
+  proveedor
+  cotizacion
+  observacion_proveedor
+}
+
+TableGroup Compras {
+  pedido
+  pedido_material
+}
+
+TableGroup Gastos {
+  gasto
+}
+
+TableGroup Personal {
+  operario
+  operario_obra
+  inasistencia
+}
+
+TableGroup Seguimiento_de_Obras {
+  hito
+  plantilla_hito
+  plantilla_hito_detalle
+}
+
+TableGroup Cobros {
+  cuota
+  registro_cac
+}
+
+TableGroup Portfolio_Web {
+  publicacion_portfolio
+  imagen_portfolio
+}
+
+TableGroup Usuarios_y_Accesos {
+  usuario
+  rol
+  permiso
+  rol_permiso
+  registro_auditoria
+}
+

@@ -29,6 +29,11 @@ flechas de las claves foráneas, está en
 Los diagramas en Mermaid se renderizan al abrir esos archivos; las imágenes
 sueltas en PNG están en [`docs/diagramas/img/`](docs/diagramas/img/).
 
+Para editar el entidad-relación o reacomodarlo a mano está
+[`sigco.dbml`](docs/diagramas/sigco.dbml): se copia entero y se pega en
+[dbdiagram.io](https://dbdiagram.io/d), que arma el diagrama solo y permite
+mover las tablas y exportarlo a PNG, PDF o SQL.
+
 > **El diagrama y el diccionario se generan leyendo la base real**, con los
 > scripts de [`docs/diagramas/scripts/`](docs/diagramas/scripts/). No se
 > escriben a mano, así que no pueden quedar desactualizados respecto del
