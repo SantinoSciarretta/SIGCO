@@ -2630,6 +2630,7 @@ Tabla intermedia que resuelve la relación de muchos a muchos entre operarios y 
 | id\_operario | BIGINT | PK, FK | Operario asignado. Referencia a operario. |
 | id\_obra | BIGINT | PK, FK | Obra a la que se asigna. Referencia a obra. |
 | fecha\_asignacion | DATE |  | Fecha en que se asignó el operario a la obra. Obligatorio. |
+| fecha\_desasignacion | DATE |  | Fecha en que se lo desvinculó de la obra. Vacía mientras sigue asignado. Se registra en lugar de borrar la fila, para conservar el historial de en qué obras trabajó. |
 
 Tabla: inasistencia
 
@@ -2768,6 +2769,7 @@ Tabla: pedido
 | fecha\_solicitud | TIMESTAMP |  | Fecha en que se generó el pedido. Obligatorio. |
 | fecha\_aprobacion | TIMESTAMP |  | Fecha en que el dueño aprobó el pedido. |
 | fecha\_recepcion | TIMESTAMP |  | Fecha en que se confirmó la entrega. |
+| motivo\_anulacion | VARCHAR(200) |  | Motivo por el que se anuló el pedido, obligatorio al anular. Un pedido no se elimina. |
 
 Tabla: pedido\_material
 
@@ -2778,6 +2780,7 @@ Tabla intermedia que resuelve la relación de muchos a muchos entre un pedido y 
 | id\_pedido | BIGINT | PK, FK | Pedido al que pertenece. Referencia a pedido. |
 | id\_material | BIGINT | PK, FK | Material solicitado. Referencia a material. |
 | cantidad | NUMERIC(12,2) |  | Cantidad solicitada del material. Obligatorio. |
+| precio\_unitario | NUMERIC(12,2) |  | Precio unitario acordado con el proveedor. Es el valor con el que se genera automáticamente el gasto al confirmar la recepción. |
 
 ## **Módulo \- Gastos** {#módulo---gastos}
 
@@ -2858,6 +2861,7 @@ Tabla: cuota
 | fecha\_pago | DATE |  | Fecha en que se registró el pago, obligatoria al marcar como abonada. |
 | medio\_pago | VARCHAR(15) |  | Medio de pago (Transferencia / Efectivo / Cheque). |
 | comprobante\_emitido | VARCHAR(20) |  | Tipo de comprobante entregado (Mensaje / Recibo / Planilla actualizada). |
+| motivo\_anulacion | VARCHAR(200) |  | Motivo por el que se anuló el pago, obligatorio al anular. La cuota vuelve a Pendiente y se sigue debiendo: lo que se anula es el pago, no la cuota. |
 
 Tabla: registro\_cac
 

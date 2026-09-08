@@ -13,6 +13,18 @@ import io
 import subprocess
 from collections import OrderedDict
 
+# Las rutas se resuelven contra la ubicacion del script, no contra la carpeta
+# desde la que se lo ejecuta: asi el archivo siempre sale en docs/diagramas/.
+import os
+AQUI = os.path.dirname(os.path.abspath(__file__))
+DIAGRAMAS = os.path.dirname(AQUI)
+RAIZ = os.path.dirname(os.path.dirname(DIAGRAMAS))
+
+
+def enDiagramas(nombre):
+    return os.path.join(DIAGRAMAS, nombre)
+
+
 PSQL = r'C:\Program Files\PostgreSQL\17\bin\psql.exe'
 ENTORNO = {'PGPASSWORD': 'sigco2026', 'SYSTEMROOT': r'C:\Windows'}
 
@@ -172,6 +184,6 @@ for origen, colOrigen, destino, colDestino in RELACIONES:
 
 lineas.append('}')
 
-io.open('erd.dot', 'w', encoding='utf-8', newline='\n').write('\n'.join(lineas) + '\n')
+io.open(enDiagramas('erd.dot'), 'w', encoding='utf-8', newline='\n').write('\n'.join(lineas) + '\n')
 print('erd.dot generado: %d tablas, %d columnas, %d relaciones'
       % (len(tablas), len(COLUMNAS), len(RELACIONES)))

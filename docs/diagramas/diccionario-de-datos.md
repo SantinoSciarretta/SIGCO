@@ -645,6 +645,12 @@ Al implementarlo aparecieron ocho puntos donde el modelo no alcanzaba para
 sostener una regla que el propio informe pide. Cada cambio es una migración
 de Flyway, y está justificado en el `.md` del módulo correspondiente.
 
+**Los ocho ya están incorporados al informe** (`docs/informe-sigco.md`), así
+que el Diccionario de la Propuesta Técnica y el esquema real coinciden campo
+por campo. Se verifica con `scripts/auditar-diccionario.py`, que compara las
+dos cosas y hoy no reporta diferencias en ninguna de las 28 tablas. Esta
+tabla queda como registro de qué se cambió y por qué.
+
 | Migración | Cambio | Por qué |
 | --- | --- | --- |
 | `V7` | `item_presupuesto.id_material` | El informe dice que los ítems se eligen del catálogo de Materiales, pero no había columna para guardar cuál: la descripción quedaba como texto libre, que es el problema que Materiales resuelve. |

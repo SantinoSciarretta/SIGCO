@@ -17,6 +17,18 @@ import subprocess
 import sys
 from collections import OrderedDict
 
+# Las rutas se resuelven contra la ubicacion del script, no contra la carpeta
+# desde la que se lo ejecuta: asi el archivo siempre sale en docs/diagramas/.
+import os
+AQUI = os.path.dirname(os.path.abspath(__file__))
+DIAGRAMAS = os.path.dirname(AQUI)
+RAIZ = os.path.dirname(os.path.dirname(DIAGRAMAS))
+
+
+def enDiagramas(nombre):
+    return os.path.join(DIAGRAMAS, nombre)
+
+
 PSQL = r'C:\Program Files\PostgreSQL\17\bin\psql.exe'
 ENTORNO = {'PGPASSWORD': 'sigco2026', 'SYSTEMROOT': r'C:\Windows'}
 
@@ -593,6 +605,12 @@ w('Al implementarlo aparecieron ocho puntos donde el modelo no alcanzaba para')
 w('sostener una regla que el propio informe pide. Cada cambio es una migración')
 w('de Flyway, y está justificado en el `.md` del módulo correspondiente.')
 w('')
+w('**Los ocho ya están incorporados al informe** (`docs/informe-sigco.md`), así')
+w('que el Diccionario de la Propuesta Técnica y el esquema real coinciden campo')
+w('por campo. Se verifica con `scripts/auditar-diccionario.py`, que compara las')
+w('dos cosas y hoy no reporta diferencias en ninguna de las 28 tablas. Esta')
+w('tabla queda como registro de qué se cambió y por qué.')
+w('')
 w('| Migración | Cambio | Por qué |')
 w('| --- | --- | --- |')
 w('| `V7` | `item_presupuesto.id_material` | El informe dice que los ítems se eligen del catálogo de Materiales, pero no había columna para guardar cuál: la descripción quedaba como texto libre, que es el problema que Materiales resuelve. |')
@@ -609,7 +627,7 @@ w('del Diccionario original**: se verificó columna por columna contra el')
 w('documento entregado.')
 w('')
 
-io.open('diccionario-de-datos.md', 'w', encoding='utf-8', newline='\n').write(
+io.open(enDiagramas('diccionario-de-datos.md'), 'w', encoding='utf-8', newline='\n').write(
     '\n'.join(sal) + '\n')
 print('diccionario-de-datos.md: %d tablas, %d columnas, %d FK'
       % (len(tablas), len(COLUMNAS), len(REFERENCIA)), file=sys.stderr)
