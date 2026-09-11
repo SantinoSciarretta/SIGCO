@@ -1,49 +1,60 @@
 /**
- * Módulos que aparecen en la navegación, tal como los define el diseño.
+ * Módulos que aparecen en la navegación.
  *
  * Se declaran en un solo archivo para que el menú y las rutas salgan de la
  * misma fuente: agregar un módulo es agregar una línea, no tocar tres archivos.
  *
- * `listo` indica si el módulo ya está desarrollado contra el backend. Los que
- * no lo están muestran una pantalla que lo aclara, así la navegación funciona
- * completa desde el primer día.
+ * Cada módulo declara el PERMISO que hace falta para verlo. Es el mismo texto
+ * que usa el backend en @PreAuthorize y el mismo que está cargado en la tabla
+ * permiso (migración V13). Que las tres cosas usen literalmente la misma
+ * cadena es lo que hace que la matriz del informe sea verificable de punta a
+ * punta.
+ *
+ * OJO con qué significa esto: filtrar el menú es PRESENTACIÓN. Un capataz que
+ * escriba la dirección a mano tampoco entra —de eso se encarga RutaProtegida—,
+ * y si insistiera contra la API, el backend le contesta 403. Esconder el enlace
+ * no protege nada por sí solo; evita ofrecer algo que va a ser rechazado.
  */
 
-/** Navegación superior del rol Dueño (pantallas de escritorio). */
-export const MODULOS_DUENO = [
-  { ruta: '/tablero', nombre: 'Tablero', listo: true },
-  { ruta: '/obras', nombre: 'Obras', listo: true },
-  // Clientes no estaba en la navegación del diseño. Se agrega porque es el
-  // primer módulo conectado al backend y necesita desde dónde entrar. Los
-  // demás módulos que faltan se suman cuando le toque a cada uno, no antes.
-  { ruta: '/clientes', nombre: 'Clientes', listo: true },
+/** Navegación superior (pantallas de escritorio). */
+export const MODULOS = [
+  { ruta: '/tablero', nombre: 'Tablero', permiso: 'tablero.ver' },
+  { ruta: '/obras', nombre: 'Obras', permiso: 'obras.ver' },
+  // Clientes no estaba en la navegación del diseño. Se agregó porque fue el
+  // primer módulo conectado al backend y necesitaba desde dónde entrar.
+  { ruta: '/clientes', nombre: 'Clientes', permiso: 'clientes.ver' },
   // Materiales entra al menú porque es un módulo propio del informe y lo
   // consultan tanto Presupuestación como Compras.
-  { ruta: '/materiales', nombre: 'Materiales', listo: true },
-  { ruta: '/proveedores', nombre: 'Proveedores', listo: true },
-  { ruta: '/pedidos', nombre: 'Pedidos', listo: true },
+  { ruta: '/materiales', nombre: 'Materiales', permiso: 'materiales.ver' },
+  { ruta: '/proveedores', nombre: 'Proveedores', permiso: 'proveedores.ver' },
+  { ruta: '/pedidos', nombre: 'Pedidos', permiso: 'compras.ver' },
   // Gastos entra al menú con entrada propia: el informe le da vistas de
   // listado y de reporte que exceden la ficha de una obra.
-  { ruta: '/gastos', nombre: 'Gastos', listo: true },
+  { ruta: '/gastos', nombre: 'Gastos', permiso: 'gastos.ver' },
   // Seguimiento entra con entrada propia: el informe le da una vista de
   // todas las obras activas, que excede la ficha de una sola.
-  { ruta: '/seguimiento', nombre: 'Avance', listo: true },
-  { ruta: '/personal', nombre: 'Personal', listo: true },
-  { ruta: '/presupuestos', nombre: 'Presupuestos', listo: true },
-  { ruta: '/cobranzas', nombre: 'Cobranzas', listo: true },
-  { ruta: '/portfolio', nombre: 'Portfolio', listo: true },
+  { ruta: '/seguimiento', nombre: 'Avance', permiso: 'seguimiento.ver' },
+  { ruta: '/personal', nombre: 'Personal', permiso: 'personal.ver' },
+  { ruta: '/presupuestos', nombre: 'Presupuestos', permiso: 'presupuestos.ver' },
+  { ruta: '/cobranzas', nombre: 'Cobranzas', permiso: 'cobros.ver' },
+  { ruta: '/portfolio', nombre: 'Portfolio', permiso: 'portfolio.ver' },
 ];
 
 /**
- * Módulos que todavía no tienen entrada en la navegación.
+ * Administración: Usuarios y Accesos.
  *
- * El diseño resolvió el menú de los cinco módulos que el dueño usa a diario,
- * pero el sistema tiene catorce. Cada módulo se suma al menú cuando se
- * desarrolla, no antes: así la navegación nunca ofrece algo que no existe.
- *
- * Cuando queden cuatro o cinco módulos más, la barra va a empezar a quedar
- * cargada y probablemente convenga un menú secundario de administración.
+ * Van en un grupo aparte y no en la barra principal por dos motivos. Uno
+ * visual: con catorce entradas la barra queda impracticable, y el diseño
+ * original ya preveía un menú secundario de administración. Y otro de uso: son
+ * pantallas que el dueño abre cada tanto —dar de alta un capataz, revisar la
+ * auditoría—, no todos los días como Obras o Gastos.
  */
-export const MODULOS_SIN_UBICAR = [
-  'Usuarios', 'Accesos',
+export const MODULOS_ADMINISTRACION = [
+  { ruta: '/usuarios', nombre: 'Usuarios', permiso: 'usuarios.ver' },
+  { ruta: '/accesos', nombre: 'Accesos', permiso: 'accesos.ver' },
 ];
+
+/** Los módulos que el usuario puede ver, según sus permisos. */
+export function modulosVisibles(lista, puede) {
+  return lista.filter((modulo) => puede(modulo.permiso));
+}

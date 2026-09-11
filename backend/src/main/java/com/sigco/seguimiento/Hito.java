@@ -61,7 +61,7 @@ public class Hito {
     @Column(name = "observacion", length = 250)
     private String observacion;
 
-    // TODO: vincular a usuario real al integrar el modulo Accesos.
+    /** Quien lo marco como completado. Lo aporta la sesion (modulo Accesos). */
     @Column(name = "id_usuario_completa")
     private Long idUsuarioCompleta;
 
@@ -83,16 +83,21 @@ public class Hito {
      * Sin ella el hito diria que se completo pero no cuando, y el analisis de
      * plazos, que es la mitad del valor del modulo, no se podria hacer.
      */
-    public void completar(LocalDate fechaCumplimiento, String observacion) {
+    public void completar(LocalDate fechaCumplimiento, String observacion,
+                          Long idUsuarioCompleta) {
         this.estado = ESTADO_COMPLETADO;
         this.fechaCumplimiento = fechaCumplimiento;
         this.observacion = observacion;
+        // Quien lo marco. Es lo que permite, mas adelante, preguntarle al
+        // capataz por un hito que se dio por cumplido y no estaba.
+        this.idUsuarioCompleta = idUsuarioCompleta;
     }
 
     /** Deshace el cumplimiento, si se marco por error. */
     public void reabrir() {
         this.estado = ESTADO_PENDIENTE;
         this.fechaCumplimiento = null;
+        this.idUsuarioCompleta = null;
     }
 
     public void registrarObservacion(String observacion) {

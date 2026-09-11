@@ -142,8 +142,9 @@ cd backend
 
 ## Estado del desarrollo
 
-**11 de 14 módulos** desarrollados de punta a punta (base de datos, lógica de
-negocio, API y pantalla). Las 28 tablas del modelo están creadas.
+**Los 14 módulos** desarrollados de punta a punta (base de datos, lógica de
+negocio, API, pantalla, tests y documentación). Las 28 tablas del modelo están
+creadas y la seguridad está activa sobre todo el sistema.
 
 | # | Módulo | Estado |
 | --- | --- | --- |
@@ -159,13 +160,28 @@ negocio, API y pantalla). Las 28 tablas del modelo están creadas.
 | 9 | Seguimiento de Obras | ✅ Terminado |
 | 10 | Cobros | ✅ Terminado |
 | 11 | Portfolio Web | ✅ Terminado |
-| 12 | Dashboard | Siguiente |
-| 13 | Usuarios | Pendiente |
-| 14 | Accesos | Pendiente |
+| 12 | Dashboard | ✅ Terminado |
+| 13 | Usuarios | ✅ Terminado |
+| 14 | Accesos | ✅ Terminado |
 
 El orden sigue las dependencias de datos, no la numeración del informe. Usuarios
-y Accesos van últimos por decisión de método: se desarrolla toda la lógica de
-negocio primero y la capa de seguridad se activa al final sobre todo lo
-construido. **Hasta entonces el sistema no tiene autenticación.**
+y Accesos fueron últimos por decisión de método: se desarrolló toda la lógica de
+negocio primero y la capa de seguridad se activó al final sobre todo lo
+construido.
 
-201 tests automáticos, sin fallos.
+**230 tests automáticos, sin fallos.**
+
+### Cómo entrar
+
+```
+usuario: ricardo
+contraseña: granica2026
+```
+
+Es la cuenta que crea la migración `V13`. **Es de puesta en marcha y hay que
+cambiarla desde Usuarios en el primer ingreso.**
+
+Cada rol ve un sistema distinto: el dueño entra al tablero con los doce módulos;
+un capataz de obra entra a la pantalla de obra y su menú tiene cuatro entradas.
+Eso no es cosmético — el backend rechaza con `403` cualquier petición a un
+módulo que el rol no tiene habilitado.

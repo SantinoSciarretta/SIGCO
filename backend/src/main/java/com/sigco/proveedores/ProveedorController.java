@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,6 +34,13 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/proveedores")
+/*
+ * Modulo 14 (Accesos): la clase exige el permiso de lectura del modulo y cada
+ * metodo que escribe lo sobreescribe con el de edicion. El texto del permiso es
+ * el mismo que figura en la tabla permiso de la base (migracion V13), asi que
+ * la matriz del informe se puede verificar buscando esa cadena en el codigo.
+ */
+@PreAuthorize("hasAuthority('proveedores.ver')")
 public class ProveedorController {
 
     private final ProveedorService servicio;
@@ -66,6 +74,7 @@ public class ProveedorController {
     }
 
     /** POST /api/proveedores */
+    @PreAuthorize("hasAuthority('proveedores.editar')")
     @PostMapping
     public ResponseEntity<ProveedorRespuesta> crear(
             @Valid @RequestBody ProveedorSolicitud solicitud) {
@@ -77,6 +86,7 @@ public class ProveedorController {
     }
 
     /** PUT /api/proveedores/{id} */
+    @PreAuthorize("hasAuthority('proveedores.editar')")
     @PutMapping("/{id}")
     public ProveedorRespuesta actualizar(@PathVariable Long id,
                                          @Valid @RequestBody ProveedorSolicitud solicitud) {
@@ -84,6 +94,7 @@ public class ProveedorController {
     }
 
     /** PATCH /api/proveedores/{id}/estado */
+    @PreAuthorize("hasAuthority('proveedores.editar')")
     @PatchMapping("/{id}/estado")
     public ProveedorRespuesta cambiarEstado(@PathVariable Long id,
                                             @Valid @RequestBody CambioEstadoProveedor cambio) {
@@ -93,6 +104,7 @@ public class ProveedorController {
     // ---------- Cotizaciones ----------
 
     /** POST /api/proveedores/{id}/cotizaciones — registra un precio informado. */
+    @PreAuthorize("hasAuthority('proveedores.editar')")
     @PostMapping("/{id}/cotizaciones")
     public ResponseEntity<CotizacionRespuesta> registrarCotizacion(
             @PathVariable Long id, @Valid @RequestBody CotizacionSolicitud solicitud) {
@@ -112,6 +124,7 @@ public class ProveedorController {
     // ---------- Observaciones ----------
 
     /** POST /api/proveedores/{id}/observaciones */
+    @PreAuthorize("hasAuthority('proveedores.editar')")
     @PostMapping("/{id}/observaciones")
     public ResponseEntity<ObservacionRespuesta> registrarObservacion(
             @PathVariable Long id, @Valid @RequestBody ObservacionSolicitud solicitud) {

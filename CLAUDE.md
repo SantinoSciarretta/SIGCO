@@ -32,7 +32,9 @@ El sistema centraliza procesos que hoy la empresa maneja con herramientas descon
 
 El módulo de **Usuarios y Accesos va ÚLTIMO**, por pedido explícito. Esto significa desarrollar toda la lógica de negocio primero, sin autenticación ni control de roles activo, y recién al final ponerle la capa de seguridad encima. Es una decisión de conveniencia (permite probar los módulos sin fricción de login), pero tiene una consecuencia a tener presente:
 
-> **Nota de diseño:** varias tablas tienen FK a `usuario` (`gasto.id_usuario_registro`, `pedido.id_usuario_solicita`, `pedido.id_usuario_recibe`, `hito.id_usuario_completa`, `inasistencia.id_usuario_registro`, `registro_auditoria.id_usuario`). Como Usuarios se hace al final, durante el desarrollo de los módulos previos esas columnas se pueden dejar nullable o apuntar a un usuario semilla fijo (por ejemplo un "dueño" precargado con id 1), y recién al integrar Usuarios/Accesos se activa el vínculo real y el control de permisos. Anotar en el código con un `// TODO: vincular a usuario real al integrar módulo Accesos` en cada punto donde aplique.
+> **Nota de diseño (RESUELTA el 11/09/2026):** varias tablas tienen FK a `usuario` (`gasto.id_usuario_registro`, `pedido.id_usuario_solicita`, `pedido.id_usuario_recibe`, `hito.id_usuario_completa`, `inasistencia.id_usuario_registro`, `registro_auditoria.id_usuario`). Durante el desarrollo de los módulos previos quedaron en `null`, con un `// TODO: vincular a usuario real al integrar módulo Accesos` en cada punto.
+>
+> **Los cinco TODO ya no existen.** El componente `com.sigco.seguridad.SesionActual` es el que los completa: los servicios de Gastos, Compras, Personal y Seguimiento lo reciben por constructor y registran quién hizo cada cosa. Ver `docs/desarrollo/15-usuarios-accesos.md`, sección 13.
 
 Orden sugerido (dependencias de datos primero, seguridad al final):
 
@@ -52,6 +54,14 @@ Orden sugerido (dependencias de datos primero, seguridad al final):
 14. **Accesos** — roles, permisos, auditoría y activación de Spring Security sobre todos los módulos anteriores. **Último.**
 
 (Este orden difiere del numérico de la Propuesta Técnica, que lista Usuarios/Accesos como módulos 13 y 14 por razones de documentación. Para el desarrollo, esta secuencia por dependencias es la que seguimos.)
+
+> **Estado al 11/09/2026: los catorce módulos están desarrollados** (backend,
+> frontend, tests y documentación). 230 tests en verde. La seguridad está
+> activa sobre todo el sistema: cada endpoint exige su permiso y el frontend
+> arma el menú con los permisos del usuario.
+>
+> La cuenta inicial es `ricardo` / `granica2026`, creada por la migración `V13`.
+> **Es de puesta en marcha y hay que cambiarla.**
 
 ---
 
@@ -205,6 +215,17 @@ Documentar a medida que se desarrolla es un requisito central del proyecto (insu
 
 **Portfolio**
 - Solo obras finalizadas. Sin canales de contacto para desconocidos.
+
+**Usuarios y Accesos** (implementadas el 11/09/2026)
+- Las contraseñas se guardan con hash BCrypt, nunca en texto plano. `Usuario` **no tiene** `getContrasenaHash()` a propósito: sin getter, el hash no puede filtrarse a un DTO ni a un log.
+- Cambiar la propia contraseña exige escribir la actual; el dueño reseteando la de otro, no.
+- **No se puede dejar el sistema sin ninguna cuenta activa con rol Dueño**, ni dando de baja ni cambiando el rol. Nadie se da de baja a sí mismo.
+- **Al rol Dueño no se le pueden quitar `accesos.editar` ni `usuarios.editar`**: nadie podría volver a entrar a la pantalla que lo arregla.
+- **`compras.aprobar` es un permiso propio y solo lo tiene el Dueño.** Es lo que hace cumplir la regla de que la aprobación del pedido es indelegable: el sistema rechaza dárselo a un capataz aunque se marque la casilla.
+- Una cuenta no se elimina: se da de baja con motivo (`usuario.motivo_baja`, agregado en `V13`).
+- El mensaje de error del login es el mismo para usuario inexistente y contraseña incorrecta, y el tiempo de respuesta también. Distinguirlos permitiría descubrir qué usuarios existen.
+- Los permisos **no viajan dentro del token**: se leen de la base en cada petición, así un cambio en Accesos se aplica en la petición siguiente.
+- **El frontend filtra menú y rutas, pero eso es presentación, no seguridad.** La validación que manda es `@PreAuthorize` en el backend.
 
 ---
 

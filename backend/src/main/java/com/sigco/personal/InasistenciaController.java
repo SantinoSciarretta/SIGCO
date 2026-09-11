@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +29,13 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/inasistencias")
+/*
+ * Modulo 14 (Accesos): la clase exige el permiso de lectura del modulo y cada
+ * metodo que escribe lo sobreescribe con el de edicion. El texto del permiso es
+ * el mismo que figura en la tabla permiso de la base (migracion V13), asi que
+ * la matriz del informe se puede verificar buscando esa cadena en el codigo.
+ */
+@PreAuthorize("hasAuthority('personal.ver')")
 public class InasistenciaController {
 
     private final PersonalService servicio;
@@ -47,6 +55,7 @@ public class InasistenciaController {
         return servicio.listarInasistencias(operario, obra, desde, hasta);
     }
 
+    @PreAuthorize("hasAuthority('personal.editar')")
     @PostMapping
     public ResponseEntity<InasistenciaRespuesta> registrar(
             @Valid @RequestBody InasistenciaSolicitud solicitud) {
@@ -57,6 +66,7 @@ public class InasistenciaController {
     }
 
     /** El motivo se completa despues, que es el caso normal. */
+    @PreAuthorize("hasAuthority('personal.editar')")
     @PatchMapping("/{id}/motivo")
     public InasistenciaRespuesta registrarMotivo(@PathVariable Long id,
                                                  @Valid @RequestBody MotivoSolicitud solicitud) {

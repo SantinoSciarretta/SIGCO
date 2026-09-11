@@ -4,6 +4,7 @@ import com.sigco.common.exception.RecursoNoEncontradoException;
 import com.sigco.common.exception.ReglaDeNegocioException;
 import com.sigco.obras.Obra;
 import com.sigco.obras.ObraRepository;
+import com.sigco.seguridad.SesionActual;
 import com.sigco.personal.dto.PersonalDtos.Asignacion;
 import com.sigco.personal.dto.PersonalDtos.CambioEstadoOperario;
 import com.sigco.personal.dto.PersonalDtos.InasistenciaRespuesta;
@@ -36,12 +37,17 @@ public class PersonalService {
     private final InasistenciaRepository inasistenciaRepositorio;
     private final ObraRepository obraRepositorio;
 
+    /** Quien esta usando el sistema, para la columna "quien lo registro". */
+    private final SesionActual sesion;
+
     public PersonalService(OperarioRepository repositorio,
                            InasistenciaRepository inasistenciaRepositorio,
-                           ObraRepository obraRepositorio) {
+                           ObraRepository obraRepositorio,
+                           SesionActual sesion) {
         this.repositorio = repositorio;
         this.inasistenciaRepositorio = inasistenciaRepositorio;
         this.obraRepositorio = obraRepositorio;
+        this.sesion = sesion;
     }
 
     // ------------------------------------------------------------------
@@ -218,6 +224,8 @@ public class PersonalService {
 
         Inasistencia inasistencia = new Inasistencia(
                 operario, obra, solicitud.fechaFalta(), limpiar(solicitud.motivo()));
+
+        sesion.idUsuario().ifPresent(inasistencia::registradaPor);
 
         return InasistenciaRespuesta.desde(inasistenciaRepositorio.save(inasistencia));
     }

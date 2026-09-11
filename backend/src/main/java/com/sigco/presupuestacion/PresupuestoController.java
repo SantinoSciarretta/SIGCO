@@ -12,6 +12,7 @@ import java.util.List;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -39,6 +40,13 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/presupuestos")
+/*
+ * Modulo 14 (Accesos): la clase exige el permiso de lectura del modulo y cada
+ * metodo que escribe lo sobreescribe con el de edicion. El texto del permiso es
+ * el mismo que figura en la tabla permiso de la base (migracion V13), asi que
+ * la matriz del informe se puede verificar buscando esa cadena en el codigo.
+ */
+@PreAuthorize("hasAuthority('presupuestos.ver')")
 public class PresupuestoController {
 
     private final PresupuestoService servicio;
@@ -64,6 +72,7 @@ public class PresupuestoController {
     }
 
     /** POST /api/presupuestos — nace en Borrador. */
+    @PreAuthorize("hasAuthority('presupuestos.editar')")
     @PostMapping
     public ResponseEntity<PresupuestoRespuesta> crear(
             @Valid @RequestBody NuevoPresupuesto solicitud) {
@@ -82,6 +91,7 @@ public class PresupuestoController {
      * anteproyecto sin sobrescribirlo, y reutilizar un presupuesto de otra obra
      * como plantilla.
      */
+    @PreAuthorize("hasAuthority('presupuestos.editar')")
     @PostMapping("/{id}/duplicar")
     public ResponseEntity<PresupuestoRespuesta> duplicar(
             @PathVariable Long id, @Valid @RequestBody Duplicacion solicitud) {
@@ -117,6 +127,7 @@ public class PresupuestoController {
     // ---------- Items ----------
 
     /** POST /api/presupuestos/{id}/items */
+    @PreAuthorize("hasAuthority('presupuestos.editar')")
     @PostMapping("/{id}/items")
     public PresupuestoRespuesta agregarItem(@PathVariable Long id,
                                             @Valid @RequestBody ItemSolicitud solicitud) {
@@ -124,6 +135,7 @@ public class PresupuestoController {
     }
 
     /** PUT /api/presupuestos/{id}/items/{idItem} */
+    @PreAuthorize("hasAuthority('presupuestos.editar')")
     @PutMapping("/{id}/items/{idItem}")
     public PresupuestoRespuesta actualizarItem(@PathVariable Long id,
                                                @PathVariable Long idItem,
@@ -132,6 +144,7 @@ public class PresupuestoController {
     }
 
     /** DELETE /api/presupuestos/{id}/items/{idItem} — solo en Borrador. */
+    @PreAuthorize("hasAuthority('presupuestos.editar')")
     @DeleteMapping("/{id}/items/{idItem}")
     public PresupuestoRespuesta quitarItem(@PathVariable Long id, @PathVariable Long idItem) {
         return servicio.quitarItem(id, idItem);
@@ -140,6 +153,7 @@ public class PresupuestoController {
     // ---------- Plan de pago y estado ----------
 
     /** PUT /api/presupuestos/{id}/plan-de-pago */
+    @PreAuthorize("hasAuthority('presupuestos.editar')")
     @PutMapping("/{id}/plan-de-pago")
     public PresupuestoRespuesta definirPlanDePago(@PathVariable Long id,
                                                   @Valid @RequestBody PlanDePago plan) {
@@ -151,6 +165,7 @@ public class PresupuestoController {
      *
      * Aprobar el definitivo pone ademas la obra en ejecucion.
      */
+    @PreAuthorize("hasAuthority('presupuestos.editar')")
     @PatchMapping("/{id}/estado")
     public PresupuestoRespuesta cambiarEstado(
             @PathVariable Long id, @Valid @RequestBody CambioEstadoPresupuesto cambio) {
@@ -166,6 +181,7 @@ public class PresupuestoController {
      * Si el eliminado era el definitivo aprobado, la obra vuelve a
      * "En presupuestacion" y pierde su fecha de inicio real.
      */
+    @PreAuthorize("hasAuthority('presupuestos.editar')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         servicio.eliminar(id);

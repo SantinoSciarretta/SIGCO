@@ -45,7 +45,7 @@ public class Inasistencia {
     @Column(name = "motivo", length = 200)
     private String motivo;
 
-    // TODO: vincular a usuario real al integrar el modulo Accesos.
+    /** Quien la cargo. Lo aporta la sesion (modulo Accesos). */
     @Column(name = "id_usuario_registro")
     private Long idUsuarioRegistro;
 
@@ -82,6 +82,11 @@ public class Inasistencia {
 
     public String getMotivo() {
         return motivo;
+    }
+
+    /** Deja constancia de quien cargo la falta. */
+    public void registradaPor(Long idUsuario) {
+        this.idUsuarioRegistro = idUsuario;
     }
 
     public Long getIdUsuarioRegistro() {

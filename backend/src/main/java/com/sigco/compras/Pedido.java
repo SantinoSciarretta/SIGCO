@@ -64,7 +64,7 @@ public class Pedido {
     @JoinColumn(name = "id_proveedor")
     private Proveedor proveedor;
 
-    // TODO: vincular a usuario real al integrar el modulo Accesos.
+    /** Quien lo pidio y quien lo recibio. Los aporta la sesion (modulo Accesos). */
     @Column(name = "id_usuario_solicita")
     private Long idUsuarioSolicita;
 

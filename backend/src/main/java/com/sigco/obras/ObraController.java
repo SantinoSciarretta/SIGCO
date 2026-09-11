@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +30,13 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/obras")
+/*
+ * Modulo 14 (Accesos): la clase exige el permiso de lectura del modulo y cada
+ * metodo que escribe lo sobreescribe con el de edicion. El texto del permiso es
+ * el mismo que figura en la tabla permiso de la base (migracion V13), asi que
+ * la matriz del informe se puede verificar buscando esa cadena en el codigo.
+ */
+@PreAuthorize("hasAuthority('obras.ver')")
 public class ObraController {
 
     private final ObraService servicio;
@@ -65,6 +73,7 @@ public class ObraController {
     }
 
     /** POST /api/obras — la obra nace "En presupuestación". */
+    @PreAuthorize("hasAuthority('obras.editar')")
     @PostMapping
     public ResponseEntity<ObraRespuesta> crear(@Valid @RequestBody ObraSolicitud solicitud) {
         ObraRespuesta creada = servicio.crear(solicitud);
@@ -74,6 +83,7 @@ public class ObraController {
     }
 
     /** PUT /api/obras/{id} — datos maestros. No admite cambiar cliente ni tipo de obra. */
+    @PreAuthorize("hasAuthority('obras.editar')")
     @PutMapping("/{id}")
     public ObraRespuesta actualizar(@PathVariable Long id,
                                     @Valid @RequestBody ObraEdicion edicion) {
@@ -87,6 +97,7 @@ public class ObraController {
      * finalizar una obra que todavia esta en presupuestacion) o cuando falta
      * el motivo al cancelar.
      */
+    @PreAuthorize("hasAuthority('obras.editar')")
     @PatchMapping("/{id}/estado")
     public ObraRespuesta cambiarEstado(@PathVariable Long id,
                                        @Valid @RequestBody CambioEstadoObra cambio) {

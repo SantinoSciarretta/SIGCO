@@ -1,6 +1,7 @@
 package com.sigco.gastos;
 
 import com.sigco.gastos.dto.EstadoFinanciero;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,6 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
  * obra recien cuando termina.
  */
 @RestController
+/*
+ * Modulo 14 (Accesos): la clase exige el permiso de lectura del modulo y cada
+ * metodo que escribe lo sobreescribe con el de edicion. El texto del permiso es
+ * el mismo que figura en la tabla permiso de la base (migracion V13), asi que
+ * la matriz del informe se puede verificar buscando esa cadena en el codigo.
+ */
+@PreAuthorize("hasAuthority('gastos.ver')")
 public class EstadoFinancieroController {
 
     private final GastoService servicio;

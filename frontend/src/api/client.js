@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+import { borrarToken, leerToken } from '../modules/sesion/almacenToken';
+
 /**
  * Cliente HTTP unico de SIGCO.
  *
@@ -27,13 +29,17 @@ const client = axios.create({
 /**
  * Interceptor de PETICIONES: se ejecuta antes de enviar cada llamada.
  *
- * Hoy no hace nada porque todavia no existe el login. Queda preparado para el
- * modulo 14, donde va a leer el token guardado y agregarlo a la cabecera
- * Authorization de cada peticion.
+ * Adjunta el token a TODAS las peticiones, en un solo lugar. Esta es la razon
+ * por la que desde el primer modulo ningun componente importa axios por su
+ * cuenta: agregar la autenticacion fue tocar este archivo y nada mas, en lugar
+ * de los catorce modulos.
  */
 client.interceptors.request.use(
   (config) => {
-    // TODO: adjuntar el token JWT al integrar modulo Accesos
+    const token = leerToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => Promise.reject(error),
@@ -49,10 +55,25 @@ client.interceptors.request.use(
 client.interceptors.response.use(
   (response) => response,
   (error) => {
-    // TODO: ante un 401 (sesion vencida), redirigir al login
-    //       al integrar modulo Accesos
-
     const respuesta = error.response;
+
+    // 401: el token vencio o la cuenta se dio de baja. Se limpia la sesion y se
+    // vuelve al ingreso.
+    //
+    // Se usa location.assign y no el router de React porque este archivo no es
+    // un componente: no tiene acceso a los hooks de navegacion. Ademas, forzar
+    // una recarga completa garantiza que no quede en memoria nada del usuario
+    // anterior, que es justamente lo que se quiere al cerrar una sesion.
+    //
+    // La excepcion es el propio login: si alguien escribe mal la contrasena, el
+    // backend contesta 401 y recargar la pagina borraria lo que escribio sin
+    // mostrarle el error.
+    if (respuesta?.status === 401 && !error.config?.url?.endsWith('/sesion')) {
+      borrarToken();
+      if (window.location.pathname !== '/') {
+        window.location.assign('/');
+      }
+    }
 
     // El backend contesto con un error y su formato conocido.
     if (respuesta?.data) {

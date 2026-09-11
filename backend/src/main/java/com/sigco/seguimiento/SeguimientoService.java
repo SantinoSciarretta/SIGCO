@@ -5,6 +5,7 @@ import com.sigco.common.exception.ReglaDeNegocioException;
 import com.sigco.gastos.GastoService;
 import com.sigco.obras.Obra;
 import com.sigco.obras.ObraRepository;
+import com.sigco.seguridad.SesionActual;
 import com.sigco.seguimiento.dto.SeguimientoDtos.AvanceObra;
 import com.sigco.seguimiento.dto.SeguimientoDtos.ConfiguracionHitos;
 import com.sigco.seguimiento.dto.SeguimientoDtos.Cumplimiento;
@@ -45,14 +46,19 @@ public class SeguimientoService {
     private final ObraRepository obraRepositorio;
     private final GastoService gastoService;
 
+    /** Quien marca el hito como completado. */
+    private final SesionActual sesion;
+
     public SeguimientoService(HitoRepository repositorio,
                               PlantillaHitoRepository plantillaRepositorio,
                               ObraRepository obraRepositorio,
-                              GastoService gastoService) {
+                              GastoService gastoService,
+                              SesionActual sesion) {
         this.repositorio = repositorio;
         this.plantillaRepositorio = plantillaRepositorio;
         this.obraRepositorio = obraRepositorio;
         this.gastoService = gastoService;
+        this.sesion = sesion;
     }
 
     // ------------------------------------------------------------------
@@ -177,7 +183,8 @@ public class SeguimientoService {
                     });
         }
 
-        hito.completar(cumplimiento.fechaCumplimiento(), limpiar(cumplimiento.observacion()));
+        hito.completar(cumplimiento.fechaCumplimiento(), limpiar(cumplimiento.observacion()),
+                sesion.idUsuario().orElse(null));
 
         // Se relee del objeto en memoria: hitos trae la misma instancia.
         boolean quedaAlgunoPendiente = hitos.stream().anyMatch(h -> !h.estaCompletado());

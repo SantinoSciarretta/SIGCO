@@ -84,5 +84,23 @@ public interface ObraRepository extends JpaRepository<Obra, Long> {
     List<Object[]> contarPorCliente();
 
     /** Cuantas obras tiene un cliente. */
+    /**
+     * Obras en un estado determinado, con su cliente ya cargado.
+     *
+     * La usa el Tablero, que recorre las obras en ejecucion. Sin el JOIN FETCH
+     * cada fila dispararia una consulta mas para traer el nombre del cliente
+     * (con open-in-view desactivado ni siquiera funcionaria).
+     */
+    @Query("""
+            SELECT o FROM Obra o
+            JOIN FETCH o.cliente
+            WHERE o.estado = :estado
+            ORDER BY o.fechaCreacion DESC
+            """)
+    List<Obra> porEstado(@Param("estado") String estado);
+
+    /** Cuantas obras hay en un estado. Para los contadores del Tablero. */
+    long countByEstado(String estado);
+
     long countByClienteIdCliente(Long idCliente);
 }

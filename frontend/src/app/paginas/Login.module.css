@@ -202,3 +202,14 @@
   color: rgba(242, 242, 243, 0.45);
   text-align: center;
 }
+
+/* Mensaje de credenciales incorrectas. Va debajo de los campos, donde el ojo
+   ya está mirando después de escribir. */
+.error {
+  margin: 14px 0 0;
+  padding: 9px 12px;
+  border-left: 3px solid var(--color-excedido);
+  background: color-mix(in srgb, var(--color-excedido) 12%, transparent);
+  font-size: 13px;
+  color: #fff;
+}

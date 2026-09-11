@@ -135,9 +135,53 @@
 		</dependency>
 
 		<!--
-			PENDIENTE (se agrega cuando entra el modulo que la necesita):
-			  - spring-boot-starter-security  -> modulo 14 (Accesos)
+			Spring Security: autenticacion y control de acceso por rol. Entra con
+			el modulo 14 (Accesos), que es el ultimo a proposito: asi los trece
+			modulos anteriores se desarrollaron y probaron sin la friccion del
+			login, y la seguridad se puso encima al final.
+
+			Aporta ademas BCryptPasswordEncoder, que es con lo que se cifran las
+			contrasenas (hash unidireccional con sal). En la base nunca hay una
+			contrasena en texto plano.
 		-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!--
+			JJWT: firma y verifica los tokens JWT del login.
+
+			Lleva version explicita por el mismo motivo que OpenPDF: el parent de
+			Spring Boot no administra esta libreria.
+
+			Se divide en tres artefactos a proposito. Solo jjwt-api es de
+			compilacion; impl y jackson son "runtime" para que el codigo de la
+			aplicacion no pueda importar clases internas de la implementacion y
+			quede atado a ella.
+		-->
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>0.12.6</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.12.6</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>0.12.6</version>
+			<scope>runtime</scope>
+		</dependency>
 
 	</dependencies>
 

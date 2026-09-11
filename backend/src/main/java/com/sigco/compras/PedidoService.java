@@ -17,6 +17,7 @@ import com.sigco.obras.ObraRepository;
 import com.sigco.proveedores.CotizacionRepository;
 import com.sigco.proveedores.Proveedor;
 import com.sigco.proveedores.ProveedorRepository;
+import com.sigco.seguridad.SesionActual;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -52,18 +53,23 @@ public class PedidoService {
     private final CotizacionRepository cotizacionRepositorio;
     private final GastoService gastoService;
 
+    /** Quien pide y quien recibe: los dos salen de la sesion. */
+    private final SesionActual sesion;
+
     public PedidoService(PedidoRepository repositorio,
                          ObraRepository obraRepositorio,
                          MaterialRepository materialRepositorio,
                          ProveedorRepository proveedorRepositorio,
                          CotizacionRepository cotizacionRepositorio,
-                         GastoService gastoService) {
+                         GastoService gastoService,
+                         SesionActual sesion) {
         this.repositorio = repositorio;
         this.obraRepositorio = obraRepositorio;
         this.materialRepositorio = materialRepositorio;
         this.proveedorRepositorio = proveedorRepositorio;
         this.cotizacionRepositorio = cotizacionRepositorio;
         this.gastoService = gastoService;
+        this.sesion = sesion;
     }
 
     // ------------------------------------------------------------------
@@ -129,7 +135,9 @@ public class PedidoService {
         exigirObraOperativa(obra);
 
         // TODO: tomar el usuario de la sesion al integrar Accesos.
-        Pedido pedido = new Pedido(obra, null);
+        // Quien genera el pedido queda registrado: es lo que convierte el
+        // pedido informal por WhatsApp en un pedido con responsable.
+        Pedido pedido = new Pedido(obra, sesion.idUsuario().orElse(null));
         repositorio.save(pedido);
 
         Set<Long> yaAgregados = new HashSet<>();
@@ -228,7 +236,7 @@ public class PedidoService {
         }
 
         // TODO: tomar el usuario de la sesion al integrar Accesos.
-        pedido.recibir(null, recepcion.fotoRemito().trim(),
+        pedido.recibir(sesion.idUsuario().orElse(null), recepcion.fotoRemito().trim(),
                        recepcion.notaDiferencia() != null && !recepcion.notaDiferencia().isBlank()
                                ? recepcion.notaDiferencia().trim()
                                : null);

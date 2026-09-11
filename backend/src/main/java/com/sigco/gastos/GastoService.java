@@ -11,6 +11,7 @@ import com.sigco.obras.Obra;
 import com.sigco.obras.ObraRepository;
 import com.sigco.presupuestacion.ItemPresupuesto;
 import com.sigco.presupuestacion.Presupuesto;
+import com.sigco.seguridad.SesionActual;
 import com.sigco.presupuestacion.PresupuestoRepository;
 import com.sigco.presupuestacion.Rubro;
 import com.sigco.presupuestacion.RubroRepository;
@@ -59,16 +60,24 @@ public class GastoService {
     private final SubrubroRepository subrubroRepositorio;
     private final PresupuestoRepository presupuestoRepositorio;
 
+    /**
+     * Quien esta usando el sistema. Es lo que permite completar la columna
+     * "quien lo hizo", que hasta el modulo Accesos quedaba en null.
+     */
+    private final SesionActual sesion;
+
     public GastoService(GastoRepository repositorio,
                         ObraRepository obraRepositorio,
                         RubroRepository rubroRepositorio,
                         SubrubroRepository subrubroRepositorio,
-                        PresupuestoRepository presupuestoRepositorio) {
+                        PresupuestoRepository presupuestoRepositorio,
+                        SesionActual sesion) {
         this.repositorio = repositorio;
         this.obraRepositorio = obraRepositorio;
         this.rubroRepositorio = rubroRepositorio;
         this.subrubroRepositorio = subrubroRepositorio;
         this.presupuestoRepositorio = presupuestoRepositorio;
+        this.sesion = sesion;
     }
 
     // ------------------------------------------------------------------
@@ -113,6 +122,9 @@ public class GastoService {
                 solicitud.monto(), solicitud.fechaGasto(),
                 limpiar(solicitud.descripcion()), limpiar(solicitud.comprobanteAdjunto()),
                 null, solicitud.idOperario());
+
+        // Quien lo cargo. Hasta el modulo Accesos esta columna quedaba en null.
+        sesion.idUsuario().ifPresent(gasto::registradoPor);
 
         return GastoRespuesta.desde(repositorio.save(gasto));
     }
@@ -197,10 +209,14 @@ public class GastoService {
                 continue;
             }
             Rubro rubro = buscarRubroOFallar(entrada.getKey());
-            repositorio.save(new Gasto(obra, rubro, null, Gasto.TIPO_MATERIAL,
+            Gasto automatico = new Gasto(obra, rubro, null, Gasto.TIPO_MATERIAL,
                     entrada.getValue(), fechaRecepcion,
                     "Generado por la recepción del pedido #" + idPedido,
-                    null, idPedido, null));
+                    null, idPedido, null);
+            // Queda a nombre de quien confirmo la recepcion: el gasto lo genera
+            // el sistema, pero lo dispara una persona.
+            sesion.idUsuario().ifPresent(automatico::registradoPor);
+            repositorio.save(automatico);
             generados++;
         }
         return generados;
@@ -304,6 +320,56 @@ public class GastoService {
         }
         return calcularPorcentaje(repositorio.totalGastado(idObra),
                                   aprobados.get(0).getTotalPresupuesto());
+    }
+
+    /**
+     * Resumen financiero de una obra que NO falla si no hay presupuesto.
+     *
+     * El Tablero recorre todas las obras en ejecucion, y alguna puede no tener
+     * definitivo aprobado todavia. Con estadoFinanciero() esa sola obra haria
+     * fallar el tablero entero.
+     *
+     * Igual que porcentajeConsumidoOCero(), NO se implementa llamando a
+     * estadoFinanciero() y atrapando la excepcion: al lanzar dentro de un
+     * metodo @Transactional, Spring marca la transaccion como rollback-only y
+     * atraparla afuera no deshace esa marca.
+     */
+    @Transactional(readOnly = true)
+    public ResumenFinanciero resumenOVacio(Long idObra) {
+        List<Presupuesto> aprobados = presupuestoRepositorio
+                .findByObraIdObraAndTipoPresupuestoAndEstado(
+                        idObra, Presupuesto.TIPO_DEFINITIVO, Presupuesto.ESTADO_APROBADO);
+
+        BigDecimal gastado = repositorio.totalGastado(idObra);
+
+        if (aprobados.isEmpty()) {
+            // Sin presupuesto no hay ganancia estimada posible: informar el
+            // gastado como perdida seria inventar un dato.
+            return new ResumenFinanciero(false, BigDecimal.ZERO, gastado,
+                    BigDecimal.ZERO, BigDecimal.ZERO, SEMAFORO_SIN_PRESUPUESTO);
+        }
+
+        BigDecimal presupuestado = aprobados.get(0).getTotalPresupuesto();
+        BigDecimal porcentaje = calcularPorcentaje(gastado, presupuestado);
+
+        return new ResumenFinanciero(true, presupuestado, gastado,
+                presupuestado.subtract(gastado), porcentaje,
+                calcularSemaforo(porcentaje, presupuestado));
+    }
+
+    /**
+     * Las cifras de una obra, sin el detalle por rubro.
+     *
+     * Es lo que necesita el Tablero, que muestra una fila por obra. El desglose
+     * por rubro vive en EstadoFinanciero y se consulta al entrar a la obra.
+     */
+    public record ResumenFinanciero(
+            boolean tienePresupuestoAprobado,
+            BigDecimal presupuestado,
+            BigDecimal gastado,
+            BigDecimal gananciaEstimada,
+            BigDecimal porcentajeConsumido,
+            String semaforo) {
     }
 
     /**

@@ -70,6 +70,8 @@
   gap: 12px;
   font-size: 12.5px;
   white-space: nowrap;
+  /* Ancla del menú desplegable, que se posiciona contra este bloque. */
+  position: relative;
 }
 
 .usuarioRol {
@@ -101,4 +103,67 @@
   .barra { gap: var(--space-4); padding: 0 16px; }
   .usuarioRol, .usuarioNombre { display: none; }
   .contenido { padding: 20px 16px 40px; }
+}
+
+/* ---------- Menú del usuario (módulo 14) ---------- */
+
+/* El bloque del usuario pasa a ser un botón con menú: desde acá se llega a
+   Usuarios, Accesos y a cerrar sesión, que son acciones de cada tanto y no
+   merecen lugar propio en la barra principal. */
+
+.usuarioBoton {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 6px;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.usuarioBoton:focus-visible {
+  outline: 2px solid rgba(242, 242, 243, .6);
+  outline-offset: 2px;
+}
+
+.menuUsuario {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  min-width: 190px;
+  padding: 6px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .18);
+}
+
+.menuEnlace,
+.menuSalir {
+  padding: 9px 11px;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 13.5px;
+  text-align: left;
+  text-decoration: none;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.menuEnlace:hover,
+.menuSalir:hover {
+  background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+}
+
+/* Cerrar sesión se separa: es la única acción del menú que no lleva a una
+   pantalla, y sale del sistema. */
+.menuSalir {
+  margin-top: 4px;
+  border-top: 1px solid var(--color-divider);
+  color: var(--color-excedido);
 }

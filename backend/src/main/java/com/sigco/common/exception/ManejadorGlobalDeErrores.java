@@ -81,6 +81,33 @@ public class ManejadorGlobalDeErrores extends ResponseEntityExceptionHandler {
     }
 
     /**
+     * 403 - El usuario esta identificado pero su rol no alcanza.
+     *
+     * Lo lanza @PreAuthorize cuando falta un permiso. Hace falta atraparlo ACA y
+     * no alcanza con el accessDeniedHandler de la configuracion de seguridad:
+     * ese handler solo ve lo que se rechaza en la cadena de filtros, y una
+     * anotacion @PreAuthorize se evalua mas adentro, ya dentro de Spring MVC.
+     * Sin este metodo, la excepcion cae en la red de contencion de abajo y el
+     * frontend recibe un 500 ("error del sistema") en lugar de un 403 ("no
+     * tenes permiso"), que son dos cosas muy distintas para quien lo lee.
+     *
+     * NO se registra en el log como error: que alguien pida algo que no le
+     * corresponde es una situacion prevista, no una falla.
+     */
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<RespuestaError> manejarAccesoDenegado(
+            org.springframework.security.access.AccessDeniedException ex, WebRequest peticion) {
+
+        RespuestaError cuerpo = RespuestaError.de(
+                HttpStatus.FORBIDDEN.value(),
+                HttpStatus.FORBIDDEN.getReasonPhrase(),
+                "Tu rol no tiene permiso para esta acción.",
+                rutaDe(peticion));
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(cuerpo);
+    }
+
+    /**
      * 500 - Red de contencion para cualquier error no previsto.
      *
      * El detalle real se registra en el log del servidor, pero al cliente se le

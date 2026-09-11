@@ -1,0 +1,257 @@
+/* Módulos Usuarios y Accesos. */
+
+/* ---------- Cabecera ---------- */
+
+.cabecera {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.titulo { margin: 4px 0 0; font-size: 30px; }
+
+.bajada {
+  margin: 4px 0 0;
+  font-size: 13.5px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+.herramientas {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Aclaración de la regla del módulo, arriba de todo. Explica por qué la
+   pantalla se comporta como se comporta, antes de que alguien busque el botón
+   de eliminar y no lo encuentre. */
+.aclaracion {
+  margin: 0 0 18px;
+  padding: 11px 14px;
+  border-left: 3px solid var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 7%, transparent);
+  font-size: 12.5px;
+  line-height: 1.6;
+  max-width: 760px;
+}
+
+/* ---------- Bloques ---------- */
+
+.bloque { padding: 18px 20px 20px; margin-bottom: 22px; }
+
+.bloqueCabecera {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.bloqueCabecera h4 { margin: 0; font-size: 20px; }
+
+/* ---------- Avisos ---------- */
+
+.aviso {
+  margin: 0;
+  padding: 16px 2px;
+  font-size: 13.5px;
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+}
+
+.avisoOk {
+  margin: 0 0 14px;
+  padding: 9px 13px;
+  border-left: 3px solid var(--color-ok);
+  background: color-mix(in srgb, var(--color-ok) 10%, transparent);
+  font-size: 13px;
+}
+
+.errorGeneral {
+  margin: 0 0 14px;
+  padding: 9px 13px;
+  border-left: 3px solid var(--color-excedido);
+  background: color-mix(in srgb, var(--color-excedido) 10%, transparent);
+  font-size: 13px;
+  color: var(--color-excedido);
+}
+
+/* ---------- Tabla de usuarios ---------- */
+
+.nombreUsuario { display: flex; align-items: center; gap: 8px; }
+
+/* Marca la fila propia: evita que el dueño intente darse de baja a sí mismo
+   sin darse cuenta de cuál fila es. */
+.marcaYo {
+  padding: 1px 6px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: color-mix(in srgb, var(--color-accent) 18%, transparent);
+}
+
+.tenue {
+  font-size: 12px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+/* Una cuenta dada de baja se atenúa pero NO se esconde: sigue siendo parte del
+   historial, y el dueño tiene que poder reactivarla. */
+.filaInactiva { opacity: 0.55; }
+
+.activo, .inactivo {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.activo { color: var(--color-ok); }
+.inactivo { color: var(--color-excedido); }
+
+.motivo {
+  margin-top: 3px;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+.acciones {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.selectChico {
+  padding: 5px 7px;
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  font: inherit;
+  font-size: 12px;
+  color: var(--color-text);
+}
+
+/* ---------- Matriz de permisos ---------- */
+
+/* Fila que separa cada módulo. Agrupar por módulo es lo que hace que la matriz
+   se lea como la tabla del informe y no como una lista de veintiocho líneas. */
+.filaModulo td {
+  padding-top: 16px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  border-bottom: 1px solid var(--color-accent);
+}
+
+.permisoNombre { font-family: var(--fuente-mono, monospace); font-size: 12.5px; }
+
+.cuentas {
+  margin-top: 3px;
+  font-size: 10.5px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: color-mix(in srgb, var(--color-text) 50%, transparent);
+}
+
+/* ---------- Formularios ---------- */
+
+.campo { margin-bottom: 16px; }
+
+.etiqueta {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 11.5px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 65%, transparent);
+}
+
+.obligatorio { color: var(--color-excedido); }
+
+.control {
+  width: 100%;
+  padding: 9px 11px;
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  font: inherit;
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+.control:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -1px;
+}
+
+.ayuda {
+  margin: 6px 0 0;
+  font-size: 11.5px;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--color-text) 58%, transparent);
+}
+
+.accionesFormulario {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+/* ---------- Botones ---------- */
+
+.botonPrimario,
+.botonSecundario,
+.botonPeligro {
+  padding: 8px 14px;
+  border: 1px solid transparent;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.botonPrimario {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.botonPrimario:hover:not(:disabled) { background: var(--color-accent-500); }
+
+.botonSecundario {
+  background: none;
+  border-color: var(--color-divider);
+  color: var(--color-text);
+}
+
+.botonSecundario:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+}
+
+.botonPeligro {
+  background: none;
+  border-color: var(--color-excedido);
+  color: var(--color-excedido);
+}
+
+.botonPeligro:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-excedido) 10%, transparent);
+}
+
+.botonPrimario:disabled,
+.botonSecundario:disabled,
+.botonPeligro:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.botonPrimario:focus-visible,
+.botonSecundario:focus-visible,
+.botonPeligro:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}

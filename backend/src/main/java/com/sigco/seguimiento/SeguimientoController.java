@@ -9,6 +9,7 @@ import com.sigco.seguimiento.dto.SeguimientoDtos.ObservacionHito;
 import com.sigco.seguimiento.dto.SeguimientoDtos.PlantillaRespuesta;
 import jakarta.validation.Valid;
 import java.util.List;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +26,13 @@ import org.springframework.web.bind.annotation.RestController;
  * del hito, que es lo que se esta modificando.
  */
 @RestController
+/*
+ * Modulo 14 (Accesos): la clase exige el permiso de lectura del modulo y cada
+ * metodo que escribe lo sobreescribe con el de edicion. El texto del permiso es
+ * el mismo que figura en la tabla permiso de la base (migracion V13), asi que
+ * la matriz del informe se puede verificar buscando esa cadena en el codigo.
+ */
+@PreAuthorize("hasAuthority('seguimiento.ver')")
 public class SeguimientoController {
 
     private final SeguimientoService servicio;
@@ -48,6 +56,7 @@ public class SeguimientoController {
      * la configuración entera: la regla de que las ponderaciones sumen 100
      * aplica al conjunto, no a cada hito por separado.
      */
+    @PreAuthorize("hasAuthority('seguimiento.editar')")
     @PutMapping("/api/obras/{id}/hitos")
     public List<HitoRespuesta> configurar(@PathVariable Long id,
                                           @Valid @RequestBody ConfiguracionHitos configuracion) {
@@ -55,6 +64,7 @@ public class SeguimientoController {
     }
 
     /** POST /api/obras/{id}/hitos/desde-plantilla/{idPlantilla} */
+    @PreAuthorize("hasAuthority('seguimiento.editar')")
     @PostMapping("/api/obras/{id}/hitos/desde-plantilla/{idPlantilla}")
     public List<HitoRespuesta> aplicarPlantilla(@PathVariable Long id,
                                                 @PathVariable Long idPlantilla) {
@@ -68,17 +78,20 @@ public class SeguimientoController {
      *
      * Al completar el último hito pendiente, la obra pasa a Finalizada.
      */
+    @PreAuthorize("hasAuthority('seguimiento.editar')")
     @PatchMapping("/api/hitos/{id}/cumplimiento")
     public AvanceObra completar(@PathVariable Long id,
                                 @Valid @RequestBody Cumplimiento cumplimiento) {
         return servicio.completar(id, cumplimiento);
     }
 
+    @PreAuthorize("hasAuthority('seguimiento.editar')")
     @PatchMapping("/api/hitos/{id}/reapertura")
     public AvanceObra reabrir(@PathVariable Long id) {
         return servicio.reabrir(id);
     }
 
+    @PreAuthorize("hasAuthority('seguimiento.editar')")
     @PatchMapping("/api/hitos/{id}/observacion")
     public AvanceObra registrarObservacion(@PathVariable Long id,
                                            @Valid @RequestBody ObservacionHito observacion) {
@@ -92,6 +105,7 @@ public class SeguimientoController {
         return servicio.listarPlantillas();
     }
 
+    @PreAuthorize("hasAuthority('seguimiento.editar')")
     @PostMapping("/api/plantillas-hito")
     public PlantillaRespuesta crearPlantilla(@Valid @RequestBody NuevaPlantilla solicitud) {
         return servicio.crearPlantilla(solicitud);

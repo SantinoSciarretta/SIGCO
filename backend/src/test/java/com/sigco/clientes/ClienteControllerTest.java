@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -36,8 +37,29 @@ import org.springframework.test.web.servlet.MockMvc;
  * salen con el formato unico del sistema.
  */
 @WebMvcTest(ClienteController.class)
-@TestPropertySource(properties = "sigco.cors.origenes-permitidos=http://localhost:5173")
+@TestPropertySource(properties = {
+        "sigco.cors.origenes-permitidos=http://localhost:5173",
+        // Desde el modulo 14 la cadena de filtros de seguridad forma parte de
+        // la capa web, asi que el corte @WebMvcTest la levanta y necesita el
+        // secreto de los tokens. El valor da igual: este test no autentica.
+        "sigco.jwt.secreto=clave-de-prueba-suficientemente-larga-para-firmar",
+        "sigco.jwt.duracion-segundos=28800",
+})
+// El usuario queda autenticado con los permisos del modulo: lo que este test
+// verifica es el contrato HTTP del controlador (codigos, formato, validacion),
+// no quien puede llamarlo. Eso se prueba aparte, en los tests de Accesos.
+@WithMockUser(authorities = { "clientes.ver", "clientes.editar" })
 class ClienteControllerTest {
+
+    /**
+     * FiltroJwt entra en el corte por ser un Filter, pero sus dependencias son
+     * servicios y quedan afuera. Se simulan para que el contexto arranque.
+     */
+    @MockitoBean
+    private com.sigco.seguridad.ServicioJwt servicioJwt;
+
+    @MockitoBean
+    private com.sigco.usuarios.UsuarioRepository usuarioRepositorio;
 
     @Autowired
     private MockMvc mockMvc;

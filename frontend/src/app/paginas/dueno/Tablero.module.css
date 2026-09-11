@@ -288,3 +288,116 @@
   .ejeNombre { font-size: 11px; }
   .ejeRazon { display: none; }
 }
+
+/* ---------- Esperando una decisión ---------- */
+
+/* La lista de pendientes: lo que el dueño tiene que destrabar. Va arriba de
+   los gráficos a propósito — es lo accionable, el resto es información. */
+
+.pendientes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pendiente {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 11px 4px;
+  border: none;
+  border-bottom: 1px solid var(--color-divider);
+  background: none;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.pendiente:hover { background: color-mix(in srgb, var(--color-accent) 7%, transparent); }
+
+.pendiente:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+
+.pendientes li:last-child .pendiente { border-bottom: none; }
+
+/* La etiqueta del tipo hace de ancla visual para agrupar de un vistazo. */
+.pendienteTipo {
+  flex: none;
+  width: 96px;
+  padding: 3px 0;
+  font-size: 10.5px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  border-left: 3px solid var(--color-neutral-500);
+  padding-left: 9px;
+}
+
+/* El color no viaja solo: el texto "hace N días" dice lo mismo sin depender
+   de distinguir rojo. */
+.pendienteUrgente {
+  border-left-color: var(--color-excedido);
+  color: var(--color-excedido);
+}
+
+.pendienteTexto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.pendienteTitulo { font-size: 14px; }
+
+.pendienteDetalle {
+  font-size: 11.5px;
+  color: color-mix(in srgb, var(--color-text) 58%, transparent);
+}
+
+/* ---------- Detalles de la tabla de obras ---------- */
+
+.aviso {
+  margin: 0;
+  padding: 22px 4px;
+  font-size: 13.5px;
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+}
+
+.errorGeneral {
+  margin: 0;
+  padding: 18px;
+  font-size: 13.5px;
+  color: var(--color-excedido);
+}
+
+.atrasada { color: var(--color-excedido); }
+
+/* Marca del avance financiero sobre la barra del avance físico. Si queda a la
+   derecha del relleno, se gastó más de lo que se construyó. */
+.marcaFinanciera {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  background: var(--color-text);
+  transform: translateX(-1px);
+}
+
+.desfasaje {
+  margin-top: 5px;
+  font-size: 10.5px;
+  letter-spacing: 0.03em;
+  color: var(--color-alerta);
+}
+
+.vencidas {
+  margin-top: 3px;
+  font-size: 10.5px;
+  letter-spacing: 0.03em;
+  color: var(--color-excedido);
+}

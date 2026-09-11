@@ -41,6 +41,8 @@ class PersonalServiceTest {
     @Mock private OperarioRepository repositorio;
     @Mock private InasistenciaRepository inasistenciaRepositorio;
     @Mock private ObraRepository obraRepositorio;
+    // Desde el modulo 14 los servicios registran quien hizo cada cosa.
+    @Mock private com.sigco.seguridad.SesionActual sesion;
 
     @InjectMocks private PersonalService servicio;
 

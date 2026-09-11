@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 
 import Layout from './Layout';
+import RutaProtegida from './RutaProtegida';
 import Login from './paginas/Login';
 import NoEncontrado from './paginas/NoEncontrado';
 
@@ -19,6 +20,9 @@ import SeguimientoPage from '../modules/seguimiento/SeguimientoPage';
 import GastosPage from '../modules/gastos/GastosPage';
 import MaterialesPage from '../modules/materiales/MaterialesPage';
 import ProveedoresPage from '../modules/proveedores/ProveedoresPage';
+import UsuariosPage from '../modules/usuarios/UsuariosPage';
+import AccesosPage from '../modules/usuarios/AccesosPage';
+import MiCuentaPage from '../modules/usuarios/MiCuentaPage';
 
 import LayoutCapataz from './paginas/capataz/LayoutCapataz';
 import Home from './paginas/capataz/Home';
@@ -26,25 +30,30 @@ import Hitos from './paginas/capataz/Hitos';
 import Materiales from './paginas/capataz/Materiales';
 
 /**
- * NOTA: ya no se usa ModuloPendiente. Los doce módulos del menú están
- * desarrollados contra el backend. El componente sigue en el proyecto por si
- * se suma alguna pantalla nueva antes de tener su backend.
- */
-
-/**
  * Mapa de rutas del sistema.
  *
  * Hay tres zonas, y cada una tiene su propio marco:
  *
  *   /            ingreso, sin marco (pantalla de fondo oscuro)
- *   /tablero…    rol Dueño, con la barra de navegación de escritorio
- *   /obra…       rol Capataz, marco angosto pensado para el celular
+ *   /tablero…    escritorio, con la barra de navegación
+ *   /obra…       capataz, marco angosto pensado para el celular
  *
  * Las rutas de adentro se dibujan en el <Outlet /> de su marco, así la
  * navegación se arma una sola vez y al moverse solo cambia el contenido.
  *
- * A medida que cada módulo se desarrolla, su línea deja de apuntar a
- * ModuloPendiente y pasa a apuntar a su pantalla real.
+ * ------------------------------------------------------------------
+ *  Protección de rutas (módulo 14)
+ * ------------------------------------------------------------------
+ *
+ * Cada ruta declara el permiso que hace falta para entrar, con el MISMO texto
+ * que usa el backend en @PreAuthorize y que está cargado en la tabla permiso.
+ * Que las tres capas usen literalmente la misma cadena es lo que permite
+ * verificar la matriz del informe de punta a punta.
+ *
+ * Y hay que tener claro qué es esto: RutaProtegida es PRESENTACIÓN. Evita que
+ * alguien llegue a una pantalla que no le sirve, pero no protege los datos —
+ * quien quiera saltearla pide los datos directo a la API. La seguridad real
+ * está en el backend, que revalida el permiso en cada petición.
  */
 export default function Router() {
   return (
@@ -52,35 +61,71 @@ export default function Router() {
 
       <Route path="/" element={<Login />} />
 
-      {/* ---------- Rol Dueño ---------- */}
-      <Route element={<Layout />}>
-        <Route path="/tablero" element={<Tablero />} />
-        <Route path="/obras" element={<ObrasPage />} />
-        <Route path="/clientes" element={<ClientesPage />} />
+      {/* ---------- Escritorio ---------- */}
+      <Route element={<RutaProtegida><Layout /></RutaProtegida>}>
+        <Route path="/tablero" element={
+          <RutaProtegida permiso="tablero.ver"><Tablero /></RutaProtegida>} />
+
+        <Route path="/obras" element={
+          <RutaProtegida permiso="obras.ver"><ObrasPage /></RutaProtegida>} />
+
+        <Route path="/clientes" element={
+          <RutaProtegida permiso="clientes.ver"><ClientesPage /></RutaProtegida>} />
 
         {/* Pantalla del diseño original, con datos de muestra. Se conserva
-            como referencia de cómo va a quedar la ficha de obra cuando existan
-            Gastos y Seguimiento, que son los módulos que producen esa
-            información. No forma parte de la navegación. */}
+            como referencia de cómo va a quedar la ficha de obra. No forma
+            parte de la navegación. */}
         <Route path="/vista-diseno/obra" element={<DetalleObra />} />
-        <Route path="/pedidos" element={<PedidosPage />} />
-        <Route path="/gastos" element={<GastosPage />} />
-        <Route path="/personal" element={<PersonalPage />} />
-        <Route path="/seguimiento" element={<SeguimientoPage />} />
-        <Route path="/presupuestos" element={<PresupuestosPage />} />
-        <Route path="/presupuestos/catalogo" element={<CatalogoPage />} />
-        <Route path="/presupuestos/:id" element={<PresupuestoDetalle />} />
-        <Route path="/materiales" element={<MaterialesPage />} />
-        <Route path="/proveedores" element={<ProveedoresPage />} />
-        <Route path="/cobranzas" element={<CobrosPage />} />
-        <Route path="/portfolio" element={<PortfolioPage />} />
+
+        <Route path="/pedidos" element={
+          <RutaProtegida permiso="compras.ver"><PedidosPage /></RutaProtegida>} />
+
+        <Route path="/gastos" element={
+          <RutaProtegida permiso="gastos.ver"><GastosPage /></RutaProtegida>} />
+
+        <Route path="/personal" element={
+          <RutaProtegida permiso="personal.ver"><PersonalPage /></RutaProtegida>} />
+
+        <Route path="/seguimiento" element={
+          <RutaProtegida permiso="seguimiento.ver"><SeguimientoPage /></RutaProtegida>} />
+
+        <Route path="/presupuestos" element={
+          <RutaProtegida permiso="presupuestos.ver"><PresupuestosPage /></RutaProtegida>} />
+        <Route path="/presupuestos/catalogo" element={
+          <RutaProtegida permiso="presupuestos.ver"><CatalogoPage /></RutaProtegida>} />
+        <Route path="/presupuestos/:id" element={
+          <RutaProtegida permiso="presupuestos.ver"><PresupuestoDetalle /></RutaProtegida>} />
+
+        <Route path="/materiales" element={
+          <RutaProtegida permiso="materiales.ver"><MaterialesPage /></RutaProtegida>} />
+
+        <Route path="/proveedores" element={
+          <RutaProtegida permiso="proveedores.ver"><ProveedoresPage /></RutaProtegida>} />
+
+        <Route path="/cobranzas" element={
+          <RutaProtegida permiso="cobros.ver"><CobrosPage /></RutaProtegida>} />
+
+        <Route path="/portfolio" element={
+          <RutaProtegida permiso="portfolio.ver"><PortfolioPage /></RutaProtegida>} />
+
+        {/* ---------- Administración ---------- */}
+        <Route path="/usuarios" element={
+          <RutaProtegida permiso="usuarios.ver"><UsuariosPage /></RutaProtegida>} />
+
+        <Route path="/accesos" element={
+          <RutaProtegida permiso="accesos.ver"><AccesosPage /></RutaProtegida>} />
+
+        {/* Sin permiso: cualquiera tiene que poder cambiar su contraseña. */}
+        <Route path="/mi-cuenta" element={<MiCuentaPage />} />
       </Route>
 
-      {/* ---------- Rol Capataz ---------- */}
-      <Route element={<LayoutCapataz />}>
+      {/* ---------- Capataz (celular en obra) ---------- */}
+      <Route element={<RutaProtegida><LayoutCapataz /></RutaProtegida>}>
         <Route path="/obra" element={<Home />} />
-        <Route path="/obra/hitos" element={<Hitos />} />
-        <Route path="/obra/materiales" element={<Materiales />} />
+        <Route path="/obra/hitos" element={
+          <RutaProtegida permiso="seguimiento.ver"><Hitos /></RutaProtegida>} />
+        <Route path="/obra/materiales" element={
+          <RutaProtegida permiso="compras.ver"><Materiales /></RutaProtegida>} />
       </Route>
 
       {/* Cualquier dirección que no coincida con las anteriores. */}

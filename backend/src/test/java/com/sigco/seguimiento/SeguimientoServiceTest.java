@@ -43,6 +43,7 @@ class SeguimientoServiceTest {
     @Mock private PlantillaHitoRepository plantillaRepositorio;
     @Mock private ObraRepository obraRepositorio;
     @Mock private GastoService gastoService;
+    @Mock private com.sigco.seguridad.SesionActual sesion;
 
     @InjectMocks private SeguimientoService servicio;
 
@@ -146,7 +147,7 @@ class SeguimientoServiceTest {
         void noRedefineConHitosCompletados() {
             Obra obra = obraEnEjecucion();
             List<Hito> hitos = tresHitos(obra);
-            hitos.get(0).completar(LocalDate.now(), null);
+            hitos.get(0).completar(LocalDate.now(), null, null);
 
             assertThatThrownBy(() -> servicio.configurar(5L, new ConfiguracionHitos(List.of(
                     new HitoSolicitud("Otro plan", new BigDecimal("100"), 1)))))
@@ -234,8 +235,8 @@ class SeguimientoServiceTest {
         void ultimoHitoFinalizaLaObra() {
             Obra obra = obraEnEjecucion();
             List<Hito> hitos = tresHitos(obra);
-            hitos.get(0).completar(LocalDate.now(), null);
-            hitos.get(1).completar(LocalDate.now(), null);
+            hitos.get(0).completar(LocalDate.now(), null, null);
+            hitos.get(1).completar(LocalDate.now(), null, null);
             sinAvanceFinanciero();
 
             AvanceObra a = servicio.completar(3L, new Cumplimiento(LocalDate.now(), null, false));

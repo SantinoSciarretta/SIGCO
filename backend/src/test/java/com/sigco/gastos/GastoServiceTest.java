@@ -52,6 +52,8 @@ class GastoServiceTest {
     @Mock private RubroRepository rubroRepositorio;
     @Mock private SubrubroRepository subrubroRepositorio;
     @Mock private PresupuestoRepository presupuestoRepositorio;
+    // Desde el modulo 14 los servicios registran quien hizo cada cosa.
+    @Mock private com.sigco.seguridad.SesionActual sesion;
 
     @InjectMocks private GastoService servicio;
 

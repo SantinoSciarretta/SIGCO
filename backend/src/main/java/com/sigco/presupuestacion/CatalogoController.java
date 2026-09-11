@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,6 +34,13 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api")
+/*
+ * Modulo 14 (Accesos): la clase exige el permiso de lectura del modulo y cada
+ * metodo que escribe lo sobreescribe con el de edicion. El texto del permiso es
+ * el mismo que figura en la tabla permiso de la base (migracion V13), asi que
+ * la matriz del informe se puede verificar buscando esa cadena en el codigo.
+ */
+@PreAuthorize("hasAuthority('presupuestos.ver')")
 public class CatalogoController {
 
     private final CatalogoService servicio;
@@ -53,6 +61,7 @@ public class CatalogoController {
     }
 
     /** POST /api/rubros */
+    @PreAuthorize("hasAuthority('presupuestos.editar')")
     @PostMapping("/rubros")
     public ResponseEntity<RubroRespuesta> crearRubro(@Valid @RequestBody RubroSolicitud solicitud) {
         RubroRespuesta creado = servicio.crearRubro(solicitud);
@@ -62,6 +71,7 @@ public class CatalogoController {
     }
 
     /** PUT /api/rubros/{id} — lo unico editable es el nombre. */
+    @PreAuthorize("hasAuthority('presupuestos.editar')")
     @PutMapping("/rubros/{id}")
     public RubroRespuesta renombrarRubro(@PathVariable Long id,
                                          @Valid @RequestBody RubroSolicitud solicitud) {
@@ -69,6 +79,7 @@ public class CatalogoController {
     }
 
     /** PATCH /api/rubros/{id}/estado */
+    @PreAuthorize("hasAuthority('presupuestos.editar')")
     @PatchMapping("/rubros/{id}/estado")
     public RubroRespuesta cambiarEstadoRubro(@PathVariable Long id,
                                              @Valid @RequestBody CambioEstadoCatalogo cambio) {
@@ -91,6 +102,7 @@ public class CatalogoController {
     }
 
     /** POST /api/rubros/{idRubro}/subrubros */
+    @PreAuthorize("hasAuthority('presupuestos.editar')")
     @PostMapping("/rubros/{idRubro}/subrubros")
     public ResponseEntity<SubrubroRespuesta> crearSubrubro(
             @PathVariable Long idRubro,
@@ -103,6 +115,7 @@ public class CatalogoController {
     }
 
     /** PUT /api/subrubros/{id} — solo el nombre; el rubro al que pertenece no cambia. */
+    @PreAuthorize("hasAuthority('presupuestos.editar')")
     @PutMapping("/subrubros/{id}")
     public SubrubroRespuesta renombrarSubrubro(@PathVariable Long id,
                                                @Valid @RequestBody SubrubroSolicitud solicitud) {
@@ -110,6 +123,7 @@ public class CatalogoController {
     }
 
     /** PATCH /api/subrubros/{id}/estado */
+    @PreAuthorize("hasAuthority('presupuestos.editar')")
     @PatchMapping("/subrubros/{id}/estado")
     public SubrubroRespuesta cambiarEstadoSubrubro(@PathVariable Long id,
                                                    @Valid @RequestBody CambioEstadoCatalogo cambio) {

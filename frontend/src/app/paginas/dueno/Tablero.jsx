@@ -1,59 +1,85 @@
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Blueprint from '../../../components/ui/Blueprint';
-import { useDemo } from '../../../datos/contextoDemo';
-import { OBRAS, avanceDeObra, totalPorCobrar } from '../../../datos/demo';
-import { colorDeDesvio, millones, porcentaje } from '../../../components/ui/semaforo';
+import {
+  cargarTablero, colorDeSemaforo, millones, pesos, porcentaje, textoDeSemaforo,
+} from '../../../modules/dashboard/tableroApi';
 import estilos from './Tablero.module.css';
 
 /**
  * Tablero del dueño — pantalla de entrada del sistema.
  *
  * Reúne en un solo lugar lo que hoy el dueño tiene que ir a buscar obra por
- * obra: cuánto se gastó contra lo presupuestado, cuánto hay por cobrar y cómo
- * viene el avance. No genera información propia, consolida la del resto de los
- * módulos.
+ * obra, en planillas distintas: cuánto se gastó contra lo presupuestado, cuánto
+ * hay por cobrar, cómo viene el avance y qué está esperando una decisión suya.
  *
- * Al tocar una obra —en el gráfico o en la tabla— queda seleccionada, y el
- * detalle de obra pasa a mostrar esa. Por eso la selección vive en el estado
- * compartido y no dentro de esta pantalla.
+ * No genera información propia: consolida la del resto de los módulos. El
+ * semáforo, el avance y el saldo llegan ya calculados desde el backend, y esta
+ * pantalla solo decide cómo se escriben. Si los recalculara acá, el tablero y
+ * la ficha de la obra podrían mostrar números distintos para lo mismo.
+ *
+ * Hasta el módulo Dashboard esta pantalla mostraba datos de muestra, porque los
+ * módulos que producen esta información todavía no existían.
  */
 export default function Tablero() {
-  const { obraSeleccionada, seleccionarObra, hitosCompletados } = useDemo();
+  const [tablero, setTablero] = useState(null);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState(null);
   const navegar = useNavigate();
+
+  useEffect(() => {
+    let vigente = true;
+    cargarTablero()
+      .then((datos) => { if (vigente) { setTablero(datos); setError(null); } })
+      .catch((fallo) => { if (vigente) setError(fallo.mensaje); })
+      .finally(() => { if (vigente) setCargando(false); });
+    return () => { vigente = false; };
+  }, []);
+
+  if (cargando) {
+    return <p className={estilos.aviso}>Consultando el estado de las obras…</p>;
+  }
+
+  if (error) {
+    return (
+      <Blueprint className={estilos.bloque}>
+        <p className={estilos.errorGeneral}>{error}</p>
+      </Blueprint>
+    );
+  }
+
+  const { resumen, obras, pendientes } = tablero;
 
   // Escala del gráfico: la barra más alta es el mayor valor de todo el
   // conjunto, así todas las obras se comparan contra la misma referencia.
-  const escala = Math.max(...OBRAS.map((o) => Math.max(o.pres, o.gasto)));
-
-  const irAlDetalle = (indice) => {
-    seleccionarObra(indice);
-    // El detalle de obra del diseño todavía muestra datos de muestra: la
-    // información que consolida (gastos por rubro, hitos) la producen módulos
-    // que aún no existen.
-    navegar('/vista-diseno/obra');
-  };
+  const escala = Math.max(
+    1,
+    ...obras.map((o) => Math.max(Number(o.totalPresupuestado), Number(o.totalGastado))),
+  );
 
   const indicadores = [
     {
-      titulo: 'Obras activas', codigo: 'A-01',
-      valor: String(OBRAS.length), unidad: 'en curso',
-      pie: '2 cierran este mes · 1 en pausa',
+      titulo: 'Obras en ejecución', codigo: 'A-01',
+      valor: String(resumen.obrasEnEjecucion), unidad: 'en curso',
+      pie: `${resumen.obrasEnPresupuestacion} en presupuestación`,
     },
     {
       titulo: 'Por cobrar esta semana', codigo: 'A-02',
-      valor: millones(totalPorCobrar()).replace('$', '').replace(' M', ''),
-      unidad: 'millones $',
-      pie: 'Vencen 3 certificados el viernes',
+      valor: millones(resumen.porCobrarEstaSemana), unidad: 'millones $',
+      pie: `${pesos(resumen.saldoPorCobrar)} pendientes en total`,
     },
     {
-      titulo: 'Pedidos a aprobar', codigo: 'A-03',
-      valor: '3', unidad: 'esperando',
-      pie: 'El más viejo hace 2 días · Casa Aguirre',
+      titulo: 'Ganancia estimada', codigo: 'A-03',
+      valor: millones(resumen.gananciaEstimada), unidad: 'millones $',
+      // Presupuestado menos gastado. Se recalcula con cada gasto que se carga.
+      pie: `${pesos(resumen.totalGastado)} gastados de ${pesos(resumen.totalPresupuestado)}`,
     },
     {
-      titulo: 'Presupuestos sin respuesta', codigo: 'A-04',
-      valor: '7', unidad: 'enviados',
-      pie: '$41,2 M en juego · 4 hace +15 días',
+      titulo: 'Esperando una decisión', codigo: 'A-04',
+      valor: String(pendientes.length), unidad: 'pendientes',
+      pie: resumen.pendientesUrgentes > 0
+        ? `${resumen.pendientesUrgentes} ya están demoradas`
+        : 'Ninguna demorada',
     },
   ];
 
@@ -61,7 +87,11 @@ export default function Tablero() {
     <>
       <div className={estilos.tituloFila}>
         <h2 className={estilos.fecha}>{fechaDeHoy()}</h2>
-        <span className="kicker">Semana {semanaDelAno()} · cierre viernes</span>
+        <span className="kicker">
+          {resumen.obrasExcedidas > 0
+            ? `${resumen.obrasExcedidas} obra${resumen.obrasExcedidas > 1 ? 's' : ''} excedida${resumen.obrasExcedidas > 1 ? 's' : ''}`
+            : 'Ninguna obra excedida'}
+        </span>
       </div>
 
       {/* ---------- Indicadores ---------- */}
@@ -81,133 +111,206 @@ export default function Tablero() {
         ))}
       </div>
 
-      {/* ---------- Presupuestado vs. gastado ---------- */}
-      <Blueprint className={estilos.bloque}>
-        <div className={estilos.bloqueCabecera}>
-          <div>
-            <h4>Presupuestado vs. gastado por obra</h4>
-            <span className="kicker">Certificado a hoy · en millones de $</span>
-          </div>
-          <ul className={estilos.leyenda}>
-            <li><span className={`${estilos.muestra} trama ${estilos.muestraTrama}`} />Presupuestado</li>
-            <li><span className={estilos.muestra} style={{ background: 'var(--color-ok)' }} />En presupuesto</li>
-            <li><span className={estilos.muestra} style={{ background: 'var(--color-alerta)' }} />Cerca del límite</li>
-            <li><span className={estilos.muestra} style={{ background: 'var(--color-excedido)' }} />Excedido</li>
-          </ul>
-        </div>
-
-        <div className={estilos.grafico}>
-          {/* Líneas guía horizontales: dan referencia de altura sin ejes numerados. */}
-          <span className={estilos.guia} style={{ top: '0%' }} />
-          <span className={estilos.guia} style={{ top: '25%' }} />
-          <span className={estilos.guia} style={{ top: '50%' }} />
-          <span className={estilos.guia} style={{ top: '75%' }} />
-
-          <div className={estilos.barras}>
-            {OBRAS.map((obra, i) => {
-              const color = colorDeDesvio(obra.gasto / obra.pres);
-              return (
-                <button
-                  key={obra.codigo}
-                  type="button"
-                  className={estilos.columna}
-                  onClick={() => seleccionarObra(i)}
-                  aria-pressed={i === obraSeleccionada}
-                  aria-label={`${obra.nombre}: gastado ${millones(obra.gasto)} de ${millones(obra.pres)}`}
-                >
-                  <span
-                    className={`trama ${estilos.barraPresupuesto}`}
-                    style={{ height: `${(obra.pres / escala) * 100}%` }}
-                  />
-                  <span
-                    className={estilos.barraGasto}
-                    style={{ height: `${(obra.gasto / escala) * 100}%`, background: color }}
-                  >
-                    <span className={estilos.barraEtiqueta} style={{ color }}>
-                      {millones(obra.gasto)}
-                    </span>
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className={estilos.ejeX}>
-          {OBRAS.map((obra, i) => (
-            <div
-              key={obra.codigo}
-              className={`${estilos.ejeItem} ${i === obraSeleccionada ? estilos.ejeItemActivo : ''}`.trim()}
-            >
-              <div className={estilos.ejeNombre}>{obra.corto}</div>
-              <div className={estilos.ejeRazon}>
-                {porcentaje(obra.gasto / obra.pres)} del presupuesto
-              </div>
+      {/* ---------- Esperando una decisión ---------- */}
+      {pendientes.length > 0 && (
+        <Blueprint className={estilos.bloque}>
+          <div className={estilos.bloqueCabecera}>
+            <div>
+              <h4>Esperando una decisión tuya</h4>
+              <span className="kicker">
+                Solo lo que nadie más puede destrabar
+              </span>
             </div>
-          ))}
-        </div>
-      </Blueprint>
+          </div>
 
-      {/* ---------- Obras activas ---------- */}
-      <Blueprint className={estilos.bloque}>
-        <div className={estilos.bloqueCabecera}>
-          <h4>Obras activas</h4>
-          <span className="kicker">Avance físico certificado</span>
-        </div>
+          <ul className={estilos.pendientes}>
+            {pendientes.map((p, i) => (
+              <li key={`${p.tipo}-${i}`}>
+                <button type="button" className={estilos.pendiente}
+                        onClick={() => navegar(p.ruta)}>
+                  <span className={`${estilos.pendienteTipo} ${
+                    p.urgencia === 'alta' ? estilos.pendienteUrgente : ''}`.trim()}>
+                    {p.tipo}
+                  </span>
+                  <span className={estilos.pendienteTexto}>
+                    <span className={estilos.pendienteTitulo}>{p.titulo}</span>
+                    <span className={estilos.pendienteDetalle}>{p.detalle}</span>
+                  </span>
+                  <span className={estilos.ver}>Ver →</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </Blueprint>
+      )}
 
-        <div className="scroll-x">
-          <table className="table">
-            <thead>
-              <tr>
-                <th style={{ width: 26 }}>#</th>
-                <th>Obra</th>
-                <th>Capataz</th>
-                <th style={{ width: 290 }}>Avance físico</th>
-                <th style={{ textAlign: 'right' }}>Por cobrar</th>
-                <th style={{ width: 78 }} />
-              </tr>
-            </thead>
-            <tbody>
-              {OBRAS.map((obra, i) => {
-                const avance = avanceDeObra(i, hitosCompletados);
-                const color = colorDeDesvio(obra.gasto / obra.pres);
+      {obras.length === 0 && (
+        <Blueprint className={estilos.bloque}>
+          <p className={estilos.aviso}>
+            No hay obras en ejecución. Una obra pasa a ejecución cuando se
+            aprueba su presupuesto definitivo.
+          </p>
+        </Blueprint>
+      )}
 
+      {/* ---------- Presupuestado vs. gastado ---------- */}
+      {obras.length > 0 && (
+        <Blueprint className={estilos.bloque}>
+          <div className={estilos.bloqueCabecera}>
+            <div>
+              <h4>Presupuestado vs. gastado por obra</h4>
+              <span className="kicker">A hoy · en millones de $</span>
+            </div>
+            <ul className={estilos.leyenda}>
+              <li><span className={`${estilos.muestra} trama ${estilos.muestraTrama}`} />Presupuestado</li>
+              <li><span className={estilos.muestra} style={{ background: 'var(--color-ok)' }} />En presupuesto</li>
+              <li><span className={estilos.muestra} style={{ background: 'var(--color-alerta)' }} />Cerca del límite</li>
+              <li><span className={estilos.muestra} style={{ background: 'var(--color-excedido)' }} />Excedido</li>
+            </ul>
+          </div>
+
+          <div className={estilos.grafico}>
+            {/* Líneas guía horizontales: dan referencia de altura sin ejes numerados. */}
+            <span className={estilos.guia} style={{ top: '0%' }} />
+            <span className={estilos.guia} style={{ top: '25%' }} />
+            <span className={estilos.guia} style={{ top: '50%' }} />
+            <span className={estilos.guia} style={{ top: '75%' }} />
+
+            <div className={estilos.barras}>
+              {obras.map((obra) => {
+                const color = colorDeSemaforo(obra.semaforo);
                 return (
-                  <tr
-                    key={obra.codigo}
-                    className={i === obraSeleccionada ? estilos.filaActiva : undefined}
-                    onClick={() => irAlDetalle(i)}
-                    style={{ cursor: 'pointer' }}
+                  <button
+                    key={obra.idObra}
+                    type="button"
+                    className={estilos.columna}
+                    onClick={() => navegar(`/gastos?obra=${obra.idObra}`)}
+                    aria-label={`${obra.direccionObra}: gastado ${pesos(obra.totalGastado)} de ${pesos(obra.totalPresupuestado)} — ${textoDeSemaforo(obra.semaforo)}`}
                   >
-                    <td className={estilos.filaNumero}>{String(i + 1).padStart(2, '0')}</td>
-                    <td>
-                      <div className={estilos.obraNombre}>
-                        {/* El cuadrito repite el estado del semáforo del gráfico. */}
-                        <span className={estilos.punto} style={{ background: color }} />
-                        <span>{obra.nombre}</span>
-                      </div>
-                      <div className={estilos.obraDir}>{obra.dir}</div>
-                    </td>
-                    <td className={estilos.capataz}>{obra.capataz}</td>
-                    <td>
-                      <div className={estilos.avance}>
-                        <span className={estilos.avancePista}>
-                          <span className={estilos.avanceRelleno} style={{ width: `${avance}%` }} />
-                        </span>
-                        <span className={`cifra ${estilos.avanceTexto}`}>{avance}%</span>
-                      </div>
-                    </td>
-                    <td className={`cifra ${estilos.cobrar}`}>{millones(obra.cobrar)}</td>
-                    <td className={estilos.verCelda}>
-                      <span className={estilos.ver}>Ver →</span>
-                    </td>
-                  </tr>
+                    <span
+                      className={`trama ${estilos.barraPresupuesto}`}
+                      style={{ height: `${(Number(obra.totalPresupuestado) / escala) * 100}%` }}
+                    />
+                    <span
+                      className={estilos.barraGasto}
+                      style={{
+                        height: `${(Number(obra.totalGastado) / escala) * 100}%`,
+                        background: color,
+                      }}
+                    >
+                      <span className={estilos.barraEtiqueta} style={{ color }}>
+                        ${millones(obra.totalGastado)} M
+                      </span>
+                    </span>
+                  </button>
                 );
               })}
-            </tbody>
-          </table>
-        </div>
-      </Blueprint>
+            </div>
+          </div>
+
+          <div className={estilos.ejeX}>
+            {obras.map((obra) => (
+              <div key={obra.idObra} className={estilos.ejeItem}>
+                <div className={estilos.ejeNombre}>{obra.direccionObra}</div>
+                <div className={estilos.ejeRazon}>
+                  {obra.semaforo === 'Sin presupuesto'
+                    ? 'sin presupuesto aprobado'
+                    : `${porcentaje(obra.avanceFinanciero)} del presupuesto`}
+                </div>
+              </div>
+            ))}
+          </div>
+        </Blueprint>
+      )}
+
+      {/* ---------- Obras en ejecución ---------- */}
+      {obras.length > 0 && (
+        <Blueprint className={estilos.bloque}>
+          <div className={estilos.bloqueCabecera}>
+            <h4>Obras en ejecución</h4>
+            <span className="kicker">
+              Primero las que necesitan atención
+            </span>
+          </div>
+
+          <div className="scroll-x">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th style={{ width: 26 }}>#</th>
+                  <th>Obra</th>
+                  <th style={{ width: 250 }}>Avance físico vs. financiero</th>
+                  <th style={{ textAlign: 'right' }}>Ganancia estimada</th>
+                  <th style={{ textAlign: 'right' }}>Por cobrar</th>
+                  <th style={{ width: 78 }} />
+                </tr>
+              </thead>
+              <tbody>
+                {obras.map((obra, i) => {
+                  const color = colorDeSemaforo(obra.semaforo);
+                  return (
+                    <tr key={obra.idObra}
+                        onClick={() => navegar(`/seguimiento?obra=${obra.idObra}`)}
+                        style={{ cursor: 'pointer' }}>
+                      <td className={estilos.filaNumero}>{String(i + 1).padStart(2, '0')}</td>
+                      <td>
+                        <div className={estilos.obraNombre}>
+                          {/* El cuadrito repite el estado del semáforo del gráfico. */}
+                          <span className={estilos.punto} style={{ background: color }}
+                                title={textoDeSemaforo(obra.semaforo)} />
+                          <span>{obra.direccionObra}</span>
+                        </div>
+                        <div className={estilos.obraDir}>
+                          {obra.nombreCliente}
+                          {obra.atrasada && <span className={estilos.atrasada}> · atrasada</span>}
+                        </div>
+                      </td>
+                      <td>
+                        <div className={estilos.avance}>
+                          <span className={estilos.avancePista}>
+                            <span className={estilos.avanceRelleno}
+                                  style={{ width: `${Math.min(100, Number(obra.avanceFisico))}%` }} />
+                            {/* La marca del avance financiero: si queda a la
+                                derecha del relleno, se gastó más de lo que se
+                                construyó. Es el cruce que el informe pide. */}
+                            <span className={estilos.marcaFinanciera}
+                                  style={{ left: `${Math.min(100, Number(obra.avanceFinanciero))}%` }}
+                                  title={`Gastado: ${porcentaje(obra.avanceFinanciero)}`} />
+                          </span>
+                          <span className={`cifra ${estilos.avanceTexto}`}>
+                            {porcentaje(obra.avanceFisico)}
+                          </span>
+                        </div>
+                        {obra.alertaDesfasaje && (
+                          <div className={estilos.desfasaje}>
+                            Gasta {porcentaje(obra.desfasaje)} más rápido de lo que avanza
+                          </div>
+                        )}
+                      </td>
+                      <td className={`cifra ${estilos.cobrar}`}
+                          style={{ color: Number(obra.gananciaEstimada) < 0
+                            ? 'var(--color-excedido)' : undefined }}>
+                        {pesos(obra.gananciaEstimada)}
+                      </td>
+                      <td className={`cifra ${estilos.cobrar}`}>
+                        {pesos(obra.saldoPendiente)}
+                        {obra.cuotasVencidas > 0 && (
+                          <div className={estilos.vencidas}>
+                            {obra.cuotasVencidas} vencida{obra.cuotasVencidas > 1 ? 's' : ''}
+                          </div>
+                        )}
+                      </td>
+                      <td className={estilos.verCelda}>
+                        <span className={estilos.ver}>Ver →</span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </Blueprint>
+      )}
     </>
   );
 }
@@ -218,12 +321,4 @@ function fechaDeHoy() {
     weekday: 'long', day: 'numeric', month: 'long',
   });
   return texto.charAt(0).toUpperCase() + texto.slice(1);
-}
-
-/** Número de semana del año, que es como la empresa organiza los cierres. */
-function semanaDelAno() {
-  const hoy = new Date();
-  const inicioDeAno = new Date(hoy.getFullYear(), 0, 1);
-  const dias = Math.floor((hoy - inicioDeAno) / 86400000);
-  return Math.ceil((dias + inicioDeAno.getDay() + 1) / 7);
 }

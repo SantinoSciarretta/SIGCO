@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,13 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/materiales")
+/*
+ * Modulo 14 (Accesos): la clase exige el permiso de lectura del modulo y cada
+ * metodo que escribe lo sobreescribe con el de edicion. El texto del permiso es
+ * el mismo que figura en la tabla permiso de la base (migracion V13), asi que
+ * la matriz del informe se puede verificar buscando esa cadena en el codigo.
+ */
+@PreAuthorize("hasAuthority('materiales.ver')")
 public class MaterialController {
 
     private final MaterialService servicio;
@@ -63,6 +71,7 @@ public class MaterialController {
     }
 
     /** POST /api/materiales */
+    @PreAuthorize("hasAuthority('materiales.editar')")
     @PostMapping
     public ResponseEntity<MaterialRespuesta> crear(
             @Valid @RequestBody MaterialSolicitud solicitud) {
@@ -74,6 +83,7 @@ public class MaterialController {
     }
 
     /** PUT /api/materiales/{id} — nombre, rubro y unidad son editables. */
+    @PreAuthorize("hasAuthority('materiales.editar')")
     @PutMapping("/{id}")
     public MaterialRespuesta actualizar(@PathVariable Long id,
                                         @Valid @RequestBody MaterialSolicitud solicitud) {
@@ -81,6 +91,7 @@ public class MaterialController {
     }
 
     /** PATCH /api/materiales/{id}/estado */
+    @PreAuthorize("hasAuthority('materiales.editar')")
     @PatchMapping("/{id}/estado")
     public MaterialRespuesta cambiarEstado(@PathVariable Long id,
                                            @Valid @RequestBody CambioEstadoMaterial cambio) {

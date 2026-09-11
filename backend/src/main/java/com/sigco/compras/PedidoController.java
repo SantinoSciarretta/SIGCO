@@ -11,6 +11,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,6 +34,13 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/pedidos")
+/*
+ * Modulo 14 (Accesos): la clase exige el permiso de lectura del modulo y cada
+ * metodo que escribe lo sobreescribe con el de edicion. El texto del permiso es
+ * el mismo que figura en la tabla permiso de la base (migracion V13), asi que
+ * la matriz del informe se puede verificar buscando esa cadena en el codigo.
+ */
+@PreAuthorize("hasAuthority('compras.ver')")
 public class PedidoController {
 
     private final PedidoService servicio;
@@ -74,6 +82,7 @@ public class PedidoController {
         return servicio.sugerirPrecios(id, proveedor);
     }
 
+    @PreAuthorize("hasAuthority('compras.editar')")
     @PostMapping
     public ResponseEntity<PedidoRespuesta> crear(@Valid @RequestBody NuevoPedido solicitud) {
         PedidoRespuesta creado = servicio.crear(solicitud);
@@ -88,6 +97,11 @@ public class PedidoController {
      * Aprueba, asigna proveedor y confirma precios en un solo paso, porque el
      * dueño toma las tres decisiones juntas. Accion no delegable.
      */
+    // Permiso propio y distinto del resto del modulo: la aprobacion del pedido
+    // es indelegable segun el informe, y ningun capataz lo tiene. Que sea un
+    // permiso separado es lo que hace cumplir esa regla, en lugar de confiar en
+    // que nadie se la asigne.
+    @PreAuthorize("hasAuthority('compras.aprobar')")
     @PatchMapping("/{id}/aprobacion")
     public PedidoRespuesta aprobar(@PathVariable Long id,
                                    @Valid @RequestBody Aprobacion aprobacion) {
@@ -100,12 +114,14 @@ public class PedidoController {
      * Se completa desde el celular en la obra. La foto del remito es
      * obligatoria y la nota define si quedo Recibido Completo o con Diferencias.
      */
+    @PreAuthorize("hasAuthority('compras.editar')")
     @PatchMapping("/{id}/recepcion")
     public PedidoRespuesta recibir(@PathVariable Long id,
                                    @Valid @RequestBody Recepcion recepcion) {
         return servicio.recibir(id, recepcion);
     }
 
+    @PreAuthorize("hasAuthority('compras.editar')")
     @PatchMapping("/{id}/anulacion")
     public PedidoRespuesta anular(@PathVariable Long id,
                                   @Valid @RequestBody Anulacion anulacion) {

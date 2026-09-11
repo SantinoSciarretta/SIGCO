@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +31,13 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/clientes")
+/*
+ * Modulo 14 (Accesos): la clase exige el permiso de lectura del modulo y cada
+ * metodo que escribe lo sobreescribe con el de edicion. El texto del permiso es
+ * el mismo que figura en la tabla permiso de la base (migracion V13), asi que
+ * la matriz del informe se puede verificar buscando esa cadena en el codigo.
+ */
+@PreAuthorize("hasAuthority('clientes.ver')")
 public class ClienteController {
 
     private final ClienteService servicio;
@@ -63,6 +71,7 @@ public class ClienteController {
      * Devuelve 201 Created con la cabecera Location apuntando al recurso recien
      * creado, que es la respuesta que corresponde a un alta en REST.
      */
+    @PreAuthorize("hasAuthority('clientes.editar')")
     @PostMapping
     public ResponseEntity<ClienteRespuesta> crear(@Valid @RequestBody ClienteSolicitud solicitud) {
         ClienteRespuesta creado = servicio.crear(solicitud);
@@ -72,6 +81,7 @@ public class ClienteController {
     }
 
     /** PUT /api/clientes/{id} — edicion de los datos de contacto. */
+    @PreAuthorize("hasAuthority('clientes.editar')")
     @PutMapping("/{id}")
     public ClienteRespuesta actualizar(@PathVariable Long id,
                                        @Valid @RequestBody ClienteSolicitud solicitud) {
@@ -88,6 +98,7 @@ public class ClienteController {
      * que un cliente no se elimina, se desactiva, para no perder la
      * trazabilidad de sus obras anteriores.
      */
+    @PreAuthorize("hasAuthority('clientes.editar')")
     @PatchMapping("/{id}/estado")
     public ClienteRespuesta cambiarEstado(@PathVariable Long id,
                                           @Valid @RequestBody CambioEstado cambio) {

@@ -101,9 +101,11 @@ public class Gasto {
     @Column(name = "comprobante_adjunto", length = 255)
     private String comprobanteAdjunto;
 
-    // TODO: vincular a usuario real al integrar el modulo Accesos.
+    /** Quien lo cargo. Lo aporta la sesion (modulo Accesos). */
     @Column(name = "id_usuario_registro")
     private Long idUsuarioRegistro;
+
+    // La operacion que lo completa esta mas abajo: registradoPor().
 
     @Column(name = "estado", nullable = false, length = 12)
     private String estado;
@@ -224,6 +226,16 @@ public class Gasto {
 
     public String getComprobanteAdjunto() {
         return comprobanteAdjunto;
+    }
+
+    /**
+     * Deja constancia de quien cargo el gasto.
+     *
+     * Es una operacion con nombre y no un setter: se llama una sola vez, al
+     * crear el gasto, y despues no cambia. Quien lo cargo no se corrige.
+     */
+    public void registradoPor(Long idUsuario) {
+        this.idUsuarioRegistro = idUsuario;
     }
 
     public Long getIdUsuarioRegistro() {

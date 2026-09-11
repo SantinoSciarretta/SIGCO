@@ -1,29 +1,52 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Blueprint from '../../components/ui/Blueprint';
-import { useDemo } from '../../datos/contextoDemo';
+import { useSesion } from '../../modules/sesion/useSesion';
 import estilos from './Login.module.css';
 
 /**
- * Ingreso al sistema, con selección de rol.
+ * Ingreso al sistema.
  *
- * El rol define dos experiencias distintas: el Dueño entra a un tablero de
- * escritorio con información densa, y el Capataz a la obra del día, con
- * bloques grandes pensados para usarse con una mano en obra.
+ * Hasta el módulo 14 esta pantalla era una maqueta: se elegía el rol tocando un
+ * botón y no había ninguna validación. Ahora autentica de verdad contra
+ * POST /api/sesion, que devuelve el token firmado y los permisos del usuario.
  *
- * ATENCIÓN: esta pantalla es solo la interfaz. Hoy el rol se elige tocando un
- * botón y no hay ninguna validación: no existe autenticación en el sistema.
- * El login real (usuario, contraseña con hash, token JWT y control de permisos
- * por rol en el backend) se implementa en los módulos 13 y 14, que van al
- * final del desarrollo.
- * TODO: conectar con POST /api/sesion al integrar módulo Usuarios/Accesos
+ * A dónde entra cada uno lo decide EL ROL QUE DEVUELVE EL BACKEND, no una
+ * elección de la pantalla. Es la diferencia de fondo con la maqueta: antes uno
+ * decía quién era, ahora lo dice el servidor después de verificar la contraseña.
+ *
+ * El PIN de cuatro dígitos del diseño original se reemplazó por una contraseña.
+ * El motivo es del backend: las contraseñas se guardan con hash BCrypt y un PIN
+ * de cuatro dígitos tiene diez mil combinaciones posibles, así que el hash no
+ * protege gran cosa — se prueban todas en segundos. El informe pide "credenciales
+ * únicas" y no especifica el formato.
  */
 export default function Login() {
-  const { rol, setRol } = useDemo();
+  const { ingresar } = useSesion();
   const navegar = useNavigate();
 
-  const esDueno = rol === 'dueno';
+  const [nombreUsuario, setNombreUsuario] = useState('');
+  const [contrasena, setContrasena] = useState('');
+  const [error, setError] = useState(null);
+  const [entrando, setEntrando] = useState(false);
 
-  const entrar = () => navegar(esDueno ? '/tablero' : '/obra');
+  const enviar = async (evento) => {
+    evento.preventDefault();
+    setEntrando(true);
+    setError(null);
+    try {
+      const sesion = await ingresar(nombreUsuario, contrasena);
+
+      // El capataz de obra va a la pantalla angosta, pensada para el celular
+      // en obra. El resto entra al tablero de escritorio.
+      navegar(sesion.nombreRol === 'Capataz de Obra' ? '/obra' : '/tablero');
+    } catch (fallo) {
+      setError(fallo.mensaje);
+      setContrasena('');
+    } finally {
+      setEntrando(false);
+    }
+  };
 
   return (
     <div className={estilos.pantalla}>
@@ -37,97 +60,61 @@ export default function Login() {
             <div className={estilos.marca}>SIGCO</div>
             <div className={estilos.marcaSub}>Granica SRL · obra y refacción</div>
           </div>
-          <div className={estilos.version}>v2.4<br />ROS-AR</div>
+          <div className={estilos.version}>v1.0<br />CABA-AR</div>
         </header>
 
-        <p className={estilos.paso}>01 · Entro como</p>
-        <div className={estilos.roles}>
-          <BotonRol
-            activo={esDueno}
-            onClick={() => setRol('dueno')}
-            titulo="Dueño"
-            detalle="Tablero y plata"
-            icono={
-              <>
-                <path d="M3 21V8l9-5 9 5v13" />
-                <path d="M9 21v-6h6v6" />
-              </>
-            }
-          />
-          <BotonRol
-            activo={!esDueno}
-            onClick={() => setRol('capataz')}
-            titulo="Capataz"
-            detalle="Obra del día"
-            icono={
-              <>
-                <path d="M2 18h20" />
-                <path d="M4 18a8 8 0 0 1 16 0" />
-                <path d="M12 4v6" />
-                <path d="M8.5 5.5 10 10" />
-                <path d="M15.5 5.5 14 10" />
-              </>
-            }
-          />
-        </div>
+        <form onSubmit={enviar}>
+          <p className={estilos.paso}>01 · Credenciales</p>
 
-        <p className={estilos.paso}>02 · Credenciales</p>
-        <div className={estilos.campos}>
-          <div>
-            <label className={estilos.etiqueta} htmlFor="usuario">Usuario</label>
-            <input
-              id="usuario"
-              className={estilos.entrada}
-              value={esDueno ? 'mgranica' : 'rduarte'}
-              readOnly
-            />
-          </div>
+          <div className={estilos.campos}>
+            <div>
+              <label className={estilos.etiqueta} htmlFor="usuario">Usuario</label>
+              <input
+                id="usuario"
+                className={estilos.entrada}
+                value={nombreUsuario}
+                onChange={(e) => setNombreUsuario(e.target.value)}
+                autoComplete="username"
+                autoFocus
+                required
+              />
+            </div>
 
-          <div>
-            <span className={estilos.etiqueta}>PIN de 4 dígitos</span>
-            {/* Representación del PIN. El teclado numérico real llega con el
-                módulo Usuarios; hoy es una maqueta no funcional. */}
-            <div className={estilos.pin} aria-hidden="true">
-              <span className={estilos.pinCasilla}>•</span>
-              <span className={estilos.pinCasilla}>•</span>
-              <span className={estilos.pinCasilla}>•</span>
-              <span className={`${estilos.pinCasilla} ${estilos.pinCursor}`}>|</span>
+            <div>
+              <label className={estilos.etiqueta} htmlFor="contrasena">Contraseña</label>
+              <input
+                id="contrasena"
+                type="password"
+                className={estilos.entrada}
+                value={contrasena}
+                onChange={(e) => setContrasena(e.target.value)}
+                autoComplete="current-password"
+                required
+              />
             </div>
           </div>
-        </div>
 
-        <Blueprint as="button" type="button" claro className={estilos.entrar} onClick={entrar}>
-          <span>{esDueno ? 'Entrar al tablero' : 'Entrar a la obra'}</span>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-               strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M5 12h14" />
-            <path d="m13 6 6 6-6 6" />
-          </svg>
-        </Blueprint>
+          {/* El mensaje es el mismo para usuario inexistente y contraseña
+              incorrecta: si distinguiera, se podrían descubrir qué usuarios
+              existen probando nombres. */}
+          {error && <p className={estilos.error} role="alert">{error}</p>}
 
-        <p className={estilos.ayuda}>Olvidé mi PIN · Hablar con oficina</p>
+          <Blueprint as="button" type="submit" claro className={estilos.entrar}
+                     disabled={entrando}>
+            <span>{entrando ? 'Verificando…' : 'Entrar'}</span>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14" />
+              <path d="m13 6 6 6-6 6" />
+            </svg>
+          </Blueprint>
+        </form>
+
+        <p className={estilos.ayuda}>
+          ¿Olvidaste tu contraseña? Solo el dueño puede restablecerla desde
+          Usuarios.
+        </p>
       </div>
     </div>
-  );
-}
-
-/** Tarjeta de selección de rol. */
-function BotonRol({ activo, onClick, titulo, detalle, icono }) {
-  return (
-    <Blueprint
-      as="button"
-      type="button"
-      claro
-      onClick={onClick}
-      aria-pressed={activo}
-      className={`${estilos.rol} ${activo ? estilos.rolActivo : ''}`.trim()}
-    >
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-           strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        {icono}
-      </svg>
-      <span className={estilos.rolTitulo}>{titulo}</span>
-      <span className={estilos.rolDetalle}>{detalle}</span>
-    </Blueprint>
   );
 }

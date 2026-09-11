@@ -55,6 +55,8 @@ class PedidoServiceTest {
     // La generacion del gasto se prueba en GastoServiceTest; aca solo hace
     // falta que la dependencia exista para no romper la inyeccion.
     @Mock private GastoService gastoService;
+    // Desde el modulo 14 los servicios registran quien hizo cada cosa.
+    @Mock private com.sigco.seguridad.SesionActual sesion;
 
     @InjectMocks private PedidoService servicio;
 

@@ -11,6 +11,7 @@ import com.sigco.cobros.dto.CobrosDtos.RegistrarPago;
 import com.sigco.cobros.dto.CobrosDtos.ResumenCobro;
 import jakarta.validation.Valid;
 import java.util.List;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +29,13 @@ import org.springframework.web.bind.annotation.RestController;
  *       informe lo define como informacion financiera no delegable.
  */
 @RestController
+/*
+ * Modulo 14 (Accesos): la clase exige el permiso de lectura del modulo y cada
+ * metodo que escribe lo sobreescribe con el de edicion. El texto del permiso es
+ * el mismo que figura en la tabla permiso de la base (migracion V13), asi que
+ * la matriz del informe se puede verificar buscando esa cadena en el codigo.
+ */
+@PreAuthorize("hasAuthority('cobros.ver')")
 public class CobrosController {
 
     private final CobrosService servicio;
@@ -51,6 +59,7 @@ public class CobrosController {
      * la fecha del primer vencimiento: el anticipo, la cantidad de cuotas y el
      * total salen del presupuesto que el cliente aceptó.
      */
+    @PreAuthorize("hasAuthority('cobros.editar')")
     @PostMapping("/api/obras/{id}/cobros")
     public PlanDeCobro generar(@PathVariable Long id,
                                @Valid @RequestBody GenerarPlan solicitud) {
@@ -64,6 +73,7 @@ public class CobrosController {
     }
 
     /** POST /api/obras/{id}/cobros/actualizacion-cac */
+    @PreAuthorize("hasAuthority('cobros.editar')")
     @PostMapping("/api/obras/{id}/cobros/actualizacion-cac")
     public PlanDeCobro aplicarCac(@PathVariable Long id) {
         return servicio.aplicarCac(id);
@@ -85,12 +95,14 @@ public class CobrosController {
 
     // ---------- Pagos, por cuota ----------
 
+    @PreAuthorize("hasAuthority('cobros.editar')")
     @PatchMapping("/api/cuotas/{id}/pago")
     public PlanDeCobro registrarPago(@PathVariable Long id,
                                      @Valid @RequestBody RegistrarPago pago) {
         return servicio.registrarPago(id, pago);
     }
 
+    @PreAuthorize("hasAuthority('cobros.editar')")
     @PatchMapping("/api/cuotas/{id}/anulacion")
     public PlanDeCobro anularPago(@PathVariable Long id,
                                   @Valid @RequestBody AnularPago anulacion) {
@@ -105,6 +117,7 @@ public class CobrosController {
     }
 
     /** El valor se carga a mano: la importación automática está fuera del alcance. */
+    @PreAuthorize("hasAuthority('cobros.editar')")
     @PostMapping("/api/cac")
     public IndiceCacRespuesta registrarIndice(@Valid @RequestBody NuevoIndiceCac solicitud) {
         return servicio.registrarIndice(solicitud);
