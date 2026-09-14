@@ -337,3 +337,11 @@
   .herramientas { width: 100%; }
   .buscador { flex: 1; width: auto; min-width: 140px; }
 }
+
+/* La dirección lleva a la ficha de la obra. */
+.enlaceFicha {
+  color: inherit;
+  text-decoration: none;
+}
+
+.enlaceFicha:hover .direccion { color: var(--color-accent); }

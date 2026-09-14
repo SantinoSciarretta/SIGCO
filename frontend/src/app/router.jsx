@@ -6,9 +6,9 @@ import Login from './paginas/Login';
 import NoEncontrado from './paginas/NoEncontrado';
 
 import Tablero from './paginas/dueno/Tablero';
-import DetalleObra from './paginas/dueno/DetalleObra';
 import ClientesPage from '../modules/clientes/ClientesPage';
 import ObrasPage from '../modules/obras/ObrasPage';
+import DetalleObraPage from '../modules/obras/DetalleObraPage';
 import CatalogoPage from '../modules/presupuestacion/CatalogoPage';
 import PresupuestosPage from '../modules/presupuestacion/PresupuestosPage';
 import PresupuestoDetalle from '../modules/presupuestacion/PresupuestoDetalle';
@@ -69,13 +69,13 @@ export default function Router() {
         <Route path="/obras" element={
           <RutaProtegida permiso="obras.ver"><ObrasPage /></RutaProtegida>} />
 
+        {/* La ficha de obra: donde convergen todos los módulos para UNA obra.
+            Reemplaza a la pantalla de muestra de /vista-diseno/obra. */}
+        <Route path="/obras/:id" element={
+          <RutaProtegida permiso="obras.ver"><DetalleObraPage /></RutaProtegida>} />
+
         <Route path="/clientes" element={
           <RutaProtegida permiso="clientes.ver"><ClientesPage /></RutaProtegida>} />
-
-        {/* Pantalla del diseño original, con datos de muestra. Se conserva
-            como referencia de cómo va a quedar la ficha de obra. No forma
-            parte de la navegación. */}
-        <Route path="/vista-diseno/obra" element={<DetalleObra />} />
 
         <Route path="/pedidos" element={
           <RutaProtegida permiso="compras.ver"><PedidosPage /></RutaProtegida>} />

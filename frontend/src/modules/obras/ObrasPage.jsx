@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import Blueprint from '../../components/ui/Blueprint';
 import ObraFormulario from './ObraFormulario';
 import CambiarEstadoObra from './CambiarEstadoObra';
@@ -129,7 +130,13 @@ export default function ObrasPage() {
                   <tr key={obra.idObra}
                       className={obra.estado === 'En ejecución' ? estilos.filaActiva : undefined}>
                     <td>
-                      <div className={estilos.direccion}>{obra.direccionObra}</div>
+                      {/* La dirección lleva a la ficha, que es donde convergen
+                          todos los módulos de esa obra. Es un enlace y no una
+                          fila entera clicable para no chocar con los botones
+                          de acción de la última columna. */}
+                      <Link to={`/obras/${obra.idObra}`} className={estilos.enlaceFicha}>
+                        <div className={estilos.direccion}>{obra.direccionObra}</div>
+                      </Link>
                       <div className={estilos.inmueble}>{obra.tipoInmueble}</div>
                     </td>
                     <td className={estilos.dato}>{obra.nombreCliente}</td>

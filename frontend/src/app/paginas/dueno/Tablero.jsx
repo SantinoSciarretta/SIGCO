@@ -184,7 +184,7 @@ export default function Tablero() {
                     key={obra.idObra}
                     type="button"
                     className={estilos.columna}
-                    onClick={() => navegar(`/gastos?obra=${obra.idObra}`)}
+                    onClick={() => navegar(`/obras/${obra.idObra}`)}
                     aria-label={`${obra.direccionObra}: gastado ${pesos(obra.totalGastado)} de ${pesos(obra.totalPresupuestado)} — ${textoDeSemaforo(obra.semaforo)}`}
                   >
                     <span
@@ -250,7 +250,7 @@ export default function Tablero() {
                   const color = colorDeSemaforo(obra.semaforo);
                   return (
                     <tr key={obra.idObra}
-                        onClick={() => navegar(`/seguimiento?obra=${obra.idObra}`)}
+                        onClick={() => navegar(`/obras/${obra.idObra}`)}
                         style={{ cursor: 'pointer' }}>
                       <td className={estilos.filaNumero}>{String(i + 1).padStart(2, '0')}</td>
                       <td>

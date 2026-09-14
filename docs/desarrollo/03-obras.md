@@ -300,7 +300,7 @@ lugar de neutralizarlas. Queda anotado en el código.
 
 | Pendiente | Se resuelve en |
 | --- | --- |
-| Ficha de obra con accesos a los demás módulos | A medida que existan esos módulos |
+| Ficha de obra con accesos a los demás módulos | **Resuelto el 14/09/2026**: `/obras/{id}`, ver abajo |
 | Historial de estados | A definir junto con Accesos |
 | Paso automático a "En ejecución" al aprobar el presupuesto | Presupuestación |
 | Paso automático a "Finalizada" al completar el último hito | Seguimiento de Obras |
@@ -308,3 +308,59 @@ lugar de neutralizarlas. Queda anotado en el código.
 | Impedir cancelar una obra con presupuesto definitivo aprobado | Presupuestación |
 | Comprobar la fecha de inicio contra el presupuesto y no contra el estado | Presupuestación |
 | Restringir el módulo por rol | Accesos |
+
+
+---
+
+## La ficha de obra (14/09/2026)
+
+`/obras/{id}` es el lugar donde convergen todos los módulos para **una** obra.
+Hasta que existió, ver una obra completa era recorrer seis pantallas: Presupuestos
+para el total, Gastos para el desvío, Avance para los hitos, Cobranzas para el
+saldo y Pedidos para los materiales.
+
+Reemplaza a `/vista-diseno/obra`, que era la pantalla del diseño con datos de
+muestra. Se conservó el diseño entero —la torta, las barras con la marca del
+tope, la línea de hitos— y se le conectaron los datos reales.
+
+### Lo que cruza
+
+Las tres informaciones que la empresa hoy tiene separadas:
+
+| Qué | De dónde |
+| --- | --- |
+| En qué rubros se gastó (la torta) | `GET /api/obras/{id}/estado-financiero` |
+| Gastado contra presupuestado por rubro (las barras) | ídem |
+| Cuánto avanzó de verdad (la línea de hitos) | `GET /api/obras/{id}/avance` |
+| Cuánto falta cobrar | `GET /api/obras/{id}/cobros` |
+| Cuántos pedidos tiene | `GET /api/pedidos?obra={id}` |
+
+Ese cruce es lo que permite detectar la situación que el relevamiento marca como
+más costosa: **una obra que gastó mucho sin avanzar**. Cuando pasa, la pantalla
+lo dice arriba de todo con una frase, no con un color:
+
+> Esta obra gastó el **101%** del presupuesto y avanzó el **70%**. Va 31 puntos
+> más rápido gastando que construyendo.
+
+### Cinco endpoints y no uno
+
+Mismo criterio que el Tablero: cada número lo calcula el módulo que es su dueño.
+Un endpoint nuevo que devolviera todo junto tendría que recalcularlos, y el día
+que cambie un umbral habría dos lugares para cambiarlo. Las cinco llamadas salen
+en paralelo, así que la pantalla tarda lo que tarda la más lenta.
+
+Cada llamada se hace **solo si el usuario tiene el permiso**: un capataz general
+que abra la ficha no ve la parte financiera, y su pantalla no se llena de
+errores por peticiones que iban a ser rechazadas.
+
+### Detalles de presentación que son decisiones
+
+- **La escala de las barras es común a todos los rubros.** Si cada una se midiera
+  contra sí misma, un rubro chico excedido se vería igual de largo que uno
+  grande y la comparación entre rubros dejaría de significar algo.
+- **Los colores de la torta salen de la rampa de azules, no del semáforo.**
+  Verde, amarillo y rojo significan algo concreto en este sistema —dentro, al
+  límite, excedido— y usarlos para distinguir rubros los vaciaría de significado.
+- **El estado de cada rubro va escrito además de en color**, para quien no
+  distingue verde de rojo.
+- **Los accesos al pie solo aparecen si el usuario puede entrar** a ese módulo.
