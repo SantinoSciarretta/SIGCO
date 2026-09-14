@@ -65,6 +65,17 @@ public class AlmacenSupabase implements AlmacenDeArchivos {
     public AlmacenSupabase(@Value("${sigco.almacenamiento.supabase.url}") String urlBase,
                            @Value("${sigco.almacenamiento.supabase.clave}") String claveDeServicio,
                            ValidadorDeArchivos validador) {
+        // Se verifica al ARRANCAR y no al subir la primera foto: un backend que
+        // levanta bien y falla recien cuando el capataz saca la foto del remito
+        // es mucho peor que uno que no levanta y dice por que.
+        if (urlBase == null || urlBase.isBlank() || claveDeServicio == null
+                || claveDeServicio.isBlank()) {
+            throw new IllegalStateException(
+                    "Falta configurar el almacenamiento: SUPABASE_URL y "
+                    + "SUPABASE_SERVICE_KEY son obligatorias cuando "
+                    + "sigco.almacenamiento.tipo=supabase.");
+        }
+
         // Sin la barra final, para no terminar armando URLs con "//".
         this.urlBase = urlBase.endsWith("/") ? urlBase.substring(0, urlBase.length() - 1) : urlBase;
         this.claveDeServicio = claveDeServicio;

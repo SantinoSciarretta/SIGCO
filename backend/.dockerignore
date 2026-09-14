@@ -1,0 +1,17 @@
+# Lo que NO viaja a la imagen.
+
+# El resultado de compilar en la maquina: la imagen compila lo suyo.
+target/
+
+# Credenciales. Nunca deben entrar a una imagen: quedan en sus capas y
+# cualquiera que la descargue las puede leer.
+.env
+*.env
+
+# Archivos subidos en desarrollo.
+archivos/
+
+# Configuracion del editor.
+.idea/
+.vscode/
+*.iml
