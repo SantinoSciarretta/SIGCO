@@ -128,3 +128,20 @@
   color: color-mix(in srgb, var(--color-text) 50%, transparent);
   text-align: center;
 }
+
+/* ---------- Estados que antes no existían (datos reales) ---------- */
+
+.error {
+  margin: 0;
+  padding: 14px 22px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--color-excedido);
+  background: color-mix(in srgb, var(--color-excedido) 10%, transparent);
+}
+
+/* Sin permiso para marcar, las filas dejan de comportarse como botones: no
+   deben invitar a un toque que no va a hacer nada. */
+.fila:disabled { cursor: default; }
+
+.fila:disabled .casilla { opacity: 0.5; }

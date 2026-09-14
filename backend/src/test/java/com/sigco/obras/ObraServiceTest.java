@@ -42,6 +42,11 @@ class ObraServiceTest {
     @Mock
     private ClienteRepository clienteRepositorio;
 
+    // El alcance por obra (modulo 14) se prueba aparte: aca se le dice que
+    // alcanza todo, para que estos tests midan lo que vinieron a medir.
+    @Mock
+    private com.sigco.seguridad.AlcanceDeObras alcance;
+
     @InjectMocks
     private ObraService servicio;
 

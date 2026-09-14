@@ -44,6 +44,9 @@ class SeguimientoServiceTest {
     @Mock private ObraRepository obraRepositorio;
     @Mock private GastoService gastoService;
     @Mock private com.sigco.seguridad.SesionActual sesion;
+    // El alcance por obra (modulo 14) se prueba aparte: aca se le dice
+    // que alcanza todo, para que estos tests midan lo que vinieron a medir.
+    @Mock private com.sigco.seguridad.AlcanceDeObras alcance;
 
     @InjectMocks private SeguimientoService servicio;
 

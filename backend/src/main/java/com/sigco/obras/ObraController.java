@@ -66,6 +66,21 @@ public class ObraController {
         return servicio.listar(cliente, tipoObra, estado, desde, hasta, busqueda);
     }
 
+    /**
+     * GET /api/obras/mias — las obras del usuario que pide.
+     *
+     * Para un Capataz de Obra son las que tiene asignadas; para el dueño y el
+     * capataz general, las que estan en ejecucion.
+     *
+     * Va ANTES de /{id} a proposito: Spring evalua los mapeos en orden y
+     * "mias" entraria por /{id} si estuviera despues, intentando convertirlo a
+     * numero y fallando con un 400.
+     */
+    @GetMapping("/mias")
+    public List<ObraRespuesta> mias() {
+        return servicio.mias();
+    }
+
     /** GET /api/obras/{id} */
     @GetMapping("/{id}")
     public ObraRespuesta obtener(@PathVariable Long id) {

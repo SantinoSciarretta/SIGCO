@@ -57,6 +57,9 @@ class PedidoServiceTest {
     @Mock private GastoService gastoService;
     // Desde el modulo 14 los servicios registran quien hizo cada cosa.
     @Mock private com.sigco.seguridad.SesionActual sesion;
+    // El alcance por obra (modulo 14) se prueba aparte: aca se le dice
+    // que alcanza todo, para que estos tests midan lo que vinieron a medir.
+    @Mock private com.sigco.seguridad.AlcanceDeObras alcance;
 
     @InjectMocks private PedidoService servicio;
 

@@ -18,6 +18,7 @@ import com.sigco.proveedores.CotizacionRepository;
 import com.sigco.proveedores.Proveedor;
 import com.sigco.proveedores.ProveedorRepository;
 import com.sigco.seguridad.SesionActual;
+import com.sigco.seguridad.AlcanceDeObras;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -56,13 +57,17 @@ public class PedidoService {
     /** Quien pide y quien recibe: los dos salen de la sesion. */
     private final SesionActual sesion;
 
+    /** Un capataz de obra solo opera sobre los pedidos de su obra. */
+    private final AlcanceDeObras alcance;
+
     public PedidoService(PedidoRepository repositorio,
                          ObraRepository obraRepositorio,
                          MaterialRepository materialRepositorio,
                          ProveedorRepository proveedorRepositorio,
                          CotizacionRepository cotizacionRepositorio,
                          GastoService gastoService,
-                         SesionActual sesion) {
+                         SesionActual sesion,
+                         AlcanceDeObras alcance) {
         this.repositorio = repositorio;
         this.obraRepositorio = obraRepositorio;
         this.materialRepositorio = materialRepositorio;
@@ -70,6 +75,7 @@ public class PedidoService {
         this.cotizacionRepositorio = cotizacionRepositorio;
         this.gastoService = gastoService;
         this.sesion = sesion;
+        this.alcance = alcance;
     }
 
     // ------------------------------------------------------------------
@@ -84,13 +90,18 @@ public class PedidoService {
                         idProveedor != null ? idProveedor : TODAS,
                         estado != null ? estado : SIN_FILTRO)
                 .stream()
+                // "(su obra)" de la matriz del informe: el capataz de obra ve
+                // solo los pedidos de las obras que tiene asignadas.
+                .filter(p -> alcance.alcanza(p.getObra().getIdObra()))
                 .map(PedidoRespuesta::resumen)
                 .toList();
     }
 
     @Transactional(readOnly = true)
     public PedidoRespuesta obtener(Long id) {
-        return PedidoRespuesta.completa(buscarCompletoOFallar(id));
+        Pedido pedido = buscarCompletoOFallar(id);
+        alcance.exigirAlcance(pedido.getObra().getIdObra());
+        return PedidoRespuesta.completa(pedido);
     }
 
     /** Pedidos esperando la aprobacion del dueño. Alimenta su panel y el Dashboard. */
@@ -133,8 +144,8 @@ public class PedidoService {
                 .orElseThrow(() -> new RecursoNoEncontradoException("Obra", solicitud.idObra()));
 
         exigirObraOperativa(obra);
+        alcance.exigirAlcance(obra.getIdObra());
 
-        // TODO: tomar el usuario de la sesion al integrar Accesos.
         // Quien genera el pedido queda registrado: es lo que convierte el
         // pedido informal por WhatsApp en un pedido con responsable.
         Pedido pedido = new Pedido(obra, sesion.idUsuario().orElse(null));
@@ -227,6 +238,7 @@ public class PedidoService {
     @Transactional
     public PedidoRespuesta recibir(Long id, Recepcion recepcion) {
         Pedido pedido = buscarCompletoOFallar(id);
+        alcance.exigirAlcance(pedido.getObra().getIdObra());
 
         if (!pedido.fueEnviado()) {
             throw new ReglaDeNegocioException(

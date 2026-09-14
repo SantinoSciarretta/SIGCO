@@ -169,3 +169,75 @@
   color: color-mix(in srgb, var(--color-text) 50%, transparent);
   white-space: nowrap;
 }
+
+/* ---------- Estados que antes no existían (datos reales) ---------- */
+
+.aviso {
+  margin: 0;
+  padding: 40px 22px;
+  font-size: 15px;
+  line-height: 1.6;
+  text-align: center;
+  color: color-mix(in srgb, var(--color-text) 62%, transparent);
+}
+
+/* Elección de obra: solo la ve el capataz general, que trabaja en varias. */
+
+.listaObras {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.obraOpcion {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+  min-height: 72px;
+  padding: 14px 16px;
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+
+.obraOpcion:active { background: color-mix(in srgb, var(--color-accent) 10%, transparent); }
+
+.obraOpcionNombre { font-size: 16px; }
+
+.obraOpcionCliente {
+  font-size: 12.5px;
+  color: color-mix(in srgb, var(--color-text) 58%, transparent);
+}
+
+.cambiarObra {
+  width: 100%;
+  margin-top: 18px;
+  padding: 12px;
+  border: 1px solid var(--color-divider);
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  color: color-mix(in srgb, var(--color-text) 62%, transparent);
+  cursor: pointer;
+}
+
+.atrasada {
+  margin: 12px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--color-divider);
+  font-size: 12px;
+  color: var(--color-excedido);
+}
+
+.verTodos {
+  font-size: 12px;
+  color: var(--color-accent);
+  text-decoration: none;
+}

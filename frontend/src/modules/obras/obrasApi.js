@@ -20,6 +20,18 @@ export async function listarObras({ cliente, tipoObra, estado, desde, hasta, bus
 }
 
 /** GET /api/obras/{id} */
+/**
+ * Las obras del usuario que está pidiendo.
+ *
+ * Para un Capataz de Obra son las que tiene asignadas; para el dueño y el
+ * capataz general, las que están en ejecución. Es lo que usan las pantallas de
+ * obra del celular para saber sobre qué obra están trabajando.
+ */
+export async function misObras() {
+  const { data } = await client.get('/obras/mias');
+  return data;
+}
+
 export async function obtenerObra(id) {
   const respuesta = await client.get(`/obras/${id}`);
   return respuesta.data;

@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Blueprint from '../../../components/ui/Blueprint';
 import CabeceraCapataz from './CabeceraCapataz';
-import { useDemo } from '../../../datos/contextoDemo';
-import { CATALOGO, OBRAS, OBRA_DEL_CAPATAZ } from '../../../datos/demo';
+import { crearPedido, listarPedidos, recibirPedido } from '../../../modules/compras/pedidosApi';
+import { listarMaterialesDisponibles } from '../../../modules/materiales/materialesApi';
+import { useObraDelCapataz } from './useObraDelCapataz';
 import estilos from './Materiales.module.css';
 
 /**
@@ -13,19 +14,27 @@ import estilos from './Materiales.module.css';
  *
  *   Pedir   → el capataz arma el pedido desde el catálogo. El dueño lo aprueba
  *             antes de que salga al proveedor: esa aprobación no es delegable.
- *   Recibir → cuando llega el camión, el capataz saca la foto del remito y
- *             declara si vino todo. Es lo que hoy se pierde en papel.
+ *   Recibir → cuando llega el camión, el capataz registra el remito y declara
+ *             si vino todo. Es lo que hoy se pierde en papel.
  *
- * TODO: conectar con POST /api/pedidos y PATCH /api/pedidos/{id}/recepcion
- *       al desarrollar módulo Compras
+ * Las dos operan siempre sobre la obra del capataz, y el backend lo vuelve a
+ * verificar: un capataz de obra solo puede pedir y recibir en las obras que
+ * tiene asignadas.
  */
 export default function Materiales() {
   const [pestana, setPestana] = useState('pedido');
-  const obra = OBRAS[OBRA_DEL_CAPATAZ];
+  const { obra, cargando, error } = useObraDelCapataz();
+
+  if (cargando) {
+    return <p className={estilos.nota}>Buscando tu obra…</p>;
+  }
+  if (error || !obra) {
+    return <p className={estilos.nota}>{error ?? 'No tenés ninguna obra asignada.'}</p>;
+  }
 
   return (
     <>
-      <CabeceraCapataz titulo={`Materiales · ${obra.corto}`}>
+      <CabeceraCapataz titulo={`Materiales · ${corto(obra.direccionObra)}`}>
         <div className={estilos.pestanas} role="tablist">
           <button
             type="button" role="tab"
@@ -46,50 +55,111 @@ export default function Materiales() {
         </div>
       </CabeceraCapataz>
 
-      {pestana === 'pedido' ? <Pedido /> : <Recepcion />}
+      {pestana === 'pedido'
+        ? <Pedido obra={obra} />
+        : <Recepcion obra={obra} />}
     </>
   );
 }
 
 /* ========================================================================== */
 
-/** Armado del pedido desde el catálogo. */
-function Pedido() {
-  const { cantidades, sumarCantidad, restarCantidad, pedidoEnviado, enviarPedido } = useDemo();
+/** Armado del pedido desde el catálogo real de materiales. */
+function Pedido({ obra }) {
+  const [materiales, setMateriales] = useState([]);
+  const [cantidades, setCantidades] = useState({});
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState(null);
+  const [enviando, setEnviando] = useState(false);
+  const [enviado, setEnviado] = useState(false);
 
-  const lineas = CATALOGO.filter((_, i) => cantidades[i]).length;
-  const unidades = CATALOGO.reduce((suma, _, i) => suma + (cantidades[i] || 0), 0);
+  useEffect(() => {
+    let vigente = true;
+    // Solo los materiales activos: pedir uno dado de baja fallaría en el
+    // backend, y ofrecerlo sería ofrecer algo que va a ser rechazado.
+    listarMaterialesDisponibles()
+      .then((lista) => { if (vigente) { setMateriales(lista); setError(null); } })
+      .catch((fallo) => { if (vigente) setError(fallo.mensaje); })
+      .finally(() => { if (vigente) setCargando(false); });
+    return () => { vigente = false; };
+  }, []);
+
+  const cambiar = (idMaterial, delta) => {
+    setCantidades((actual) => {
+      const nueva = Math.max(0, (actual[idMaterial] ?? 0) + delta);
+      return { ...actual, [idMaterial]: nueva };
+    });
+    setEnviado(false);
+  };
+
+  const lineas = Object.entries(cantidades).filter(([, c]) => c > 0);
+  const unidades = lineas.reduce((suma, [, c]) => suma + c, 0);
+
+  const enviar = async () => {
+    setEnviando(true);
+    setError(null);
+    try {
+      await crearPedido({
+        idObra: obra.idObra,
+        materiales: lineas.map(([idMaterial, cantidad]) => ({
+          idMaterial: Number(idMaterial),
+          cantidad,
+        })),
+      });
+      setCantidades({});
+      setEnviado(true);
+    } catch (fallo) {
+      setError(fallo.mensaje);
+    } finally {
+      setEnviando(false);
+    }
+  };
+
+  if (cargando) {
+    return <p className={estilos.nota}>Cargando el catálogo…</p>;
+  }
 
   return (
     <>
       <div className={estilos.catalogoCabecera}>
         <span className="kicker">Catálogo Granica</span>
-        <span className={estilos.entrega}>Entrega mañana AM</span>
+        <span className={estilos.entrega}>{materiales.length} materiales</span>
       </div>
 
+      {error && <p className={estilos.error}>{error}</p>}
+
+      {materiales.length === 0 && (
+        <p className={estilos.nota}>
+          El catálogo está vacío. Lo carga la oficina desde el módulo Materiales.
+        </p>
+      )}
+
       <ul className={estilos.catalogo}>
-        {CATALOGO.map((material, i) => {
-          const cantidad = cantidades[i] || 0;
+        {materiales.map((material) => {
+          const cantidad = cantidades[material.idMaterial] ?? 0;
+          // El paso no es de a uno para todo: nadie pide una bolsa de cemento
+          // sola. Se deduce de la unidad de medida, que es el dato que hay.
+          const paso = pasoSegunUnidad(material.unidadMedida);
 
           return (
             <li
-              key={material.nombre}
+              key={material.idMaterial}
               className={`${estilos.material} ${cantidad ? estilos.materialPedido : ''}`.trim()}
             >
               <div className={estilos.materialTexto}>
-                <span className={estilos.materialNombre}>{material.nombre}</span>
-                <span className={estilos.materialUnidad}>{material.unidad}</span>
+                <span className={estilos.materialNombre}>{material.nombreMaterial}</span>
+                <span className={estilos.materialUnidad}>
+                  {material.unidadMedida} · {material.nombreRubro}
+                </span>
               </div>
 
-              {/* El paso no es de a uno: nadie pide una bolsa de cemento sola.
-                  Cada material sube y baja de a lo que se pide en la realidad. */}
               <div className={estilos.contador}>
                 <button
                   type="button"
                   className={estilos.contadorBoton}
-                  onClick={() => restarCantidad(i, material.paso)}
+                  onClick={() => cambiar(material.idMaterial, -paso)}
                   disabled={cantidad === 0}
-                  aria-label={`Quitar ${material.paso} de ${material.nombre}`}
+                  aria-label={`Quitar ${paso} de ${material.nombreMaterial}`}
                 >
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                        strokeWidth="1.8" strokeLinecap="round">
@@ -104,8 +174,8 @@ function Pedido() {
                 <button
                   type="button"
                   className={`${estilos.contadorBoton} ${cantidad ? estilos.contadorMas : ''}`.trim()}
-                  onClick={() => sumarCantidad(i, material.paso)}
-                  aria-label={`Agregar ${material.paso} de ${material.nombre}`}
+                  onClick={() => cambiar(material.idMaterial, paso)}
+                  aria-label={`Agregar ${paso} de ${material.nombreMaterial}`}
                 >
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                        strokeWidth="1.8" strokeLinecap="round">
@@ -123,17 +193,17 @@ function Pedido() {
         <div className={estilos.resumen}>
           <span className="kicker">En el pedido</span>
           <span className={`cifra ${estilos.resumenValor}`}>
-            {lineas === 0 ? 'nada aún' : `${lineas} ítems · ${unidades} u.`}
+            {lineas.length === 0 ? 'nada aún' : `${lineas.length} ítems · ${unidades} u.`}
           </span>
         </div>
 
         <Blueprint
           as="button" type="button" claro
           className={estilos.enviar}
-          onClick={enviarPedido}
-          disabled={lineas === 0}
+          onClick={enviar}
+          disabled={lineas.length === 0 || enviando}
         >
-          <span>{pedidoEnviado ? 'Pedido enviado ✓' : 'Enviar pedido'}</span>
+          <span>{enviando ? 'Enviando…' : (enviado ? 'Pedido enviado ✓' : 'Enviar pedido')}</span>
           <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M5 12h14" />
@@ -149,54 +219,147 @@ function Pedido() {
 
 /* ========================================================================== */
 
-/** Confirmación de recepción del pedido, con foto del remito. */
-function Recepcion() {
-  const {
-    fotoTomada, alternarFoto,
-    huboDiferencias, setHuboDiferencias,
-    notaDiferencia, setNotaDiferencia,
-    recepcionConfirmada, confirmarRecepcion,
-  } = useDemo();
+/**
+ * Confirmación de recepción de los pedidos que llegaron.
+ *
+ * Solo aparecen los pedidos en "Enviado al Proveedor": son los únicos que se
+ * pueden recibir. Un pedido que todavía espera aprobación no llegó, y uno ya
+ * recibido no se recibe dos veces.
+ */
+function Recepcion({ obra }) {
+  const [pedidos, setPedidos] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState(null);
+  const [elegido, setElegido] = useState(null);
+
+  const recargar = useCallback(() => {
+    listarPedidos({ obra: obra.idObra, estado: 'Enviado al Proveedor' })
+      .then((lista) => {
+        setPedidos(lista);
+        setError(null);
+        // Con uno solo no hay nada que elegir: es el caso normal en obra.
+        setElegido((actual) => actual ?? (lista.length === 1 ? lista[0] : null));
+      })
+      .catch((fallo) => setError(fallo.mensaje))
+      .finally(() => setCargando(false));
+  }, [obra.idObra]);
+
+  useEffect(() => { recargar(); }, [recargar]);
+
+  if (cargando) {
+    return <p className={estilos.nota}>Buscando pedidos en camino…</p>;
+  }
+
+  if (pedidos.length === 0) {
+    return (
+      <div className={estilos.recepcion}>
+        <p className={estilos.nota}>
+          No hay pedidos esperando recepción. Acá aparecen los que la oficina ya
+          aprobó y envió al proveedor.
+        </p>
+      </div>
+    );
+  }
+
+  if (!elegido) {
+    return (
+      <div className={estilos.recepcion}>
+        <p className={estilos.paso}>¿Cuál llegó?</p>
+        {pedidos.map((p) => (
+          <Blueprint as="button" type="button" key={p.idPedido}
+                     className={estilos.pedidoBloque}
+                     onClick={() => setElegido(p)}>
+            <div className={estilos.pedidoCabecera}>
+              <span className="kicker kicker-acento">Pedido #{p.idPedido}</span>
+              <span className={estilos.aprobado}>{p.nombreProveedor}</span>
+            </div>
+            <p className={estilos.pedidoDetalle}>{resumen(p)}</p>
+          </Blueprint>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <FormularioRecepcion
+      pedido={elegido}
+      varios={pedidos.length > 1}
+      onVolver={() => setElegido(null)}
+      onConfirmado={() => { setElegido(null); recargar(); }}
+      errorPrevio={error}
+    />
+  );
+}
+
+/* ========================================================================== */
+
+function FormularioRecepcion({ pedido, varios, onVolver, onConfirmado, errorPrevio }) {
+  const [remito, setRemito] = useState('');
+  const [huboDiferencias, setHuboDiferencias] = useState(null);
+  const [notaDiferencia, setNotaDiferencia] = useState('');
+  const [error, setError] = useState(errorPrevio ?? null);
+  const [confirmando, setConfirmando] = useState(false);
 
   // Regla del informe: si hubo diferencias, la nota es obligatoria. Sin eso la
   // recepción no se puede confirmar, porque un "faltó algo" sin detalle no le
   // sirve a nadie después.
-  const listo = fotoTomada
+  const listo = remito.trim().length > 0
     && huboDiferencias !== null
     && (huboDiferencias === 'no' || notaDiferencia.trim().length > 0);
+
+  const confirmar = async () => {
+    setConfirmando(true);
+    setError(null);
+    try {
+      // La nota vacía es lo que le dice al backend que vino todo: el estado
+      // final (Recibido Completo o con Diferencias) lo deduce él de la nota,
+      // no lo elige esta pantalla.
+      await recibirPedido(pedido.idPedido, {
+        fotoRemito: remito.trim(),
+        notaDiferencia: huboDiferencias === 'si' ? notaDiferencia.trim() : null,
+      });
+      onConfirmado();
+    } catch (fallo) {
+      setError(fallo.mensaje);
+    } finally {
+      setConfirmando(false);
+    }
+  };
 
   return (
     <div className={estilos.recepcion}>
 
       <Blueprint className={estilos.pedidoBloque}>
         <div className={estilos.pedidoCabecera}>
-          <span className="kicker kicker-acento">Pedido PD-1194</span>
+          <span className="kicker kicker-acento">Pedido #{pedido.idPedido}</span>
           <span className={estilos.aprobado}>Aprobado</span>
         </div>
-        <p className={estilos.pedidoDetalle}>40 bolsas cemento<br />6 m³ arena gruesa</p>
-        <p className={estilos.pedidoPie}>Corralón San Martín · llegó 09:15</p>
+        <p className={estilos.pedidoDetalle}>{resumen(pedido)}</p>
+        <p className={estilos.pedidoPie}>{pedido.nombreProveedor}</p>
       </Blueprint>
 
-      {/* ---------- Paso 1: foto ---------- */}
-      <p className={estilos.paso}>01 · Foto del remito</p>
-      <button
-        type="button"
-        className={`${estilos.foto} ${fotoTomada ? estilos.fotoLista : ''}`.trim()}
-        onClick={alternarFoto}
-        aria-pressed={fotoTomada}
-      >
-        <svg width="58" height="58" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-             strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M14.5 4h-5L8 6H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-4z" />
-          <circle cx="12" cy="13" r="3.5" />
-        </svg>
-        <span className={estilos.fotoTitulo}>
-          {fotoTomada ? 'Remito 4471 · foto lista' : 'Sacar foto del remito'}
-        </span>
-        <span className={estilos.fotoSub}>
-          {fotoTomada ? 'Tocá para sacarla de nuevo' : 'Se guarda con el pedido PD-1194'}
-        </span>
-      </button>
+      {varios && (
+        <button type="button" className={estilos.cambiar} onClick={onVolver}>
+          ← Elegir otro pedido
+        </button>
+      )}
+
+      {error && <p className={estilos.error}>{error}</p>}
+
+      {/* ---------- Paso 1: remito ---------- */}
+      <p className={estilos.paso}>01 · Remito</p>
+      <input
+        className={estilos.remito}
+        value={remito}
+        onChange={(e) => setRemito(e.target.value)}
+        placeholder="Nº de remito"
+        aria-label="Número de remito"
+        inputMode="numeric"
+      />
+      <p className={estilos.ayudaFoto}>
+        Por ahora se anota el número. La foto del remito se sube cuando se
+        conecte el almacenamiento de imágenes.
+      </p>
 
       {/* ---------- Paso 2: diferencias ---------- */}
       <p className={estilos.paso}>02 · ¿Hubo diferencias?</p>
@@ -232,11 +395,11 @@ function Recepcion() {
       {/* ---------- Confirmación ---------- */}
       <Blueprint
         as="button" type="button"
-        className={`${estilos.confirmar} ${recepcionConfirmada ? estilos.confirmado : ''} ${listo ? estilos.confirmarListo : ''}`.trim()}
-        onClick={confirmarRecepcion}
-        disabled={!listo}
+        className={`${estilos.confirmar} ${listo ? estilos.confirmarListo : ''}`.trim()}
+        onClick={confirmar}
+        disabled={!listo || confirmando}
       >
-        <span>{recepcionConfirmada ? 'Recepción confirmada' : 'Confirmar recepción'}</span>
+        <span>{confirmando ? 'Confirmando…' : 'Confirmar recepción'}</span>
         <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor"
              strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
           <path d="M20 6 9 17l-5-5" />
@@ -244,10 +407,41 @@ function Recepcion() {
       </Blueprint>
 
       <p className={estilos.notaFinal}>
-        {recepcionConfirmada
-          ? 'Listo. La oficina ya lo tiene.'
-          : 'Necesita la foto y la respuesta de arriba.'}
+        {listo
+          ? 'Al confirmar, el gasto de los materiales se carga solo en la obra.'
+          : 'Necesita el remito y la respuesta de arriba.'}
       </p>
     </div>
   );
+}
+
+/* ========================================================================== */
+
+/** "40 cemento, 6 arena gruesa" — lo que entra en dos líneas de un celular. */
+function resumen(pedido) {
+  return (pedido.materiales ?? [])
+    .slice(0, 3)
+    .map((m) => `${Math.round(Number(m.cantidad))} ${m.nombreMaterial}`)
+    .join('\n');
+}
+
+/**
+ * De a cuánto sube y baja el contador, según la unidad.
+ *
+ * Es presentación pura: el backend acepta cualquier cantidad. Acá se acomoda a
+ * cómo se pide en la realidad, para que armar un pedido de cuarenta bolsas no
+ * sean cuarenta toques.
+ */
+function pasoSegunUnidad(unidad) {
+  const u = (unidad ?? '').toLowerCase();
+  if (u.includes('bolsa')) return 10;
+  if (u.includes('m³') || u.includes('m3') || u.includes('metro cúbico')) return 1;
+  if (u.includes('m²') || u.includes('m2')) return 5;
+  if (u.includes('kg') || u.includes('litro')) return 5;
+  return 1;
+}
+
+/** "Av. Cabildo 2340, Belgrano" → "Av. Cabildo 2340", que es lo que entra. */
+function corto(direccion) {
+  return direccion.split(',')[0];
 }

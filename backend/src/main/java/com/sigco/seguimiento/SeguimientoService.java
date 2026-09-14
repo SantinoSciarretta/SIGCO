@@ -6,6 +6,7 @@ import com.sigco.gastos.GastoService;
 import com.sigco.obras.Obra;
 import com.sigco.obras.ObraRepository;
 import com.sigco.seguridad.SesionActual;
+import com.sigco.seguridad.AlcanceDeObras;
 import com.sigco.seguimiento.dto.SeguimientoDtos.AvanceObra;
 import com.sigco.seguimiento.dto.SeguimientoDtos.ConfiguracionHitos;
 import com.sigco.seguimiento.dto.SeguimientoDtos.Cumplimiento;
@@ -49,16 +50,21 @@ public class SeguimientoService {
     /** Quien marca el hito como completado. */
     private final SesionActual sesion;
 
+    /** Un capataz de obra solo ve y marca los hitos de su obra. */
+    private final AlcanceDeObras alcance;
+
     public SeguimientoService(HitoRepository repositorio,
                               PlantillaHitoRepository plantillaRepositorio,
                               ObraRepository obraRepositorio,
                               GastoService gastoService,
-                              SesionActual sesion) {
+                              SesionActual sesion,
+                              AlcanceDeObras alcance) {
         this.repositorio = repositorio;
         this.plantillaRepositorio = plantillaRepositorio;
         this.obraRepositorio = obraRepositorio;
         this.gastoService = gastoService;
         this.sesion = sesion;
+        this.alcance = alcance;
     }
 
     // ------------------------------------------------------------------
@@ -157,6 +163,7 @@ public class SeguimientoService {
                 .orElseThrow(() -> new RecursoNoEncontradoException("Hito", idHito));
 
         Obra obra = hito.getObra();
+        alcance.exigirAlcance(obra.getIdObra());
 
         if (obra.estaFinalizada()) {
             throw new ReglaDeNegocioException(
@@ -228,6 +235,7 @@ public class SeguimientoService {
 
     @Transactional(readOnly = true)
     public AvanceObra avance(Long idObra) {
+        alcance.exigirAlcance(idObra);
         Obra obra = buscarObraOFallar(idObra);
         return armarAvance(obra, repositorio.deLaObra(idObra));
     }

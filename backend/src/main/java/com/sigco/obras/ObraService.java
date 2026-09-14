@@ -2,6 +2,7 @@ package com.sigco.obras;
 
 import com.sigco.clientes.Cliente;
 import com.sigco.clientes.ClienteRepository;
+import com.sigco.seguridad.AlcanceDeObras;
 import com.sigco.common.exception.RecursoNoEncontradoException;
 import com.sigco.common.exception.ReglaDeNegocioException;
 import com.sigco.obras.dto.CambioEstadoObra;
@@ -47,9 +48,19 @@ public class ObraService {
     private final ObraRepository repositorio;
     private final ClienteRepository clienteRepositorio;
 
-    public ObraService(ObraRepository repositorio, ClienteRepository clienteRepositorio) {
+    /**
+     * A que obras alcanza quien esta pidiendo.
+     *
+     * Un Capataz de Obra solo ve las que tiene asignadas: es el "(su obra)" de
+     * la matriz del informe, que un permiso por modulo no puede expresar.
+     */
+    private final AlcanceDeObras alcance;
+
+    public ObraService(ObraRepository repositorio, ClienteRepository clienteRepositorio,
+                       AlcanceDeObras alcance) {
         this.repositorio = repositorio;
         this.clienteRepositorio = clienteRepositorio;
+        this.alcance = alcance;
     }
 
     /**
@@ -76,12 +87,34 @@ public class ObraService {
                         hasta != null ? hasta.atTime(LocalTime.MAX) : SIN_LIMITE_SUPERIOR,
                         sinFiltro(busqueda))
                 .stream()
+                // El filtro por alcance va DESPUES de la consulta y no dentro,
+                // porque para el dueño y el capataz general no hay filtro: meter
+                // una condicion en la consulta obligaria a pasarle una lista de
+                // ids en el caso mas frecuente, que es el que no la necesita.
+                .filter(o -> alcance.alcanza(o.getIdObra()))
+                .map(ObraRespuesta::desde)
+                .toList();
+    }
+
+    /**
+     * Las obras del usuario que esta pidiendo.
+     *
+     * Es lo que usa la pantalla del capataz para saber en que obra esta
+     * trabajando. Para el dueño y el capataz general devuelve las obras en
+     * ejecucion, que es la lectura natural de "mis obras" para quien las ve
+     * todas.
+     */
+    @Transactional(readOnly = true)
+    public List<ObraRespuesta> mias() {
+        return repositorio.porEstado(Obra.ESTADO_EN_EJECUCION).stream()
+                .filter(o -> alcance.alcanza(o.getIdObra()))
                 .map(ObraRespuesta::desde)
                 .toList();
     }
 
     @Transactional(readOnly = true)
     public ObraRespuesta obtener(Long id) {
+        alcance.exigirAlcance(id);
         return ObraRespuesta.desde(buscarOFallar(id));
     }
 
