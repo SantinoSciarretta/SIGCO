@@ -259,8 +259,8 @@ Obras, que es el módulo siguiente.
 | --- | --- |
 | Columna "cantidad de obras" en el listado | **Resuelto** en el módulo Obras |
 | Formulario de alta rápida desde Obras | **Resuelto** en el módulo Obras |
-| Ficha de cliente con historial de obras | Pendiente: el endpoint ya existe (`GET /api/obras?cliente={id}`), falta la pantalla |
-| Restringir el módulo al rol Dueño (hoy accede cualquiera) | Módulo Accesos |
+| Ficha de cliente con historial de obras | **Resuelta el 14/09/2026**: `/clientes/{id}`, con las obras en tres grupos —activas, finalizadas y canceladas— como pide el informe |
+| Restringir el módulo al rol Dueño | **Resuelto**: `clientes.ver` / `clientes.editar`, que solo tiene el Dueño |
 
 ---
 

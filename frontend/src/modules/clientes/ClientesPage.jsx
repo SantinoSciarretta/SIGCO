@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import Blueprint from '../../components/ui/Blueprint';
 import ClienteFormulario from './ClienteFormulario';
 import { ORIGENES, cambiarEstadoCliente, listarClientes } from './clientesApi';
@@ -156,7 +157,13 @@ export default function ClientesPage() {
               <tbody>
                 {clientes.map((cliente) => (
                   <tr key={cliente.idCliente}>
-                    <td className={estilos.nombre}>{cliente.nombreApellido}</td>
+                    <td className={estilos.nombre}>
+                      {/* El nombre lleva a la ficha, con el historial de obras. */}
+                      <Link to={`/clientes/${cliente.idCliente}`}
+                            className={estilos.enlaceFicha}>
+                        {cliente.nombreApellido}
+                      </Link>
+                    </td>
                     <td className={estilos.dato}>{cliente.telefonoContacto || '—'}</td>
                     <td className={estilos.dato}>{cliente.emailContacto || '—'}</td>
                     <td className={estilos.dato}>

@@ -7,6 +7,7 @@ import NoEncontrado from './paginas/NoEncontrado';
 
 import Tablero from './paginas/dueno/Tablero';
 import ClientesPage from '../modules/clientes/ClientesPage';
+import FichaClientePage from '../modules/clientes/FichaClientePage';
 import ObrasPage from '../modules/obras/ObrasPage';
 import DetalleObraPage from '../modules/obras/DetalleObraPage';
 import CatalogoPage from '../modules/presupuestacion/CatalogoPage';
@@ -88,6 +89,11 @@ export default function Router() {
 
         <Route path="/clientes" element={
           <RutaProtegida permiso="clientes.ver"><ClientesPage /></RutaProtegida>} />
+
+        {/* Ficha con el historial de obras del cliente, que el informe pide
+            distinguiendo activas, finalizadas y canceladas. */}
+        <Route path="/clientes/:id" element={
+          <RutaProtegida permiso="clientes.ver"><FichaClientePage /></RutaProtegida>} />
 
         <Route path="/pedidos" element={
           <RutaProtegida permiso="compras.ver"><PedidosPage /></RutaProtegida>} />
