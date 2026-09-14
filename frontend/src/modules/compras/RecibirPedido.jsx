@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Modal from '../../components/ui/Modal';
+import SubirImagen from '../../components/ui/SubirImagen';
 import { recibirPedido } from './pedidosApi';
 import estilos from './Compras.module.css';
 
@@ -57,13 +58,16 @@ export default function RecibirPedido({ pedido, onCerrar, onRecibido }) {
           <label className={estilos.etiqueta} htmlFor="fotoRemito">
             Foto del remito <span className={estilos.obligatorio}>*</span>
           </label>
-          <input id="fotoRemito" className={estilos.control} maxLength={255}
-                 placeholder="remitos/2026-09-03-corralon.jpg" value={fotoRemito}
-                 onChange={(e) => setFotoRemito(e.target.value)} required autoFocus />
+          <SubirImagen
+            carpeta="remitos"
+            valor={fotoRemito}
+            onSubida={setFotoRemito}
+            etiqueta="Sacar o elegir la foto del remito"
+          />
           <p className={estilos.ayuda}>
             Es obligatoria: reemplaza al remito en papel, que es lo que hoy se
-            pierde. La imagen se guarda en Supabase Storage y la base conserva
-            solo la referencia.
+            pierde. Desde el celular, el botón abre la cámara. La base guarda
+            solo la referencia; el archivo va al almacenamiento.
           </p>
         </div>
 

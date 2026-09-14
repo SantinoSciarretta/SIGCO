@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Blueprint from '../../../components/ui/Blueprint';
 import CabeceraCapataz from './CabeceraCapataz';
+import SubirImagen from '../../../components/ui/SubirImagen';
 import { crearPedido, listarPedidos, recibirPedido } from '../../../modules/compras/pedidosApi';
 import { listarMaterialesDisponibles } from '../../../modules/materiales/materialesApi';
 import { useObraDelCapataz } from './useObraDelCapataz';
@@ -346,19 +347,17 @@ function FormularioRecepcion({ pedido, varios, onVolver, onConfirmado, errorPrev
 
       {error && <p className={estilos.error}>{error}</p>}
 
-      {/* ---------- Paso 1: remito ---------- */}
-      <p className={estilos.paso}>01 · Remito</p>
-      <input
-        className={estilos.remito}
-        value={remito}
-        onChange={(e) => setRemito(e.target.value)}
-        placeholder="Nº de remito"
-        aria-label="Número de remito"
-        inputMode="numeric"
+      {/* ---------- Paso 1: foto del remito ---------- */}
+      <p className={estilos.paso}>01 · Foto del remito</p>
+      <SubirImagen
+        carpeta="remitos"
+        valor={remito}
+        onSubida={setRemito}
+        etiqueta="Sacar foto del remito"
       />
       <p className={estilos.ayudaFoto}>
-        Por ahora se anota el número. La foto del remito se sube cuando se
-        conecte el almacenamiento de imágenes.
+        Desde el celular el botón abre la cámara directo. Es lo que reemplaza al
+        remito en papel, que es lo que hoy se pierde.
       </p>
 
       {/* ---------- Paso 2: diferencias ---------- */}

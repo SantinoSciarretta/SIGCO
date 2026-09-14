@@ -46,3 +46,4 @@ $RECYCLE.BIN/
 # ---------- Logs ----------
 *.log
 npm-debug.log*
+archivos/

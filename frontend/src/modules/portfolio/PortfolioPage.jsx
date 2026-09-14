@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import Blueprint from '../../components/ui/Blueprint';
 import Modal from '../../components/ui/Modal';
+import SubirImagen, { VistaPrevia } from '../../components/ui/SubirImagen';
+import { esArchivoSubido } from '../../components/ui/archivos';
 import { listarObras } from '../obras/obrasApi';
 import client from '../../api/client';
 import estilos from './Portfolio.module.css';
@@ -134,7 +136,12 @@ export default function PortfolioPage() {
           <div className={estilos.galeria}>
             {p.imagenes.map((img) => (
               <div key={img.idImagen} className={estilos.miniatura}>
-                {img.urlImagen}
+                {/* Las publicaciones cargadas antes de que existiera la subida
+                    tienen un texto escrito a mano en lugar de un archivo: se
+                    muestran como texto, porque la imagen no existe. */}
+                {esArchivoSubido(img.urlImagen)
+                  ? <VistaPrevia referencia={img.urlImagen} />
+                  : img.urlImagen}
                 <button type="button" className={estilos.quitarImagen}
                         onClick={() => accion(() => api.quitarImagen(p.idPublicacion, img.idImagen))}
                         aria-label="Quitar imagen">
@@ -189,16 +196,22 @@ export default function PortfolioPage() {
 
 /* ========================================================================== */
 
+/**
+ * Agrega una foto a la publicación.
+ *
+ * La subida y el alta son dos pasos encadenados y no uno: primero el archivo va
+ * al almacenamiento y devuelve su referencia, después esa referencia se guarda
+ * en la publicación. Acá se hacen seguidos porque no hay nada que decidir en el
+ * medio.
+ */
 function AgregarImagen({ idPublicacion, onAgregada, onError }) {
-  const [urlImagen, setUrl] = useState('');
   const [guardando, setGuardando] = useState(false);
 
-  const enviar = async (evento) => {
-    evento.preventDefault();
+  const agregar = async (referencia) => {
+    if (!referencia) return;
     setGuardando(true);
     try {
-      await api.agregarImagen(idPublicacion, urlImagen);
-      setUrl('');
+      await api.agregarImagen(idPublicacion, referencia);
       onAgregada();
     } catch (fallo) {
       onError(fallo.mensaje);
@@ -208,15 +221,14 @@ function AgregarImagen({ idPublicacion, onAgregada, onError }) {
   };
 
   return (
-    <form onSubmit={enviar} className={estilos.formularioEnLinea ?? estilos.campo}>
-      <input className={estilos.control} maxLength={255}
-             placeholder="portfolio/cocina-terminada.jpg" value={urlImagen}
-             onChange={(e) => setUrl(e.target.value)} required
-             aria-label="Referencia de la imagen" />
-      <button type="submit" className={estilos.botonSecundario} disabled={guardando}>
-        {guardando ? '…' : 'Agregar imagen'}
-      </button>
-    </form>
+    <div className={estilos.campo}>
+      <SubirImagen
+        carpeta="portfolio"
+        valor={null}
+        onSubida={agregar}
+        etiqueta={guardando ? 'Agregando…' : 'Agregar una foto de la obra'}
+      />
+    </div>
   );
 }
 

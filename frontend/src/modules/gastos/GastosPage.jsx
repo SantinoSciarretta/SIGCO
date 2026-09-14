@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Blueprint from '../../components/ui/Blueprint';
 import Modal from '../../components/ui/Modal';
+import SubirImagen from '../../components/ui/SubirImagen';
 import { listarObras } from '../obras/obrasApi';
 import { listarRubros } from '../presupuestacion/catalogoApi';
 import EstadoFinancieroPanel from './EstadoFinancieroPanel';
@@ -374,12 +375,17 @@ function NuevoGastoModal({ idObra, rubros, onCerrar, onCreado }) {
           <label className={estilos.etiqueta} htmlFor="comprobanteAdjunto">
             Comprobante
           </label>
-          <input id="comprobanteAdjunto" className={estilos.control} maxLength={255}
-                 placeholder="comprobantes/2026-09-03-ticket.jpg"
-                 value={datos.comprobanteAdjunto} onChange={cambiar('comprobanteAdjunto')} />
+          <SubirImagen
+            carpeta="comprobantes"
+            valor={datos.comprobanteAdjunto}
+            onSubida={(referencia) =>
+              setDatos((actual) => ({ ...actual, comprobanteAdjunto: referencia }))}
+            etiqueta="Foto o PDF del comprobante"
+          />
           <p className={estilos.ayuda}>
-            Opcional. La imagen se guarda en Supabase Storage y la base conserva
-            solo la referencia.
+            Opcional, pero es lo que después respalda el gasto ante una duda.
+            El archivo va al almacenamiento y la base conserva solo la
+            referencia.
           </p>
         </div>
 

@@ -112,6 +112,14 @@ public class ConfiguracionSeguridad {
                         .requestMatchers(HttpMethod.GET, "/api/vidriera", "/api/vidriera/**")
                         .permitAll()
 
+                        // Las imagenes del portfolio son publicas por el mismo
+                        // motivo que la vidriera: sin esto, la galeria se veria
+                        // con los recuadros vacios para un visitante.
+                        // Los remitos y comprobantes viven en /privado y no
+                        // entran aca.
+                        .requestMatchers(HttpMethod.GET, "/api/archivos/publico/**")
+                        .permitAll()
+
                         // El navegador manda OPTIONS antes de ciertas peticiones
                         // para preguntar si tiene permiso. Esa consulta no lleva
                         // token y no debe rechazarse.
