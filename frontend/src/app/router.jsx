@@ -23,6 +23,7 @@ import ProveedoresPage from '../modules/proveedores/ProveedoresPage';
 import UsuariosPage from '../modules/usuarios/UsuariosPage';
 import AccesosPage from '../modules/usuarios/AccesosPage';
 import MiCuentaPage from '../modules/usuarios/MiCuentaPage';
+import VidrieraPage from '../modules/portfolio/VidrieraPage';
 
 import LayoutCapataz from './paginas/capataz/LayoutCapataz';
 import Home from './paginas/capataz/Home';
@@ -60,6 +61,17 @@ export default function Router() {
     <Routes>
 
       <Route path="/" element={<Login />} />
+
+      {/* ---------- Vidriera pública ---------- */}
+      {/* La única pantalla que ve alguien de afuera. Va FUERA de RutaProtegida
+          y fuera del marco de la aplicación: no tiene login, ni menú, ni barra
+          de navegación. Es la contraparte de /api/vidriera, que es una de las
+          tres rutas abiertas del backend.
+
+          Sin formulario de contacto, por decisión explícita del dueño: el
+          portfolio es respaldo visual para quien ya llegó por recomendación,
+          no una herramienta para captar desconocidos. */}
+      <Route path="/obras-realizadas" element={<VidrieraPage />} />
 
       {/* ---------- Escritorio ---------- */}
       <Route element={<RutaProtegida><Layout /></RutaProtegida>}>

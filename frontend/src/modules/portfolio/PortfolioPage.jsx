@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import Blueprint from '../../components/ui/Blueprint';
 import Modal from '../../components/ui/Modal';
 import SubirImagen, { VistaPrevia } from '../../components/ui/SubirImagen';
@@ -86,6 +87,12 @@ export default function PortfolioPage() {
         </div>
 
         <div className={estilos.herramientas}>
+          {/* Ver la vidriera como la ve un visitante. Se abre en otra pestaña
+              a propósito: es otra "aplicación", sin el marco del sistema. */}
+          <Link to="/obras-realizadas" target="_blank" rel="noreferrer"
+                className={estilos.botonSecundario}>
+            Ver la vidriera
+          </Link>
           <button type="button" className={estilos.botonPrimario}
                   onClick={() => setAltaAbierta(true)} disabled={disponibles.length === 0}>
             Publicar una obra

@@ -192,7 +192,47 @@ tenga campos de cliente ni dirección**, verificado por reflexión.
 
 | Pendiente | Se resuelve en |
 | --- | --- |
-| Subida real de imágenes a Supabase Storage | Integración de almacenamiento |
-| Vista pública con diseño de galería | Hoy la API está lista, falta la pantalla del visitante |
-| Restringir la administración al rol dueño | Accesos |
+| Subida real de imágenes | **Resuelto el 14/09/2026**, ver `16-almacenamiento.md` |
+| Vista pública con diseño de galería | **Resuelta el 14/09/2026**: `/obras-realizadas`, ver abajo |
+| Restringir la administración al rol dueño | **Resuelto**: `portfolio.ver` / `portfolio.editar`, solo el Dueño |
 | Reordenar las imágenes arrastrando | Hoy se agregan al final |
+
+
+---
+
+## La vidriera pública (14/09/2026)
+
+`/obras-realizadas` es **la única pantalla del sistema que ve alguien de
+afuera**. El informe la pide así: *"Vista pública de la vidriera, accesible
+desde un navegador, sin formularios de contacto ni datos de acceso."*
+
+Vive **fuera** de `RutaProtegida` y fuera del marco de la aplicación: no tiene
+login, ni menú, ni barra de navegación. Es la contraparte de `/api/vidriera`,
+que es una de las tres rutas abiertas del backend.
+
+### Lo que no tiene, y no es un olvido
+
+| Qué falta | Por qué |
+| --- | --- |
+| Formulario de contacto, teléfono, correo | Decisión explícita del dueño: trabaja solo con referidos. El portfolio es respaldo visual para quien ya llegó por recomendación |
+| Nombre del cliente, dirección de la obra | **El backend no los manda.** `VidrieraRespuesta` no tiene esos campos, y un test lo verifica por reflexión |
+| Login | La vidriera es pública por diseño |
+
+Se verificó en el navegador, con una ventana **sin ninguna sesión guardada**:
+la página carga, las tres fotos se sirven desde el almacenamiento, y una
+búsqueda en todo el texto de la página no encuentra ni el nombre del cliente, ni
+la dirección, ni ningún dato de contacto.
+
+### Detalles
+
+- **Los tipos de trabajo del filtro salen de lo publicado**, no de una lista
+  fija. El informe dice "construcción, refacción, decoración de local, **entre
+  otros**": encerrarlos obligaría a tocar el código cada vez que aparece uno.
+- **El filtro solo aparece si hay más de un tipo.** Un filtro con una sola
+  opción es ruido.
+- **Se muestra el año, no la fecha exacta.** A un visitante la fecha precisa no
+  le dice nada; el año sí, porque habla de trayectoria.
+- **La foto ampliada se cierra tocando en cualquier lado**: en un celular no hay
+  lugar para apuntarle a una cruz chica.
+- **Las fotos usan `loading="lazy"`**: una galería de obras puede tener muchas y
+  no tiene sentido bajarlas todas antes de que alguien llegue a mirarlas.

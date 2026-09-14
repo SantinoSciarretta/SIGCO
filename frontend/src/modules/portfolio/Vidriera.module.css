@@ -1,0 +1,209 @@
+/* Vidriera pública — la única pantalla que ve alguien de afuera del sistema. */
+
+.pantalla {
+  position: relative;
+  min-height: 100vh;
+  background: var(--color-accent-900);
+  color: #f2f2f3;
+  overflow-x: hidden;
+}
+
+/* La hoja milimetrada del plano, igual que en el ingreso: es lo que hace que
+   esta pantalla se reconozca como parte del mismo sistema aunque no tenga la
+   barra de navegación. */
+.cuadricula {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(242, 242, 243, .05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(242, 242, 243, .05) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+}
+
+/* ---------- Encabezado ---------- */
+
+.encabezado {
+  position: relative;
+  padding: 64px 24px 40px;
+  text-align: center;
+  border-bottom: 1px solid rgba(242, 242, 243, .14);
+}
+
+.marca {
+  font-size: 46px;
+  letter-spacing: 0.24em;
+  /* El margen compensa el espaciado de la última letra, que si no deja la
+     palabra corrida hacia la izquierda. */
+  margin-left: 0.24em;
+}
+
+.bajada {
+  margin: 16px 0 0;
+  font-size: 13px;
+  line-height: 1.8;
+  letter-spacing: 0.04em;
+  color: rgba(242, 242, 243, .6);
+}
+
+/* ---------- Contenido ---------- */
+
+.contenido {
+  position: relative;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 36px 24px 60px;
+}
+
+.aviso {
+  padding: 60px 0;
+  text-align: center;
+  font-size: 14px;
+  color: rgba(242, 242, 243, .55);
+}
+
+/* ---------- Filtro por tipo de trabajo ---------- */
+
+.filtros {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 36px;
+}
+
+.filtro {
+  padding: 9px 18px;
+  border: 1px solid rgba(242, 242, 243, .22);
+  background: none;
+  font: inherit;
+  font-size: 12.5px;
+  letter-spacing: 0.06em;
+  color: rgba(242, 242, 243, .7);
+  cursor: pointer;
+}
+
+.filtro:hover { border-color: rgba(242, 242, 243, .5); color: #f2f2f3; }
+
+.filtro:focus-visible {
+  outline: 2px solid rgba(242, 242, 243, .7);
+  outline-offset: 2px;
+}
+
+.filtroActivo {
+  background: #f2f2f3;
+  border-color: #f2f2f3;
+  color: var(--color-accent-900);
+}
+
+/* ---------- Galería ---------- */
+
+.galeria {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.obra { border-top: 1px solid rgba(242, 242, 243, .14); padding-top: 20px; }
+
+.obraCabecera {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.tipo {
+  font-size: 19px;
+  letter-spacing: 0.02em;
+}
+
+.fecha {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: rgba(242, 242, 243, .45);
+}
+
+.fotos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 10px;
+}
+
+.foto {
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: zoom-in;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+
+.foto:focus-visible {
+  outline: 2px solid #f2f2f3;
+  outline-offset: 2px;
+}
+
+.imagen {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform .4s ease;
+}
+
+.foto:hover .imagen { transform: scale(1.04); }
+
+@media (prefers-reduced-motion: reduce) {
+  .imagen { transition: none; }
+  .foto:hover .imagen { transform: none; }
+}
+
+.sinFotos {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(242, 242, 243, .45);
+}
+
+/* ---------- Foto ampliada ---------- */
+
+.ampliada {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 24px;
+  background: rgba(13, 20, 28, .94);
+  cursor: zoom-out;
+}
+
+.ampliada img {
+  max-width: 100%;
+  max-height: 82vh;
+  object-fit: contain;
+}
+
+.cerrar {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(242, 242, 243, .5);
+}
+
+/* ---------- Pie ---------- */
+
+/* Sin teléfono ni correo: decisión del dueño, que trabaja solo por referidos. */
+.pie {
+  position: relative;
+  padding: 30px 24px 40px;
+  text-align: center;
+  border-top: 1px solid rgba(242, 242, 243, .14);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: rgba(242, 242, 243, .45);
+}
