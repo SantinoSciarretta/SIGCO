@@ -2,6 +2,12 @@
 
 > Memoria persistente del proyecto. Se lee sola al arrancar cada sesión de Claude Code en este repo. Es la fuente de verdad para el desarrollo. Construida a partir del Informe consolidado (Relevamiento + Propuesta Técnica + Diccionario de Datos) de Santino Sciarretta.
 
+## Por dónde empezar cada sesión
+
+**Leé `ESTADO.md` primero.** Dice en qué está el proyecto hoy, qué falta, las
+decisiones que no hay que revertir y las trampas del entorno que ya costaron
+tiempo. Se actualiza al final de cada sesión de trabajo.
+
 ## Documento de referencia completo
 
 El informe completo del proyecto está en **`docs/informe-sigco.md`**. Contiene el relevamiento (el *porqué* de cada proceso de la empresa), la propuesta técnica (los 14 módulos con sus circuitos, validaciones y vistas al detalle) y el diccionario de datos. Este CLAUDE.md es el resumen operativo; cuando necesites el detalle fino de un módulo (por ejemplo las vistas de interfaz exactas o el circuito completo de estados), consultá `@docs/informe-sigco.md`. Ante cualquier duda de negocio, ese archivo manda.
