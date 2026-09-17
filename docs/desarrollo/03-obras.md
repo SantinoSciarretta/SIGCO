@@ -40,6 +40,21 @@ informe para este módulo es que no puede existir una obra sin cliente. Al
 declararlo `NOT NULL` en la base, esa regla no depende de que la aplicación se
 acuerde de validarla.
 
+**Cancelar una obra en marcha exige confirmación explícita** *(agregado el
+17/09/2026)*. Si la obra tiene un presupuesto definitivo aprobado, además del
+motivo hay que mandar `confirmaObraEnEjecucion: true`.
+
+Es la regla del informe —*"una obra con presupuesto definitivo aprobado no puede
+cancelarse salvo autorización explícita del dueño"*— que había quedado como
+`TODO` esperando que existiera Presupuestación. La diferencia es de fondo:
+cancelar una obra que todavía se estaba presupuestando descarta una propuesta
+que no prosperó; cancelar una con el definitivo aprobado interrumpe una obra en
+marcha, con material comprado, gente asignada y cuotas emitidas.
+
+No alcanza con exigir el rol Dueño, porque solo el dueño llega a esa pantalla de
+todos modos: lo que hace falta es que la decisión sea deliberada y no un clic de
+más. Detalle completo en `18-cierre-y-endurecimiento.md`, sección 6.
+
 **El motivo de cancelación se exige desde la base:**
 
 ```sql
@@ -121,6 +136,7 @@ cambios.
 | Tipo de obra bloqueado para edición | Diseño de la API | No está en `ObraEdicion` |
 | Fecha de inicio recién con el presupuesto aprobado | Servicio | Se rechaza mientras la obra siga "En presupuestación" |
 | Motivo obligatorio al cancelar | Servicio + base | `409` + `CHECK` |
+| Confirmación explícita para cancelar una obra con definitivo aprobado | Servicio | `409` |
 | Una obra no se elimina, se cancela | Diseño de la API | No existe DELETE |
 | Toda obra nace "En presupuestación" | Entidad | Lo fija el constructor |
 
@@ -223,6 +239,8 @@ entre el archivo SQL, el driver y la base.
 | Cancelar sin motivo | `409` "hay que indicar el motivo" |
 | Pasar a ejecución con fecha de inicio | `200`, fecha registrada |
 | Cancelar con motivo | `200`, el registro se conserva |
+| Cancelar una obra con definitivo aprobado, sin confirmar | `409` "definitivo aprobado" |
+| Lo mismo, confirmando | `200` |
 | Cambiar una obra ya cancelada | `409` "ya no admite cambios" |
 
 ---

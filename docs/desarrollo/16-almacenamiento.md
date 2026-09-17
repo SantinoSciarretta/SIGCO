@@ -227,7 +227,7 @@ referencia (`privado/remitos/a1b2.jpg`) es la misma en las dos implementaciones.
 
 | Pendiente | Nota |
 | --- | --- |
-| Achicar la imagen antes de subirla | Una foto de celular pesa 3–4 MB y se muestra a 160 px. Achicarla en el navegador ahorraría casi todo ese tráfico |
-| Limpiar archivos huérfanos | Si alguien sube una foto y cierra el formulario sin guardar, el archivo queda. Ocupa lugar y no lo referencia nadie |
-| Rotación según los datos EXIF | Las fotos de celular a veces se ven giradas |
+| ~~Achicar la imagen antes de subirla~~ | **Resuelto el 17/09/2026**: `comprimirImagen.js`, ver `18-cierre-y-endurecimiento.md` §9 |
+| Limpiar archivos huérfanos | **Parcialmente resuelto el 17/09/2026**: `DELETE /api/archivos` borra los que nadie usa, y el frontend lo llama al quitar y al reemplazar. Queda afuera cerrar la pestaña de golpe |
+| ~~Rotación según los datos EXIF~~ | **Resuelto el 17/09/2026**: lo resuelve la compresión, ver `18-cierre-y-endurecimiento.md` §9 |
 | Varias fotos por remito | Hoy es una sola. El informe no pide más |

@@ -393,8 +393,8 @@ navegador:
 
 | Pendiente | Nota |
 | --- | --- |
-| **Alcance por obra del Capataz de Obra** | El informe dice "su obra asignada". Hoy el permiso es por módulo, no por fila: un capataz de obra ve los pedidos de todas las obras, no solo la suya. El vínculo con Personal y `operario_obra` ya están, que es lo que hace falta para filtrar; se resuelve agregando el filtro en Compras y Seguimiento |
-| Renovación del token antes de que venza | Hoy, a las ocho horas hay que volver a entrar |
-| Bloqueo tras varios intentos fallidos | El informe no lo pide; sin esto, nada impide probar contraseñas por fuerza bruta |
-| Auditar más acciones | Hoy se auditan las de Usuarios, Accesos y el ingreso. Falta enganchar aprobaciones, anulaciones y cobros |
-| Cambio obligatorio de contraseña en el primer ingreso | Hoy es una recomendación, no una obligación |
+| ~~**Alcance por obra del Capataz de Obra**~~ | **Resuelto el 14/09/2026**: lo implementa `AlcanceDeObras`, con sus tests en `AlcanceDeObrasTest` |
+| ~~Renovación del token antes de que venza~~ | **Resuelto el 17/09/2026**: renovación deslizante, ver `18-cierre-y-endurecimiento.md` §4 |
+| ~~Bloqueo tras varios intentos fallidos~~ | **Resuelto el 17/09/2026**: 5 intentos, 15 minutos, ver `18-cierre-y-endurecimiento.md` §2 |
+| ~~Auditar más acciones~~ | **Resuelto el 17/09/2026**: aprobaciones, anulaciones y cobros, ver `18-cierre-y-endurecimiento.md` §5 |
+| ~~Cambio obligatorio de contraseña en el primer ingreso~~ | **Resuelto el 17/09/2026**: lo exige el backend, ver `18-cierre-y-endurecimiento.md` §3 |

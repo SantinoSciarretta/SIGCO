@@ -72,7 +72,7 @@ Tres detalles que no son decorativos:
 4. **Clave:** *Project Settings → API → `service_role`*. **No la anónima**: la
    anónima no puede escribir en un bucket privado.
 
-> Las tablas **no hay que crearlas a mano**. Flyway ejecuta las 13 migraciones
+> Las tablas **no hay que crearlas a mano**. Flyway ejecuta las 14 migraciones
 > al primer arranque del backend y deja el esquema completo, con los roles, los
 > permisos y la cuenta inicial.
 
@@ -132,8 +132,11 @@ usuario: ricardo
 contraseña: granica2026
 ```
 
-**Cambiarla de inmediato**, desde Usuarios o "Mi contraseña". Está escrita en la
-migración `V13`, así que es pública para cualquiera que lea el repositorio.
+**El sistema obliga a cambiarla** *(desde el 17/09/2026)*: hasta que el titular
+elija una contraseña propia, ninguna otra pantalla se habilita y el backend
+rechaza cualquier otra petición. Está escrita en la migración `V13`, así que es
+pública para cualquiera que lea el repositorio. Ver
+`18-cierre-y-endurecimiento.md`, sección 3.
 
 ---
 
@@ -198,7 +201,7 @@ el capataz saca la primera foto.
 | Qué | Cómo |
 | --- | --- |
 | Que Flyway haya corrido | `GET /api/estado` dice "conectada" y el login funciona |
-| Que las 13 migraciones estén | `SELECT version, description FROM flyway_schema_history` |
+| Que las 14 migraciones estén | `SELECT version, description FROM flyway_schema_history` |
 | Que la subida de fotos ande | Cargar un gasto con comprobante y verlo |
 | Que la vidriera se vea sin login | Abrir `/api/vidriera` en una ventana privada |
 | Cambiar la contraseña inicial | Usuarios → Contraseña |

@@ -195,7 +195,7 @@ tenga campos de cliente ni dirección**, verificado por reflexión.
 | Subida real de imágenes | **Resuelto el 14/09/2026**, ver `16-almacenamiento.md` |
 | Vista pública con diseño de galería | **Resuelta el 14/09/2026**: `/obras-realizadas`, ver abajo |
 | Restringir la administración al rol dueño | **Resuelto**: `portfolio.ver` / `portfolio.editar`, solo el Dueño |
-| Reordenar las imágenes arrastrando | Hoy se agregan al final |
+| ~~Reordenar las imágenes arrastrando~~ | **Resuelto el 17/09/2026**, ver `18-cierre-y-endurecimiento.md` §10 |
 
 
 ---

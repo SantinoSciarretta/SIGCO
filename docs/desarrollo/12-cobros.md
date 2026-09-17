@@ -194,5 +194,5 @@ Sobre la obra 5, con definitivo aprobado de $95.439.000 (30% + 6 cuotas):
 | --- | --- |
 | Restringir todo el módulo al rol dueño | Accesos |
 | Generar la planilla de pagos en PDF para el cliente | Pendiente del informe |
-| Generar el plan automáticamente al aprobar el definitivo | Hoy es una acción explícita |
+| Generar el plan automáticamente al aprobar el definitivo | **Descartado el 17/09/2026**: falta la fecha del primer vencimiento, que se pacta con el cliente. En su lugar el tablero lo reclama. Ver `18-cierre-y-endurecimiento.md` §8 |
 | Estado de cuenta por cliente | Cruza obras y cobros; falta la vista |

@@ -62,12 +62,16 @@ Orden sugerido (dependencias de datos primero, seguridad al final):
 (Este orden difiere del numérico de la Propuesta Técnica, que lista Usuarios/Accesos como módulos 13 y 14 por razones de documentación. Para el desarrollo, esta secuencia por dependencias es la que seguimos.)
 
 > **Estado al 17/09/2026: los catorce módulos están desarrollados** (backend,
-> frontend, tests y documentación). 248 tests en verde. La seguridad está
+> frontend, tests y documentación). 274 tests en verde. La seguridad está
 > activa sobre todo el sistema: cada endpoint exige su permiso y el frontend
 > arma el menú con los permisos del usuario.
 >
+> **El código está terminado.** Lo que falta para usarlo es publicarlo, y eso
+> necesita las cuentas de Santino: los pasos están en `docs/PUESTA-EN-MARCHA.md`.
+>
 > La cuenta inicial es `ricardo` / `granica2026`, creada por la migración `V13`.
-> **Es de puesta en marcha y hay que cambiarla.**
+> **El sistema obliga a cambiarla en el primer ingreso** (`V14`): hasta que el
+> titular elija una propia, el backend rechaza cualquier otra petición.
 
 ---
 
@@ -175,7 +179,7 @@ Documentar a medida que se desarrolla es un requisito central del proyecto (insu
 - No se crea una obra sin cliente asociado. Dirección y tipo de obra son obligatorios.
 - `tipo_obra` queda bloqueado para edición apenas existe un presupuesto de anteproyecto o definitivo (cambiarlo rompería el circuito de Presupuestación).
 - `fecha_inicio_real` no se carga hasta que el presupuesto definitivo esté aprobado.
-- Una obra con presupuesto definitivo aprobado no puede cancelarse salvo autorización explícita del dueño.
+- Una obra con presupuesto definitivo aprobado no puede cancelarse salvo autorización explícita del dueño. **Implementado el 17/09/2026**: el servicio exige `confirmaObraEnEjecucion: true` además del motivo. Cancelar una obra en presupuestación descarta una propuesta; cancelar una con el definitivo aprobado interrumpe una obra en marcha, con material comprado y cuotas emitidas.
 - No se elimina una obra, solo se cancela (trazabilidad).
 
 **Presupuestación**
@@ -230,6 +234,9 @@ Documentar a medida que se desarrolla es un requisito central del proyecto (insu
 - **`compras.aprobar` es un permiso propio y solo lo tiene el Dueño.** Es lo que hace cumplir la regla de que la aprobación del pedido es indelegable: el sistema rechaza dárselo a un capataz aunque se marque la casilla.
 - Una cuenta no se elimina: se da de baja con motivo (`usuario.motivo_baja`, agregado en `V13`).
 - El mensaje de error del login es el mismo para usuario inexistente y contraseña incorrecta, y el tiempo de respuesta también. Distinguirlos permitiría descubrir qué usuarios existen.
+- **Cinco intentos fallidos bloquean la cuenta quince minutos** (agregado el 17/09/2026). El bloqueo se verifica **antes** de comparar la contraseña: si se verificara después, quien prueba contraseñas podría seguir probándolas durante el bloqueo y el sistema le confirmaría cuál acertó. El contador vive en la base, no en memoria, porque reiniciar el servidor sería si no la forma de saltear el bloqueo; y se incrementa en una transacción propia (`RegistroDeIntentos`, `REQUIRES_NEW`) porque el rechazo lanza una excepción que desharía el incremento.
+- **Toda cuenta nace obligada a cambiar su contraseña**, y también cuando el dueño se la resetea a otro: en los dos casos hay una contraseña que conocen dos personas. `FiltroCambioDeContrasena` rechaza cualquier otra petición hasta que lo haga — no alcanza con que el frontend muestre la pantalla.
+- **El token se renueva mientras se usa** (cabecera `X-Token-Renovado`, últimas dos horas de ocho). Quien trabaja no se cae a media tarde; quien se va, vence igual.
 - Los permisos **no viajan dentro del token**: se leen de la base en cada petición, así un cambio en Accesos se aplica en la petición siguiente.
 - **El frontend filtra menú y rutas, pero eso es presentación, no seguridad.** La validación que manda es `@PreAuthorize` en el backend.
 

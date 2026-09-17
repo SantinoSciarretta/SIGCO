@@ -172,6 +172,6 @@ y que arme los pendientes con la urgencia correcta.
 
 | Pendiente | Se resuelve en |
 | --- | --- |
-| Versión reducida para el Capataz General | El informe le da acceso de consulta al tablero; hoy ve el mismo |
+| ~~Versión reducida para el Capataz General~~ | **Resuelto el 17/09/2026**, ver `18-cierre-y-endurecimiento.md` §7 |
 | Consultas agregadas si crece la cantidad de obras | No hace falta con menos de diez obras activas |
 | Que las tarjetas lleven a la obra filtrada y no al módulo entero | Hoy el enlace abre el módulo |
