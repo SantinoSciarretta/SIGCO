@@ -183,6 +183,54 @@ public class PortfolioService {
         return PublicacionRespuesta.desde(publicacion);
     }
 
+    /**
+     * Reordena la galeria segun la lista de ids que llega.
+     *
+     * La primera imagen es la portada de la obra en la vidriera, asi que el
+     * orden no es un detalle: es con que foto se presenta el trabajo al cliente
+     * que entra a mirarlo. Hasta ahora las imagenes quedaban en el orden en que
+     * se subieron, y cambiarlo obligaba a borrarlas y volver a subirlas todas.
+     *
+     * Llega la lista COMPLETA de ids en el orden deseado, y no un par
+     * "imagen, posicion nueva". Es a proposito: mover una sola imagen obliga a
+     * correr a todas las que estan entre su posicion vieja y la nueva, y esa
+     * cuenta hecha de a una deja huecos y posiciones repetidas en cuanto dos
+     * operaciones se pisan. Con la lista entera, el orden que se guarda es
+     * exactamente el que el usuario ve en pantalla.
+     *
+     * Se exige que la lista tenga las mismas imagenes que la publicacion, ni una
+     * mas ni una menos: una lista incompleta dejaria imagenes con el orden
+     * viejo, mezcladas con las nuevas, y el resultado no seria el que nadie
+     * pidio.
+     */
+    @Transactional
+    public PublicacionRespuesta reordenarImagenes(Long id, List<Long> idsEnOrden) {
+        PublicacionPortfolio publicacion = buscarOFallar(id);
+
+        java.util.Map<Long, ImagenPortfolio> porId = new java.util.LinkedHashMap<>();
+        for (ImagenPortfolio imagen : publicacion.getImagenes()) {
+            porId.put(imagen.getIdImagen(), imagen);
+        }
+
+        // Un id repetido haria que la lista pareciera del largo correcto sin
+        // serlo, y dejaria una imagen sin reordenar.
+        java.util.Set<Long> sinRepetir = new java.util.HashSet<>(idsEnOrden);
+
+        if (sinRepetir.size() != idsEnOrden.size()
+                || !sinRepetir.equals(porId.keySet())) {
+            throw new ReglaDeNegocioException(
+                    "La lista de imágenes no coincide con las de esta publicación. "
+                    + "Actualizá la pantalla y volvé a intentarlo.");
+        }
+
+        int posicion = 1;
+        for (Long idImagen : idsEnOrden) {
+            porId.get(idImagen).reordenar(posicion++);
+        }
+
+        return PublicacionRespuesta.desde(publicacion);
+    }
+
     private PublicacionPortfolio buscarOFallar(Long id) {
         return repositorio.buscarCompleta(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Publicación", id));

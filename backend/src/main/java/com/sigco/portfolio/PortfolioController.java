@@ -125,4 +125,20 @@ public class PortfolioController {
                                              @PathVariable Long idImagen) {
         return servicio.quitarImagen(id, idImagen);
     }
+
+    /**
+     * PUT /api/portfolio/{id}/imagenes/orden — reordena la galería.
+     *
+     * Recibe la lista completa de ids en el orden deseado. La primera imagen es
+     * la portada con la que la obra se presenta en la vidriera.
+     *
+     * Es PUT y no PATCH porque reemplaza el orden entero, no lo modifica en
+     * parte: lo que llega es el estado final completo.
+     */
+    @PreAuthorize("hasAuthority('portfolio.editar')")
+    @PutMapping("/api/portfolio/{id}/imagenes/orden")
+    public PublicacionRespuesta reordenarImagenes(@PathVariable Long id,
+                                                  @RequestBody List<Long> idsEnOrden) {
+        return servicio.reordenarImagenes(id, idsEnOrden);
+    }
 }

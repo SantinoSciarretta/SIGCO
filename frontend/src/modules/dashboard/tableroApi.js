@@ -36,9 +36,21 @@ export function textoDeSemaforo(semaforo) {
   return 'En presupuesto';
 }
 
-/** "$ 12.980.000" */
+/**
+ * "$ 12.980.000", o "—" si el dato no vino.
+ *
+ * La diferencia entre null y cero importa desde el tablero reducido: al Capataz
+ * General el backend le manda los importes financieros en null, porque su rol
+ * no accede a Presupuestación ni a Cobros. Mostrar "$ 0" ahí sería afirmar que
+ * no hay nada por cobrar, que es distinto de no tener por qué saberlo.
+ *
+ * Un cero de verdad sí se muestra como "$ 0".
+ */
 export function pesos(monto) {
-  return '$ ' + Math.round(Number(monto ?? 0)).toLocaleString('es-AR');
+  if (monto === null || monto === undefined) {
+    return '—';
+  }
+  return '$ ' + Math.round(Number(monto)).toLocaleString('es-AR');
 }
 
 /** Abreviado para las cifras grandes del encabezado: 12980000 → "12,98" */

@@ -76,6 +76,18 @@ public class TableroService {
     /** Un pedido esperando aprobacion frena la obra: a los dos dias ya es urgente. */
     private static final int DIAS_PEDIDO_SIN_APROBAR = 2;
 
+    /**
+     * Los tipos de pendiente, como constantes y no como texto suelto.
+     *
+     * Importan porque el tablero reducido del Capataz General filtra por este
+     * valor: con el literal escrito en cada lugar, cambiar "Pedido" en un punto
+     * y no en el filtro dejaria de mostrarle pedidos sin ningun error a la
+     * vista.
+     */
+    private static final String TIPO_PRESUPUESTO = "Presupuesto";
+    private static final String TIPO_PEDIDO = "Pedido";
+    private static final String TIPO_COBRO = "Cobro";
+
     private static final String URGENCIA_ALTA = "alta";
     private static final String URGENCIA_MEDIA = "media";
 
@@ -86,12 +98,22 @@ public class TableroService {
     private final SeguimientoService seguimientoService;
     private final CobrosService cobrosService;
 
+    /**
+     * Para saber qué puede ver quien pide el tablero.
+     *
+     * Es el único módulo que lo necesita: en el resto, el permiso decide si se
+     * entra o no, y acá decide qué contiene la respuesta.
+     */
+    private final com.sigco.seguridad.SesionActual sesion;
+
     public TableroService(ObraRepository obraRepositorio,
                           PresupuestoRepository presupuestoRepositorio,
                           PedidoRepository pedidoRepositorio,
                           GastoService gastoService,
                           SeguimientoService seguimientoService,
-                          CobrosService cobrosService) {
+                          CobrosService cobrosService,
+                          com.sigco.seguridad.SesionActual sesion) {
+        this.sesion = sesion;
         this.obraRepositorio = obraRepositorio;
         this.presupuestoRepositorio = presupuestoRepositorio;
         this.pedidoRepositorio = pedidoRepositorio;
@@ -129,13 +151,113 @@ public class TableroService {
                 .thenComparing(o -> !o.alertaDesfasaje())
                 .thenComparing(ObraEnTablero::avanceFinanciero, Comparator.reverseOrder()));
 
-        List<Pendiente> pendientes = armarPendientes();
+        List<Pendiente> pendientes = armarPendientes(enEjecucion, cobrosPorObra);
 
-        return new Tablero(
+        Tablero completo = new Tablero(
                 LocalDateTime.now(),
                 armarResumen(obras, pendientes),
                 obras,
                 pendientes);
+
+        return reducirSiCorresponde(completo);
+    }
+
+    // ------------------------------------------------------------------
+    //  La version reducida del Capataz General
+    // ------------------------------------------------------------------
+
+    /**
+     * Quita del tablero lo que el rol no tiene derecho a ver.
+     *
+     * ------------------------------------------------------------------
+     *  Por que se arma completo y despues se recorta
+     * ------------------------------------------------------------------
+     *
+     * Parece mas prolijo no calcular lo que no se va a mostrar, y ademas seria
+     * mas rapido. No se hace asi por una razon concreta: si el recorte
+     * estuviera repartido en cada paso del armado, alcanzaria con agregar un
+     * campo nuevo y olvidarse de una rama para que una cifra financiera se le
+     * escape al capataz sin que nadie lo note. Con un unico punto de recorte,
+     * lo que se oculta se lee de un vistazo y se prueba en un solo lugar.
+     *
+     * El costo es calcular de mas para un rol que entra poco al tablero, con
+     * menos de diez obras activas. Es despreciable frente a filtrar mal.
+     *
+     * ------------------------------------------------------------------
+     *  Que se oculta y por que
+     * ------------------------------------------------------------------
+     *
+     * La matriz del informe le da al Capataz General acceso de CONSULTA al
+     * tablero, pero ningun acceso a Presupuestacion ni a Cobros. Entonces:
+     *
+     *   - lo presupuestado y la ganancia estimada salen (Presupuestacion)
+     *   - el saldo, las cuotas vencidas y los vencimientos salen (Cobros)
+     *   - lo gastado y el semaforo QUEDAN: Gastos es Consulta para el rol, y el
+     *     semaforo es lo que le sirve para saber donde parar la mano
+     *
+     * Los campos ocultos viajan en null y no en cero, a proposito: cero es una
+     * afirmacion —"no hay nada por cobrar"— y seria mentira. null dice "esto no
+     * es asunto tuyo", y el frontend lo muestra como un guion en lugar de un
+     * importe.
+     */
+    private Tablero reducirSiCorresponde(Tablero tablero) {
+        boolean veFinanzas = sesion.puede("cobros.ver") || sesion.puede("presupuestos.ver");
+        if (veFinanzas) {
+            return tablero;
+        }
+
+        List<ObraEnTablero> obras = tablero.obras().stream()
+                .map(this::sinDatosFinancieros)
+                .toList();
+
+        // De los pendientes quedan solo los pedidos. Los presupuestos esperando
+        // respuesta son de Presupuestacion y las cuotas vencidas de Cobros: dos
+        // modulos a los que este rol no tiene acceso. Ademas son cosas que solo
+        // el dueño puede destrabar, asi que al capataz no le sirven de nada.
+        List<Pendiente> pendientes = tablero.pendientes().stream()
+                .filter(p -> TIPO_PEDIDO.equals(p.tipo()))
+                .toList();
+
+        return new Tablero(
+                tablero.momento(),
+                sinDatosFinancieros(tablero.resumen(), obras, pendientes),
+                obras,
+                pendientes);
+    }
+
+    private ObraEnTablero sinDatosFinancieros(ObraEnTablero o) {
+        return new ObraEnTablero(
+                o.idObra(), o.direccionObra(), o.nombreCliente(), o.estado(),
+                null,                    // totalPresupuestado
+                o.totalGastado(),
+                null,                    // gananciaEstimada
+                o.semaforo(),
+                o.avanceFisico(), o.avanceFinanciero(), o.desfasaje(),
+                o.alertaDesfasaje(), o.atrasada(), o.diasParaElPlazo(),
+                o.hitosCompletados(), o.hitosTotales(),
+                null,                    // saldoPendiente
+                0,                       // cuotasVencidas
+                null);                   // proximoVencimiento
+    }
+
+    private Resumen sinDatosFinancieros(Resumen r,
+                                        List<ObraEnTablero> obras,
+                                        List<Pendiente> pendientes) {
+        return new Resumen(
+                r.obrasEnEjecucion(),
+                r.obrasEnPresupuestacion(),
+                null,                    // totalPresupuestado
+                r.totalGastado(),
+                null,                    // gananciaEstimada
+                null,                    // saldoPorCobrar
+                null,                    // porCobrarEstaSemana
+                r.obrasExcedidas(),
+                r.obrasConDesfasaje(),
+                // Se recuenta sobre los pendientes que quedaron: si no, el
+                // numero incluiria presupuestos que la lista ya no muestra y el
+                // capataz veria "3 urgentes" con dos tarjetas en pantalla.
+                (int) pendientes.stream()
+                        .filter(p -> URGENCIA_ALTA.equals(p.urgencia())).count());
     }
 
     // ------------------------------------------------------------------
@@ -221,15 +343,48 @@ public class TableroService {
      * el dueño quien lo resuelve, y una lista donde aparece lo que uno no puede
      * hacer se deja de mirar.
      */
-    private List<Pendiente> armarPendientes() {
+    private List<Pendiente> armarPendientes(List<Obra> enEjecucion,
+                                            Map<Long, ResumenCobro> cobrosPorObra) {
         List<Pendiente> pendientes = new ArrayList<>();
         LocalDate hoy = LocalDate.now();
+
+        // ---- Obras en ejecución sin plan de cobro ----
+        //
+        // Una obra llega a "En ejecución" porque se aprobó su presupuesto
+        // definitivo, y ese presupuesto ya trae el anticipo y la cantidad de
+        // cuotas acordados. Falta un solo dato para armar el plan: la fecha del
+        // primer vencimiento, que se pacta con el cliente y no está en ningún
+        // presupuesto.
+        //
+        // Por eso el plan NO se genera solo al aprobar, aunque figure como
+        // pendiente del módulo Cobros: el sistema tendría que inventar una
+        // fecha de vencimiento, es decir inventar un compromiso de pago que el
+        // cliente nunca aceptó. Preferible que el tablero lo reclame: la obra
+        // arrancó y todavía no hay de dónde cobrarla, que es exactamente el
+        // tipo de cosa que hoy se le traspapela al dueño.
+        for (Obra obra : enEjecucion) {
+            if (cobrosPorObra.containsKey(obra.getIdObra())) {
+                continue;
+            }
+            long dias = obra.getFechaInicioReal() != null
+                    ? ChronoUnit.DAYS.between(obra.getFechaInicioReal(), hoy)
+                    : 0L;
+
+            pendientes.add(new Pendiente(
+                    TIPO_COBRO,
+                    "Sin plan de cobro: " + obra.getDireccionObra(),
+                    "La obra está en ejecución y todavía no se generó el plan de pago",
+                    URGENCIA_ALTA,
+                    Math.max(0, dias),
+                    obra.getIdObra(),
+                    "/cobranzas"));
+        }
 
         // ---- Presupuestos enviados sin respuesta ----
         for (Presupuesto p : presupuestoRepositorio.buscar(0L, "", Presupuesto.ESTADO_ENVIADO)) {
             long dias = ChronoUnit.DAYS.between(p.getFechaCreacion().toLocalDate(), hoy);
             pendientes.add(new Pendiente(
-                    "Presupuesto",
+                    TIPO_PRESUPUESTO,
                     p.getTipoPresupuesto() + " de " + p.getObra().getDireccionObra(),
                     "Enviado hace " + dias + " " + (dias == 1 ? "día" : "días")
                             + " · " + formatear(p.getTotalPresupuesto()),
@@ -246,7 +401,7 @@ public class TableroService {
                 .findByEstadoOrderByFechaSolicitudAsc(Pedido.ESTADO_PENDIENTE)) {
             long dias = ChronoUnit.DAYS.between(pedido.getFechaSolicitud().toLocalDate(), hoy);
             pendientes.add(new Pendiente(
-                    "Pedido",
+                    TIPO_PEDIDO,
                     "Pedido para " + pedido.getObra().getDireccionObra(),
                     "Esperando aprobación hace " + dias + " " + (dias == 1 ? "día" : "días"),
                     dias >= DIAS_PEDIDO_SIN_APROBAR ? URGENCIA_ALTA : URGENCIA_MEDIA,
@@ -261,7 +416,7 @@ public class TableroService {
             long dias = pedido.getFechaAprobacion() == null ? 0
                     : ChronoUnit.DAYS.between(pedido.getFechaAprobacion().toLocalDate(), hoy);
             pendientes.add(new Pendiente(
-                    "Pedido",
+                    TIPO_PEDIDO,
                     "Material en camino a " + pedido.getObra().getDireccionObra(),
                     "Enviado al proveedor hace " + dias + " " + (dias == 1 ? "día" : "días")
                             + " · falta confirmar la recepción",
@@ -277,7 +432,7 @@ public class TableroService {
         for (ResumenCobro cobro : cobrosService.consolidado()) {
             if (cobro.cuotasVencidas() != null && cobro.cuotasVencidas() > 0) {
                 pendientes.add(new Pendiente(
-                        "Cobro",
+                        TIPO_COBRO,
                         cobro.cuotasVencidas() + " "
                                 + (cobro.cuotasVencidas() == 1 ? "cuota vencida" : "cuotas vencidas")
                                 + " · " + cobro.nombreCliente(),
@@ -291,7 +446,7 @@ public class TableroService {
                     && !cobro.proximoVencimiento().isAfter(hoy.plusDays(DIAS_DE_LA_SEMANA))) {
                 long dias = ChronoUnit.DAYS.between(hoy, cobro.proximoVencimiento());
                 pendientes.add(new Pendiente(
-                        "Cobro",
+                        TIPO_COBRO,
                         "Vence una cuota de " + cobro.nombreCliente(),
                         cobro.direccionObra() + " · "
                                 + (dias == 0 ? "vence hoy" : "en " + dias + " días"),

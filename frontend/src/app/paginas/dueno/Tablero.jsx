@@ -57,25 +57,56 @@ export default function Tablero() {
     ...obras.map((o) => Math.max(Number(o.totalPresupuestado), Number(o.totalGastado))),
   );
 
+  /**
+   * Si el backend mandó el tablero reducido.
+   *
+   * Se deduce de que el saldo por cobrar venga en null: el backend lo anula
+   * para los roles sin acceso a Cobros ni a Presupuestación (hoy, el Capataz
+   * General). No se mira el rol acá porque quien decide qué se manda es el
+   * backend; el frontend solo se acomoda a lo que recibió.
+   */
+  const reducido = resumen.saldoPorCobrar === null;
+
   const indicadores = [
     {
       titulo: 'Obras en ejecución', codigo: 'A-01',
       valor: String(resumen.obrasEnEjecucion), unidad: 'en curso',
       pie: `${resumen.obrasEnPresupuestacion} en presupuestación`,
     },
+
+    // Las dos tarjetas del medio son financieras. Para quien no accede a esa
+    // información se reemplazan por dos que sí le sirven, en lugar de dejar dos
+    // recuadros con un guion: un tablero lleno de huecos parece roto.
+    ...(reducido
+      ? [
+          {
+            titulo: 'Obras excedidas', codigo: 'A-02',
+            valor: String(resumen.obrasExcedidas), unidad: 'en rojo',
+            pie: 'Gastaron más de lo previsto en algún rubro',
+          },
+          {
+            titulo: 'Obras desfasadas', codigo: 'A-03',
+            valor: String(resumen.obrasConDesfasaje), unidad: 'con alerta',
+            pie: 'Gastan más rápido de lo que avanzan',
+          },
+        ]
+      : [
+          {
+            titulo: 'Por cobrar esta semana', codigo: 'A-02',
+            valor: millones(resumen.porCobrarEstaSemana), unidad: 'millones $',
+            pie: `${pesos(resumen.saldoPorCobrar)} pendientes en total`,
+          },
+          {
+            titulo: 'Ganancia estimada', codigo: 'A-03',
+            valor: millones(resumen.gananciaEstimada), unidad: 'millones $',
+            // Presupuestado menos gastado. Se recalcula con cada gasto.
+            pie: `${pesos(resumen.totalGastado)} gastados de ${pesos(resumen.totalPresupuestado)}`,
+          },
+        ]),
+
     {
-      titulo: 'Por cobrar esta semana', codigo: 'A-02',
-      valor: millones(resumen.porCobrarEstaSemana), unidad: 'millones $',
-      pie: `${pesos(resumen.saldoPorCobrar)} pendientes en total`,
-    },
-    {
-      titulo: 'Ganancia estimada', codigo: 'A-03',
-      valor: millones(resumen.gananciaEstimada), unidad: 'millones $',
-      // Presupuestado menos gastado. Se recalcula con cada gasto que se carga.
-      pie: `${pesos(resumen.totalGastado)} gastados de ${pesos(resumen.totalPresupuestado)}`,
-    },
-    {
-      titulo: 'Esperando una decisión', codigo: 'A-04',
+      titulo: reducido ? 'Pedidos pendientes' : 'Esperando una decisión',
+      codigo: 'A-04',
       valor: String(pendientes.length), unidad: 'pendientes',
       pie: resumen.pendientesUrgentes > 0
         ? `${resumen.pendientesUrgentes} ya están demoradas`
@@ -240,8 +271,15 @@ export default function Tablero() {
                   <th style={{ width: 26 }}>#</th>
                   <th>Obra</th>
                   <th style={{ width: 250 }}>Avance físico vs. financiero</th>
-                  <th style={{ textAlign: 'right' }}>Ganancia estimada</th>
-                  <th style={{ textAlign: 'right' }}>Por cobrar</th>
+                  {/* Columnas financieras: no existen en el tablero reducido.
+                      Se quita la columna entera en lugar de llenarla de
+                      guiones, que ocuparía el mismo ancho sin decir nada. */}
+                  {!reducido && (
+                    <>
+                      <th style={{ textAlign: 'right' }}>Ganancia estimada</th>
+                      <th style={{ textAlign: 'right' }}>Por cobrar</th>
+                    </>
+                  )}
                   <th style={{ width: 78 }} />
                 </tr>
               </thead>
@@ -287,19 +325,23 @@ export default function Tablero() {
                           </div>
                         )}
                       </td>
-                      <td className={`cifra ${estilos.cobrar}`}
-                          style={{ color: Number(obra.gananciaEstimada) < 0
-                            ? 'var(--color-excedido)' : undefined }}>
-                        {pesos(obra.gananciaEstimada)}
-                      </td>
-                      <td className={`cifra ${estilos.cobrar}`}>
-                        {pesos(obra.saldoPendiente)}
-                        {obra.cuotasVencidas > 0 && (
-                          <div className={estilos.vencidas}>
-                            {obra.cuotasVencidas} vencida{obra.cuotasVencidas > 1 ? 's' : ''}
-                          </div>
-                        )}
-                      </td>
+                      {!reducido && (
+                        <>
+                          <td className={`cifra ${estilos.cobrar}`}
+                              style={{ color: Number(obra.gananciaEstimada) < 0
+                                ? 'var(--color-excedido)' : undefined }}>
+                            {pesos(obra.gananciaEstimada)}
+                          </td>
+                          <td className={`cifra ${estilos.cobrar}`}>
+                            {pesos(obra.saldoPendiente)}
+                            {obra.cuotasVencidas > 0 && (
+                              <div className={estilos.vencidas}>
+                                {obra.cuotasVencidas} vencida{obra.cuotasVencidas > 1 ? 's' : ''}
+                              </div>
+                            )}
+                          </td>
+                        </>
+                      )}
                       <td className={estilos.verCelda}>
                         <span className={estilos.ver}>Ver →</span>
                       </td>

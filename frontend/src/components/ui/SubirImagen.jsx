@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import client from '../../api/client';
+import { comprimirImagen } from './comprimirImagen';
 import { urlDeArchivo } from './archivos';
 import estilos from './SubirImagen.module.css';
 
@@ -37,15 +38,29 @@ export default function SubirImagen({ carpeta, valor, onSubida, etiqueta = 'Subi
     setSubiendo(true);
     setError(null);
     try {
+      // Se achica antes de subir: una foto de celular pesa 3 o 4 MB y se
+      // muestra a 160 px. Además endereza las fotos que el celular guardó
+      // acostadas. Si algo falla, devuelve el archivo original y la subida
+      // sigue igual.
+      const liviano = await comprimirImagen(archivo);
+
       const datos = new FormData();
-      datos.append('archivo', archivo);
+      datos.append('archivo', liviano);
       datos.append('carpeta', carpeta);
 
       // Sin Content-Type a mano: el navegador tiene que ponerlo él, porque
       // multipart lleva un separador que genera al momento de enviar. Si se
       // escribe la cabecera, ese separador falta y el backend no puede leerlo.
+      const anterior = valor;
       const { data } = await client.post('/archivos', datos);
       onSubida(data.referencia);
+
+      // Reemplazar una foto dejaba huérfana a la anterior. Se borra después de
+      // que la nueva subió bien: si se borrara antes y la subida fallara, el
+      // usuario se quedaría sin ninguna de las dos.
+      if (anterior) {
+        client.delete('/archivos', { params: { referencia: anterior } }).catch(() => {});
+      }
     } catch (fallo) {
       setError(fallo.mensaje);
     } finally {
@@ -53,6 +68,29 @@ export default function SubirImagen({ carpeta, valor, onSubida, etiqueta = 'Subi
       // Se limpia para que elegir dos veces el mismo archivo vuelva a disparar
       // el evento: sin esto, un reintento después de un error no hace nada.
       if (entrada.current) entrada.current.value = '';
+    }
+  };
+
+  /**
+   * Quita la imagen del formulario y, si no la usa nadie, la borra del
+   * almacenamiento.
+   *
+   * Sin esto, cada foto que alguien sube y después descarta se queda ocupando
+   * lugar para siempre, sin que ningún registro la nombre. El backend solo
+   * borra los archivos huérfanos: si la referencia ya está adjunta a un gasto o
+   * a un pedido, contesta que no y el archivo queda intacto — acá eso se ignora
+   * a propósito, porque para el usuario "quitar" es sacarlo de ESTE formulario,
+   * y si el archivo sobrevive porque otro registro lo usa, mejor.
+   */
+  const quitar = async () => {
+    const referencia = valor;
+    onSubida(null);
+
+    try {
+      await client.delete('/archivos', { params: { referencia } });
+    } catch {
+      // Que no se pueda borrar no puede frenar al usuario: ya lo quitó del
+      // formulario, que es lo que pidió.
     }
   };
 
@@ -77,7 +115,7 @@ export default function SubirImagen({ carpeta, valor, onSubida, etiqueta = 'Subi
               {subiendo ? 'Subiendo…' : 'Cambiar'}
             </button>
             <button type="button" className={estilos.botonQuitar}
-                    onClick={() => onSubida(null)} disabled={subiendo}>
+                    onClick={quitar} disabled={subiendo}>
               Quitar
             </button>
           </div>

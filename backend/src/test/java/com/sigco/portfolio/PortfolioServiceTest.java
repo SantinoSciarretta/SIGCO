@@ -147,6 +147,53 @@ class PortfolioServiceTest {
         assertThat(r.imagenes().get(2).orden()).isEqualTo(2);
     }
 
+    /**
+     * El orden no es cosmético: la primera imagen es la portada con la que la
+     * obra se presenta en la vidriera al cliente referido.
+     */
+    @Test
+    @DisplayName("Reordenar deja las imágenes en el orden pedido, empezando en 1")
+    void reordenaLasImagenes() {
+        publicacionCon(3);   // ids 500, 501, 502
+
+        PublicacionRespuesta r = servicio.reordenarImagenes(50L, List.of(502L, 500L, 501L));
+
+        assertThat(r.imagenes())
+                .extracting(i -> i.orden())
+                .containsExactly(1, 2, 3);
+    }
+
+    @Test
+    @DisplayName("Una lista incompleta se rechaza: dejaría imágenes con el orden viejo")
+    void listaIncompletaSeRechaza() {
+        publicacionCon(3);
+
+        assertThatThrownBy(() -> servicio.reordenarImagenes(50L, List.of(502L, 500L)))
+                .isInstanceOf(ReglaDeNegocioException.class)
+                .hasMessageContaining("no coincide");
+    }
+
+    @Test
+    @DisplayName("Un id repetido se rechaza aunque la lista mida bien")
+    void idRepetidoSeRechaza() {
+        publicacionCon(3);
+
+        // Mide 3, como corresponde, pero deja a 501 sin reordenar.
+        assertThatThrownBy(() -> servicio.reordenarImagenes(50L, List.of(500L, 500L, 502L)))
+                .isInstanceOf(ReglaDeNegocioException.class)
+                .hasMessageContaining("no coincide");
+    }
+
+    @Test
+    @DisplayName("Una imagen de otra publicación se rechaza")
+    void imagenAjenaSeRechaza() {
+        publicacionCon(3);
+
+        assertThatThrownBy(() -> servicio.reordenarImagenes(50L, List.of(500L, 501L, 999L)))
+                .isInstanceOf(ReglaDeNegocioException.class)
+                .hasMessageContaining("no coincide");
+    }
+
     @Test
     @DisplayName("No se quita la única imagen de una publicación activa")
     void noSeVaciaUnaPublicacionActiva() {

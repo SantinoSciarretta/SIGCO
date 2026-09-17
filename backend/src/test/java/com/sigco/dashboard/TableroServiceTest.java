@@ -55,7 +55,33 @@ class TableroServiceTest {
     @Mock private SeguimientoService seguimientoService;
     @Mock private CobrosService cobrosService;
 
+    /**
+     * Quien pide el tablero. Estos tests miden el tablero COMPLETO, así que la
+     * sesión simula al dueño; la versión reducida del Capataz General se prueba
+     * aparte, más abajo.
+     */
+    @Mock private com.sigco.seguridad.SesionActual sesion;
+
     @InjectMocks private TableroService servicio;
+
+    // Por defecto, el dueño: es quien entra al tablero y lo que miden casi
+    // todos estos tests. Los del tablero reducido llaman a comoCapatazGeneral().
+    @org.junit.jupiter.api.BeforeEach
+    void porDefectoElDueno() {
+        comoDueno();
+    }
+
+    /** Le da a la sesión los permisos financieros del dueño. */
+    private void comoDueno() {
+        lenient().when(sesion.puede("cobros.ver")).thenReturn(true);
+        lenient().when(sesion.puede("presupuestos.ver")).thenReturn(true);
+    }
+
+    /** El Capataz General: sin Presupuestación ni Cobros. */
+    private void comoCapatazGeneral() {
+        lenient().when(sesion.puede("cobros.ver")).thenReturn(false);
+        lenient().when(sesion.puede("presupuestos.ver")).thenReturn(false);
+    }
 
     // ------------------------------------------------------------------
     //  Ayudantes
@@ -253,5 +279,156 @@ class TableroServiceTest {
         sinPresupuestosEnviados();
 
         assertThat(servicio.armar().resumen().pendientesUrgentes()).isEqualTo(1);
+    }
+
+    /**
+     * El plan de cobro no se genera solo al aprobar el definitivo, porque
+     * faltaría la fecha del primer vencimiento —se pacta con el cliente y no
+     * está en ningún presupuesto— y el sistema tendría que inventar un
+     * compromiso de pago. En su lugar, el tablero lo reclama.
+     */
+    @Test
+    @DisplayName("Una obra en ejecución sin plan de cobro aparece como pendiente urgente")
+    void obraSinPlanDeCobroEsPendiente() {
+        Obra a = obra(1L, "Av. Cabildo 2340");
+        when(obraRepositorio.porEstado(Obra.ESTADO_EN_EJECUCION)).thenReturn(List.of(a));
+        conFinanzas(1L, "10000000", "4000000", GastoService.SEMAFORO_VERDE);
+        conAvance(1L, "40", "40", false);
+        // Sin plan: la obra no figura en el consolidado de cobros.
+        when(cobrosService.consolidado()).thenReturn(List.of());
+        sinPedidos();
+        sinPresupuestosEnviados();
+
+        Tablero tablero = servicio.armar();
+
+        assertThat(tablero.pendientes())
+                .anyMatch(p -> p.titulo().contains("Sin plan de cobro")
+                        && "alta".equals(p.urgencia()));
+    }
+
+    @Test
+    @DisplayName("Con el plan ya generado, no reclama nada")
+    void obraConPlanNoEsPendiente() {
+        Obra a = obra(1L, "Av. Cabildo 2340");
+        when(obraRepositorio.porEstado(Obra.ESTADO_EN_EJECUCION)).thenReturn(List.of(a));
+        conFinanzas(1L, "10000000", "4000000", GastoService.SEMAFORO_VERDE);
+        conAvance(1L, "40", "40", false);
+        when(cobrosService.consolidado()).thenReturn(List.of(
+                new ResumenCobro(1L, "Av. Cabildo 2340", "Marcela Ferrari",
+                        Obra.ESTADO_EN_EJECUCION, new BigDecimal("10000000"),
+                        new BigDecimal("3000000"), new BigDecimal("7000000"), 0, null)));
+        sinPedidos();
+        sinPresupuestosEnviados();
+
+        assertThat(servicio.armar().pendientes())
+                .noneMatch(p -> p.titulo().contains("Sin plan de cobro"));
+    }
+
+    // ------------------------------------------------------------------
+    //  El tablero reducido del Capataz General
+    // ------------------------------------------------------------------
+
+    /**
+     * La matriz del informe le da al Capataz General acceso de CONSULTA al
+     * tablero, y ningún acceso a Presupuestación ni a Cobros. Estos tests
+     * verifican esa frontera: lo que ve, y sobre todo lo que no.
+     */
+    @org.junit.jupiter.api.Nested
+    @DisplayName("Tablero reducido del Capataz General")
+    class TableroReducido {
+
+        @Test
+        @DisplayName("No ve lo presupuestado, la ganancia ni el saldo por cobrar")
+        void sinInformacionFinanciera() {
+            comoCapatazGeneral();
+
+            Obra a = obra(1L, "Av. Cabildo 2340");
+            when(obraRepositorio.porEstado(Obra.ESTADO_EN_EJECUCION)).thenReturn(List.of(a));
+            conFinanzas(1L, "10000000", "4000000", GastoService.SEMAFORO_VERDE);
+            conAvance(1L, "40", "40", false);
+            when(cobrosService.consolidado()).thenReturn(List.of(
+                    new ResumenCobro(1L, "Av. Cabildo 2340", "Marcela Ferrari",
+                            Obra.ESTADO_EN_EJECUCION, new BigDecimal("10000000"),
+                            new BigDecimal("3000000"), new BigDecimal("7000000"), 0, null)));
+            sinPedidos();
+            sinPresupuestosEnviados();
+
+            Tablero tablero = servicio.armar();
+
+            // Van en null y no en cero: cero afirmaría que no hay nada por
+            // cobrar, y sería mentira.
+            assertThat(tablero.resumen().totalPresupuestado()).isNull();
+            assertThat(tablero.resumen().gananciaEstimada()).isNull();
+            assertThat(tablero.resumen().saldoPorCobrar()).isNull();
+            assertThat(tablero.resumen().porCobrarEstaSemana()).isNull();
+
+            ObraEnTablero fila = tablero.obras().get(0);
+            assertThat(fila.totalPresupuestado()).isNull();
+            assertThat(fila.gananciaEstimada()).isNull();
+            assertThat(fila.saldoPendiente()).isNull();
+            assertThat(fila.proximoVencimiento()).isNull();
+        }
+
+        @Test
+        @DisplayName("Sí ve lo gastado, el semáforo y el avance: son su trabajo")
+        void conservaLoOperativo() {
+            comoCapatazGeneral();
+
+            Obra a = obra(1L, "Av. Cabildo 2340");
+            when(obraRepositorio.porEstado(Obra.ESTADO_EN_EJECUCION)).thenReturn(List.of(a));
+            conFinanzas(1L, "10000000", "4000000", GastoService.SEMAFORO_ROJO);
+            conAvance(1L, "40", "60", true);
+            when(cobrosService.consolidado()).thenReturn(List.of());
+            sinPedidos();
+            sinPresupuestosEnviados();
+
+            ObraEnTablero fila = servicio.armar().obras().get(0);
+
+            assertThat(fila.direccionObra()).isEqualTo("Av. Cabildo 2340");
+            assertThat(fila.totalGastado()).isEqualByComparingTo("4000000");
+            assertThat(fila.semaforo()).isEqualTo(GastoService.SEMAFORO_ROJO);
+            assertThat(fila.avanceFisico()).isEqualByComparingTo("40");
+            assertThat(fila.alertaDesfasaje()).isTrue();
+        }
+
+        @Test
+        @DisplayName("De los pendientes solo le quedan los pedidos")
+        void soloPendientesDeCompras() {
+            comoCapatazGeneral();
+
+            when(obraRepositorio.porEstado(Obra.ESTADO_EN_EJECUCION)).thenReturn(List.of());
+            // Una cuota vencida y un presupuesto sin respuesta: los dos son de
+            // módulos a los que este rol no accede.
+            when(cobrosService.consolidado()).thenReturn(List.of(
+                    new ResumenCobro(1L, "A", "Cliente A", Obra.ESTADO_EN_EJECUCION,
+                            BigDecimal.TEN, BigDecimal.ZERO, BigDecimal.TEN, 1, null)));
+            sinPedidos();
+            sinPresupuestosEnviados();
+
+            Tablero tablero = servicio.armar();
+
+            assertThat(tablero.pendientes()).isEmpty();
+            // Y el contador se recalcula sobre lo que queda: si no, diría
+            // "1 urgente" sin ninguna tarjeta en pantalla.
+            assertThat(tablero.resumen().pendientesUrgentes()).isZero();
+        }
+
+        @Test
+        @DisplayName("El dueño sigue viendo todo")
+        void elDuenoVeTodo() {
+            comoDueno();
+
+            when(obraRepositorio.porEstado(Obra.ESTADO_EN_EJECUCION)).thenReturn(List.of());
+            when(cobrosService.consolidado()).thenReturn(List.of(
+                    new ResumenCobro(1L, "A", "Cliente A", Obra.ESTADO_EN_EJECUCION,
+                            BigDecimal.TEN, BigDecimal.ZERO, BigDecimal.TEN, 1, null)));
+            sinPedidos();
+            sinPresupuestosEnviados();
+
+            Tablero tablero = servicio.armar();
+
+            assertThat(tablero.resumen().saldoPorCobrar()).isNotNull();
+            assertThat(tablero.pendientes()).isNotEmpty();
+        }
     }
 }

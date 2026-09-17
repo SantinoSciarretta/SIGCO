@@ -8,6 +8,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -58,9 +59,14 @@ public class ArchivoController {
     private final AlmacenDeArchivos almacen;
     private final ValidadorDeArchivos validador;
 
-    public ArchivoController(AlmacenDeArchivos almacen, ValidadorDeArchivos validador) {
+    /** Para no borrar un archivo que algun registro este usando. */
+    private final ArchivosEnUso enUso;
+
+    public ArchivoController(AlmacenDeArchivos almacen, ValidadorDeArchivos validador,
+                             ArchivosEnUso enUso) {
         this.almacen = almacen;
         this.validador = validador;
+        this.enUso = enUso;
     }
 
     /**
@@ -86,6 +92,37 @@ public class ArchivoController {
 
         String referencia = almacen.guardar(archivo, carpeta, ambito);
         return Map.of("referencia", referencia);
+    }
+
+    /**
+     * DELETE /api/archivos — borra un archivo que no usa nadie.
+     *
+     * Existe por el otro lado del POST de arriba: como el archivo se sube antes
+     * de guardar el formulario, quien sube una foto y despues se arrepiente deja
+     * un archivo que no referencia ningun registro. Sin esto, cada foto
+     * descartada se queda ocupando lugar para siempre.
+     *
+     * La regla que lo vuelve seguro esta en ArchivosEnUso: solo borra si NINGUNA
+     * tabla apunta a esa referencia. Un remito ya confirmado o una imagen del
+     * portfolio no se pueden borrar por aca, aunque alguien mande su referencia
+     * a proposito. Borrarlas es tarea de su modulo, que ademas limpia el
+     * registro que las nombra.
+     *
+     * La referencia va como parametro y no en la ruta porque contiene barras
+     * ("privado/remitos/a1b2.jpg") y una ruta con barras adentro se vuelve
+     * ambigua de mapear.
+     */
+    @DeleteMapping("/api/archivos")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Void> borrar(@RequestParam String referencia) {
+        if (enUso.estaEnUso(referencia)) {
+            throw new ReglaDeNegocioException(
+                    "Ese archivo está adjunto a un registro del sistema. "
+                    + "Para quitarlo hay que editar el registro que lo usa.");
+        }
+
+        almacen.borrar(referencia);
+        return ResponseEntity.noContent().build();
     }
 
     /** GET /api/archivos/publico/** — imagenes del portfolio, sin autenticacion. */

@@ -68,6 +68,24 @@ public class SesionActual {
                 .filter(java.util.Objects::nonNull);
     }
 
+    /**
+     * Si el usuario de esta peticion tiene un permiso.
+     *
+     * Sirve para los casos en que un modulo no se limita a dejar pasar o
+     * rechazar, sino que arma una respuesta DISTINTA segun quien pregunta. Hoy
+     * el caso es el Tablero: el informe le da al Capataz General una version
+     * reducida, sin la informacion financiera.
+     *
+     * No reemplaza a @PreAuthorize, que es lo que autoriza el endpoint. Esto
+     * decide que contiene la respuesta una vez que el acceso ya se concedio.
+     */
+    public boolean puede(String permiso) {
+        return autenticado()
+                .map(u -> u.getAuthorities().stream()
+                        .anyMatch(a -> permiso.equals(a.getAuthority())))
+                .orElse(false);
+    }
+
     public boolean esDueno() {
         return autenticado()
                 .map(u -> com.sigco.accesos.Rol.DUENO.equals(u.getNombreRol()))
