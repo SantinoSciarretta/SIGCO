@@ -11,6 +11,9 @@ import com.sigco.cobros.dto.CobrosDtos.RegistrarPago;
 import com.sigco.cobros.dto.CobrosDtos.ResumenCobro;
 import jakarta.validation.Valid;
 import java.util.List;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -82,6 +85,22 @@ public class CobrosController {
     // ---------- Vista consolidada y alertas ----------
 
     /** GET /api/cobros — cuánto resta cobrar de cada obra. */
+    /**
+     * GET /api/obras/{id}/cobros/planilla — la planilla de pagos en PDF.
+     *
+     * inline y no attachment: el navegador la abre en una pestaña para
+     * revisarla antes de mandarla, que es lo que se hace en la practica.
+     */
+    @PreAuthorize("hasAuthority('cobros.ver')")
+    @GetMapping("/api/obras/{id}/cobros/planilla")
+    public ResponseEntity<byte[]> planilla(@PathVariable Long id) {
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "inline; filename=\"" + servicio.nombreDePlanilla(id) + "\"")
+                .body(servicio.generarPlanilla(id));
+    }
+
     @GetMapping("/api/cobros")
     public List<ResumenCobro> consolidado() {
         return servicio.consolidado();

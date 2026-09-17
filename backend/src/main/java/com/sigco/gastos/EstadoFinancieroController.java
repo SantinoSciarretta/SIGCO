@@ -1,6 +1,9 @@
 package com.sigco.gastos;
 
 import com.sigco.gastos.dto.EstadoFinanciero;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,8 +32,33 @@ public class EstadoFinancieroController {
 
     private final GastoService servicio;
 
-    public EstadoFinancieroController(GastoService servicio) {
+    /** Arma el reporte en PDF. Es un pendiente que el informe pide. */
+    private final GeneradorDeReporteDeGastos generador;
+
+    public EstadoFinancieroController(GastoService servicio,
+                                      GeneradorDeReporteDeGastos generador) {
         this.servicio = servicio;
+        this.generador = generador;
+    }
+
+    /**
+     * GET /api/obras/{id}/gastos/reporte — el reporte de gastos en PDF.
+     *
+     * A diferencia del presupuesto y la planilla de pagos, este documento es
+     * INTERNO: muestra la ganancia estimada y el detalle de lo que se gastó,
+     * que es exactamente lo que el cliente no tiene por qué ver. El PDF lo dice
+     * en su encabezado.
+     */
+    @GetMapping("/api/obras/{id}/gastos/reporte")
+    public ResponseEntity<byte[]> reporte(@PathVariable Long id) {
+        byte[] pdf = generador.generar(id);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "inline; filename=\""
+                        + generador.nombreDeArchivo(servicio.estadoFinanciero(id)) + "\"")
+                .body(pdf);
     }
 
     /**

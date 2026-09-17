@@ -74,20 +74,16 @@ export async function eliminarPresupuesto(id) {
   await client.delete(`/presupuestos/${id}`);
 }
 
-/**
- * Dirección del PDF del presupuesto.
+/*
+ * urlDelPdf() se retiró al activar la seguridad (módulo 14).
  *
- * Se abre en una pestaña nueva en lugar de descargarse con Axios: el documento
- * lo arma el servidor y el navegador ya sabe mostrarlo. Traerlo por Axios
- * obligaría a manejar el binario y crear una URL temporal, sin ninguna ventaja.
+ * Devolvía la dirección para ponerla en un <a href>, y eso dejó de funcionar:
+ * un enlace no envía la cabecera Authorization, así que el backend contesta
+ * 401 y la pestaña se abre con un error en JSON. El comentario de esa misma
+ * función ya lo había anticipado desde el módulo 4.
  *
- * OJO: cuando exista la autenticación del módulo 14, esta dirección va a
- * necesitar el token, que un enlace directo no envía. En ese momento habrá que
- * pedirlo con Axios y abrir el resultado, o usar una URL firmada.
+ * Ahora se usa abrirPdf() de src/api/documentos.js, que lo pide con Axios.
  */
-export function urlDelPdf(id) {
-  return `${import.meta.env.VITE_API_URL}/presupuestos/${id}/pdf`;
-}
 
 export const TIPOS = ['Cotización inicial', 'Anteproyecto', 'Definitivo', 'Adicional'];
 export const ESTADOS = ['Borrador', 'Enviado', 'Aprobado', 'Rechazado'];

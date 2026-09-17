@@ -50,6 +50,9 @@ public class CobrosService {
     private final ObraRepository obraRepositorio;
     private final PresupuestoRepository presupuestoRepositorio;
 
+    /** Arma el PDF de la planilla que se le entrega al cliente. */
+    private final GeneradorDePlanillaDePagos generador = new GeneradorDePlanillaDePagos();
+
     public CobrosService(CuotaRepository repositorio,
                          RegistroCacRepository cacRepositorio,
                          ObraRepository obraRepositorio,
@@ -147,6 +150,31 @@ public class CobrosService {
      * Reemplaza la planilla resumen que hoy se actualiza a mano y que, por eso
      * mismo, casi siempre esta desactualizada.
      */
+    /**
+     * La planilla de pagos en PDF, para entregarle al cliente.
+     *
+     * Es un pendiente que el informe pide para este modulo: reemplaza a la
+     * planilla que hoy la empresa arma a mano y actualiza cada vez que el
+     * cliente pregunta cuanto debe.
+     */
+    @Transactional(readOnly = true)
+    public byte[] generarPlanilla(Long idObra) {
+        Obra obra = buscarObraOFallar(idObra);
+        List<Cuota> cuotas = repositorio.delPlan(idObra);
+
+        if (cuotas.isEmpty()) {
+            throw new ReglaDeNegocioException(
+                    "Esta obra todavía no tiene plan de cobro.");
+        }
+        return generador.generar(obra, cuotas);
+    }
+
+    /** Nombre del archivo, armado con la direccion de la obra. */
+    @Transactional(readOnly = true)
+    public String nombreDePlanilla(Long idObra) {
+        return generador.nombreDeArchivo(buscarObraOFallar(idObra));
+    }
+
     @Transactional(readOnly = true)
     public List<ResumenCobro> consolidado() {
         Map<Long, List<Cuota>> porObra = new LinkedHashMap<>();

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { abrirPdf } from '../../api/documentos';
 import Blueprint from '../../components/ui/Blueprint';
 import { obtenerObra } from './obrasApi';
 import { estadoFinanciero } from '../gastos/gastosApi';
@@ -353,6 +354,44 @@ export default function DetalleObraPage() {
 
           </div>
         </div>
+      )}
+
+      {/* ---------- Documentos ---------- */}
+      {(finanzas || cobros) && (
+        <Blueprint className={estilos.bloque}>
+          <div className={estilos.bloqueCabecera}>
+            <div>
+              <h4>Documentos</h4>
+              <div className="kicker">Se abren en otra pestaña</div>
+            </div>
+          </div>
+
+          <div className={estilos.documentos}>
+            {cobros && puede('cobros.ver') && (
+              <button type="button" className={estilos.documento}
+                      onClick={() => abrirPdf(`/obras/${obra.idObra}/cobros/planilla`,
+                                              'plan-de-pago.pdf')}>
+                <span className={estilos.documentoTitulo}>Planilla de pagos</span>
+                <span className={estilos.documentoDetalle}>
+                  Para entregarle al cliente: cuotas, vencimientos y saldo
+                </span>
+              </button>
+            )}
+
+            {finanzas && puede('gastos.ver') && (
+              <button type="button" className={estilos.documento}
+                      onClick={() => abrirPdf(`/obras/${obra.idObra}/gastos/reporte`,
+                                              'reporte-de-gastos.pdf')}>
+                <span className={estilos.documentoTitulo}>Reporte de gastos</span>
+                {/* Se avisa acá y además en el propio PDF: muestra la ganancia
+                    estimada, que es justo lo que el cliente no debe ver. */}
+                <span className={estilos.documentoDetalle}>
+                  Uso interno: incluye la ganancia estimada
+                </span>
+              </button>
+            )}
+          </div>
+        </Blueprint>
       )}
 
       {/* ---------- A dónde seguir ---------- */}

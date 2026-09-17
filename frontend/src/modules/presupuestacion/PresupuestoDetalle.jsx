@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { abrirPdf } from '../../api/documentos';
 import Blueprint from '../../components/ui/Blueprint';
 import Modal from '../../components/ui/Modal';
 import { listarMaterialesDisponibles } from '../materiales/materialesApi';
 import { listarRubros } from './catalogoApi';
 import {
   UNIDADES, agregarItem, actualizarItem, cambiarEstadoPresupuesto, definirPlanDePago,
-  duplicarPresupuesto, estadosPosiblesDesde, obtenerPresupuesto, pesos, quitarItem, urlDelPdf,
+  duplicarPresupuesto, estadosPosiblesDesde, obtenerPresupuesto, pesos, quitarItem,
 } from './presupuestosApi';
 import estilos from './Presupuestos.module.css';
 
@@ -149,12 +150,13 @@ export default function PresupuestoDetalle() {
         <button type="button" className={estilos.botonSecundario} onClick={() => setDuplicarAbierto(true)}>
           Usar como base
         </button>
-        {/* Se abre en una pestaña: el PDF lo arma el servidor y el navegador
-            ya sabe mostrarlo. */}
-        <a className={estilos.botonSecundario} href={urlDelPdf(id)}
-           target="_blank" rel="noreferrer">
+        {/* Se pide con Axios y NO con un enlace: un enlace no envía el token,
+            y desde que la seguridad está activa el backend lo exige. */}
+        <button type="button" className={estilos.botonSecundario}
+                onClick={() => abrirPdf(`/presupuestos/${id}/pdf`,
+                                        `presupuesto-${id}.pdf`)}>
           Ver PDF
-        </a>
+        </button>
       </div>
 
       {!editable && (
