@@ -23,5 +23,17 @@ public record CambioEstadoObra(
         String motivoCancelacion,
 
         /** Se carga al pasar a "En ejecución", cuando arrancan los trabajos. */
-        LocalDate fechaInicioReal) {
+        LocalDate fechaInicioReal,
+
+        /**
+         * Confirmación para cancelar una obra que ya tiene presupuesto
+         * definitivo aprobado.
+         *
+         * El informe dice que esa obra no se cancela "salvo autorización
+         * explícita del dueño". No alcanza con que el rol sea Dueño —solo el
+         * dueño llega a esta pantalla de todos modos—: lo que hace falta es que
+         * la decisión sea deliberada y no un clic de más. Este campo es esa
+         * confirmación: el servicio rechaza la cancelación si no viene en true.
+         */
+        boolean confirmaObraEnEjecucion) {
 }

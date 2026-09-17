@@ -87,6 +87,50 @@ public class ServicioJwt {
         }
     }
 
+    /**
+     * Si a este token le queda poco y conviene reemplazarlo por uno nuevo.
+     *
+     * ------------------------------------------------------------------
+     *  Renovacion deslizante: por que asi y no con un refresh token
+     * ------------------------------------------------------------------
+     *
+     * El problema real: el token dura ocho horas contadas desde el ingreso, asi
+     * que a media tarde el dueño se queda afuera en medio del trabajo, aunque
+     * haya estado usando el sistema todo el dia.
+     *
+     * La solucion clasica es un segundo token de refresco, pero eso obliga a
+     * guardarlo en una tabla y a poder revocarlo: le agrega estado al servidor,
+     * que es justo lo que este diseño evita.
+     *
+     * Aca el token se renueva mientras se usa. Si a una peticion valida le queda
+     * menos del umbral, el backend emite uno nuevo y se lo devuelve al frontend
+     * en una cabecera. El efecto: quien trabaja nunca se cae, y quien deja la
+     * pestaña abierta y se va vence igual, porque nadie esta renovando nada.
+     *
+     * No alarga la ventana de un token robado mas alla de su duracion: el
+     * ladron tendria que estar usandolo activamente, y en ese caso el problema
+     * no es la renovacion.
+     */
+    public boolean convieneRenovar(String token, double umbral) {
+        try {
+            Claims contenido = Jwts.parser()
+                    .verifyWith(clave)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+
+            long segundosRestantes = java.time.Duration
+                    .between(Instant.now(), contenido.getExpiration().toInstant())
+                    .getSeconds();
+
+            return segundosRestantes < duracionEnSegundos * umbral;
+        } catch (JwtException | IllegalArgumentException ex) {
+            // Un token que no se puede leer no se renueva. No es un error: el
+            // filtro ya lo trato como "no autenticado" antes de llegar aca.
+            return false;
+        }
+    }
+
     public long getDuracionEnSegundos() {
         return duracionEnSegundos;
     }

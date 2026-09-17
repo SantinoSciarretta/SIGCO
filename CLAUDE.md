@@ -61,8 +61,8 @@ Orden sugerido (dependencias de datos primero, seguridad al final):
 
 (Este orden difiere del numérico de la Propuesta Técnica, que lista Usuarios/Accesos como módulos 13 y 14 por razones de documentación. Para el desarrollo, esta secuencia por dependencias es la que seguimos.)
 
-> **Estado al 11/09/2026: los catorce módulos están desarrollados** (backend,
-> frontend, tests y documentación). 230 tests en verde. La seguridad está
+> **Estado al 17/09/2026: los catorce módulos están desarrollados** (backend,
+> frontend, tests y documentación). 248 tests en verde. La seguridad está
 > activa sobre todo el sistema: cada endpoint exige su permiso y el frontend
 > arma el menú con los permisos del usuario.
 >

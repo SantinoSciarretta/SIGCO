@@ -57,6 +57,24 @@ export function ProveedorSesion({ children }) {
   }, []);
 
   /**
+   * Vuelve a preguntarle al backend quién es el usuario.
+   *
+   * Hace falta cuando algo que viaja en la sesión cambió sin pasar por el
+   * login. Hoy el caso es uno: al cambiar la contraseña, la cuenta deja de
+   * estar obligada a cambiarla. Sin refrescar, el frontend seguiría creyendo
+   * que la obligación sigue y devolvería al usuario a la misma pantalla una y
+   * otra vez.
+   *
+   * Se le pregunta al backend en lugar de corregir el dato a mano acá, para
+   * que lo que el frontend cree sea siempre lo que el backend sabe.
+   */
+  const refrescar = useCallback(async () => {
+    const datos = await sesionActual();
+    setSesion(datos);
+    return datos;
+  }, []);
+
+  /**
    * Cerrar sesión es olvidar el token.
    *
    * No hay llamada al backend, y no es una omisión: con tokens firmados el
@@ -73,10 +91,11 @@ export function ProveedorSesion({ children }) {
     cargando,
     ingresar,
     salir,
+    refrescar,
     /** Si el usuario tiene un permiso. Sirve para mostrar u ocultar acciones. */
     puede: (permiso) => Boolean(sesion?.permisos?.includes(permiso)),
     esDueno: sesion?.nombreRol === 'Dueño',
-  }), [sesion, cargando, ingresar, salir]);
+  }), [sesion, cargando, ingresar, salir, refrescar]);
 
   return <ContextoSesion.Provider value={valor}>{children}</ContextoSesion.Provider>;
 }

@@ -47,6 +47,16 @@ class ObraServiceTest {
     @Mock
     private com.sigco.seguridad.AlcanceDeObras alcance;
 
+    // Para la regla de cancelacion: si la obra tiene un definitivo aprobado,
+    // cancelarla exige confirmacion explicita. Por defecto el mock devuelve
+    // lista vacia, o sea "no hay definitivo aprobado", que es el caso de la
+    // mayoria de estos tests.
+    @Mock
+    private com.sigco.presupuestacion.PresupuestoRepository presupuestoRepositorio;
+
+    @Mock
+    private com.sigco.accesos.ServicioAuditoria auditoria;
+
     @InjectMocks
     private ObraService servicio;
 
@@ -113,7 +123,7 @@ class ObraServiceTest {
             when(repositorio.buscarConCliente(1L)).thenReturn(Optional.of(obra));
 
             ObraRespuesta respuesta = servicio.cambiarEstado(1L, new CambioEstadoObra(
-                    Obra.ESTADO_EN_EJECUCION, null, LocalDate.of(2026, 3, 4)));
+                    Obra.ESTADO_EN_EJECUCION, null, LocalDate.of(2026, 3, 4), false));
 
             assertThat(respuesta.estado()).isEqualTo(Obra.ESTADO_EN_EJECUCION);
             assertThat(respuesta.fechaInicioReal()).isEqualTo(LocalDate.of(2026, 3, 4));
@@ -125,7 +135,7 @@ class ObraServiceTest {
             when(repositorio.buscarConCliente(1L)).thenReturn(Optional.of(unaObra()));
 
             assertThatThrownBy(() -> servicio.cambiarEstado(1L,
-                    new CambioEstadoObra(Obra.ESTADO_FINALIZADA, null, null)))
+                    new CambioEstadoObra(Obra.ESTADO_FINALIZADA, null, null, false)))
                     .isInstanceOf(ReglaDeNegocioException.class)
                     .hasMessageContaining("primero tiene que ejecutarse");
         }
@@ -138,7 +148,7 @@ class ObraServiceTest {
             when(repositorio.buscarConCliente(1L)).thenReturn(Optional.of(obra));
 
             assertThatThrownBy(() -> servicio.cambiarEstado(1L,
-                    new CambioEstadoObra(Obra.ESTADO_EN_EJECUCION, null, null)))
+                    new CambioEstadoObra(Obra.ESTADO_EN_EJECUCION, null, null, false)))
                     .isInstanceOf(ReglaDeNegocioException.class);
         }
 
@@ -151,7 +161,7 @@ class ObraServiceTest {
             when(repositorio.buscarConCliente(1L)).thenReturn(Optional.of(obra));
 
             assertThatThrownBy(() -> servicio.cambiarEstado(1L,
-                    new CambioEstadoObra(Obra.ESTADO_CANCELADA, "Ya no va", null)))
+                    new CambioEstadoObra(Obra.ESTADO_CANCELADA, "Ya no va", null, false)))
                     .isInstanceOf(ReglaDeNegocioException.class)
                     .hasMessageContaining("ya no admite cambios");
         }
@@ -164,7 +174,7 @@ class ObraServiceTest {
             when(repositorio.buscarConCliente(1L)).thenReturn(Optional.of(obra));
 
             assertThatThrownBy(() -> servicio.cambiarEstado(1L,
-                    new CambioEstadoObra(Obra.ESTADO_EN_EJECUCION, null, null)))
+                    new CambioEstadoObra(Obra.ESTADO_EN_EJECUCION, null, null, false)))
                     .isInstanceOf(ReglaDeNegocioException.class);
         }
     }
@@ -183,7 +193,7 @@ class ObraServiceTest {
             when(repositorio.buscarConCliente(1L)).thenReturn(Optional.of(unaObra()));
 
             assertThatThrownBy(() -> servicio.cambiarEstado(1L,
-                    new CambioEstadoObra(Obra.ESTADO_CANCELADA, "   ", null)))
+                    new CambioEstadoObra(Obra.ESTADO_CANCELADA, "   ", null, false)))
                     .isInstanceOf(ReglaDeNegocioException.class)
                     .hasMessageContaining("motivo");
         }
@@ -194,13 +204,74 @@ class ObraServiceTest {
             when(repositorio.buscarConCliente(1L)).thenReturn(Optional.of(unaObra()));
 
             ObraRespuesta respuesta = servicio.cambiarEstado(1L, new CambioEstadoObra(
-                    Obra.ESTADO_CANCELADA, "El cliente no aceptó el precio", null));
+                    Obra.ESTADO_CANCELADA, "El cliente no aceptó el precio", null, false));
 
             assertThat(respuesta.estado()).isEqualTo(Obra.ESTADO_CANCELADA);
             assertThat(respuesta.motivoCancelacion()).isEqualTo("El cliente no aceptó el precio");
             // La obra no se borra: queda para entender más adelante por qué no
             // se concretó.
             assertThat(respuesta.direccionObra()).isEqualTo("Av. Cabildo 2340");
+        }
+
+        /**
+         * La regla del informe: una obra con presupuesto definitivo aprobado no
+         * se cancela salvo autorizacion explicita del dueño.
+         *
+         * La diferencia es de fondo: cancelar una obra que todavia se estaba
+         * presupuestando descarta una propuesta; cancelar una con el definitivo
+         * aprobado interrumpe una obra en marcha, con material comprado y cuotas
+         * emitidas.
+         */
+        @Test
+        @DisplayName("Con definitivo aprobado, cancelar sin confirmar se rechaza")
+        void noCancelaObraEnMarchaSinConfirmar() {
+            when(repositorio.buscarConCliente(1L)).thenReturn(Optional.of(unaObra()));
+            conDefinitivoAprobado();
+
+            assertThatThrownBy(() -> servicio.cambiarEstado(1L, new CambioEstadoObra(
+                    Obra.ESTADO_CANCELADA, "El cliente se arrepintió", null, false)))
+                    .isInstanceOf(ReglaDeNegocioException.class)
+                    .hasMessageContaining("definitivo aprobado");
+        }
+
+        @Test
+        @DisplayName("Con definitivo aprobado y confirmación explícita, sí se cancela")
+        void cancelaObraEnMarchaConConfirmacion() {
+            when(repositorio.buscarConCliente(1L)).thenReturn(Optional.of(unaObra()));
+            conDefinitivoAprobado();
+
+            ObraRespuesta respuesta = servicio.cambiarEstado(1L, new CambioEstadoObra(
+                    Obra.ESTADO_CANCELADA, "Se interrumpió la obra", null, true));
+
+            assertThat(respuesta.estado()).isEqualTo(Obra.ESTADO_CANCELADA);
+        }
+
+        @Test
+        @DisplayName("Sin definitivo aprobado no hace falta confirmar nada")
+        void sinDefinitivoAprobadoNoPideConfirmacion() {
+            when(repositorio.buscarConCliente(1L)).thenReturn(Optional.of(unaObra()));
+            // El mock devuelve lista vacía por defecto: no hay definitivo aprobado.
+
+            ObraRespuesta respuesta = servicio.cambiarEstado(1L, new CambioEstadoObra(
+                    Obra.ESTADO_CANCELADA, "No prosperó", null, false));
+
+            assertThat(respuesta.estado()).isEqualTo(Obra.ESTADO_CANCELADA);
+        }
+
+        /** Hace que el repositorio conteste que la obra tiene un definitivo aprobado. */
+        private void conDefinitivoAprobado() {
+            // El id va con un matcher porque la obra de prueba no está
+            // persistida y su id todavía es null; lo que importa acá es el tipo
+            // y el estado que se consultan.
+            when(presupuestoRepositorio.findByObraIdObraAndTipoPresupuestoAndEstado(
+                    org.mockito.ArgumentMatchers.any(),
+                    org.mockito.ArgumentMatchers.eq(
+                            com.sigco.presupuestacion.Presupuesto.TIPO_DEFINITIVO),
+                    org.mockito.ArgumentMatchers.eq(
+                            com.sigco.presupuestacion.Presupuesto.ESTADO_APROBADO)))
+                    .thenReturn(java.util.List.of(
+                            org.mockito.Mockito.mock(
+                                    com.sigco.presupuestacion.Presupuesto.class)));
         }
     }
 

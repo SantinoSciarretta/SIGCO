@@ -16,7 +16,7 @@ todo el sistema.
 
 - **248 tests** automáticos, sin fallos
 - **28 tablas**, 13 migraciones de Flyway aplicadas
-- Último commit: `37607a9`
+- Último commit: `1f0b492`
 
 ### Cómo entrar
 
@@ -141,4 +141,5 @@ sistema de verdad. Por eso cada módulo se verifica además:
 | `46f124b` | Ficha de cliente con su historial |
 | `37607a9` | Planilla de pagos y reporte de gastos en PDF |
 
-**Faltan empujar al repositorio de GitHub** (`git push`).
+**Todo empujado a GitHub** el 17/09/2026 (`2c0cc8b..1f0b492`). La rama `main`
+local y `origin/main` están sincronizadas.

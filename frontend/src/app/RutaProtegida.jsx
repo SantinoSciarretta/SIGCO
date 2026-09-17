@@ -32,6 +32,17 @@ export default function RutaProtegida({ permiso, children }) {
     return <Navigate to="/" replace state={{ destino: ubicacion.pathname }} />;
   }
 
+  // Cuenta obligada a cambiar la contraseña: no entra a ninguna otra pantalla.
+  //
+  // Esto es COMODIDAD, no la defensa. El backend rechaza toda petición de una
+  // cuenta en esta situación (FiltroCambioDeContrasena), así que sin esta
+  // redirección el usuario vería el sistema entero fallando en 403 sin
+  // entender por qué. Acá se lo lleva directo al único lugar donde puede
+  // resolverlo.
+  if (sesion.debeCambiarContrasena && ubicacion.pathname !== '/mi-cuenta') {
+    return <Navigate to="/mi-cuenta" replace />;
+  }
+
   if (permiso && !puede(permiso)) {
     return <SinPermiso />;
   }

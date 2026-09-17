@@ -56,11 +56,26 @@ public class ObraService {
      */
     private final AlcanceDeObras alcance;
 
+    /**
+     * Para saber si la obra tiene un definitivo aprobado antes de cancelarla.
+     *
+     * Se inyecta el REPOSITORIO y no PresupuestoService: ese servicio ya depende
+     * de ObraRepository, y pedirle el servicio entero cerraria un ciclo entre
+     * los dos modulos. Con el repositorio, la dependencia va en un solo sentido.
+     */
+    private final com.sigco.presupuestacion.PresupuestoRepository presupuestoRepositorio;
+
+    private final com.sigco.accesos.ServicioAuditoria auditoria;
+
     public ObraService(ObraRepository repositorio, ClienteRepository clienteRepositorio,
-                       AlcanceDeObras alcance) {
+                       AlcanceDeObras alcance,
+                       com.sigco.presupuestacion.PresupuestoRepository presupuestoRepositorio,
+                       com.sigco.accesos.ServicioAuditoria auditoria) {
         this.repositorio = repositorio;
         this.clienteRepositorio = clienteRepositorio;
         this.alcance = alcance;
+        this.presupuestoRepositorio = presupuestoRepositorio;
+        this.auditoria = auditoria;
     }
 
     /**
@@ -214,9 +229,11 @@ public class ObraService {
      * A "En ejecucion" se llega unicamente desde "En presupuestacion", y ocurre
      * cuando el cliente aprueba el presupuesto definitivo.
      *
-     * TODO: al desarrollar Presupuestacion, este cambio deberia dispararse solo
-     *       al aprobarse el presupuesto definitivo, sin que el dueño tenga que
-     *       actualizarlo a mano.
+     * Ese cambio ya se dispara solo: PresupuestoService, al aprobar un
+     * definitivo, pone la obra en ejecucion. Esta transicion manual se conserva
+     * para los casos que no pasan por ahi —una obra cargada con el presupuesto
+     * ya aprobado de antes, por ejemplo— y porque el cambio automatico no puede
+     * ser la unica forma de llegar a un estado.
      */
     private void pasarAEjecucion(Obra obra, CambioEstadoObra cambio) {
         if (!obra.estaEnPresupuestacion()) {
@@ -237,8 +254,9 @@ public class ObraService {
      * Una obra se finaliza cuando termina de ejecutarse, nunca antes de
      * arrancar.
      *
-     * TODO: al desarrollar Seguimiento de Obras, este cambio deberia dispararse
-     *       automaticamente al completarse el ultimo hito.
+     * Tambien se dispara solo: SeguimientoService finaliza la obra al
+     * completarse el ultimo hito. Esta via manual queda para las obras que no
+     * llevan hitos cargados.
      */
     private void finalizar(Obra obra) {
         if (obra.estaEnPresupuestacion()) {
@@ -252,10 +270,15 @@ public class ObraService {
      * Cancelar exige dejar el motivo. El informe lo pide para poder entender
      * mas adelante por que un proyecto no se concreto.
      *
-     * TODO: al desarrollar Presupuestacion, impedir la cancelacion si la obra
-     *       ya tiene un presupuesto definitivo aprobado, salvo autorizacion
-     *       explicita del dueño: eso no es un presupuesto rechazado sino una
-     *       obra interrumpida en plena ejecucion.
+     * Y si la obra ya tiene un presupuesto definitivo aprobado, hace falta algo
+     * mas que el motivo: una confirmacion explicita.
+     *
+     * Es la regla del informe —"una obra con presupuesto definitivo aprobado no
+     * puede cancelarse salvo autorizacion explicita del dueño"— y la diferencia
+     * es de fondo: cancelar una obra que todavia se estaba presupuestando es
+     * descartar una propuesta que no prospero; cancelar una con el definitivo
+     * aprobado es interrumpir una obra en marcha, con material comprado, gente
+     * asignada y cuotas emitidas. Lo segundo no puede pasar por un clic de mas.
      */
     private void cancelar(Obra obra, CambioEstadoObra cambio) {
         String motivo = normalizar(cambio.motivoCancelacion());
@@ -263,7 +286,27 @@ public class ObraService {
             throw new ReglaDeNegocioException(
                     "Para cancelar una obra hay que indicar el motivo.");
         }
+
+        if (tieneDefinitivoAprobado(obra) && !cambio.confirmaObraEnEjecucion()) {
+            throw new ReglaDeNegocioException(
+                    "Esta obra tiene un presupuesto definitivo aprobado: cancelarla "
+                    + "interrumpe una obra en marcha. Si estás seguro, confirmá la "
+                    + "cancelación.");
+        }
+
         obra.cancelar(motivo);
+
+        auditoria.registrar(
+                "Cancelación de la obra #" + obra.getIdObra() + ": " + motivo,
+                "Obras");
+    }
+
+    /** Si la obra llego a tener un definitivo aprobado, esta o estuvo en marcha. */
+    private boolean tieneDefinitivoAprobado(Obra obra) {
+        return !presupuestoRepositorio.findByObraIdObraAndTipoPresupuestoAndEstado(
+                obra.getIdObra(),
+                com.sigco.presupuestacion.Presupuesto.TIPO_DEFINITIVO,
+                com.sigco.presupuestacion.Presupuesto.ESTADO_APROBADO).isEmpty();
     }
 
     // ------------------------------------------------------------------

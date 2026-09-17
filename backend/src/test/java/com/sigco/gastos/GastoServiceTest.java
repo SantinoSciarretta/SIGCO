@@ -55,6 +55,10 @@ class GastoServiceTest {
     // Desde el modulo 14 los servicios registran quien hizo cada cosa.
     @Mock private com.sigco.seguridad.SesionActual sesion;
 
+    // La auditoria de las acciones sensibles se simula: lo que se verifica aca
+    // es la regla de negocio, no que se escriba la traza.
+    @Mock private com.sigco.accesos.ServicioAuditoria auditoria;
+
     @InjectMocks private GastoService servicio;
 
     private static void asignarId(Object entidad, String campo, Long valor) {

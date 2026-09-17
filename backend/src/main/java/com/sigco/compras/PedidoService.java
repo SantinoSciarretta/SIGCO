@@ -60,6 +60,8 @@ public class PedidoService {
     /** Un capataz de obra solo opera sobre los pedidos de su obra. */
     private final AlcanceDeObras alcance;
 
+    private final com.sigco.accesos.ServicioAuditoria auditoria;
+
     public PedidoService(PedidoRepository repositorio,
                          ObraRepository obraRepositorio,
                          MaterialRepository materialRepositorio,
@@ -67,7 +69,9 @@ public class PedidoService {
                          CotizacionRepository cotizacionRepositorio,
                          GastoService gastoService,
                          SesionActual sesion,
-                         AlcanceDeObras alcance) {
+                         AlcanceDeObras alcance,
+                         com.sigco.accesos.ServicioAuditoria auditoria) {
+        this.auditoria = auditoria;
         this.repositorio = repositorio;
         this.obraRepositorio = obraRepositorio;
         this.materialRepositorio = materialRepositorio;
@@ -201,6 +205,15 @@ public class PedidoService {
         aplicarPrecios(pedido, aprobacion.precios());
         pedido.aprobar(proveedor);
 
+        // El informe define la aprobacion del pedido como indelegable del dueño,
+        // y el permiso compras.aprobar es lo que lo hace cumplir. Queda anotado
+        // quien la ejercio: es lo que vuelve verificable que no se delego.
+        auditoria.registrar(
+                "Aprobación del pedido #" + pedido.getIdPedido()
+                + " a " + proveedor.getNombreProveedor()
+                + " para la obra #" + pedido.getObra().getIdObra(),
+                "Compras");
+
         return PedidoRespuesta.completa(pedido);
     }
 
@@ -247,7 +260,7 @@ public class PedidoService {
                             : "Este pedido ya está " + pedido.getEstado().toLowerCase() + ".");
         }
 
-        // TODO: tomar el usuario de la sesion al integrar Accesos.
+        // Quien confirma la recepcion queda registrado en pedido.id_usuario_recibe.
         pedido.recibir(sesion.idUsuario().orElse(null), recepcion.fotoRemito().trim(),
                        recepcion.notaDiferencia() != null && !recepcion.notaDiferencia().isBlank()
                                ? recepcion.notaDiferencia().trim()
@@ -313,6 +326,12 @@ public class PedidoService {
         }
 
         pedido.anular(anulacion.motivo().trim());
+
+        auditoria.registrar(
+                "Anulación del pedido #" + pedido.getIdPedido()
+                + ": " + anulacion.motivo().trim(),
+                "Compras");
+
         return PedidoRespuesta.completa(pedido);
     }
 

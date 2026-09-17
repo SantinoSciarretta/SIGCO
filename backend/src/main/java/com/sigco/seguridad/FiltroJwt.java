@@ -45,6 +45,25 @@ public class FiltroJwt extends OncePerRequestFilter {
     private static final String CABECERA = "Authorization";
     private static final String PREFIJO = "Bearer ";
 
+    /**
+     * Cabecera por la que viaja el token renovado.
+     *
+     * Tiene que estar declarada en exposedHeaders de la configuracion de CORS:
+     * el navegador no deja leer una cabecera de respuesta que el servidor no
+     * autorizo explicitamente, y la renovacion pasaria inadvertida.
+     */
+    public static final String CABECERA_TOKEN_RENOVADO = "X-Token-Renovado";
+
+    /**
+     * Se renueva cuando queda menos de un cuarto de la duracion: con ocho horas
+     * de token, en las ultimas dos.
+     *
+     * Antes seria emitir un token en casi cada peticion sin ganar nada. Mas
+     * tarde dejaria sin margen a quien hace una sola consulta por la tarde y
+     * vuelve al rato.
+     */
+    private static final double UMBRAL_DE_RENOVACION = 0.25;
+
     private final ServicioJwt servicioJwt;
     private final UsuarioRepository usuarioRepositorio;
 
@@ -76,11 +95,38 @@ public class FiltroJwt extends OncePerRequestFilter {
                                     autenticado, null, autenticado.getAuthorities());
 
                     SecurityContextHolder.getContext().setAuthentication(autenticacion);
+
+                    renovarSiConviene(token, encontrado.get(), respuesta);
                 }
             }
         }
 
         cadena.doFilter(peticion, respuesta);
+    }
+
+    /**
+     * Devuelve un token nuevo si al actual le queda poco.
+     *
+     * Viaja en una cabecera de respuesta y no en el cuerpo porque el cuerpo es
+     * de cada modulo: meter ahi un dato de la sesion obligaria a que las
+     * respuestas de los catorce modulos tuvieran un campo mas. El frontend lo
+     * recoge en su interceptor de Axios, en un solo lugar.
+     *
+     * Si la renovacion falla por lo que sea, la peticion sigue: el token viejo
+     * todavia es valido. Quedarse sin renovar es una molestia dentro de un rato;
+     * cortar la peticion es un error ahora.
+     */
+    private void renovarSiConviene(String token, Usuario usuario, HttpServletResponse respuesta) {
+        try {
+            if (servicioJwt.convieneRenovar(token, UMBRAL_DE_RENOVACION)) {
+                respuesta.setHeader(CABECERA_TOKEN_RENOVADO, servicioJwt.emitir(
+                        usuario.getIdUsuario(),
+                        usuario.getNombreUsuario(),
+                        usuario.getRol().getNombreRol()));
+            }
+        } catch (RuntimeException ignorado) {
+            // Sin renovar: el token actual sigue sirviendo.
+        }
     }
 
     private String extraerToken(HttpServletRequest peticion) {

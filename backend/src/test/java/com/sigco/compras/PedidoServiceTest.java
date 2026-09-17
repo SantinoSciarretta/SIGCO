@@ -61,6 +61,10 @@ class PedidoServiceTest {
     // que alcanza todo, para que estos tests midan lo que vinieron a medir.
     @Mock private com.sigco.seguridad.AlcanceDeObras alcance;
 
+    // La auditoria de las acciones sensibles se simula: lo que se verifica aca
+    // es la regla de negocio, no que se escriba la traza.
+    @Mock private com.sigco.accesos.ServicioAuditoria auditoria;
+
     @InjectMocks private PedidoService servicio;
 
     /** Asigna el id que en produccion pone la base al guardar. */

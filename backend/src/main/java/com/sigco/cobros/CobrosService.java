@@ -53,10 +53,14 @@ public class CobrosService {
     /** Arma el PDF de la planilla que se le entrega al cliente. */
     private final GeneradorDePlanillaDePagos generador = new GeneradorDePlanillaDePagos();
 
+    private final com.sigco.accesos.ServicioAuditoria auditoria;
+
     public CobrosService(CuotaRepository repositorio,
                          RegistroCacRepository cacRepositorio,
                          ObraRepository obraRepositorio,
-                         PresupuestoRepository presupuestoRepositorio) {
+                         PresupuestoRepository presupuestoRepositorio,
+                         com.sigco.accesos.ServicioAuditoria auditoria) {
+        this.auditoria = auditoria;
         this.repositorio = repositorio;
         this.cacRepositorio = cacRepositorio;
         this.obraRepositorio = obraRepositorio;
@@ -229,6 +233,18 @@ public class CobrosService {
         }
 
         cuota.abonar(pago.fechaPago(), pago.medioPago(), pago.comprobanteEmitido());
+
+        // Dinero que entra. Es de las pocas acciones del sistema que afirman un
+        // hecho del mundo real —"el cliente pagó"— y no se puede verificar
+        // mirando otra pantalla: si no queda registrado quien la cargo, no hay
+        // forma de reconstruirlo despues.
+        auditoria.registrar(
+                "Cobro de la cuota " + cuota.getNumeroCuota()
+                + " de la obra #" + cuota.getObra().getIdObra()
+                + " por " + cuota.getMontoCuota()
+                + " (" + pago.medioPago() + ")",
+                "Cobros");
+
         return plan(cuota.getObra().getIdObra());
     }
 
@@ -241,6 +257,13 @@ public class CobrosService {
         }
 
         cuota.anularPago(anulacion.motivo().trim());
+
+        auditoria.registrar(
+                "Anulación del cobro de la cuota " + cuota.getNumeroCuota()
+                + " de la obra #" + cuota.getObra().getIdObra()
+                + ": " + anulacion.motivo().trim(),
+                "Cobros");
+
         return plan(cuota.getObra().getIdObra());
     }
 

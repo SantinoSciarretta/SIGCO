@@ -38,6 +38,12 @@ class AutenticacionServiceTest {
     @Mock private UsuarioRepository repositorio;
     @Mock private ServicioAuditoria auditoria;
 
+    // Simulado, a diferencia de BCrypt y JWT. Lo que hace RegistroDeIntentos
+    // adentro —abrir su propia transaccion— no se puede ejercitar con mocks:
+    // eso se prueba contra el backend real. Aca interesa la DECISION del
+    // servicio segun lo que ese componente conteste.
+    @Mock private RegistroDeIntentos intentos;
+
     // BCrypt y JWT de verdad: son el objeto de la prueba, no dependencias a
     // simular. Con un codificador simulado, "la contrasena se verifica bien"
     // no probaria nada.
@@ -46,7 +52,8 @@ class AutenticacionServiceTest {
             "clave-de-prueba-suficientemente-larga-para-hmac-sha256", 28800);
 
     private AutenticacionService servicio() {
-        return new AutenticacionService(repositorio, codificador, servicioJwt, auditoria);
+        return new AutenticacionService(
+                repositorio, codificador, servicioJwt, auditoria, intentos);
     }
 
     private static void asignar(Object objeto, String campo, Object valor) {
@@ -148,6 +155,151 @@ class AutenticacionServiceTest {
     }
 
     // ------------------------------------------------------------------
+    //  Limite de intentos fallidos
+    // ------------------------------------------------------------------
+
+    @Test
+    @DisplayName("El intento que pasa el límite avisa que la cuenta quedó bloqueada")
+    void avisaCuandoBloquea() {
+        usuario("granica2026", true);
+        when(intentos.registrarFallo(1L)).thenReturn(true);
+        when(intentos.getMinutosDeBloqueo()).thenReturn(15);
+
+        assertThatThrownBy(() -> servicio().ingresar(
+                new Credenciales("ricardo", "incorrecta")))
+                .isInstanceOf(ReglaDeNegocioException.class)
+                .hasMessageContaining("15 minutos");
+    }
+
+    @Test
+    @DisplayName("Cada intento fallido contra una cuenta que existe queda anotado")
+    void anotaElIntentoFallido() {
+        usuario("granica2026", true);
+
+        assertThatThrownBy(() -> servicio().ingresar(
+                new Credenciales("ricardo", "incorrecta")))
+                .isInstanceOf(ReglaDeNegocioException.class);
+
+        verify(intentos).registrarFallo(1L);
+    }
+
+    @Test
+    @DisplayName("Contra un usuario inexistente no se anota nada: no hay dónde")
+    void noAnotaContraUsuarioInexistente() {
+        when(repositorio.porNombre("nadie")).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> servicio().ingresar(
+                new Credenciales("nadie", "loquesea")))
+                .isInstanceOf(ReglaDeNegocioException.class);
+
+        verify(intentos, org.mockito.Mockito.never())
+                .registrarFallo(org.mockito.ArgumentMatchers.anyLong());
+    }
+
+    /**
+     * El test que justifica el orden del codigo.
+     *
+     * Si el bloqueo se verificara DESPUES de comparar la contrasena, quien esta
+     * probando contrasenas podria seguir probandolas durante el bloqueo: el
+     * sistema le diria "incorrecta" hasta que acertara y recien ahi le avisaria
+     * del bloqueo, confirmandole cual era. Verificando antes, durante el bloqueo
+     * ningun intento se evalua.
+     *
+     * Por eso el caso de prueba usa la contrasena CORRECTA: si el mensaje
+     * hablara de credenciales en lugar del bloqueo, el orden estaria mal.
+     */
+    @Test
+    @DisplayName("Una cuenta bloqueada no entra ni con la contraseña correcta")
+    void cuentaBloqueadaNoEntraNiConLaCorrecta() {
+        Usuario u = usuario("granica2026", true);
+        u.registrarIntentoFallido(1, 15);   // con maximo 1, este intento la bloquea
+
+        assertThatThrownBy(() -> servicio().ingresar(
+                new Credenciales("ricardo", "granica2026")))
+                .isInstanceOf(ReglaDeNegocioException.class)
+                .hasMessageContaining("Demasiados intentos");
+
+        // Y no llega a evaluarse como intento: la peticion se corta antes.
+        verify(intentos, org.mockito.Mockito.never())
+                .registrarFallo(org.mockito.ArgumentMatchers.anyLong());
+    }
+
+    @Test
+    @DisplayName("Un ingreso correcto borra la cuenta de intentos fallidos")
+    void ingresoCorrectoLimpiaLosIntentos() {
+        Usuario u = usuario("granica2026", true);
+        u.registrarIntentoFallido(5, 15);   // un fallo suelto, sin llegar al limite
+        assertThat(u.getIntentosFallidos()).isEqualTo(1);
+
+        servicio().ingresar(new Credenciales("ricardo", "granica2026"));
+
+        assertThat(u.getIntentosFallidos()).isZero();
+        assertThat(u.estaBloqueada()).isFalse();
+    }
+
+    @Test
+    @DisplayName("Al bloquear, el contador vuelve a cero para no rebloquear al primer error")
+    void alBloquearElContadorVuelveACero() {
+        Usuario u = usuario("granica2026", true);
+
+        assertThat(u.registrarIntentoFallido(2, 15)).isFalse();
+        assertThat(u.registrarIntentoFallido(2, 15)).isTrue();
+
+        assertThat(u.estaBloqueada()).isTrue();
+        // Si quedara en 2, al vencer el bloqueo el primer error siguiente
+        // volveria a bloquear la cuenta de inmediato.
+        assertThat(u.getIntentosFallidos()).isZero();
+    }
+
+    // ------------------------------------------------------------------
+    //  Cambio obligatorio de contraseña
+    // ------------------------------------------------------------------
+
+    @Test
+    @DisplayName("Una cuenta recién creada nace obligada a cambiar la contraseña")
+    void cuentaNuevaNaceObligada() {
+        Usuario nuevo = new Usuario("martin", codificador.encode("general2026"), rolDueno(), null);
+
+        assertThat(nuevo.debeCambiarContrasena()).isTrue();
+    }
+
+    @Test
+    @DisplayName("La sesión informa si hay que cambiar la contraseña")
+    void laSesionInformaLaObligacion() {
+        usuario("granica2026", true);
+
+        Sesion sesion = servicio().ingresar(new Credenciales("ricardo", "granica2026"));
+
+        assertThat(sesion.debeCambiarContrasena()).isTrue();
+    }
+
+    @Test
+    @DisplayName("Elegir una contraseña propia levanta la obligación; que se la resetee otro, la impone")
+    void cambioPropioYReseteoAjeno() {
+        Usuario u = usuario("granica2026", true);
+
+        u.cambiarContrasena(codificador.encode("laQueEligioRicardo"));
+        assertThat(u.debeCambiarContrasena()).isFalse();
+
+        u.resetearContrasena(codificador.encode("laQuePusoElDueno"));
+        assertThat(u.debeCambiarContrasena()).isTrue();
+    }
+
+    @Test
+    @DisplayName("Cambiar la contraseña libera el bloqueo")
+    void cambiarContrasenaLiberaElBloqueo() {
+        Usuario u = usuario("granica2026", true);
+        u.registrarIntentoFallido(1, 15);
+        assertThat(u.estaBloqueada()).isTrue();
+
+        // La contrasena que estaban buscando ya no existe: no hay motivo para
+        // que el titular siga esperando.
+        u.cambiarContrasena(codificador.encode("unaNueva"));
+
+        assertThat(u.estaBloqueada()).isFalse();
+    }
+
+    // ------------------------------------------------------------------
     //  El token
     // ------------------------------------------------------------------
 
@@ -172,6 +324,37 @@ class AutenticacionServiceTest {
         String token = yaVencido.emitir(1L, "ricardo", Rol.DUENO);
 
         assertThat(servicioJwt.idDelUsuario(token)).isNull();
+    }
+
+    @Test
+    @DisplayName("Un token recién emitido no se renueva")
+    void tokenNuevoNoSeRenueva() {
+        String token = servicioJwt.emitir(1L, "ricardo", Rol.DUENO);
+
+        // Le queda el 100% de su vida: muy por encima del 25% del umbral.
+        assertThat(servicioJwt.convieneRenovar(token, 0.25)).isFalse();
+    }
+
+    @Test
+    @DisplayName("Un token al que le queda poco sí se renueva")
+    void tokenPorVencerSeRenueva() {
+        // Duracion de 8 horas, pero emitido por un servicio con vida corta: lo
+        // que importa es la proporcion entre lo que queda y la duracion
+        // configurada.
+        ServicioJwt casiVencido = new ServicioJwt(
+                "clave-de-prueba-suficientemente-larga-para-hmac-sha256", 60);
+        String token = casiVencido.emitir(1L, "ricardo", Rol.DUENO);
+
+        // Le queda un minuto de sesenta segundos configurados. Con un umbral
+        // del 200% (mas de lo que dura), tiene que querer renovarse.
+        assertThat(casiVencido.convieneRenovar(token, 2.0)).isTrue();
+    }
+
+    @Test
+    @DisplayName("Un token inválido no se renueva y no rompe")
+    void tokenInvalidoNoSeRenueva() {
+        assertThat(servicioJwt.convieneRenovar("no-es-un-token", 0.25)).isFalse();
+        assertThat(servicioJwt.convieneRenovar("", 0.25)).isFalse();
     }
 
     @Test

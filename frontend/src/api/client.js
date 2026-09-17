@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { borrarToken, leerToken } from '../modules/sesion/almacenToken';
+import { borrarToken, guardarToken, leerToken } from '../modules/sesion/almacenToken';
 
 /**
  * Cliente HTTP unico de SIGCO.
@@ -53,7 +53,23 @@ client.interceptors.request.use(
  * puedan mostrar sin tener que interpretar la estructura de axios.
  */
 client.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // Renovacion deslizante de la sesion.
+    //
+    // Cuando al token le queda poco, el backend manda uno nuevo en esta
+    // cabecera y hay que reemplazar el guardado. Es lo que evita que el sistema
+    // eche al usuario a las ocho horas en medio del trabajo: mientras usa el
+    // sistema, el token se va renovando solo. Si deja de usarlo, nadie renueva
+    // nada y la sesion vence como corresponde.
+    //
+    // Va aca y no en el contexto de sesion porque cualquier peticion de
+    // cualquier modulo puede traerla.
+    const renovado = response.headers?.['x-token-renovado'];
+    if (renovado) {
+      guardarToken(renovado);
+    }
+    return response;
+  },
   (error) => {
     const respuesta = error.response;
 

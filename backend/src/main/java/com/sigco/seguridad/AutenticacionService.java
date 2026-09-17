@@ -34,20 +34,38 @@ public class AutenticacionService {
     private final PasswordEncoder codificador;
     private final ServicioJwt servicioJwt;
     private final ServicioAuditoria auditoria;
+    private final RegistroDeIntentos intentos;
 
     public AutenticacionService(UsuarioRepository repositorio,
                                 PasswordEncoder codificador,
                                 ServicioJwt servicioJwt,
-                                ServicioAuditoria auditoria) {
+                                ServicioAuditoria auditoria,
+                                RegistroDeIntentos intentos) {
         this.repositorio = repositorio;
         this.codificador = codificador;
         this.servicioJwt = servicioJwt;
         this.auditoria = auditoria;
+        this.intentos = intentos;
     }
 
     @Transactional
     public Sesion ingresar(Credenciales credenciales) {
         Optional<Usuario> encontrado = repositorio.porNombre(credenciales.nombreUsuario().trim());
+
+        // El bloqueo se verifica ANTES de comparar la contrasena, y el orden es
+        // la diferencia entre defender y aparentar que se defiende.
+        //
+        // Si se verificara despues, quien esta probando contrasenas podria
+        // seguir probandolas todas: el sistema le diria "incorrecta" hasta que
+        // acertara, y recien ahi le avisaria que la cuenta esta bloqueada. Le
+        // habriamos impedido entrar en ese momento, pero le habriamos confirmado
+        // cual era la contrasena, y le alcanza con esperar a que el bloqueo se
+        // venza. Verificando antes, durante los minutos del bloqueo NINGUN
+        // intento se evalua: el ritmo maximo queda en unos pocos intentos por
+        // ventana, y adivinar deja de ser viable.
+        if (encontrado.isPresent() && encontrado.get().estaBloqueada()) {
+            throw new ReglaDeNegocioException(mensajeDeBloqueo(encontrado.get()));
+        }
 
         // Se verifica la contrasena aunque el usuario no exista, para que el
         // tiempo de respuesta sea parecido en los dos casos: si el sistema
@@ -61,6 +79,18 @@ public class AutenticacionService {
                 });
 
         if (encontrado.isEmpty() || !valida) {
+            // Solo se cuenta el fallo si la cuenta existe: no hay donde anotar
+            // los intentos contra un nombre inventado. Es la limitacion de
+            // contar por cuenta, y por eso el limite protege la contrasena, no
+            // impide que alguien golpee la puerta.
+            if (encontrado.isPresent()) {
+                boolean quedoBloqueada = intentos.registrarFallo(encontrado.get().getIdUsuario());
+                if (quedoBloqueada) {
+                    throw new ReglaDeNegocioException(
+                            "Demasiados intentos fallidos. La cuenta queda bloqueada "
+                            + intentos.getMinutosDeBloqueo() + " minutos.");
+                }
+            }
             throw new ReglaDeNegocioException("Usuario o contraseña incorrectos.");
         }
 
@@ -71,6 +101,11 @@ public class AutenticacionService {
                     "Esta cuenta está dada de baja. Hablá con el dueño para reactivarla.");
         }
 
+        // Un ingreso correcto borra la cuenta de intentos: el limite mira
+        // intentos CONSECUTIVOS. Si no se limpiara, cinco errores repartidos a
+        // lo largo de meses terminarian bloqueando a alguien que siempre entro
+        // bien.
+        usuario.limpiarIntentosFallidos();
         usuario.registrarIngreso();
 
         // El ingreso se audita con el usuario explicito: en este momento la
@@ -99,7 +134,8 @@ public class AutenticacionService {
                 usuario.getRol().getPermisos().stream()
                         .map(Permiso::getNombrePermiso)
                         .sorted()
-                        .toList());
+                        .toList(),
+                usuario.debeCambiarContrasena());
     }
 
     private Sesion armarSesion(Usuario usuario) {
@@ -108,6 +144,37 @@ public class AutenticacionService {
                 usuario.getNombreUsuario(),
                 usuario.getRol().getNombreRol());
         return sesionDe(usuario, token);
+    }
+
+    /**
+     * El aviso de cuenta bloqueada, con los minutos que faltan.
+     *
+     * ------------------------------------------------------------------
+     *  Lo que este mensaje revela, y por que se acepta
+     * ------------------------------------------------------------------
+     *
+     * Decir "esta cuenta esta bloqueada" admite que la cuenta existe, y el
+     * resto de este archivo se cuida justamente de no revelar eso. La
+     * contradiccion es real y la decision es deliberada:
+     *
+     *   - Lo que protege el sistema es la contrasena, no la lista de nombres.
+     *     En Granica las cuentas son tres y se llaman por el nombre de pila de
+     *     gente que cualquiera que conozca la empresa ya conoce. Ocultar que
+     *     "ricardo" existe no protege nada real.
+     *   - Un mensaje generico deja al usuario legitimo sin entender por que no
+     *     entra si esta escribiendo bien la contrasena. Termina llamando por
+     *     telefono, o peor, convencido de que el sistema se rompio.
+     *
+     * Es el mismo criterio que ya se aplica con las cuentas dadas de baja unas
+     * lineas mas arriba.
+     */
+    private String mensajeDeBloqueo(Usuario usuario) {
+        long minutos = Math.max(1, java.time.Duration
+                .between(java.time.LocalDateTime.now(), usuario.getBloqueadoHasta())
+                .toMinutes() + 1);
+
+        return "Demasiados intentos fallidos. Probá de nuevo en "
+                + minutos + (minutos == 1 ? " minuto." : " minutos.");
     }
 
     /**

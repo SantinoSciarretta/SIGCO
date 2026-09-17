@@ -22,6 +22,17 @@ export default function CambiarEstadoObra({ obra, onCerrar, onCambiado }) {
   const [fechaInicio, setFechaInicio] = useState('');
   const [error, setError] = useState(null);
   const [guardando, setGuardando] = useState(false);
+  const [confirmaEnMarcha, setConfirmaEnMarcha] = useState(false);
+
+  /**
+   * Si cancelar esta obra interrumpe una obra en marcha.
+   *
+   * Se deduce del estado: una obra llega a "En ejecución" justamente cuando se
+   * aprueba su presupuesto definitivo. Quien decide de verdad es el backend,
+   * que consulta los presupuestos; acá solo se anticipa para pedir la
+   * confirmación antes de mandar algo que va a ser rechazado.
+   */
+  const obraEnMarcha = obra.estado === 'En ejecución';
 
   const enviar = async (evento) => {
     evento.preventDefault();
@@ -33,6 +44,7 @@ export default function CambiarEstadoObra({ obra, onCerrar, onCambiado }) {
         estado,
         motivoCancelacion: estado === 'Cancelada' ? motivo : null,
         fechaInicioReal: estado === 'En ejecución' && fechaInicio ? fechaInicio : null,
+        confirmaObraEnEjecucion: estado === 'Cancelada' && confirmaEnMarcha,
       }));
     } catch (fallo) {
       // Un 409 llega acá con el texto de la regla que se violó, tal como la
@@ -100,6 +112,29 @@ export default function CambiarEstadoObra({ obra, onCerrar, onCambiado }) {
               Sin el motivo no se puede cancelar: es lo que permite entender más
               adelante por qué no se concretó el proyecto.
             </p>
+          </div>
+        )}
+
+        {/* La obra ya arrancó: cancelarla no es descartar una propuesta, es
+            interrumpir trabajos con material comprado y cuotas emitidas. El
+            informe pide autorización explícita del dueño, y esto es esa
+            autorización. El backend la vuelve a exigir. */}
+        {estado === 'Cancelada' && obraEnMarcha && (
+          <div className={estilos.campo}>
+            <label className={estilos.etiqueta} htmlFor="confirmaEnMarcha"
+                   style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+              <input
+                id="confirmaEnMarcha"
+                type="checkbox"
+                checked={confirmaEnMarcha}
+                onChange={(e) => setConfirmaEnMarcha(e.target.checked)}
+                style={{ marginTop: 3 }}
+              />
+              <span>
+                Esta obra tiene el presupuesto definitivo aprobado y está en
+                ejecución. Confirmo que quiero interrumpirla.
+              </span>
+            </label>
           </div>
         )}
 

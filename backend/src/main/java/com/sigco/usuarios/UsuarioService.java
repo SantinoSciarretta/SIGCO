@@ -130,7 +130,24 @@ public class UsuarioService {
             }
         }
 
-        usuario.cambiarContrasena(codificador.encode(cambio.contrasenaNueva()));
+        // La nueva no puede ser la que ya tenia.
+        //
+        // Sin esta validacion, el cambio obligatorio del primer ingreso se
+        // saltea solo: alcanzaria con volver a escribir la contrasena conocida
+        // para que el sistema la diera por cambiada y levantara la obligacion.
+        if (usuario.verificarContra(cambio.contrasenaNueva(), codificador::matches)) {
+            throw new ReglaDeNegocioException(
+                    "La contraseña nueva tiene que ser distinta de la actual.");
+        }
+
+        // Dos metodos distintos y no uno con un booleano: cambiar la propia
+        // levanta la obligacion de cambiarla, resetear la de otro la impone,
+        // porque deja una contrasena que conocen dos personas.
+        if (esLaPropia) {
+            usuario.cambiarContrasena(codificador.encode(cambio.contrasenaNueva()));
+        } else {
+            usuario.resetearContrasena(codificador.encode(cambio.contrasenaNueva()));
+        }
 
         auditoria.registrar(esLaPropia
                         ? "Cambio de su propia contraseña"

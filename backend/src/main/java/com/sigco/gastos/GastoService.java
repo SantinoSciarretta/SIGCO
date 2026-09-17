@@ -66,12 +66,16 @@ public class GastoService {
      */
     private final SesionActual sesion;
 
+    private final com.sigco.accesos.ServicioAuditoria auditoria;
+
     public GastoService(GastoRepository repositorio,
                         ObraRepository obraRepositorio,
                         RubroRepository rubroRepositorio,
                         SubrubroRepository subrubroRepositorio,
                         PresupuestoRepository presupuestoRepositorio,
-                        SesionActual sesion) {
+                        SesionActual sesion,
+                        com.sigco.accesos.ServicioAuditoria auditoria) {
+        this.auditoria = auditoria;
         this.repositorio = repositorio;
         this.obraRepositorio = obraRepositorio;
         this.rubroRepositorio = rubroRepositorio;
@@ -163,6 +167,17 @@ public class GastoService {
         }
 
         gasto.anular(anulacion.motivo().trim());
+
+        // Un gasto anulado deja de contar contra el presupuesto del rubro y
+        // cambia la ganancia de la obra. Que quede quien lo anulo y por que es
+        // lo que impide que un desvio se "arregle" sin dejar rastro.
+        auditoria.registrar(
+                "Anulación del gasto #" + gasto.getIdGasto()
+                + " por " + gasto.getMonto()
+                + " en la obra #" + gasto.getObra().getIdObra()
+                + ": " + anulacion.motivo().trim(),
+                "Gastos");
+
         return GastoRespuesta.desde(gasto);
     }
 

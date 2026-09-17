@@ -144,6 +144,16 @@ public final class UsuarioDtos {
             String nombreUsuario,
             String nombreRol,
             Long idOperario,
-            List<String> permisos) {
+            List<String> permisos,
+
+            /**
+             * Si la cuenta tiene que cambiar la contrasena antes de operar.
+             *
+             * El frontend lo usa para mandar al usuario directo a la pantalla de
+             * cambio. Eso es COMODIDAD: quien ignore este campo y llame a la API
+             * igual se choca contra FiltroCambioDeContrasena, que es lo que de
+             * verdad lo impide.
+             */
+            boolean debeCambiarContrasena) {
     }
 }

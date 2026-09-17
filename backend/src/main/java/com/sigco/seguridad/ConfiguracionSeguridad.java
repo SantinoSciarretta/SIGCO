@@ -52,6 +52,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class ConfiguracionSeguridad {
 
     private final FiltroJwt filtroJwt;
+    private final FiltroCambioDeContrasena filtroCambioDeContrasena;
 
     /**
      * El mismo ObjectMapper que usa el resto de la API.
@@ -68,8 +69,11 @@ public class ConfiguracionSeguridad {
      */
     private final ObjectMapper mapeador;
 
-    public ConfiguracionSeguridad(FiltroJwt filtroJwt, ObjectMapper mapeador) {
+    public ConfiguracionSeguridad(FiltroJwt filtroJwt,
+                                  FiltroCambioDeContrasena filtroCambioDeContrasena,
+                                  ObjectMapper mapeador) {
         this.filtroJwt = filtroJwt;
+        this.filtroCambioDeContrasena = filtroCambioDeContrasena;
         this.mapeador = mapeador;
     }
 
@@ -136,7 +140,12 @@ public class ConfiguracionSeguridad {
 
                 // El filtro del token va antes del de usuario y contrasena de
                 // Spring: para cuando ese corre, el usuario ya esta identificado.
-                .addFilterBefore(filtroJwt, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(filtroJwt, UsernamePasswordAuthenticationFilter.class)
+
+                // Y este va DESPUES del token, no antes: necesita saber quien es
+                // el usuario para preguntarle si tiene que cambiar la
+                // contrasena. Antes del token no habria a quien preguntarle.
+                .addFilterAfter(filtroCambioDeContrasena, FiltroJwt.class);
 
         return http.build();
     }

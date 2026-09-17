@@ -60,6 +60,15 @@ public class CorsConfig {
         // el token JWT.
         configuracion.setAllowCredentials(true);
 
+        // Cabeceras de RESPUESTA que el navegador le deja leer al frontend.
+        //
+        // Por defecto no deja leer ninguna fuera de un puñado estandar: aunque
+        // el backend mande el token renovado, el JavaScript no lo veria y la
+        // sesion se caeria igual a las ocho horas. Como el sintoma seria
+        // "a veces se cierra sola", conviene tener presente que se declara aca.
+        configuracion.setExposedHeaders(
+                List.of(com.sigco.seguridad.FiltroJwt.CABECERA_TOKEN_RENOVADO));
+
         UrlBasedCorsConfigurationSource fuente = new UrlBasedCorsConfigurationSource();
         fuente.registerCorsConfiguration("/api/**", configuracion);
         return fuente;

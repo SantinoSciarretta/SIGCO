@@ -33,8 +33,15 @@ public class UsuarioAutenticado implements org.springframework.security.core.use
     private final Long idOperario;
     private final List<GrantedAuthority> permisos;
 
+    /**
+     * Se copia aca para que FiltroCambioDeContrasena no tenga que volver a
+     * consultar la base: FiltroJwt ya cargo el usuario en esta misma peticion.
+     */
+    private final boolean debeCambiarContrasena;
+
     public UsuarioAutenticado(Usuario usuario) {
         this.idUsuario = usuario.getIdUsuario();
+        this.debeCambiarContrasena = usuario.debeCambiarContrasena();
         this.nombreUsuario = usuario.getNombreUsuario();
         this.nombreRol = usuario.getRol().getNombreRol();
         this.idOperario = usuario.getOperario() != null
@@ -44,6 +51,10 @@ public class UsuarioAutenticado implements org.springframework.security.core.use
                 .map(SimpleGrantedAuthority::new)
                 .map(GrantedAuthority.class::cast)
                 .toList();
+    }
+
+    public boolean debeCambiarContrasena() {
+        return debeCambiarContrasena;
     }
 
     public Long getIdUsuario() {

@@ -74,6 +74,28 @@ public class Usuario {
     @Column(name = "motivo_baja", length = 200)
     private String motivoBaja;
 
+    /**
+     * Intentos fallidos CONSECUTIVOS. Un ingreso correcto lo vuelve a cero.
+     *
+     * No es un total historico: lo que interesa es si alguien esta probando
+     * contrasenas ahora, no cuantas veces se equivoco Ricardo en marzo.
+     */
+    @Column(name = "intentos_fallidos", nullable = false)
+    private int intentosFallidos;
+
+    /** Instante en que se libera el bloqueo. NULL es lo normal: sin bloqueo. */
+    @Column(name = "bloqueado_hasta")
+    private LocalDateTime bloqueadoHasta;
+
+    /**
+     * Mientras este en true, la cuenta solo puede cambiar su contrasena.
+     *
+     * Se activa cuando existe una contrasena que conocen dos personas: la que
+     * el dueño eligio al crear la cuenta, y la que el dueño puso al resetearla.
+     */
+    @Column(name = "debe_cambiar_contrasena", nullable = false)
+    private boolean debeCambiarContrasena;
+
     @Column(name = "ultima_fecha_acceso")
     private LocalDateTime ultimaFechaAcceso;
 
@@ -98,6 +120,11 @@ public class Usuario {
         this.operario = operario;
         this.estado = ESTADO_ACTIVO;
         this.fechaAlta = LocalDateTime.now();
+
+        // Toda cuenta nace obligada a cambiar la contrasena: la eligio el dueño
+        // al crearla, asi que hay dos personas que la conocen. Recien cuando el
+        // titular elige una propia la contrasena vuelve a ser secreta.
+        this.debeCambiarContrasena = true;
     }
 
     // ------------------------------------------------------------------
@@ -119,8 +146,87 @@ public class Usuario {
         return verificador.test(contrasenaEnClaro, this.contrasenaHash);
     }
 
+    /**
+     * El titular elige una contrasena nueva.
+     *
+     * Levanta la obligacion de cambiarla: desde ahora la conoce una sola
+     * persona, que es lo que hace que una contrasena sirva.
+     */
     public void cambiarContrasena(String nuevoHash) {
         this.contrasenaHash = nuevoHash;
+        this.debeCambiarContrasena = false;
+
+        // Cambiar la contrasena tambien libera el bloqueo. Si la cuenta quedo
+        // bloqueada porque alguien estuvo probando contrasenas, la que estaban
+        // buscando ya no existe, y el titular no tiene por que esperar.
+        limpiarIntentosFallidos();
+    }
+
+    /**
+     * El dueño le pone una contrasena a otro.
+     *
+     * Es el otro caso, y por eso es un metodo distinto: la contrasena resultante
+     * la conocen dos personas, asi que el titular queda obligado a cambiarla en
+     * cuanto entre. Usar el mismo metodo para los dos casos haria que un reseteo
+     * dejara en pie una contrasena compartida sin que nadie lo note.
+     */
+    public void resetearContrasena(String nuevoHash) {
+        this.contrasenaHash = nuevoHash;
+        this.debeCambiarContrasena = true;
+        limpiarIntentosFallidos();
+    }
+
+    // ------------------------------------------------------------------
+    //  Intentos fallidos y bloqueo
+    // ------------------------------------------------------------------
+
+    /**
+     * Anota un intento fallido y bloquea la cuenta si se paso del limite.
+     *
+     * @param maximo          intentos consecutivos tolerados antes de bloquear
+     * @param minutosBloqueo  cuanto dura el bloqueo
+     * @return true si este intento fue el que bloqueo la cuenta
+     */
+    public boolean registrarIntentoFallido(int maximo, int minutosBloqueo) {
+        this.intentosFallidos++;
+
+        if (this.intentosFallidos >= maximo) {
+            this.bloqueadoHasta = LocalDateTime.now().plusMinutes(minutosBloqueo);
+            // El contador se reinicia junto con el bloqueo. Si no, al vencer el
+            // bloqueo la cuenta quedaria con el contador al limite y el primer
+            // error siguiente la bloquearia de nuevo.
+            this.intentosFallidos = 0;
+            return true;
+        }
+        return false;
+    }
+
+    /** Un ingreso correcto borra la cuenta de intentos y cualquier bloqueo. */
+    public void limpiarIntentosFallidos() {
+        this.intentosFallidos = 0;
+        this.bloqueadoHasta = null;
+    }
+
+    /**
+     * Si la cuenta esta bloqueada en este momento.
+     *
+     * El bloqueo se vence solo: no hay nada que corra cada tanto para liberar
+     * cuentas, simplemente se compara la fecha guardada contra el reloj.
+     */
+    public boolean estaBloqueada() {
+        return bloqueadoHasta != null && bloqueadoHasta.isAfter(LocalDateTime.now());
+    }
+
+    public LocalDateTime getBloqueadoHasta() {
+        return bloqueadoHasta;
+    }
+
+    public int getIntentosFallidos() {
+        return intentosFallidos;
+    }
+
+    public boolean debeCambiarContrasena() {
+        return debeCambiarContrasena;
     }
 
     public void cambiarRol(Rol nuevoRol) {

@@ -51,6 +51,10 @@ class PresupuestoServiceTest {
     @Mock private RubroRepository rubroRepositorio;
     @Mock private SubrubroRepository subrubroRepositorio;
 
+    // La auditoria de las acciones sensibles se simula: lo que se verifica aca
+    // es la regla de negocio, no que se escriba la traza.
+    @Mock private com.sigco.accesos.ServicioAuditoria auditoria;
+
     @InjectMocks private PresupuestoService servicio;
 
     /** Asigna el id que en produccion pone la base al guardar. */

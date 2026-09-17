@@ -46,6 +46,10 @@ class CobrosServiceTest {
     @Mock private ObraRepository obraRepositorio;
     @Mock private PresupuestoRepository presupuestoRepositorio;
 
+    // La auditoria de las acciones sensibles se simula: lo que se verifica aca
+    // es la regla de negocio, no que se escriba la traza.
+    @Mock private com.sigco.accesos.ServicioAuditoria auditoria;
+
     @InjectMocks private CobrosService servicio;
 
     private static void asignarId(Object entidad, String campo, Long valor) {

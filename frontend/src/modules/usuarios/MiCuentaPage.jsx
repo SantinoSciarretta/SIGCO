@@ -16,7 +16,13 @@ import estilos from './Usuarios.module.css';
  * una computadora no puede apropiarse de la cuenta cambiándole la clave.
  */
 export default function MiCuentaPage() {
-  const { sesion } = useSesion();
+  const { sesion, refrescar } = useSesion();
+
+  // Cuando la cuenta está obligada a cambiar la contraseña, esta pantalla es la
+  // única a la que puede entrar: RutaProtegida la trae acá y el backend rechaza
+  // todo lo demás. Por eso cambia el texto — sin explicación, el usuario no
+  // entiende por qué el sistema no lo deja pasar.
+  const obligado = Boolean(sesion?.debeCambiarContrasena);
 
   const [actual, setActual] = useState('');
   const [nueva, setNueva] = useState('');
@@ -48,6 +54,13 @@ export default function MiCuentaPage() {
       setActual('');
       setNueva('');
       setRepetida('');
+
+      // Se vuelve a pedir la sesión: la cuenta ya no está obligada a cambiar la
+      // contraseña, y hasta que el frontend no lo sepa, RutaProtegida la sigue
+      // trayendo a esta misma pantalla.
+      if (obligado) {
+        await refrescar();
+      }
     } catch (fallo) {
       setError(fallo.mensaje);
     } finally {
@@ -64,6 +77,19 @@ export default function MiCuentaPage() {
           <p className={estilos.bajada}>{sesion?.nombreRol}</p>
         </div>
       </div>
+
+      {obligado && (
+        <Blueprint className={estilos.bloque} style={{ maxWidth: 460, marginBottom: 16 }}>
+          <div className={estilos.bloqueCabecera}>
+            <h4>Antes de empezar, elegí una contraseña propia</h4>
+          </div>
+          <p className={estilos.ayuda} style={{ margin: 0 }}>
+            La contraseña que estás usando te la dio otra persona, así que la
+            conocen dos. Hasta que elijas una tuya, el sistema no habilita el
+            resto de las pantallas.
+          </p>
+        </Blueprint>
+      )}
 
       <Blueprint className={estilos.bloque} style={{ maxWidth: 460 }}>
         <div className={estilos.bloqueCabecera}>

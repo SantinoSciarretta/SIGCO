@@ -44,6 +44,7 @@ public class PresupuestoService {
     private final MaterialRepository materialRepositorio;
     private final RubroRepository rubroRepositorio;
     private final SubrubroRepository subrubroRepositorio;
+    private final com.sigco.accesos.ServicioAuditoria auditoria;
 
     public PresupuestoService(PresupuestoRepository repositorio,
                               ItemPresupuestoRepository itemRepositorio,
@@ -51,8 +52,10 @@ public class PresupuestoService {
                               MaterialRepository materialRepositorio,
                               RubroRepository rubroRepositorio,
                               SubrubroRepository subrubroRepositorio,
-                              GeneradorDePdf generadorDePdf) {
+                              GeneradorDePdf generadorDePdf,
+                              com.sigco.accesos.ServicioAuditoria auditoria) {
         this.generadorDePdf = generadorDePdf;
+        this.auditoria = auditoria;
         this.repositorio = repositorio;
         this.itemRepositorio = itemRepositorio;
         this.obraRepositorio = obraRepositorio;
@@ -289,8 +292,11 @@ public class PresupuestoService {
     /**
      * Avanza el estado de la negociacion con el cliente.
      *
-     * TODO: al integrar el modulo Accesos, restringir la aprobacion al rol
-     *       dueño. El informe la define como una decision no delegable.
+     * La aprobacion es indelegable, como pide el informe, y eso ya esta
+     * resuelto: el endpoint exige el permiso presupuestos.editar y ese permiso
+     * lo tiene unicamente el rol Dueño (V13). No hace falta una comprobacion de
+     * rol escrita a mano aca: duplicaria la regla en dos lugares que despues
+     * pueden contradecirse.
      */
     @Transactional
     public PresupuestoRespuesta cambiarEstado(Long id, CambioEstadoPresupuesto cambio) {
@@ -344,6 +350,16 @@ public class PresupuestoService {
         if (presupuesto.esDefinitivo() && presupuesto.getObra().estaEnPresupuestacion()) {
             presupuesto.getObra().pasarAEjecucion();
         }
+
+        // Es la accion mas sensible del sistema: fija el precio que se le cobra
+        // al cliente y pone la obra en marcha. Si alguna vez hay que responder
+        // "quien aprobo este monto", la respuesta tiene que existir.
+        auditoria.registrar(
+                "Aprobación del presupuesto #" + presupuesto.getIdPresupuesto()
+                + " (" + presupuesto.getTipoPresupuesto() + ") de la obra #"
+                + presupuesto.getObra().getIdObra()
+                + " por " + presupuesto.getTotalPresupuesto(),
+                "Presupuestacion");
     }
 
     // ------------------------------------------------------------------
