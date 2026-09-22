@@ -54,17 +54,91 @@ public class ServicioJwt {
         this.duracionEnSegundos = duracionEnSegundos;
     }
 
-    /** Emite el token que el frontend va a adjuntar en cada peticion. */
-    public String emitir(Long idUsuario, String nombreUsuario, String nombreRol) {
+    /**
+     * Emite el token del ingreso: arranca una sesion nueva.
+     *
+     * El instante de AHORA queda grabado como inicio de la sesion, y las
+     * renovaciones posteriores lo conservan. Es lo que permite ponerle un tope
+     * a la cadena de renovaciones.
+     */
+    public String emitir(Long idUsuario, String nombreUsuario, String nombreRol,
+                         int versionSesion) {
+        return construir(idUsuario, nombreUsuario, nombreRol, versionSesion, Instant.now());
+    }
+
+    /**
+     * Emite el reemplazo de un token que esta por vencer.
+     *
+     * Recibe el inicio de sesion del token anterior y lo conserva. Si en cada
+     * renovacion se grabara el instante actual, el tope no llegaria nunca: la
+     * sesion se estaria renovando a si misma para siempre, que es exactamente
+     * lo que hay que evitar.
+     */
+    public String renovar(Long idUsuario, String nombreUsuario, String nombreRol,
+                          int versionSesion, Instant inicioSesion) {
+        return construir(idUsuario, nombreUsuario, nombreRol, versionSesion, inicioSesion);
+    }
+
+    private String construir(Long idUsuario, String nombreUsuario, String nombreRol,
+                             int versionSesion, Instant inicioSesion) {
         Instant ahora = Instant.now();
         return Jwts.builder()
                 .subject(String.valueOf(idUsuario))
                 .claim("usuario", nombreUsuario)
                 .claim("rol", nombreRol)
+                // La version con la que se emitio. Si despues la cuenta corta
+                // sus sesiones, este numero deja de coincidir y el token muere.
+                .claim("version", versionSesion)
+                // Cuando empezo la sesion, no cuando se emitio ESTE token.
+                .claim("inicio", inicioSesion.getEpochSecond())
                 .issuedAt(Date.from(ahora))
                 .expiration(Date.from(ahora.plusSeconds(duracionEnSegundos)))
                 .signWith(clave)
                 .compact();
+    }
+
+    /**
+     * Los datos de sesion que el token lleva adentro, o null si no sirve.
+     *
+     * Se devuelven juntos y en una sola lectura porque el filtro los necesita
+     * todos en la misma peticion: leer el token tres veces seria verificar la
+     * firma tres veces.
+     */
+    public DatosDeSesion datosDe(String token) {
+        try {
+            Claims contenido = Jwts.parser()
+                    .verifyWith(clave)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+
+            Integer version = contenido.get("version", Integer.class);
+            Long inicio = contenido.get("inicio", Long.class);
+
+            // Un token sin estos claims es anterior a V15. No se acepta: no
+            // tiene tope ni se puede cortar, que es justo lo que se vino a
+            // arreglar. Quien lo tenga vuelve a entrar una vez.
+            if (version == null || inicio == null) {
+                return null;
+            }
+
+            return new DatosDeSesion(
+                    Long.valueOf(contenido.getSubject()),
+                    version,
+                    Instant.ofEpochSecond(inicio));
+        } catch (JwtException | IllegalArgumentException ex) {
+            return null;
+        }
+    }
+
+    /**
+     * Lo que el filtro necesita saber de un token valido.
+     *
+     * @param idUsuario     de quien es la sesion
+     * @param versionSesion version con la que se emitio, para poder cortarla
+     * @param inicioSesion  cuando empezo la sesion, para el tope absoluto
+     */
+    public record DatosDeSesion(Long idUsuario, int versionSesion, Instant inicioSesion) {
     }
 
     /**
@@ -107,11 +181,32 @@ public class ServicioJwt {
      * en una cabecera. El efecto: quien trabaja nunca se cae, y quien deja la
      * pestaña abierta y se va vence igual, porque nadie esta renovando nada.
      *
-     * No alarga la ventana de un token robado mas alla de su duracion: el
-     * ladron tendria que estar usandolo activamente, y en ese caso el problema
-     * no es la renovacion.
+     * ------------------------------------------------------------------
+     *  El tope absoluto, y por que hizo falta agregarlo
+     * ------------------------------------------------------------------
+     *
+     * Tal como se escribio primero, esto tenia un agujero: la renovacion no
+     * terminaba nunca. Un token robado, usado cada tanto por quien lo robo, se
+     * renovaba indefinidamente y la sesion no moria jamas. Antes de la
+     * renovacion el token vencia a las ocho horas si o si; despues, nunca.
+     *
+     * El tope lo cierra: pasadas las horas configuradas desde el INGRESO —no
+     * desde la emision de este token— la cadena se corta y hay que volver a
+     * entrar. Para el usuario legitimo es escribir la contrasena una vez por
+     * dia; para quien robo el token, es el plazo en que deja de servirle.
      */
-    public boolean convieneRenovar(String token, double umbral) {
+    public boolean convieneRenovar(String token, double umbral, long topeEnSegundos) {
+        DatosDeSesion datos = datosDe(token);
+        if (datos == null) {
+            // Un token que no se puede leer no se renueva. No es un error: el
+            // filtro ya lo trato como "no autenticado" antes de llegar aca.
+            return false;
+        }
+
+        if (sesionPasoElTope(datos, topeEnSegundos)) {
+            return false;
+        }
+
         try {
             Claims contenido = Jwts.parser()
                     .verifyWith(clave)
@@ -125,10 +220,14 @@ public class ServicioJwt {
 
             return segundosRestantes < duracionEnSegundos * umbral;
         } catch (JwtException | IllegalArgumentException ex) {
-            // Un token que no se puede leer no se renueva. No es un error: el
-            // filtro ya lo trato como "no autenticado" antes de llegar aca.
             return false;
         }
+    }
+
+    /** Si la sesion ya vivio mas de lo que se le permite, contando desde el ingreso. */
+    public boolean sesionPasoElTope(DatosDeSesion datos, long topeEnSegundos) {
+        return java.time.Duration.between(datos.inicioSesion(), Instant.now())
+                .getSeconds() >= topeEnSegundos;
     }
 
     public long getDuracionEnSegundos() {

@@ -43,9 +43,19 @@ public class UsuarioController {
     private final UsuarioService servicio;
     private final SesionActual sesion;
 
-    public UsuarioController(UsuarioService servicio, SesionActual sesion) {
+    /**
+     * Para reemplazar el token de quien cambia su propia contrasena.
+     *
+     * El cambio invalida las sesiones de la cuenta, asi que hay que devolverle
+     * uno nuevo o lo dejariamos afuera del sistema que acaba de asegurar.
+     */
+    private final com.sigco.seguridad.ServicioJwt servicioJwt;
+
+    public UsuarioController(UsuarioService servicio, SesionActual sesion,
+                             com.sigco.seguridad.ServicioJwt servicioJwt) {
         this.servicio = servicio;
         this.sesion = sesion;
+        this.servicioJwt = servicioJwt;
     }
 
     @GetMapping
@@ -81,10 +91,34 @@ public class UsuarioController {
      */
     @PatchMapping("/{id}/contrasena")
     @PreAuthorize("hasAuthority('usuarios.editar') or #id == principal.idUsuario")
-    public ResponseEntity<Void> cambiarContrasena(@PathVariable Long id,
-                                                  @Valid @RequestBody CambioContrasena cambio) {
+    public ResponseEntity<Void> cambiarContrasena(
+            @PathVariable Long id,
+            @Valid @RequestBody CambioContrasena cambio,
+            jakarta.servlet.http.HttpServletResponse respuesta) {
+
         boolean esLaPropia = sesion.idUsuario().map(id::equals).orElse(false);
         servicio.cambiarContrasena(id, cambio, esLaPropia);
+
+        // Cambiar la contrasena deja sin efecto las sesiones abiertas de esa
+        // cuenta, y eso incluye la que se esta usando en este mismo momento.
+        //
+        // Sin nada mas, quien acaba de cambiar su contrasena quedaria afuera en
+        // la peticion siguiente sin entender por que. Se le devuelve un token
+        // nuevo —ya con la version actualizada— por la misma cabecera que usa la
+        // renovacion: el interceptor de Axios lo guarda solo.
+        //
+        // Los tokens ANTERIORES, incluido el que trajo esta peticion, quedan
+        // igualmente muertos. Que es el objetivo.
+        if (esLaPropia) {
+            sesion.usuario().ifPresent(actualizado -> respuesta.setHeader(
+                    com.sigco.seguridad.FiltroJwt.CABECERA_TOKEN_RENOVADO,
+                    servicioJwt.emitir(
+                            actualizado.getIdUsuario(),
+                            actualizado.getNombreUsuario(),
+                            actualizado.getRol().getNombreRol(),
+                            actualizado.getVersionSesion())));
+        }
+
         return ResponseEntity.noContent().build();
     }
 

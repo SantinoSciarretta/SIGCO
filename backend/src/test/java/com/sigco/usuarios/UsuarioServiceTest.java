@@ -88,8 +88,10 @@ class UsuarioServiceTest {
 
     private UsuarioService servicio() {
         if (servicio == null) {
+            // La politica de contrasenas va de verdad, no simulada: es una
+            // regla de negocio del modulo y con un doble no se probaria nada.
             servicio = new UsuarioService(repositorio, rolRepositorio, operarioRepositorio,
-                    codificador, auditoria);
+                    codificador, auditoria, new PoliticaDeContrasenas());
         }
         return servicio;
     }
@@ -117,13 +119,13 @@ class UsuarioServiceTest {
             return u;
         });
 
-        servicio().crear(new NuevoUsuario("ricardo", "granica2026", 1L, null));
+        servicio().crear(new NuevoUsuario("ricardo", "melonVerde47", 1L, null));
 
         // La entidad no expone el hash a proposito, asi que se verifica por el
         // unico camino que hay: preguntarle si una contrasena coincide.
         verify(repositorio).save(org.mockito.ArgumentMatchers.argThat(u -> {
-            boolean coincideLaCorrecta = u.verificarContra("granica2026", codificador::matches);
-            boolean rechazaOtra = !u.verificarContra("granica2026 ", codificador::matches);
+            boolean coincideLaCorrecta = u.verificarContra("melonVerde47", codificador::matches);
+            boolean rechazaOtra = !u.verificarContra("melonVerde47 ", codificador::matches);
             return coincideLaCorrecta && rechazaOtra;
         }));
     }

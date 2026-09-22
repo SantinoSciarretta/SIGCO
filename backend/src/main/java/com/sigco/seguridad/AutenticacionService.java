@@ -139,10 +139,13 @@ public class AutenticacionService {
     }
 
     private Sesion armarSesion(Usuario usuario) {
+        // emitir() y no renovar(): esto es un ingreso, asi que la sesion
+        // empieza ahora y el tope absoluto se cuenta desde este momento.
         String token = servicioJwt.emitir(
                 usuario.getIdUsuario(),
                 usuario.getNombreUsuario(),
-                usuario.getRol().getNombreRol());
+                usuario.getRol().getNombreRol(),
+                usuario.getVersionSesion());
         return sesionDe(usuario, token);
     }
 

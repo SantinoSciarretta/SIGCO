@@ -43,8 +43,8 @@ public final class UsuarioDtos {
             String nombreUsuario,
 
             @NotBlank(message = "La contraseña es obligatoria")
-            @Size(min = 8, max = 72,
-                  message = "La contraseña debe tener entre 8 y 72 caracteres")
+            @Size(min = 10, max = 72,
+                  message = "La contraseña debe tener entre 10 y 72 caracteres")
             String contrasena,
 
             @NotNull(message = "Hay que elegir un rol")
@@ -67,8 +67,8 @@ public final class UsuarioDtos {
             String contrasenaActual,
 
             @NotBlank(message = "La contraseña nueva es obligatoria")
-            @Size(min = 8, max = 72,
-                  message = "La contraseña debe tener entre 8 y 72 caracteres")
+            @Size(min = 10, max = 72,
+                  message = "La contraseña debe tener entre 10 y 72 caracteres")
             String contrasenaNueva) {
     }
 

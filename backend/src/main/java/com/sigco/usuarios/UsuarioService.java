@@ -38,16 +38,21 @@ public class UsuarioService {
     private final PasswordEncoder codificador;
     private final ServicioAuditoria auditoria;
 
+    /** Rechaza las contrasenas previsibles, que el largo minimo no filtra. */
+    private final PoliticaDeContrasenas politica;
+
     public UsuarioService(UsuarioRepository repositorio,
                           RolRepository rolRepositorio,
                           OperarioRepository operarioRepositorio,
                           PasswordEncoder codificador,
-                          ServicioAuditoria auditoria) {
+                          ServicioAuditoria auditoria,
+                          PoliticaDeContrasenas politica) {
         this.repositorio = repositorio;
         this.rolRepositorio = rolRepositorio;
         this.operarioRepositorio = operarioRepositorio;
         this.codificador = codificador;
         this.auditoria = auditoria;
+        this.politica = politica;
     }
 
     // ------------------------------------------------------------------
@@ -81,6 +86,11 @@ public class UsuarioService {
 
         Rol rol = buscarRolOFallar(solicitud.idRol());
         Operario operario = resolverOperario(solicitud.idOperario());
+
+        // La inicial también se valida, aunque el titular esté obligado a
+        // cambiarla: mientras no lo haga, es la contraseña que protege la
+        // cuenta, y "granica2026" no protege nada.
+        politica.validar(solicitud.contrasena(), solicitud.nombreUsuario());
 
         // La contrasena se cifra ACA y nunca se guarda en claro, ni siquiera un
         // instante en una variable que despues se persista.
@@ -139,6 +149,11 @@ public class UsuarioService {
             throw new ReglaDeNegocioException(
                     "La contraseña nueva tiene que ser distinta de la actual.");
         }
+
+        // Y no puede ser una previsible. Es el punto donde mas importa: el
+        // sistema acaba de obligar a cambiarla, y es cuando mas tienta poner
+        // cualquier cosa para salir del paso.
+        politica.validar(cambio.contrasenaNueva(), usuario.getNombreUsuario());
 
         // Dos metodos distintos y no uno con un booleano: cambiar la propia
         // levanta la obligacion de cambiarla, resetear la de otro la impone,

@@ -67,9 +67,21 @@ public class FiltroJwt extends OncePerRequestFilter {
     private final ServicioJwt servicioJwt;
     private final UsuarioRepository usuarioRepositorio;
 
-    public FiltroJwt(ServicioJwt servicioJwt, UsuarioRepository usuarioRepositorio) {
+    /**
+     * Cuanto puede vivir una sesion, contando desde el ingreso.
+     *
+     * Es el tope de la cadena de renovaciones: pasado esto hay que volver a
+     * escribir la contrasena, por mucho que se haya estado usando el sistema.
+     */
+    private final long topeEnSegundos;
+
+    public FiltroJwt(ServicioJwt servicioJwt,
+                     UsuarioRepository usuarioRepositorio,
+                     @org.springframework.beans.factory.annotation.Value(
+                             "${sigco.jwt.tope-sesion-segundos}") long topeEnSegundos) {
         this.servicioJwt = servicioJwt;
         this.usuarioRepositorio = usuarioRepositorio;
+        this.topeEnSegundos = topeEnSegundos;
     }
 
     @Override
@@ -80,14 +92,27 @@ public class FiltroJwt extends OncePerRequestFilter {
         String token = extraerToken(peticion);
 
         if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            Long idUsuario = servicioJwt.idDelUsuario(token);
+            ServicioJwt.DatosDeSesion datos = servicioJwt.datosDe(token);
 
-            if (idUsuario != null) {
-                Optional<Usuario> encontrado = usuarioRepositorio.completo(idUsuario);
+            if (datos != null && !servicioJwt.sesionPasoElTope(datos, topeEnSegundos)) {
+                Optional<Usuario> encontrado = usuarioRepositorio.completo(datos.idUsuario());
 
-                // Una cuenta dada de baja queda afuera aunque su token siga
-                // vigente. Es el motivo por el que se consulta la base.
-                if (encontrado.isPresent() && encontrado.get().estaActivo()) {
+                // Tres condiciones, y cada una cierra una puerta distinta:
+                //
+                //   - que la cuenta exista y este ACTIVA, para que una cuenta
+                //     dada de baja quede afuera aunque su token siga vigente;
+                //   - que la VERSION DE SESION del token coincida con la de la
+                //     cuenta, para que un cambio de contrasena deje sin efecto
+                //     los tokens anteriores;
+                //   - y, mas arriba, que la sesion no haya pasado su tope.
+                //
+                // Todo esto se puede comprobar sin consultas extra porque el
+                // usuario ya se consulta en cada peticion desde el modulo
+                // Accesos, para que un permiso revocado se aplique en el acto.
+                if (encontrado.isPresent()
+                        && encontrado.get().estaActivo()
+                        && encontrado.get().getVersionSesion() == datos.versionSesion()) {
+
                     UsuarioAutenticado autenticado = new UsuarioAutenticado(encontrado.get());
 
                     UsernamePasswordAuthenticationToken autenticacion =
@@ -96,7 +121,7 @@ public class FiltroJwt extends OncePerRequestFilter {
 
                     SecurityContextHolder.getContext().setAuthentication(autenticacion);
 
-                    renovarSiConviene(token, encontrado.get(), respuesta);
+                    renovarSiConviene(token, datos, encontrado.get(), respuesta);
                 }
             }
         }
@@ -116,13 +141,21 @@ public class FiltroJwt extends OncePerRequestFilter {
      * todavia es valido. Quedarse sin renovar es una molestia dentro de un rato;
      * cortar la peticion es un error ahora.
      */
-    private void renovarSiConviene(String token, Usuario usuario, HttpServletResponse respuesta) {
+    private void renovarSiConviene(String token,
+                                   ServicioJwt.DatosDeSesion datos,
+                                   Usuario usuario,
+                                   HttpServletResponse respuesta) {
         try {
-            if (servicioJwt.convieneRenovar(token, UMBRAL_DE_RENOVACION)) {
-                respuesta.setHeader(CABECERA_TOKEN_RENOVADO, servicioJwt.emitir(
+            if (servicioJwt.convieneRenovar(token, UMBRAL_DE_RENOVACION, topeEnSegundos)) {
+                // Se CONSERVA el inicio de sesion del token anterior. Grabar el
+                // instante actual haria que el tope no llegara nunca: la sesion
+                // se renovaria a si misma para siempre.
+                respuesta.setHeader(CABECERA_TOKEN_RENOVADO, servicioJwt.renovar(
                         usuario.getIdUsuario(),
                         usuario.getNombreUsuario(),
-                        usuario.getRol().getNombreRol()));
+                        usuario.getRol().getNombreRol(),
+                        usuario.getVersionSesion(),
+                        datos.inicioSesion()));
             }
         } catch (RuntimeException ignorado) {
             // Sin renovar: el token actual sigue sirviendo.

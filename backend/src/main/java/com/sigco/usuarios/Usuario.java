@@ -96,6 +96,19 @@ public class Usuario {
     @Column(name = "debe_cambiar_contrasena", nullable = false)
     private boolean debeCambiarContrasena;
 
+    /**
+     * Version de sesion: lo que permite cortar sesiones ya abiertas.
+     *
+     * El numero viaja dentro del token y FiltroJwt lo compara contra este valor
+     * en cada peticion. Incrementarlo deja sin efecto, de golpe, todos los
+     * tokens emitidos hasta ese momento para esta cuenta.
+     *
+     * Hace falta porque el backend no guarda sesiones: sin esto, un token
+     * robado sirve hasta que venza y no hay forma de anularlo.
+     */
+    @Column(name = "version_sesion", nullable = false)
+    private int versionSesion = 1;
+
     @Column(name = "ultima_fecha_acceso")
     private LocalDateTime ultimaFechaAcceso;
 
@@ -160,6 +173,12 @@ public class Usuario {
         // bloqueada porque alguien estuvo probando contrasenas, la que estaban
         // buscando ya no existe, y el titular no tiene por que esperar.
         limpiarIntentosFallidos();
+
+        // Y deja sin efecto las sesiones abiertas. Es la razon principal por la
+        // que alguien cambia la contrasena de apuro: sospecha que alguien mas
+        // entro. Si las sesiones ya abiertas siguieran sirviendo, cambiarla no
+        // resolveria nada — el intruso seguiria adentro con su token.
+        invalidarSesiones();
     }
 
     /**
@@ -174,6 +193,30 @@ public class Usuario {
         this.contrasenaHash = nuevoHash;
         this.debeCambiarContrasena = true;
         limpiarIntentosFallidos();
+
+        // Un reseteo tambien corta las sesiones de esa cuenta, y aca importa
+        // todavia mas: el dueño resetea la contrasena de alguien justamente
+        // cuando esa cuenta puede estar en manos equivocadas.
+        invalidarSesiones();
+    }
+
+    // ------------------------------------------------------------------
+    //  Sesiones abiertas
+    // ------------------------------------------------------------------
+
+    /**
+     * Deja sin efecto todos los tokens emitidos hasta ahora para esta cuenta.
+     *
+     * Incrementar el numero alcanza: el token lleva adentro la version con la
+     * que se emitio, y FiltroJwt rechaza el que no coincida con esta. No hay
+     * lista de tokens revocados que mantener ni limpiar.
+     */
+    public void invalidarSesiones() {
+        this.versionSesion++;
+    }
+
+    public int getVersionSesion() {
+        return versionSesion;
     }
 
     // ------------------------------------------------------------------

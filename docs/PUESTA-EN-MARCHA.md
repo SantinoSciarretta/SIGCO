@@ -42,9 +42,38 @@ Supabase no la vuelve a mostrar y la vas a necesitar en el paso 2.
 Elegí la región más cercana (San Pablo o Virginia del Norte). Tarda un par de
 minutos en crearse.
 
+### 1.1 bis — Si el proyecto ya existe
+
+El proyecto de SIGCO **ya está creado**: se llama `SIGCO`, su id es
+`gpauxpuhbmwlswcinfmb` y está en `us-west-2` (Oregon). Saltate el paso de arriba
+y seguí desde 1.2.
+
+**Si el panel dice que está pausado**, tocá *Resume project* y esperá unos
+minutos. No se pierde nada: los datos, los backups y los archivos quedan
+intactos.
+
+> **Por qué se pausó, y por qué importa más adelante.** El plan gratuito de
+> Supabase pausa el proyecto tras una semana sin actividad. Mientras SIGCO sea
+> un proyecto de facultad no molesta: se reanuda y listo.
+>
+> Pero si Ricardo empieza a usarlo de verdad, significa que después de una
+> semana tranquila **el sistema deja de responder hasta que alguien entre al
+> panel de Supabase a reanudarlo** — y el capataz que intenta cargar un remito
+> solo ve un error que no puede resolver.
+>
+> La única forma de evitarlo es el plan Pro (unos 25 dólares por mes). No hace
+> falta decidirlo para avanzar, pero conviene que Ricardo sepa que ese costo
+> existe antes de apoyar la operación de la empresa en el sistema.
+
 ### 1.2 Copiar la cadena de conexión
 
-*Project Settings → Database → Connection string → **JDBC***.
+Botón **`Connect`**, arriba de todo, al lado del nombre de la rama. Se abre un
+panel con pestañas según el tipo de conexión: elegí la de **JDBC**.
+
+> Supabase movió esto de lugar. Antes estaba en *Project Settings → Database*,
+> y ese menú **ya no existe**: dentro de Project Settings hoy solo hay General,
+> Infrastructure, Integrations, API Keys, JWT Keys, Log Drains y Add-ons. Si
+> alguna guía te manda ahí, está desactualizada.
 
 Te va a quedar algo así:
 
@@ -53,6 +82,11 @@ jdbc:postgresql://db.abcdefghijk.supabase.co:5432/postgres
 ```
 
 Guardala. Es el `DB_URL` del paso 2.
+
+**Si no anotaste la contraseña de la base** (o el proyecto es viejo y no te
+acordás), no hace falta rehacer nada: barra lateral izquierda → ícono de
+**Database** → *Settings* → *Reset database password*. Generá una nueva y
+guardala.
 
 ### 1.3 Crear los dos buckets
 
@@ -68,8 +102,9 @@ Los nombres tienen que ser exactamente esos.
 
 ### 1.4 Copiar la clave de servicio
 
-*Project Settings → API*. Ahí hay dos claves y **tenés que copiar la
-`service_role`**, no la `anon`.
+*Project Settings → **API Keys***. Ahí hay dos claves y **tenés que copiar la
+`service_role`**, no la `anon`. Si la pantalla las separa en solapas, la
+`service_role` está entre las claves *legacy*.
 
 > La `anon` no puede escribir en un bucket privado: si usás esa, todo va a
 > andar hasta que un capataz intente subir la primera foto de un remito.

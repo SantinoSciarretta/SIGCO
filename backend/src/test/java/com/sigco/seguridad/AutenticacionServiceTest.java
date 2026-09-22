@@ -15,6 +15,8 @@ import com.sigco.usuarios.UsuarioRepository;
 import com.sigco.usuarios.dto.UsuarioDtos.Credenciales;
 import com.sigco.usuarios.dto.UsuarioDtos.Sesion;
 import java.lang.reflect.Field;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -50,6 +52,16 @@ class AutenticacionServiceTest {
     private final PasswordEncoder codificador = new BCryptPasswordEncoder();
     private final ServicioJwt servicioJwt = new ServicioJwt(
             "clave-de-prueba-suficientemente-larga-para-hmac-sha256", 28800);
+
+    /**
+     * Un tope de sesion tan grande que nunca se alcanza.
+     *
+     * Los tests de renovacion miden el UMBRAL —cuanto le tiene que quedar al
+     * token para que convenga reemplazarlo— y el tope es otra cosa. Con un
+     * valor enorme, el tope no interfiere y cada test mide lo suyo. El tope
+     * tiene sus propios tests mas abajo.
+     */
+    private static final long TOPE_AMPLIO = 365L * 24 * 3600;
 
     private AutenticacionService servicio() {
         return new AutenticacionService(
@@ -308,7 +320,7 @@ class AutenticacionServiceTest {
     void tokenConFirmaAjena() {
         ServicioJwt otroServidor = new ServicioJwt(
                 "otra-clave-distinta-igual-de-larga-para-hmac-sha", 28800);
-        String tokenAjeno = otroServidor.emitir(1L, "ricardo", Rol.DUENO);
+        String tokenAjeno = otroServidor.emitir(1L, "ricardo", Rol.DUENO, 1);
 
         // Devuelve null en lugar de lanzar: un token invalido es una situacion
         // esperable, no un error del sistema. El filtro lo trata como
@@ -321,7 +333,7 @@ class AutenticacionServiceTest {
     void tokenVencido() {
         ServicioJwt yaVencido = new ServicioJwt(
                 "clave-de-prueba-suficientemente-larga-para-hmac-sha256", -1);
-        String token = yaVencido.emitir(1L, "ricardo", Rol.DUENO);
+        String token = yaVencido.emitir(1L, "ricardo", Rol.DUENO, 1);
 
         assertThat(servicioJwt.idDelUsuario(token)).isNull();
     }
@@ -329,10 +341,10 @@ class AutenticacionServiceTest {
     @Test
     @DisplayName("Un token recién emitido no se renueva")
     void tokenNuevoNoSeRenueva() {
-        String token = servicioJwt.emitir(1L, "ricardo", Rol.DUENO);
+        String token = servicioJwt.emitir(1L, "ricardo", Rol.DUENO, 1);
 
         // Le queda el 100% de su vida: muy por encima del 25% del umbral.
-        assertThat(servicioJwt.convieneRenovar(token, 0.25)).isFalse();
+        assertThat(servicioJwt.convieneRenovar(token, 0.25, TOPE_AMPLIO)).isFalse();
     }
 
     @Test
@@ -343,18 +355,18 @@ class AutenticacionServiceTest {
         // configurada.
         ServicioJwt casiVencido = new ServicioJwt(
                 "clave-de-prueba-suficientemente-larga-para-hmac-sha256", 60);
-        String token = casiVencido.emitir(1L, "ricardo", Rol.DUENO);
+        String token = casiVencido.emitir(1L, "ricardo", Rol.DUENO, 1);
 
         // Le queda un minuto de sesenta segundos configurados. Con un umbral
         // del 200% (mas de lo que dura), tiene que querer renovarse.
-        assertThat(casiVencido.convieneRenovar(token, 2.0)).isTrue();
+        assertThat(casiVencido.convieneRenovar(token, 2.0, TOPE_AMPLIO)).isTrue();
     }
 
     @Test
     @DisplayName("Un token inválido no se renueva y no rompe")
     void tokenInvalidoNoSeRenueva() {
-        assertThat(servicioJwt.convieneRenovar("no-es-un-token", 0.25)).isFalse();
-        assertThat(servicioJwt.convieneRenovar("", 0.25)).isFalse();
+        assertThat(servicioJwt.convieneRenovar("no-es-un-token", 0.25, TOPE_AMPLIO)).isFalse();
+        assertThat(servicioJwt.convieneRenovar("", 0.25, TOPE_AMPLIO)).isFalse();
     }
 
     @Test
@@ -362,6 +374,118 @@ class AutenticacionServiceTest {
     void textoCualquieraNoRompe() {
         assertThat(servicioJwt.idDelUsuario("esto-no-es-un-token")).isNull();
         assertThat(servicioJwt.idDelUsuario("")).isNull();
+    }
+
+
+    // ------------------------------------------------------------------
+    //  Tope absoluto de la sesión y corte de sesiones
+    // ------------------------------------------------------------------
+
+    /**
+     * El test que fija por qué existe el tope.
+     *
+     * Sin él, la renovación no terminaba nunca: un token robado, usado cada
+     * tanto por quien lo robó, se renovaba indefinidamente y la sesión no moría
+     * jamás. Antes de la renovación el token vencía a las ocho horas sí o sí.
+     */
+    @Test
+    @DisplayName("Pasado el tope, el token deja de renovarse por mucho que se use")
+    void pasadoElTopeNoSeRenueva() {
+        ServicioJwt corto = new ServicioJwt(
+                "clave-de-prueba-suficientemente-larga-para-hmac-sha256", 60);
+
+        // Una sesión que empezó hace dos horas, con un tope de una hora.
+        Instant haceDosHoras = Instant.now().minus(Duration.ofHours(2));
+        String token = corto.renovar(1L, "ricardo", Rol.DUENO, 1, haceDosHoras);
+
+        // Le queda muy poco de vida (60 s de duración), así que por umbral
+        // correspondería renovarlo. El tope manda.
+        assertThat(corto.convieneRenovar(token, 2.0, Duration.ofHours(1).toSeconds()))
+                .isFalse();
+    }
+
+    @Test
+    @DisplayName("Dentro del tope, el token sí se renueva")
+    void dentroDelTopeSeRenueva() {
+        ServicioJwt corto = new ServicioJwt(
+                "clave-de-prueba-suficientemente-larga-para-hmac-sha256", 60);
+
+        String token = corto.emitir(1L, "ricardo", Rol.DUENO, 1);
+
+        assertThat(corto.convieneRenovar(token, 2.0, Duration.ofHours(24).toSeconds()))
+                .isTrue();
+    }
+
+    /**
+     * Lo que impide que la renovación corra el tope hacia adelante.
+     *
+     * Si al renovar se grabara el instante actual como inicio de sesión, el
+     * tope no llegaría nunca: cada renovación lo empujaría una hora más.
+     */
+    @Test
+    @DisplayName("Renovar CONSERVA el inicio de sesión, no lo corre")
+    void renovarConservaElInicio() {
+        Instant inicio = Instant.now().minus(Duration.ofHours(5));
+        String renovado = servicioJwt.renovar(1L, "ricardo", Rol.DUENO, 1, inicio);
+
+        ServicioJwt.DatosDeSesion datos = servicioJwt.datosDe(renovado);
+
+        assertThat(datos).isNotNull();
+        // Al segundo, porque el claim viaja en segundos desde la época.
+        assertThat(datos.inicioSesion().getEpochSecond())
+                .isEqualTo(inicio.getEpochSecond());
+    }
+
+    @Test
+    @DisplayName("El token lleva adentro la versión de sesión con la que se emitió")
+    void elTokenLlevaLaVersion() {
+        String token = servicioJwt.emitir(1L, "ricardo", Rol.DUENO, 7);
+
+        assertThat(servicioJwt.datosDe(token).versionSesion()).isEqualTo(7);
+    }
+
+    /**
+     * Un token emitido antes de V15 no tiene los claims de versión ni de
+     * inicio, así que no se le puede poner tope ni cortar. Se rechaza: quien lo
+     * tenga vuelve a entrar una vez.
+     */
+    @Test
+    @DisplayName("Un token sin los claims nuevos se rechaza")
+    void tokenViejoSeRechaza() {
+        String tokenViejo = io.jsonwebtoken.Jwts.builder()
+                .subject("1")
+                .claim("usuario", "ricardo")
+                .claim("rol", Rol.DUENO)
+                .expiration(java.util.Date.from(Instant.now().plusSeconds(3600)))
+                .signWith(io.jsonwebtoken.security.Keys.hmacShaKeyFor(
+                        "clave-de-prueba-suficientemente-larga-para-hmac-sha256"
+                                .getBytes(java.nio.charset.StandardCharsets.UTF_8)))
+                .compact();
+
+        assertThat(servicioJwt.datosDe(tokenViejo)).isNull();
+    }
+
+    @Test
+    @DisplayName("Cambiar la contraseña corta las sesiones abiertas")
+    void cambiarContrasenaCortaLasSesiones() {
+        Usuario u = usuario("granica2026", true);
+        int antes = u.getVersionSesion();
+
+        u.cambiarContrasena(codificador.encode("otraDistinta2026"));
+
+        // El token emitido con la versión anterior deja de coincidir.
+        assertThat(u.getVersionSesion()).isGreaterThan(antes);
+    }
+
+    @Test
+    @DisplayName("Que el dueño resetee una contraseña también corta esas sesiones")
+    void resetearTambienCorta() {
+        Usuario u = usuario("granica2026", true);
+        int antes = u.getVersionSesion();
+
+        u.resetearContrasena(codificador.encode("laQuePusoElDueno"));
+
+        assertThat(u.getVersionSesion()).isGreaterThan(antes);
     }
 
     // ------------------------------------------------------------------
