@@ -50,6 +50,10 @@ class CobrosServiceTest {
     // es la regla de negocio, no que se escriba la traza.
     @Mock private com.sigco.accesos.ServicioAuditoria auditoria;
 
+    // Quien registra el pago. Se simula porque estos tests miden los montos y
+    // los estados, no de quien queda el registro.
+    @Mock private com.sigco.seguridad.SesionActual sesion;
+
     @InjectMocks private CobrosService servicio;
 
     private static void asignarId(Object entidad, String campo, Long valor) {
@@ -221,7 +225,8 @@ class CobrosServiceTest {
             planDe(obra, "300000", "175000", "175000");
 
             PlanDeCobro plan = servicio.registrarPago(100L, new RegistrarPago(
-                    LocalDate.of(2026, 9, 1), "Transferencia", "Recibo"));
+                    new BigDecimal("300000"), LocalDate.of(2026, 9, 1),
+                    "Transferencia", "Recibo"));
 
             assertThat(plan.totalCobrado()).isEqualByComparingTo("300000");
             assertThat(plan.saldoPendiente()).isEqualByComparingTo("350000");
@@ -233,10 +238,10 @@ class CobrosServiceTest {
         void noSePagaDosVeces() {
             Obra obra = obra();
             List<Cuota> plan = planDe(obra, "300000", "175000");
-            plan.get(0).abonar(LocalDate.now(), "Efectivo", null);
+            pagarEntera(plan.get(0), LocalDate.now(), "Efectivo", null);
 
             assertThatThrownBy(() -> servicio.registrarPago(100L, new RegistrarPago(
-                    LocalDate.now(), "Efectivo", null)))
+                    new BigDecimal("300000"), LocalDate.now(), "Efectivo", null)))
                     .isInstanceOf(ReglaDeNegocioException.class)
                     .hasMessageContaining("ya está abonada");
         }
@@ -246,7 +251,7 @@ class CobrosServiceTest {
         void anularPago() {
             Obra obra = obra();
             List<Cuota> plan = planDe(obra, "300000", "175000");
-            plan.get(0).abonar(LocalDate.now(), "Cheque", null);
+            pagarEntera(plan.get(0), LocalDate.now(), "Cheque", null);
 
             PlanDeCobro r = servicio.anularPago(100L, new AnularPago("El cheque rebotó"));
 
@@ -283,7 +288,7 @@ class CobrosServiceTest {
         void noTocaLoYaCobrado() {
             Obra obra = obra();
             List<Cuota> plan = planDe(obra, "300000", "175000", "175000");
-            plan.get(0).abonar(LocalDate.now(), "Transferencia", null);
+            pagarEntera(plan.get(0), LocalDate.now(), "Transferencia", null);
             conCac("1000", "1100");
 
             PlanDeCobro r = servicio.aplicarCac(5L);
@@ -314,7 +319,7 @@ class CobrosServiceTest {
         void sinPendientesNoSeActualiza() {
             Obra obra = obra();
             List<Cuota> plan = planDe(obra, "300000", "175000");
-            plan.forEach(c -> c.abonar(LocalDate.now(), "Efectivo", null));
+            plan.forEach(c -> pagarEntera(c, LocalDate.now(), "Efectivo", null));
             conCac("1000", "1100");
 
             assertThatThrownBy(() -> servicio.aplicarCac(5L))
@@ -340,5 +345,167 @@ class CobrosServiceTest {
         // volvería a depender de la memoria del dueño.
         assertThat(plan.cuotas().get(0).estado()).isEqualTo(Cuota.ESTADO_VENCIDA);
         assertThat(plan.cuotasVencidas()).isEqualTo(1);
+    }
+
+    // ------------------------------------------------------------------
+    //  Pagos parciales
+    // ------------------------------------------------------------------
+
+    /**
+     * Alcance NUEVO: el informe no pide pagos parciales. Define la cuota con
+     * estados Pendiente / Abonada / Vencida, o sea que se cobra entera o no se
+     * cobra. Se agregó a pedido de Santino en la auditoría previa a la entrega.
+     */
+    @org.junit.jupiter.api.Nested
+    @DisplayName("Pagos parciales")
+    class Parciales {
+
+        @Test
+        @DisplayName("Un pago parcial deja la cuota en Parcial, con su saldo")
+        void pagoParcial() {
+            Obra obra = obra();
+            planDe(obra, "300000", "175000", "175000");
+
+            PlanDeCobro plan = servicio.registrarPago(100L, new RegistrarPago(
+                    new BigDecimal("120000"), LocalDate.of(2026, 9, 1),
+                    "Transferencia", "Recibo"));
+
+            var anticipo = plan.cuotas().get(0);
+            assertThat(anticipo.estado()).isEqualTo(Cuota.ESTADO_PARCIAL);
+            assertThat(anticipo.totalPagado()).isEqualByComparingTo("120000");
+            assertThat(anticipo.saldo()).isEqualByComparingTo("180000");
+
+            // El total cobrado de la obra incluye lo que entró a cuenta.
+            assertThat(plan.totalCobrado()).isEqualByComparingTo("120000");
+            assertThat(plan.saldoPendiente()).isEqualByComparingTo("530000");
+
+            // Todavía no cuenta como cuota abonada: falta plata.
+            assertThat(plan.cuotasAbonadas()).isZero();
+        }
+
+        @Test
+        @DisplayName("Dos pagos que completan la cuota la dejan Abonada")
+        void dosPagosCompletan() {
+            Obra obra = obra();
+            planDe(obra, "300000", "175000");
+
+            servicio.registrarPago(100L, new RegistrarPago(
+                    new BigDecimal("120000"), LocalDate.of(2026, 9, 1), "Efectivo", null));
+            PlanDeCobro plan = servicio.registrarPago(100L, new RegistrarPago(
+                    new BigDecimal("180000"), LocalDate.of(2026, 9, 15),
+                    "Transferencia", "Recibo"));
+
+            var anticipo = plan.cuotas().get(0);
+            assertThat(anticipo.estado()).isEqualTo(Cuota.ESTADO_ABONADA);
+            assertThat(anticipo.saldo()).isEqualByComparingTo("0");
+            assertThat(anticipo.pagos()).hasSize(2);
+            assertThat(plan.cuotasAbonadas()).isEqualTo(1);
+        }
+
+        @Test
+        @DisplayName("No se puede cobrar más que el saldo")
+        void noSeCobraDeMas() {
+            Obra obra = obra();
+            planDe(obra, "300000", "175000");
+            servicio.registrarPago(100L, new RegistrarPago(
+                    new BigDecimal("250000"), LocalDate.now(), "Efectivo", null));
+
+            // Quedan 50000 de saldo y se intentan cobrar 80000.
+            assertThatThrownBy(() -> servicio.registrarPago(100L, new RegistrarPago(
+                    new BigDecimal("80000"), LocalDate.now(), "Efectivo", null)))
+                    .isInstanceOf(ReglaDeNegocioException.class)
+                    .hasMessageContaining("supera el saldo");
+        }
+
+        @Test
+        @DisplayName("Anular devuelve la cuota a deberse entera, con todos sus pagos")
+        void anularBorraTodosLosPagos() {
+            Obra obra = obra();
+            planDe(obra, "300000", "175000");
+            servicio.registrarPago(100L, new RegistrarPago(
+                    new BigDecimal("120000"), LocalDate.now(), "Efectivo", null));
+            servicio.registrarPago(100L, new RegistrarPago(
+                    new BigDecimal("50000"), LocalDate.now(), "Efectivo", null));
+
+            PlanDeCobro plan = servicio.anularPago(100L, new AnularPago("Rebotó"));
+
+            var anticipo = plan.cuotas().get(0);
+            assertThat(anticipo.totalPagado()).isEqualByComparingTo("0");
+            assertThat(anticipo.saldo()).isEqualByComparingTo("300000");
+            assertThat(anticipo.pagos()).isEmpty();
+            assertThat(anticipo.motivoAnulacion()).isEqualTo("Rebotó");
+        }
+
+        @Test
+        @DisplayName("Una cuota sin pagos no se puede anular")
+        void sinPagosNoSeAnula() {
+            Obra obra = obra();
+            planDe(obra, "300000", "175000");
+
+            assertThatThrownBy(() -> servicio.anularPago(100L, new AnularPago("Error")))
+                    .isInstanceOf(ReglaDeNegocioException.class)
+                    .hasMessageContaining("no tiene ningún pago");
+        }
+
+        /**
+         * El punto más delicado del cambio.
+         *
+         * Aplicar el coeficiente sobre el monto entero encarecería
+         * retroactivamente la parte ya pagada, y el cliente terminaría debiendo
+         * plata por algo que ya pagó.
+         */
+        @Test
+        @DisplayName("El CAC ajusta solo el saldo impago, no lo ya pagado")
+        void cacSoloSobreElSaldo() {
+            Obra obra = obra();
+            List<Cuota> plan = planDe(obra, "300000", "175000");
+
+            // Se pagan 100000 de los 300000 del anticipo: quedan 200000.
+            pagarParcial(plan.get(0), new BigDecimal("100000"));
+            conCac("1000", "1100");   // +10%
+
+            PlanDeCobro r = servicio.aplicarCac(5L);
+
+            // 100000 ya pagados + 200000 x 1,10 = 100000 + 220000 = 320000
+            assertThat(r.cuotas().get(0).montoCuota()).isEqualByComparingTo("320000.00");
+            // Lo pagado no se movió.
+            assertThat(r.cuotas().get(0).totalPagado()).isEqualByComparingTo("100000");
+            assertThat(r.cuotas().get(0).saldo()).isEqualByComparingTo("220000.00");
+        }
+
+        @Test
+        @DisplayName("Una cuota parcial y vencida SIGUE vencida: se sigue debiendo")
+        void parcialVencidaSigueVencida() {
+            Obra obra = obra();
+            Cuota vencida = new Cuota(obra, 0, new BigDecimal("300000"),
+                    LocalDate.now().minusDays(10));
+            asignarId(vencida, "idCuota", 100L);
+
+            pagarParcial(vencida, new BigDecimal("50000"));
+            vencida.revisarVencimiento(LocalDate.now());
+
+            // Que haya entrado algo no cambia que el resto está impago y fuera
+            // de término: es justo lo que hay que reclamar.
+            assertThat(vencida.getEstado()).isEqualTo(Cuota.ESTADO_VENCIDA);
+            assertThat(vencida.saldo()).isEqualByComparingTo("250000");
+        }
+
+        private void pagarParcial(Cuota cuota, BigDecimal monto) {
+            cuota.registrarPago(new Pago(cuota, monto, LocalDate.now(),
+                    "Transferencia", null, null));
+        }
+    }
+
+    /**
+     * Paga una cuota entera.
+     *
+     * Reemplaza al viejo cuota.abonar(): ahora el estado no se marca, se deriva
+     * de los pagos registrados. Para los tests que solo necesitan "esta cuota ya
+     * se cobro", esto es el equivalente.
+     */
+    private static void pagarEntera(Cuota cuota, LocalDate fecha,
+                                    String medio, String comprobante) {
+        cuota.registrarPago(new Pago(cuota, cuota.getMontoCuota(), fecha,
+                medio, comprobante, null));
     }
 }

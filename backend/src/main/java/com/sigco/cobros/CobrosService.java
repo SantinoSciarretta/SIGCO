@@ -55,12 +55,17 @@ public class CobrosService {
 
     private final com.sigco.accesos.ServicioAuditoria auditoria;
 
+    /** Quien registra cada pago: queda guardado en pago.id_usuario_registro. */
+    private final com.sigco.seguridad.SesionActual sesion;
+
     public CobrosService(CuotaRepository repositorio,
                          RegistroCacRepository cacRepositorio,
                          ObraRepository obraRepositorio,
                          PresupuestoRepository presupuestoRepositorio,
-                         com.sigco.accesos.ServicioAuditoria auditoria) {
+                         com.sigco.accesos.ServicioAuditoria auditoria,
+                         com.sigco.seguridad.SesionActual sesion) {
         this.auditoria = auditoria;
+        this.sesion = sesion;
         this.repositorio = repositorio;
         this.cacRepositorio = cacRepositorio;
         this.obraRepositorio = obraRepositorio;
@@ -194,8 +199,10 @@ public class CobrosService {
                     obra.getIdObra(), obra.getDireccionObra(),
                     obra.getCliente().getNombreApellido(), obra.getEstado(),
                     sumar(cuotas, c -> true),
-                    sumar(cuotas, Cuota::estaAbonada),
-                    sumar(cuotas, Cuota::estaPendiente),
+                    // Lo cobrado sale de los pagos y el saldo de lo que falta:
+                    // con pagos parciales, una misma cuota aporta a los dos.
+                    sumarPagado(cuotas),
+                    sumarSaldo(cuotas),
                     (int) cuotas.stream().filter(Cuota::estaVencida).count(),
                     proximoVencimiento(cuotas)));
         }
@@ -220,9 +227,11 @@ public class CobrosService {
     /**
      * Registra el pago de una cuota.
      *
-     * El monto no se recibe: es el de la cuota. El informe establece que si el
-     * cliente paga fuera de termino se mantiene el valor sin recargos, tal como
-     * lo maneja hoy la empresa, asi que no hay nada que recalcular al cobrar.
+     *
+     * El monto SI se recibe, a diferencia de antes: puede ser la cuota entera o
+     * una parte. Lo que no cambia es el valor de la cuota — el informe establece
+     * que si el cliente paga fuera de termino se mantiene sin recargos, tal como
+     * lo maneja hoy la empresa.
      */
     @Transactional
     public PlanDeCobro registrarPago(Long idCuota, RegistrarPago pago) {
@@ -232,36 +241,64 @@ public class CobrosService {
             throw new ReglaDeNegocioException("La cuota ya está abonada.");
         }
 
-        cuota.abonar(pago.fechaPago(), pago.medioPago(), pago.comprobanteEmitido());
+        // No se puede cobrar mas de lo que se debe. Se verifica aca y no en una
+        // restriccion de la tabla porque depende de los otros pagos de la misma
+        // cuota, y una restriccion no puede mirar otras filas.
+        if (pago.monto().compareTo(cuota.saldo()) > 0) {
+            throw new ReglaDeNegocioException(
+                    "El pago (" + pago.monto() + ") supera el saldo de la cuota ("
+                    + cuota.saldo() + "). Si el cliente pagó de más, registrá el "
+                    + "saldo exacto y el excedente a cuenta de la cuota siguiente.");
+        }
+
+        cuota.registrarPago(new Pago(
+                cuota,
+                pago.monto(),
+                pago.fechaPago(),
+                pago.medioPago(),
+                pago.comprobanteEmitido(),
+                sesion.idUsuario().orElse(null)));
 
         // Dinero que entra. Es de las pocas acciones del sistema que afirman un
         // hecho del mundo real —"el cliente pagó"— y no se puede verificar
         // mirando otra pantalla: si no queda registrado quien la cargo, no hay
         // forma de reconstruirlo despues.
+        //
+        // Se anota el monto de ESTE pago y el saldo que queda, no el total de la
+        // cuota: con pagos parciales son cosas distintas.
         auditoria.registrar(
-                "Cobro de la cuota " + cuota.getNumeroCuota()
+                "Cobro de " + pago.monto()
+                + " en la cuota " + cuota.getNumeroCuota()
                 + " de la obra #" + cuota.getObra().getIdObra()
-                + " por " + cuota.getMontoCuota()
-                + " (" + pago.medioPago() + ")",
+                + " (" + pago.medioPago() + "). Saldo: " + cuota.saldo(),
                 "Cobros");
 
         return plan(cuota.getObra().getIdObra());
     }
 
+    /**
+     * Anula la cobranza de la cuota: vuelve a deberse entera.
+     *
+     * Se anulan TODOS los pagos y no uno suelto. Anular una parte dejaria un
+     * estado de cuenta que nadie puede reconstruir sin mirar el historial
+     * entero; si hubo un error, se anula todo y se vuelven a cargar los pagos
+     * que si entraron, que ademas es como se corrige en una planilla.
+     */
     @Transactional
     public PlanDeCobro anularPago(Long idCuota, AnularPago anulacion) {
         Cuota cuota = buscarCuotaOFallar(idCuota);
 
-        if (!cuota.estaAbonada()) {
-            throw new ReglaDeNegocioException("La cuota no está abonada.");
+        if (!cuota.tienePagos()) {
+            throw new ReglaDeNegocioException("La cuota no tiene ningún pago registrado.");
         }
 
+        java.math.BigDecimal anulado = cuota.totalPagado();
         cuota.anularPago(anulacion.motivo().trim());
 
         auditoria.registrar(
                 "Anulación del cobro de la cuota " + cuota.getNumeroCuota()
                 + " de la obra #" + cuota.getObra().getIdObra()
-                + ": " + anulacion.motivo().trim(),
+                + " por " + anulado + ": " + anulacion.motivo().trim(),
                 "Cobros");
 
         return plan(cuota.getObra().getIdObra());
@@ -383,8 +420,8 @@ public class CobrosService {
                 obra.getIdObra(), obra.getDireccionObra(),
                 obra.getCliente().getNombreApellido(),
                 sumar(cuotas, c -> true),
-                sumar(cuotas, Cuota::estaAbonada),
-                sumar(cuotas, Cuota::estaPendiente),
+                sumarPagado(cuotas),
+                sumarSaldo(cuotas),
                 (int) cuotas.stream().filter(Cuota::estaAbonada).count(),
                 cuotas.size(),
                 (int) cuotas.stream().filter(Cuota::estaVencida).count(),
@@ -392,6 +429,30 @@ public class CobrosService {
                 cuotas.stream()
                         .sorted(Comparator.comparing(Cuota::getNumeroCuota))
                         .map(CuotaRespuesta::desde).toList());
+    }
+
+    /**
+     * Lo efectivamente cobrado: la suma de los pagos recibidos.
+     *
+     * Antes era la suma de las cuotas abonadas, y con pagos parciales eso
+     * dejaria afuera toda la plata que entro en cuotas a medio pagar.
+     */
+    private BigDecimal sumarPagado(List<Cuota> cuotas) {
+        return cuotas.stream()
+                .map(Cuota::totalPagado)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    /**
+     * Lo que falta cobrar: la suma de los saldos.
+     *
+     * Antes era la suma de las cuotas pendientes enteras, que ahora contaria de
+     * mas: una cuota pagada a medias no se debe entera.
+     */
+    private BigDecimal sumarSaldo(List<Cuota> cuotas) {
+        return cuotas.stream()
+                .map(Cuota::saldo)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     private BigDecimal sumar(List<Cuota> cuotas, java.util.function.Predicate<Cuota> filtro) {

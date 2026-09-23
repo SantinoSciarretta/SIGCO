@@ -37,6 +37,17 @@ public final class CobrosDtos {
 
     public record RegistrarPago(
 
+            /**
+             * Cuánto entró. Puede ser la cuota entera o una parte.
+             *
+             * Antes no existía: el pago era siempre por el total de la cuota. El
+             * servicio verifica que no supere el saldo, porque eso depende de
+             * los otros pagos de la misma cuota.
+             */
+            @NotNull(message = "El monto del pago es obligatorio")
+            @DecimalMin(value = "0.01", message = "El monto tiene que ser mayor a cero")
+            BigDecimal monto,
+
             @NotNull(message = "La fecha de pago es obligatoria")
             LocalDate fechaPago,
 
@@ -76,18 +87,40 @@ public final class CobrosDtos {
             Integer numeroCuota,
             boolean esAnticipo,
             BigDecimal montoCuota,
+            /** Lo que entró hasta ahora por esta cuota. */
+            BigDecimal totalPagado,
+            /** Lo que falta. Con pagos parciales ya no se deduce del estado. */
+            BigDecimal saldo,
             LocalDate fechaVencimiento,
             String estado,
             LocalDate fechaPago,
             String medioPago,
             String comprobanteEmitido,
-            String motivoAnulacion) {
+            String motivoAnulacion,
+            /** El detalle, para que el cliente pueda verificar cada entrega. */
+            List<PagoRespuesta> pagos) {
 
         public static CuotaRespuesta desde(Cuota c) {
             return new CuotaRespuesta(
                     c.getIdCuota(), c.getNumeroCuota(), c.esAnticipo(), c.getMontoCuota(),
+                    c.totalPagado(), c.saldo(),
                     c.getFechaVencimiento(), c.getEstado(), c.getFechaPago(),
-                    c.getMedioPago(), c.getComprobanteEmitido(), c.getMotivoAnulacion());
+                    c.getMedioPago(), c.getComprobanteEmitido(), c.getMotivoAnulacion(),
+                    c.getPagos().stream().map(PagoRespuesta::desde).toList());
+        }
+    }
+
+    /** Un pago recibido a cuenta de una cuota. */
+    public record PagoRespuesta(
+            Long idPago,
+            BigDecimal monto,
+            LocalDate fechaPago,
+            String medioPago,
+            String comprobanteEmitido) {
+
+        public static PagoRespuesta desde(com.sigco.cobros.Pago p) {
+            return new PagoRespuesta(p.getIdPago(), p.getMonto(), p.getFechaPago(),
+                    p.getMedioPago(), p.getComprobanteEmitido());
         }
     }
 

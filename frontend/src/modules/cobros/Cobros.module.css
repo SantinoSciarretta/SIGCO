@@ -496,7 +496,7 @@
    Cobros
    -------------------------------------------------------------------------- */
 
-.cuotaPendiente, .cuotaAbonada, .cuotaVencida {
+.cuotaPendiente, .cuotaAbonada, .cuotaVencida, .cuotaParcial {
   display: inline-block;
   font-size: 11px;
   letter-spacing: 0.06em;
@@ -515,6 +515,15 @@
 .cuotaPendiente {
   color: var(--color-neutral-700);
   border-color: var(--color-neutral-400);
+}
+
+/* Parcial: entró algo pero todavía se debe. Va en el color de alerta y no en
+   el de "abonada", porque lo que importa al recorrer la lista es que queda
+   saldo: pintarla de verde la haría pasar por cobrada. */
+.cuotaParcial {
+  color: var(--color-alerta);
+  border-color: var(--color-alerta);
+  background: color-mix(in srgb, var(--color-alerta) 10%, transparent);
 }
 
 /* Vencida: hay que reclamarla. Es la información que hoy depende de que el

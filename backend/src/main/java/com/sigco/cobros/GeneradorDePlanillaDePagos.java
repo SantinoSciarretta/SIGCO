@@ -11,6 +11,7 @@ import static com.sigco.documentos.EstiloPdf.celda;
 import static com.sigco.documentos.EstiloPdf.dato;
 import static com.sigco.documentos.EstiloPdf.encabezado;
 import static com.sigco.documentos.EstiloPdf.importe;
+import static com.sigco.documentos.EstiloPdf.pesos;
 import static com.sigco.documentos.EstiloPdf.membrete;
 
 import com.lowagie.text.Document;
@@ -149,6 +150,15 @@ public class GeneradorDePlanillaDePagos {
             return "Pagada " + (cuota.getFechaPago() != null
                     ? cuota.getFechaPago().format(FECHA) : "");
         }
+
+        // Pagada en parte: se dice cuanto entro y cuanto falta. Es exactamente
+        // la pregunta que el cliente hace cuando pago algo a cuenta.
+        if (cuota.tienePagos()) {
+            String base = "Pagó " + pesos(cuota.totalPagado())
+                    + " · resta " + pesos(cuota.saldo());
+            return cuota.estaVencida() ? base + " (vencida)" : base;
+        }
+
         return cuota.estaVencida() ? "Vencida" : "Pendiente";
     }
 
@@ -160,7 +170,11 @@ public class GeneradorDePlanillaDePagos {
             throws DocumentException {
 
         BigDecimal total = sumar(cuotas, c -> true);
-        BigDecimal cobrado = sumar(cuotas, Cuota::estaAbonada);
+        // De los pagos y no de las cuotas abonadas: si no, la plata que entro
+        // en cuotas a medio pagar no figuraria como cobrada.
+        BigDecimal cobrado = cuotas.stream()
+                .map(Cuota::totalPagado)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal saldo = total.subtract(cobrado);
 
         PdfPTable resumen = new PdfPTable(2);

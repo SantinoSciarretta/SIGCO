@@ -68,6 +68,9 @@ export function claseDeEstadoCuota(estado, estilos) {
   switch (estado) {
     case 'Abonada': return estilos.cuotaAbonada;
     case 'Vencida': return estilos.cuotaVencida;
+    // Parcial se ve como pendiente y no como abonada: todavia se debe plata,
+    // y ese es el dato que importa al mirar la lista.
+    case 'Parcial': return estilos.cuotaParcial;
     default: return estilos.cuotaPendiente;
   }
 }

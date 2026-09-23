@@ -203,6 +203,13 @@ export default function CobrosPage() {
                       </td>
                       <td className={estilos.dato}>
                         {c.fechaPago ? `${fecha(c.fechaPago)} · ${c.medioPago}` : '—'}
+                        {/* Con pagos parciales, el monto de la cuota ya no dice
+                            cuánto se debe: hay que mostrar el saldo. */}
+                        {Number(c.totalPagado) > 0 && Number(c.saldo) > 0 && (
+                          <div className={estilos.subrubroNombre}>
+                            Pagó {pesos(c.totalPagado)} · resta {pesos(c.saldo)}
+                          </div>
+                        )}
                         {c.motivoAnulacion && (
                           <div className={estilos.subrubroNombre}>
                             Pago anulado: {c.motivoAnulacion}
@@ -216,7 +223,7 @@ export default function CobrosPage() {
                             Registrar pago
                           </button>
                         )}
-                        {c.estado === 'Abonada' && (
+                        {Number(c.totalPagado) > 0 && (
                           <button type="button" className={estilos.accionPeligro}
                                   onClick={() => setAAnular(c)}>
                             Anular pago
@@ -314,6 +321,10 @@ export default function CobrosPage() {
 function RegistrarPagoModal({ cuota, onCerrar, onRegistrado }) {
   const hoy = new Date().toISOString().slice(0, 10);
   const [datos, setDatos] = useState({
+    // Propone el saldo completo: pagar la cuota entera sigue siendo lo normal,
+    // y así quien cobra todo no tiene que escribir el monto. Quien cobra una
+    // parte lo edita.
+    monto: cuota.saldo,
     fechaPago: hoy, medioPago: 'Transferencia', comprobanteEmitido: 'Recibo',
   });
   const [error, setError] = useState(null);
@@ -340,10 +351,32 @@ function RegistrarPagoModal({ cuota, onCerrar, onRegistrado }) {
            titulo={cuota.esAnticipo ? 'Cobrar el anticipo' : `Cobrar cuota ${cuota.numeroCuota}`}>
       <form onSubmit={enviar}>
         <p className={estilos.confirmacion}>
-          Monto: <b>{pesos(cuota.montoCuota)}</b> · vencía el {fecha(cuota.fechaVencimiento)}
+          {Number(cuota.totalPagado) > 0 ? (
+            <>
+              Ya pagó <b>{pesos(cuota.totalPagado)}</b> de {pesos(cuota.montoCuota)} ·
+              resta <b>{pesos(cuota.saldo)}</b>
+            </>
+          ) : (
+            <>Monto: <b>{pesos(cuota.montoCuota)}</b></>
+          )} · vencía el {fecha(cuota.fechaVencimiento)}
         </p>
 
         {error && <p className={estilos.errorGeneral}>{error}</p>}
+
+        <div className={estilos.campo}>
+          <label className={estilos.etiqueta} htmlFor="monto">
+            Monto cobrado <span className={estilos.obligatorio}>*</span>
+          </label>
+          <input id="monto" type="number" step="0.01" min="0.01"
+                 max={cuota.saldo}
+                 className={estilos.control}
+                 value={datos.monto} onChange={cambiar('monto')} required />
+          <p className={estilos.ayuda}>
+            Viene cargado el saldo completo. Si el cliente pagó solo una parte,
+            cambiá el importe: la cuota queda como pagada en parte y el resto
+            sigue figurando como deuda.
+          </p>
+        </div>
 
         <div className={estilos.tresColumnas}>
           <div className={estilos.campo}>
