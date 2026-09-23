@@ -1,4 +1,4 @@
-# Estado del proyecto — 17/09/2026
+# Estado del proyecto — 23/09/2026
 
 > Este archivo es el punto de partida de cada sesión nueva. Dice dónde está el
 > proyecto hoy, qué falta y qué hay que saber antes de tocar nada.
@@ -14,8 +14,9 @@
 de negocio, API, pantalla, tests y documentación. La seguridad está activa sobre
 todo el sistema y endurecida para salir a internet.
 
-- **274 tests** automáticos, sin fallos
-- **28 tablas**, 14 migraciones de Flyway aplicadas
+- **301 tests** automáticos, sin fallos
+- **29 tablas**, 16 migraciones de Flyway aplicadas
+- **Auditoría completa hecha** el 22–23/09: ver `docs/desarrollo/19-auditoria.md`
 - **El código está terminado.** Lo único que falta para usarlo es publicarlo, y
   eso necesita tus cuentas: ver `docs/PUESTA-EN-MARCHA.md`
 
@@ -30,6 +31,10 @@ usuario: jorge        contraseña: capataz2026     (Capataz de Obra)
 **El sistema te va a obligar a cambiarla apenas entres**, y eso es a propósito:
 esa contraseña está escrita en el repositorio, así que la conoce cualquiera que
 vea el código. Hasta que elijas una propia, ninguna otra pantalla se habilita.
+
+Y no la vas a poder volver a poner: desde la auditoría, la política rechaza las
+contraseñas previsibles, y `granica2026` contiene el nombre de la empresa. El
+mínimo es de 10 caracteres.
 
 ### Cómo levantarlo
 
@@ -64,11 +69,17 @@ reales y se pueden capturar. El insumo son los `.md` de `docs/desarrollo/`.
 
 Rubros, subrubros, materiales y proveedores. Es con Ricardo, no es código.
 
-### 4. Una decisión abierta
+### 4. Tres cosas que decide Ricardo
 
-**¿`gasto.id_subrubro` es obligatorio?** El informe se contradice: la sección de
-validaciones dice que sí, la tabla de campos y el Diccionario dicen que no. Está
-implementado **opcional**. Hay que resolverlo con Ricardo.
+Están en **`docs/PREGUNTAS-PARA-RICARDO.md`**, escritas para él:
+
+1. **¿El subrubro de un gasto es obligatorio?** El informe se contradice. Está
+   implementado **opcional**.
+2. **¿El Capataz General puede registrar gastos?** El informe dice que sí, la
+   matriz de permisos le da solo Consulta. Está implementado según la matriz: no
+   puede.
+3. **Los pagos parciales** no son una pregunta sino un aviso: el sistema hace
+   algo que su informe no describe.
 
 ---
 
@@ -81,6 +92,8 @@ implementado **opcional**. Hay que resolverlo con Ricardo.
 | Estado de cuenta por cliente, cruzando obras y cobros | `12-cobros.md` |
 | Varias fotos por remito (el informe no las pide) | `16-almacenamiento.md` |
 | Consultas agregadas en el tablero si algún día hay muchas obras | `14-dashboard.md` |
+| Sin límite de peticiones fuera del login | `19-auditoria.md` §9 |
+| Poder cargar gastos sin poder anularlos (hoy `gastos.editar` habilita las dos) | `19-auditoria.md` §9 |
 
 ---
 
@@ -135,6 +148,16 @@ paquete viejo compila en el IDE y falla al construir.
 - **El tablero reducido se arma completo y se recorta al final, en un solo
   punto.** Repartir el filtro por el armado haría que agregar un campo nuevo y
   olvidarse de una rama filtrara mal sin que nadie lo note.
+- **La renovación del token CONSERVA el instante del ingreso, no lo corre.** Si
+  al renovar se grabara el instante actual, el tope de 24 h no llegaría nunca y
+  un token robado se renovaría para siempre. Lo fija el test
+  `renovarConservaElInicio`.
+- **El estado de una cuota se DERIVA de sus pagos, nadie lo marca.** Así no
+  puede existir una cuota "Abonada" con saldo pendiente. Y el CAC se aplica solo
+  sobre el saldo impago: encarecer lo ya pagado sería cobrarlo dos veces.
+- **La política de contraseñas NO exige mayúsculas, números ni símbolos.** Esa
+  regla empuja a todos a la misma contraseña previsible y termina anotada en un
+  papel. Lo que se exige es largo, y se rechazan las previsibles.
 
 ### Cómo se verifica acá
 
@@ -147,7 +170,7 @@ sistema de verdad. Por eso cada módulo se verifica además:
 
 ---
 
-## Lo hecho en las últimas sesiones (11 al 17/09)
+## Lo hecho en las últimas sesiones (11 al 23/09)
 
 | Commit | Qué |
 | --- | --- |
@@ -159,8 +182,14 @@ sistema de verdad. Por eso cada módulo se verifica además:
 | `d140115` | Vidriera pública |
 | `46f124b` | Ficha de cliente con su historial |
 | `37607a9` | Planilla de pagos y reporte de gastos en PDF |
+| `96cd9b7` | Auditoría: tope de sesión, corte al cambiar contraseña, política de contraseñas |
+| `b6fad42` | Auditoría: pagos parciales de cuotas (alcance nuevo, no pedido por el informe) |
+| `63f8213` | Auditoría: código muerto fuera y tres reglas del informe completadas |
 | `97ca017` | Endurece el ingreso: bloqueo por intentos, cambio obligatorio de contraseña, renovación del token, auditoría de aprobaciones |
 | `ad8ca16` | Tablero reducido del capataz, compresión de fotos, borrado de huérfanos, reordenar el portfolio |
+| `96cd9b7` | Auditoría: tope de sesión, corte al cambiar contraseña, política de contraseñas |
+| `b6fad42` | Auditoría: pagos parciales de cuotas (alcance nuevo, no pedido por el informe) |
+| `63f8213` | Auditoría: código muerto fuera y tres reglas del informe completadas |
 
 Todo empujado a GitHub. La rama `main` local y `origin/main` están
 sincronizadas.
