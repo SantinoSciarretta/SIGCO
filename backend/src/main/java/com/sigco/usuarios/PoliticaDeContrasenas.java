@@ -43,11 +43,18 @@ public class PoliticaDeContrasenas {
      *
      * No pretende ser una lista completa —para eso haria falta un diccionario de
      * millones de entradas— sino cubrir lo que alguien de esta empresa pondria
-     * al apuro: lo obvio universal y lo obvio de Granica.
+     * al apuro: lo obvio universal y el nombre de la empresa.
+     *
+     * Solo palabras ESPECIFICAS. Las genericas del rubro no entran, y la primera
+     * version se equivoco en esto: tenia "obra" y "constructora", y con eso
+     * rechazaba "obraPilar7742", que es una contrasena perfectamente razonable.
+     * En una constructora, "obra" aparece en cualquier cosa que alguien elija.
+     * Una lista que rechaza contrasenas buenas empuja a la gente a inventar
+     * peores, que es justo lo contrario de lo que se busca.
      */
     private static final List<String> PROHIBIDAS = List.of(
             "contrasena", "contraseña", "password", "123456", "1234567890",
-            "qwerty", "admin", "usuario", "granica", "sigco", "obra", "constructora");
+            "qwerty", "admin", "usuario", "granica", "sigco");
 
     /**
      * Valida la contrasena elegida.

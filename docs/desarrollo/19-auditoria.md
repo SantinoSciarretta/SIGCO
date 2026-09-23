@@ -63,8 +63,28 @@ obra)". El resto de los módulos se los bloquea el permiso: un capataz de obra n
 tiene `gastos.ver`, `cobros.ver` ni `presupuestos.ver`, así que no llega ni a
 pedirlos.
 
-Verificado por HTTP con una cuenta de capataz real: no puede abrir una obra
-ajena por id, ni ver su avance, ni acceder a Gastos o Cobros.
+### La verificación que primero dio un falso positivo
+
+La primera corrida "confirmó" el aislamiento, y estaba mal. La cuenta de prueba
+tenía pendiente el **cambio obligatorio de contraseña**, así que todas las
+peticiones daban 403 — pero por la contraseña, no por el alcance. El test pasaba
+por el motivo equivocado.
+
+Repetido con la cuenta ya en uso normal, el resultado real:
+
+| Con la cuenta del Capataz de Obra | |
+| --- | --- |
+| Ve **solo** la obra que tiene asignada | ✅ `[1]` de 7 obras |
+| Abre su obra | ✅ 200 |
+| Abre una obra ajena por id | ✅ rechazado |
+| Ve el avance de una obra ajena | ✅ rechazado |
+| Accede a Gastos | ✅ 403 |
+| Accede a Cobros, incluso de su propia obra | ✅ 403 |
+| Accede a Compras, que su rol necesita | ✅ 200 |
+| Accede al catálogo de Materiales | ✅ 200 |
+
+**La lección, para la próxima:** un 403 no prueba que la defensa que uno quiere
+medir esté funcionando. Puede venir de otra. Hay que mirar el mensaje.
 
 ---
 
@@ -141,6 +161,17 @@ regla más común y la que peor funciona: empuja a todo el mundo a la misma
 contraseña previsible —una mayúscula al principio, un número y un signo al
 final— y termina anotada en un papel. `Granica2026!` cumple todas las reglas de
 complejidad y es la primera que probaría alguien que conoce la empresa.
+
+**Un error propio, corregido al usar el sistema.** La primera lista de palabras
+prohibidas incluía `"obra"` y `"constructora"`, y con eso rechazaba
+`obraPilar7742` — una contraseña perfectamente razonable. Apareció al cambiar la
+contraseña de la cuenta de un capataz.
+
+En una constructora, "obra" aparece en cualquier cosa que alguien elija. **Una
+lista que rechaza contraseñas buenas empuja a la gente a inventar peores**, que
+es lo contrario de lo que se busca. Quedaron solo las palabras específicas: el
+nombre de la empresa, el del sistema y las universales. Lo fija el test
+`noRechazaPalabrasDelRubro`.
 
 **Efecto secundario que conviene saber:** `granica2026` ya no se puede volver a
 poner. Se puede entrar con ella —el hash está en la base desde `V13`— pero al

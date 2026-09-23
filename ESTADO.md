@@ -25,7 +25,7 @@ todo el sistema y endurecida para salir a internet.
 ```
 usuario: ricardo      contraseña: granica2026     (Dueño)
 usuario: martin       contraseña: general2026     (Capataz General)
-usuario: jorge        contraseña: capataz2026     (Capataz de Obra)
+usuario: jorge        contraseña: obraPilar7742   (Capataz de Obra)
 ```
 
 **El sistema te va a obligar a cambiarla apenas entres**, y eso es a propósito:
@@ -168,6 +168,11 @@ sistema de verdad. Por eso cada módulo se verifica además:
 
 - por HTTP con `curl` o un script de Python contra el backend real
 - en el navegador con Puppeteer (`puppeteer-core` está en el scratchpad)
+
+**Un 403 no prueba lo que uno cree.** Al verificar el aislamiento entre obras,
+las peticiones del capataz daban 403 y el test pasaba — pero por el cambio
+obligatorio de contraseña, no por el alcance. Hay que mirar el mensaje del error,
+no solo el código.
 
 **Trampa de Puppeteer en este proyecto:** el CSS pone los botones en mayúsculas,
 y `innerText` devuelve el texto **ya transformado**. Buscar un botón por

@@ -82,6 +82,25 @@ class PoliticaDeContrasenasTest {
                 .isInstanceOf(ReglaDeNegocioException.class);
     }
 
+    /**
+     * La primera versión de la lista tenía "obra" y "constructora", y con eso
+     * rechazaba "obraPilar7742" — una contraseña perfectamente razonable. Se
+     * descubrió al probar el sistema con la cuenta de un capataz.
+     *
+     * En una constructora, "obra" aparece en cualquier cosa que alguien elija.
+     * Una lista que rechaza contraseñas buenas empuja a inventar peores.
+     */
+    @Test
+    @DisplayName("Las palabras genéricas del rubro NO están prohibidas")
+    void noRechazaPalabrasDelRubro() {
+        assertThatCode(() -> politica.validar("obraPilar7742", "jorge"))
+                .doesNotThrowAnyException();
+        assertThatCode(() -> politica.validar("cementoRapido9", "jorge"))
+                .doesNotThrowAnyException();
+        assertThatCode(() -> politica.validar("constructoraXY7", "jorge"))
+                .doesNotThrowAnyException();
+    }
+
     @Test
     @DisplayName("Un nombre de usuario muy corto no bloquea contraseñas legítimas")
     void nombreCortoNoBloquea() {
