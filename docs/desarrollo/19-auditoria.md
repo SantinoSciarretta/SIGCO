@@ -266,7 +266,31 @@ datos:
 | El capataz no accede a Gastos ni a Cobros | ✅ |
 
 Antes de correr nada se hizo un `pg_dump` de la base de desarrollo, porque `V16`
-convierte datos y no tiene vuelta atrás.
+convierte datos y no tiene vuelta atrás. Al terminar se borraron los datos de
+prueba: la base quedó idéntica a como estaba (3 cuotas abonadas, 7 pendientes,
+4 vencidas, 3 pagos por $13.706.666,66).
+
+### Y en el navegador (23/09)
+
+Los tests de backend no ejercitan el frontend: si una pantalla rompe al
+renderizar, ninguno se entera. Se recorrió el sistema con Chrome real:
+
+| Qué | Resultado |
+| --- | --- |
+| Ingreso y sesión | ✅ |
+| Las 15 pantallas del escritorio cargan, sin `NaN` ni `undefined` | ✅ |
+| Errores de JavaScript en consola | ninguno relevante |
+| La vidriera se ve **sin** iniciar sesión | ✅ |
+| La pantalla del capataz a 390 px (celular) | ✅ |
+| El modal de cobro pide el monto y propone el saldo completo | ✅ |
+| Una cuota a medio pagar muestra *"Pagó $500.000,00 · resta $2.498.333,33"* | ✅ |
+| Los totales suben de forma consistente al cobrar una parte | ✅ |
+
+**Una advertencia para quien repita esta verificación:** el CSS pone los botones
+en mayúsculas (`text-transform: uppercase`) y `innerText` de Puppeteer devuelve
+el texto **ya transformado**. Buscar un botón por `includes('Registrar pago')`
+no lo encuentra; hay que comparar sin distinguir mayúsculas. La primera corrida
+dio un falso positivo por eso.
 
 ---
 
@@ -274,7 +298,7 @@ convierte datos y no tiene vuelta atrás.
 
 | Qué | Por qué |
 | --- | --- |
-| Las dos contradicciones del informe | Son decisiones de negocio: `docs/PREGUNTAS-PARA-RICARDO.md` |
+| ~~Las dos contradicciones del informe~~ | **Resueltas el 23/09**: subrubro opcional, el Capataz General no carga gastos. Las dos confirman lo implementado. Ver `docs/PREGUNTAS-PARA-RICARDO.md` |
 | Sin límite de peticiones fuera del login | Solo el ingreso tiene límite. Con tres a diez usuarios internos es menor, pero conviene saberlo |
 | Poder cargar gastos sin poder anularlos | Hoy `gastos.editar` habilita las dos cosas. Separarlo requiere tocar código |
 | `AlmacenSupabase` contra Supabase real | Nunca se probó: hace falta la cuenta |

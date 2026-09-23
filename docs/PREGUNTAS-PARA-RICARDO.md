@@ -1,18 +1,27 @@
-# Preguntas para Ricardo
+# Preguntas para Ricardo — RESPONDIDAS
 
-> Tres cosas que el sistema no puede decidir solo, porque son decisiones de
-> negocio y no de programación. Dos salieron de contradicciones dentro del
-> propio informe; la tercera es una funcionalidad que se agregó y conviene que
-> él sepa que existe.
+> **Las tres quedaron resueltas el 23/09/2026, y las tres confirman lo que el
+> sistema ya hacía. No hubo que cambiar código.**
 >
-> Ninguna bloquea el uso del sistema: las tres tienen hoy una respuesta
-> implementada, y lo que hace falta es confirmarla o cambiarla.
+> | Pregunta | Respuesta |
+> | --- | --- |
+> | ¿El subrubro de un gasto es obligatorio? | **No, opcional** |
+> | ¿El Capataz General registra gastos? | **No, solo los consulta** |
+> | ¿Se quedan los pagos parciales? | **Sí**: no siempre se paga la cuota entera de una vez |
+>
+> El documento se conserva completo porque explica el *porqué* de cada decisión,
+> que es lo que hace falta para defenderlas y para no volver a discutirlas en
+> seis meses.
 
 ---
 
 ## 1. ¿El subrubro de un gasto es obligatorio?
 
-**Hoy está implementado como OPCIONAL.**
+### ✅ RESUELTO: queda OPCIONAL, que es como estaba implementado.
+
+Ricardo confirmó que no siempre se sabe el subrubro al cargar el gasto. Se
+mantiene `gasto.id_subrubro` nullable, y la comparación contra el presupuesto
+se hace igual a nivel de rubro.
 
 ### El problema
 
@@ -52,7 +61,11 @@ a cargarlo mal — y un subrubro inventado es peor que ninguno.
 
 ## 2. ¿El Capataz General puede registrar gastos?
 
-**Hoy está implementado que NO: solo puede consultarlos.**
+### ✅ RESUELTO: NO carga gastos, solo los consulta.
+
+Manda la matriz de permisos del informe. El Capataz General conserva
+`gastos.ver` —ve los montos y el semáforo— y no recibe `gastos.editar`. Los
+gastos los carga el dueño.
 
 ### El problema
 
@@ -89,10 +102,14 @@ código; decime si te interesa y se hace.
 
 ---
 
-## 3. Se agregó algo que el informe no pedía: pagos parciales
+## 3. Pagos parciales
 
-**Esto no es una pregunta, es un aviso.** Pero conviene que lo sepas porque el
-sistema hace algo que el informe no describe.
+### ✅ RESUELTO: se quedan.
+
+Ricardo confirmó que **no siempre se paga la cuota entera en un solo pago**, así
+que la funcionalidad responde a cómo cobra la empresa de verdad. Es el único
+punto en que el sistema hace algo que el informe no describe, y queda registrado
+como desvío deliberado.
 
 ### Qué cambió
 
@@ -122,8 +139,8 @@ como cobrada entera (y el sistema decía que no debía nada) o dejarla como impa
 - **Una cuota pagada a medias cuyo vencimiento ya pasó sigue figurando como
   vencida**, porque el resto se sigue debiendo y hay que reclamarlo.
 
-**La pregunta, si querés hacerla:** ¿te sirve, o preferís que lo saquemos para
-que el sistema quede exactamente como el informe lo describe?
+**Respondido:** sirve y se queda. El informe describía el cobro como "la cuota
+se paga entera", y en la práctica no siempre es así.
 
 ---
 

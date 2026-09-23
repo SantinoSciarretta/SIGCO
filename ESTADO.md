@@ -69,17 +69,18 @@ reales y se pueden capturar. El insumo son los `.md` de `docs/desarrollo/`.
 
 Rubros, subrubros, materiales y proveedores. Es con Ricardo, no es código.
 
-### 4. Tres cosas que decide Ricardo
+### 4. ~~Decisiones de Ricardo~~ — RESUELTAS el 23/09
 
-Están en **`docs/PREGUNTAS-PARA-RICARDO.md`**, escritas para él:
+Las tres quedaron cerradas, y las tres **confirman lo que el sistema ya hacía**.
+No hubo que cambiar código:
 
-1. **¿El subrubro de un gasto es obligatorio?** El informe se contradice. Está
-   implementado **opcional**.
-2. **¿El Capataz General puede registrar gastos?** El informe dice que sí, la
-   matriz de permisos le da solo Consulta. Está implementado según la matriz: no
-   puede.
-3. **Los pagos parciales** no son una pregunta sino un aviso: el sistema hace
-   algo que su informe no describe.
+| Pregunta | Respuesta |
+| --- | --- |
+| ¿El subrubro de un gasto es obligatorio? | **No, opcional** |
+| ¿El Capataz General registra gastos? | **No, solo los consulta** |
+| ¿Se quedan los pagos parciales? | **Sí**: no siempre se paga la cuota entera |
+
+El detalle y el porqué de cada una, en `docs/PREGUNTAS-PARA-RICARDO.md`.
 
 ---
 
@@ -167,6 +168,11 @@ sistema de verdad. Por eso cada módulo se verifica además:
 
 - por HTTP con `curl` o un script de Python contra el backend real
 - en el navegador con Puppeteer (`puppeteer-core` está en el scratchpad)
+
+**Trampa de Puppeteer en este proyecto:** el CSS pone los botones en mayúsculas,
+y `innerText` devuelve el texto **ya transformado**. Buscar un botón por
+`includes('Registrar pago')` no lo encuentra: hay que comparar sin distinguir
+mayúsculas. Ya generó un falso positivo una vez.
 
 ---
 
