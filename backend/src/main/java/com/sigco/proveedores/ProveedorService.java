@@ -34,10 +34,22 @@ public class ProveedorService {
     private final ObservacionRepository observacionRepositorio;
     private final MaterialRepository materialRepositorio;
 
+    /**
+     * Para verificar que el pedido de una observacion exista y sea de este
+     * proveedor.
+     *
+     * Se inyecta el REPOSITORIO y no PedidoService: ese servicio ya depende de
+     * ProveedorRepository, y pedirle el servicio entero cerraria un ciclo entre
+     * los dos modulos.
+     */
+    private final com.sigco.compras.PedidoRepository pedidoRepositorio;
+
     public ProveedorService(ProveedorRepository repositorio,
                             CotizacionRepository cotizacionRepositorio,
                             ObservacionRepository observacionRepositorio,
-                            MaterialRepository materialRepositorio) {
+                            MaterialRepository materialRepositorio,
+                            com.sigco.compras.PedidoRepository pedidoRepositorio) {
+        this.pedidoRepositorio = pedidoRepositorio;
         this.repositorio = repositorio;
         this.cotizacionRepositorio = cotizacionRepositorio;
         this.observacionRepositorio = observacionRepositorio;
@@ -192,8 +204,25 @@ public class ProveedorService {
                                                      ObservacionSolicitud solicitud) {
         Proveedor proveedor = buscarOFallar(idProveedor);
 
-        // TODO: al desarrollar Compras, comprobar que el pedido exista y sea de
-        //       este proveedor.
+        // El pedido es opcional —una observacion puede no venir de ninguno— pero
+        // si viene tiene que existir y ser de ESTE proveedor. Sin esta
+        // comprobacion se podia colgar una queja de un pedido inexistente, o
+        // peor, del pedido de otro proveedor: el historial de comportamiento
+        // que el dueño usa para decidir a quien comprarle quedaria contaminado.
+        if (solicitud.idPedido() != null) {
+            var pedido = pedidoRepositorio.findById(solicitud.idPedido())
+                    .orElseThrow(() -> new RecursoNoEncontradoException(
+                            "Pedido", solicitud.idPedido()));
+
+            boolean esDeEsteProveedor = pedido.getProveedor() != null
+                    && pedido.getProveedor().getIdProveedor().equals(idProveedor);
+
+            if (!esDeEsteProveedor) {
+                throw new ReglaDeNegocioException(
+                        "Ese pedido no corresponde a este proveedor.");
+            }
+        }
+
         ObservacionProveedor observacion = new ObservacionProveedor(
                 proveedor, solicitud.idPedido(), solicitud.descripcion().trim());
 

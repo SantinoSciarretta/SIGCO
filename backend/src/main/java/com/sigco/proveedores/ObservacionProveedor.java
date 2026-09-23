@@ -37,10 +37,14 @@ public class ObservacionProveedor {
     /**
      * Pedido que origino la observacion.
      *
-     * Se guarda como identificador suelto y no como relacion: la entidad Pedido
-     * todavia no existe, porque el modulo Compras va despues. Al desarrollarlo
-     * se reemplaza por un @ManyToOne y se agrega la clave foranea en la base.
-     * TODO: vincular con la entidad Pedido al desarrollar el modulo Compras.
+     * Se guarda como identificador suelto y no como @ManyToOne, y ahora que
+     * Compras existe la decision se sostiene a proposito: una observacion sobre
+     * un proveedor no siempre nace de un pedido —puede ser "me atendio mal por
+     * telefono"— asi que el vinculo es opcional. Con una relacion obligatoria,
+     * Proveedores pasaria a depender de Compras para algo que la mayoria de las
+     * veces no lo necesita.
+     *
+     * Que el pedido exista y sea de ESTE proveedor lo verifica el servicio.
      */
     @Column(name = "id_pedido")
     private Long idPedido;

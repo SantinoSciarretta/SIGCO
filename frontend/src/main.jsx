@@ -2,7 +2,6 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import Router from './app/router';
-import DemoProvider from './datos/DemoProvider';
 import { ProveedorSesion } from './modules/sesion/ContextoSesion';
 
 // El orden importa: primero los tokens (las variables), después los estilos
@@ -26,19 +25,13 @@ import './styles/base.css';
  *
  * Va POR FUERA del router porque el router ya depende de la sesión: es la
  * sesión la que decide si una ruta se puede abrir.
- *
- * DemoProvider sostiene los datos de muestra que todavía alimentan las
- * pantallas del capataz y la ficha de obra del diseño. Se retira cuando esas
- * pantallas pasen a consumir el backend.
  */
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ProveedorSesion>
-      <DemoProvider>
-        <BrowserRouter>
-          <Router />
-        </BrowserRouter>
-      </DemoProvider>
+      <BrowserRouter>
+        <Router />
+      </BrowserRouter>
     </ProveedorSesion>
   </StrictMode>,
 );

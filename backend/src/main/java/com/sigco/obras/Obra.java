@@ -110,13 +110,7 @@ public class Obra {
     /**
      * Edicion de los datos maestros.
      *
-     * El tipo de obra NO se puede cambiar desde aca. El informe lo bloquea
-     * apenas existe un presupuesto de anteproyecto o definitivo, porque
-     * cambiarlo despues romperia el circuito de Presupuestacion. Como ese
-     * modulo todavia no existe, se toma la posicion mas segura: el tipo de obra
-     * se define al dar de alta y no se toca.
-     * TODO: al desarrollar Presupuestacion, permitir cambiarlo mientras la obra
-     *       no tenga ningun presupuesto generado.
+     * El cliente no esta: la obra pertenece a quien la encargo y eso no cambia.
      */
     public void actualizarDatos(String direccionObra, String tipoInmueble,
                                 LocalDate fechaFinEstimada, String notas) {
@@ -124,6 +118,24 @@ public class Obra {
         this.tipoInmueble = tipoInmueble;
         this.fechaFinEstimada = fechaFinEstimada;
         this.notas = notas;
+    }
+
+    /**
+     * Corrige el tipo de obra.
+     *
+     * Va aparte de actualizarDatos() porque no se puede hacer siempre: el
+     * informe lo bloquea apenas existe un presupuesto de anteproyecto o
+     * definitivo, porque el tipo determina el circuito de Presupuestacion —en
+     * construccion nueva no hay anteproyecto, en reforma si—. Quien llama tiene
+     * que haber comprobado antes que la obra no tenga presupuestos; eso lo hace
+     * el servicio, que es el unico que puede consultarlos.
+     *
+     * Existe porque hasta la auditoria del 22/09 el tipo no se podia cambiar
+     * NUNCA, y una obra cargada con el tipo equivocado no tenia arreglo: habia
+     * que cancelarla y volver a crearla, perdiendo su historial.
+     */
+    public void corregirTipoObra(String tipoObra) {
+        this.tipoObra = tipoObra;
     }
 
     /** Registra la fecha en que arrancaron los trabajos en el lugar. */

@@ -18,9 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
  * Reemplaza las fotos dispersas y sin ordenar en el telefono del dueño, que hoy
  * son dificiles de encontrar cuando un cliente las pide.
  *
- * TODO: al integrar Accesos, restringir la administracion al rol dueño. La
- *       vista publica NO lleva autenticacion: es de solo lectura y esa es su
- *       razon de ser.
+ * La administracion esta restringida al rol dueño: exige portfolio.ver y
+ * portfolio.editar, que ningun capataz tiene. La vidriera publica NO lleva
+ * autenticacion, y esa es su razon de ser: vive en /api/vidriera, fuera de
+ * /api/portfolio, justamente para poder abrirse sin desarmar las rutas.
  */
 @Service
 public class PortfolioService {

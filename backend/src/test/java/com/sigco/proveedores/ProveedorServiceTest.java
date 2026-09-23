@@ -42,6 +42,10 @@ class ProveedorServiceTest {
     @Mock private ObservacionRepository observacionRepositorio;
     @Mock private MaterialRepository materialRepositorio;
 
+    // Desde la auditoria del 22/09, una observacion vinculada a un pedido exige
+    // que ese pedido exista y sea de este proveedor.
+    @Mock private com.sigco.compras.PedidoRepository pedidoRepositorio;
+
     @InjectMocks private ProveedorService servicio;
 
     private static void asignarId(Object entidad, String campo, Long valor) {
@@ -252,6 +256,61 @@ class ProveedorServiceTest {
     @DisplayName("Observaciones y estado")
     class Observaciones {
 
+        /**
+         * Sin esta comprobación se podía colgar una queja de un pedido
+         * inexistente, o peor, del pedido de OTRO proveedor: el historial de
+         * comportamiento que el dueño usa para decidir a quién comprarle
+         * quedaría contaminado.
+         */
+        @Test
+        @DisplayName("Una observación sobre un pedido que no existe se rechaza")
+        void pedidoInexistente() {
+            when(repositorio.findById(1L))
+                    .thenReturn(Optional.of(proveedor("Corralón", "Norte", 1L)));
+            when(pedidoRepositorio.findById(99L)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> servicio.registrarObservacion(1L,
+                    new ObservacionSolicitud("Cualquier cosa", 99L)))
+                    .isInstanceOf(com.sigco.common.exception.RecursoNoEncontradoException.class);
+        }
+
+        @Test
+        @DisplayName("Una observación sobre el pedido de OTRO proveedor se rechaza")
+        void pedidoDeOtroProveedor() {
+            when(repositorio.findById(1L))
+                    .thenReturn(Optional.of(proveedor("Corralón", "Norte", 1L)));
+            conPedidoDelProveedor(42L, 7L);   // el pedido es del proveedor 7
+
+            assertThatThrownBy(() -> servicio.registrarObservacion(1L,
+                    new ObservacionSolicitud("Demoró la entrega", 42L)))
+                    .isInstanceOf(ReglaDeNegocioException.class)
+                    .hasMessageContaining("no corresponde a este proveedor");
+        }
+
+        @Test
+        @DisplayName("Sin pedido asociado la observación se guarda igual")
+        void sinPedidoTambienSeGuarda() {
+            when(repositorio.findById(1L))
+                    .thenReturn(Optional.of(proveedor("Corralón", "Norte", 1L)));
+            when(observacionRepositorio.save(any(ObservacionProveedor.class)))
+                    .thenAnswer(i -> i.getArgument(0));
+
+            // No toda queja nace de un pedido: puede ser "me atendió mal por
+            // teléfono". Por eso el vínculo es opcional.
+            var r = servicio.registrarObservacion(1L,
+                    new ObservacionSolicitud("Atendió de mala manera", null));
+
+            assertThat(r.idPedido()).isNull();
+        }
+
+        /** Declara un pedido existente y de quién es. */
+        private void conPedidoDelProveedor(Long idPedido, Long idProveedor) {
+            var pedido = org.mockito.Mockito.mock(com.sigco.compras.Pedido.class);
+            var prov = proveedor("Quien sea", "Norte", idProveedor);
+            org.mockito.Mockito.when(pedido.getProveedor()).thenReturn(prov);
+            when(pedidoRepositorio.findById(idPedido)).thenReturn(Optional.of(pedido));
+        }
+
         @Test
         @DisplayName("Una observación se guarda con su fecha y el pedido que la originó")
         void registraObservacion() {
@@ -259,6 +318,7 @@ class ProveedorServiceTest {
                     .thenReturn(Optional.of(proveedor("Corralón", "Norte", 1L)));
             when(observacionRepositorio.save(any(ObservacionProveedor.class)))
                     .thenAnswer(i -> i.getArgument(0));
+            conPedidoDelProveedor(42L, 1L);
 
             var r = servicio.registrarObservacion(1L, new ObservacionSolicitud(
                     "Demoró una semana la entrega de hierro", 42L));

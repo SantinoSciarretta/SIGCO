@@ -159,27 +159,47 @@ public class ObraService {
     /**
      * Edicion de los datos maestros.
      *
-     * Ni el cliente ni el tipo de obra se pueden modificar: no estan en
-     * ObraEdicion, asi que no hay forma de enviarlos.
+     * El cliente no se puede modificar: no esta en ObraEdicion, asi que no hay
+     * forma de enviarlo. El tipo de obra si, pero solo mientras la obra no
+     * tenga ningun presupuesto (ver mas abajo).
      */
     @Transactional
     public ObraRespuesta actualizar(Long id, ObraEdicion edicion) {
         Obra obra = buscarOFallar(id);
 
-        // Regla del informe: la fecha de inicio real no puede cargarse hasta
-        // que el presupuesto definitivo este aprobado. Mientras la obra sigue
-        // "En presupuestacion", ese presupuesto todavia no se aprobo.
-        // TODO: al desarrollar Presupuestacion, comprobar directamente contra
-        //       el estado del presupuesto definitivo.
-        if (edicion.fechaInicioReal() != null && obra.estaEnPresupuestacion()) {
+        // Regla del informe: la fecha de inicio real no se carga hasta que el
+        // presupuesto definitivo este aprobado.
+        //
+        // Se comprueba contra el PRESUPUESTO y no contra el estado de la obra.
+        // Antes se miraba si la obra seguia "En presupuestacion", que es casi lo
+        // mismo pero no lo mismo: una obra pasada a ejecucion a mano —transicion
+        // que existe y es valida— admitia la fecha sin tener ningun definitivo
+        // aprobado.
+        if (edicion.fechaInicioReal() != null && !tieneDefinitivoAprobado(obra)) {
             throw new ReglaDeNegocioException(
-                    "No se puede cargar la fecha de inicio mientras la obra este en presupuestacion. "
-                    + "Se habilita al aprobarse el presupuesto definitivo.");
+                    "No se puede cargar la fecha de inicio hasta que el presupuesto "
+                    + "definitivo este aprobado.");
         }
 
         validarOrdenDeFechas(edicion.fechaInicioReal() != null
                 ? edicion.fechaInicioReal() : obra.getFechaInicioReal(),
                 edicion.fechaFinEstimada());
+
+        // El tipo de obra se puede corregir mientras la obra no tenga ningun
+        // presupuesto. Es la regla del informe: el tipo determina el circuito de
+        // Presupuestacion —en construccion nueva no se habilita anteproyecto, en
+        // reforma si— asi que cambiarlo con presupuestos ya armados dejaria esos
+        // presupuestos en un circuito que no les corresponde.
+        if (edicion.tipoObra() != null
+                && !edicion.tipoObra().equals(obra.getTipoObra())) {
+
+            if (tieneAlgunPresupuesto(obra)) {
+                throw new ReglaDeNegocioException(
+                        "No se puede cambiar el tipo de obra: ya tiene presupuestos "
+                        + "generados y el tipo define su circuito de presupuestacion.");
+            }
+            obra.corregirTipoObra(edicion.tipoObra());
+        }
 
         obra.actualizarDatos(
                 edicion.direccionObra().trim(),
@@ -299,6 +319,11 @@ public class ObraService {
         auditoria.registrar(
                 "Cancelación de la obra #" + obra.getIdObra() + ": " + motivo,
                 "Obras");
+    }
+
+    /** Si la obra tiene algun presupuesto, del tipo y estado que sea. */
+    private boolean tieneAlgunPresupuesto(Obra obra) {
+        return !presupuestoRepositorio.buscar(obra.getIdObra(), "", "").isEmpty();
     }
 
     /** Si la obra llego a tener un definitivo aprobado, esta o estuvo en marcha. */

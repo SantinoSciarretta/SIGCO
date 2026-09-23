@@ -28,8 +28,10 @@ import org.springframework.web.bind.annotation.RestController;
  * No hay DELETE. Un plan de cobro no se borra y un pago tampoco: se anula
  * dejando el motivo, para conservar la trazabilidad del estado de cuenta.
  *
- * TODO: al integrar Accesos, restringir TODO este modulo al rol dueño. El
- *       informe lo define como informacion financiera no delegable.
+ * Todo el modulo esta restringido al rol dueño, como pide el informe: es
+ * informacion financiera no delegable. La clase exige cobros.ver y los metodos
+ * que mueven plata exigen cobros.editar; ninguno de los dos permisos lo tiene
+ * un capataz (V13).
  */
 @RestController
 /*

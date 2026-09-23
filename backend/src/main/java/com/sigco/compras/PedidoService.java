@@ -37,9 +37,9 @@ import org.springframework.transaction.annotation.Transactional;
  * quien recibe confirma con la foto del remito. Aprobar es explicitamente no
  * delegable.
  *
- * TODO: al integrar Accesos, restringir aprobar() al rol dueño y recibir() a
- *       quien tenga la obra asignada. Hoy no hay sesion, asi que las tres
- *       operaciones estan abiertas.
+ * Esa separacion ya esta hecha cumplir por el sistema: aprobar() exige el
+ * permiso compras.aprobar, que solo tiene el Dueño (V13), y recibir() pasa por
+ * AlcanceDeObras, que limita al capataz a las obras que tiene asignadas.
  */
 @Service
 public class PedidoService {

@@ -69,6 +69,37 @@ class ObraServiceTest {
                 Obra.TIPO_REFORMA, LocalDate.of(2026, 12, 1), null);
     }
 
+    /**
+     * Hace que el repositorio conteste que la obra tiene un definitivo aprobado.
+     *
+     * Lo usan dos reglas distintas: la fecha de inicio real (que solo se carga
+     * con el definitivo aprobado) y la cancelación de una obra en marcha.
+     */
+    private void conDefinitivoAprobado() {
+        // El id va con un matcher porque la obra de prueba no está persistida y
+        // su id todavía es null; lo que importa acá es el tipo y el estado.
+        when(presupuestoRepositorio.findByObraIdObraAndTipoPresupuestoAndEstado(
+                org.mockito.ArgumentMatchers.any(),
+                org.mockito.ArgumentMatchers.eq(
+                        com.sigco.presupuestacion.Presupuesto.TIPO_DEFINITIVO),
+                org.mockito.ArgumentMatchers.eq(
+                        com.sigco.presupuestacion.Presupuesto.ESTADO_APROBADO)))
+                .thenReturn(java.util.List.of(
+                        org.mockito.Mockito.mock(
+                                com.sigco.presupuestacion.Presupuesto.class)));
+    }
+
+    /** Hace que el repositorio conteste que la obra ya tiene presupuestos. */
+    private void conAlgunPresupuesto() {
+        when(presupuestoRepositorio.buscar(
+                org.mockito.ArgumentMatchers.any(),
+                org.mockito.ArgumentMatchers.eq(""),
+                org.mockito.ArgumentMatchers.eq("")))
+                .thenReturn(java.util.List.of(
+                        org.mockito.Mockito.mock(
+                                com.sigco.presupuestacion.Presupuesto.class)));
+    }
+
     private ObraSolicitud unaSolicitud() {
         return new ObraSolicitud(1L, "Av. Cabildo 2340", Obra.INMUEBLE_DEPARTAMENTO,
                 Obra.TIPO_REFORMA, LocalDate.of(2026, 12, 1), "Acceso por cochera");
@@ -258,21 +289,6 @@ class ObraServiceTest {
             assertThat(respuesta.estado()).isEqualTo(Obra.ESTADO_CANCELADA);
         }
 
-        /** Hace que el repositorio conteste que la obra tiene un definitivo aprobado. */
-        private void conDefinitivoAprobado() {
-            // El id va con un matcher porque la obra de prueba no está
-            // persistida y su id todavía es null; lo que importa acá es el tipo
-            // y el estado que se consultan.
-            when(presupuestoRepositorio.findByObraIdObraAndTipoPresupuestoAndEstado(
-                    org.mockito.ArgumentMatchers.any(),
-                    org.mockito.ArgumentMatchers.eq(
-                            com.sigco.presupuestacion.Presupuesto.TIPO_DEFINITIVO),
-                    org.mockito.ArgumentMatchers.eq(
-                            com.sigco.presupuestacion.Presupuesto.ESTADO_APROBADO)))
-                    .thenReturn(java.util.List.of(
-                            org.mockito.Mockito.mock(
-                                    com.sigco.presupuestacion.Presupuesto.class)));
-        }
     }
 
     // ------------------------------------------------------------------
@@ -289,21 +305,22 @@ class ObraServiceTest {
             when(repositorio.buscarConCliente(1L)).thenReturn(Optional.of(unaObra()));
 
             assertThatThrownBy(() -> servicio.actualizar(1L, new ObraEdicion(
-                    "Av. Cabildo 2340", Obra.INMUEBLE_DEPARTAMENTO,
+                    "Av. Cabildo 2340", Obra.INMUEBLE_DEPARTAMENTO, null,
                     LocalDate.of(2026, 3, 4), null, null)))
                     .isInstanceOf(ReglaDeNegocioException.class)
                     .hasMessageContaining("presupuesto definitivo");
         }
 
         @Test
-        @DisplayName("Con la obra en ejecución sí se puede corregir la fecha de inicio")
+        @DisplayName("Con el definitivo aprobado sí se puede cargar la fecha de inicio")
         void fechaInicioPermitidaEnEjecucion() {
             Obra obra = unaObra();
             obra.pasarAEjecucion();
             when(repositorio.buscarConCliente(1L)).thenReturn(Optional.of(obra));
+            conDefinitivoAprobado();
 
             ObraRespuesta respuesta = servicio.actualizar(1L, new ObraEdicion(
-                    "Av. Cabildo 2340", Obra.INMUEBLE_DEPARTAMENTO,
+                    "Av. Cabildo 2340", Obra.INMUEBLE_DEPARTAMENTO, null,
                     LocalDate.of(2026, 3, 10), LocalDate.of(2026, 12, 1), null));
 
             assertThat(respuesta.fechaInicioReal()).isEqualTo(LocalDate.of(2026, 3, 10));
@@ -315,12 +332,63 @@ class ObraServiceTest {
             Obra obra = unaObra();
             obra.pasarAEjecucion();
             when(repositorio.buscarConCliente(1L)).thenReturn(Optional.of(obra));
+            conDefinitivoAprobado();
 
             assertThatThrownBy(() -> servicio.actualizar(1L, new ObraEdicion(
-                    "Av. Cabildo 2340", Obra.INMUEBLE_DEPARTAMENTO,
+                    "Av. Cabildo 2340", Obra.INMUEBLE_DEPARTAMENTO, null,
                     LocalDate.of(2026, 6, 1), LocalDate.of(2026, 3, 1), null)))
                     .isInstanceOf(ReglaDeNegocioException.class)
                     .hasMessageContaining("anterior");
+        }
+
+        /**
+         * Regla del informe: el tipo de obra se bloquea "apenas existe un
+         * presupuesto de anteproyecto o definitivo", porque determina el
+         * circuito de Presupuestación. Antes de la auditoría del 22/09 no se
+         * podía cambiar NUNCA, y una obra cargada con el tipo equivocado no
+         * tenía arreglo: había que cancelarla y rehacerla.
+         */
+        @Test
+        @DisplayName("Sin presupuestos, el tipo de obra se puede corregir")
+        void corrigeTipoSinPresupuestos() {
+            Obra obra = unaObra();
+            when(repositorio.buscarConCliente(1L)).thenReturn(Optional.of(obra));
+            // Sin presupuestos: el mock devuelve lista vacía por defecto.
+
+            ObraRespuesta respuesta = servicio.actualizar(1L, new ObraEdicion(
+                    "Av. Cabildo 2340", Obra.INMUEBLE_DEPARTAMENTO,
+                    Obra.TIPO_CONSTRUCCION, null, null, null));
+
+            assertThat(respuesta.tipoObra()).isEqualTo(Obra.TIPO_CONSTRUCCION);
+        }
+
+        @Test
+        @DisplayName("Con presupuestos ya generados, el tipo queda bloqueado")
+        void noCorrigeTipoConPresupuestos() {
+            Obra obra = unaObra();
+            when(repositorio.buscarConCliente(1L)).thenReturn(Optional.of(obra));
+            conAlgunPresupuesto();
+
+            assertThatThrownBy(() -> servicio.actualizar(1L, new ObraEdicion(
+                    "Av. Cabildo 2340", Obra.INMUEBLE_DEPARTAMENTO,
+                    Obra.TIPO_CONSTRUCCION, null, null, null)))
+                    .isInstanceOf(ReglaDeNegocioException.class)
+                    .hasMessageContaining("tipo de obra");
+        }
+
+        @Test
+        @DisplayName("Mandar el mismo tipo no se considera un cambio")
+        void mismoTipoNoEsCambio() {
+            Obra obra = unaObra();
+            when(repositorio.buscarConCliente(1L)).thenReturn(Optional.of(obra));
+            // No se declara ningún presupuesto: si el servicio los consultara
+            // igual, el stub estricto de Mockito haría fallar este test.
+
+            ObraRespuesta respuesta = servicio.actualizar(1L, new ObraEdicion(
+                    "Av. Cabildo 2340", Obra.INMUEBLE_DEPARTAMENTO,
+                    Obra.TIPO_REFORMA, null, null, null));
+
+            assertThat(respuesta.tipoObra()).isEqualTo(Obra.TIPO_REFORMA);
         }
 
         @Test
@@ -330,12 +398,11 @@ class ObraServiceTest {
             when(repositorio.buscarConCliente(1L)).thenReturn(Optional.of(obra));
 
             ObraRespuesta respuesta = servicio.actualizar(1L, new ObraEdicion(
-                    "Otra dirección 100", Obra.INMUEBLE_LOCAL, null, null, "Nota nueva"));
+                    "Otra dirección 100", Obra.INMUEBLE_LOCAL, null, null, null, "Nota nueva"));
 
             assertThat(respuesta.direccionObra()).isEqualTo("Otra dirección 100");
             assertThat(respuesta.tipoInmueble()).isEqualTo(Obra.INMUEBLE_LOCAL);
-            // El tipo de obra determina el circuito de Presupuestación: no está
-            // en ObraEdicion, así que no hay forma de enviarlo.
+            // Se envió null como tipo de obra, que significa "no lo toques".
             assertThat(respuesta.tipoObra()).isEqualTo(Obra.TIPO_REFORMA);
             assertThat(respuesta.nombreCliente()).isEqualTo("Marcela Ferrari");
         }
