@@ -103,10 +103,17 @@ class CobrosServiceTest {
         lenient().when(repositorio.saveAll(any())).thenAnswer(i -> i.getArgument(0));
     }
 
-    private void conCac(String anterior, String actual) {
-        RegistroCac ant = new RegistroCac(LocalDate.of(2026, 8, 1), new BigDecimal(anterior));
-        RegistroCac act = new RegistroCac(LocalDate.of(2026, 9, 1), new BigDecimal(actual));
-        lenient().when(cacRepositorio.ultimosDos()).thenReturn(List.of(act, ant));
+    /**
+     * Carga el coeficiente del mes.
+     *
+     * Desde V21 es un solo numero y es por cuanto se multiplican las cuotas:
+     * conCac("1.1") sube un 10%. Antes se cargaban dos niveles de indice y el
+     * coeficiente salia de dividirlos.
+     */
+    private void conCac(String coeficiente) {
+        RegistroCac registro = new RegistroCac(
+                LocalDate.of(2026, 9, 1), new BigDecimal(coeficiente));
+        lenient().when(cacRepositorio.ultimo()).thenReturn(Optional.of(registro));
     }
 
     /** Plan ya generado en memoria, para probar pagos y ajustes. */
@@ -273,7 +280,7 @@ class CobrosServiceTest {
         void coeficienteEntreMeses() {
             Obra obra = obra();
             planDe(obra, "300000", "175000", "175000");
-            conCac("1000", "1100");
+            conCac("1.1");
 
             PreviaCac previa = servicio.previaCac(5L);
 
@@ -289,7 +296,7 @@ class CobrosServiceTest {
             Obra obra = obra();
             List<Cuota> plan = planDe(obra, "300000", "175000", "175000");
             pagarEntera(plan.get(0), LocalDate.now(), "Transferencia", null);
-            conCac("1000", "1100");
+            conCac("1.1");
 
             PlanDeCobro r = servicio.aplicarCac(5L);
 
@@ -302,16 +309,50 @@ class CobrosServiceTest {
         }
 
         @Test
-        @DisplayName("Con un solo mes cargado no se puede calcular el ajuste")
-        void hacenFaltaDosMeses() {
+        @DisplayName("Sin ninguna actualización cargada, no hay nada que aplicar")
+        void sinCoeficienteCargado() {
             obra();
-            when(cacRepositorio.ultimosDos()).thenReturn(List.of(
-                    new RegistroCac(LocalDate.of(2026, 9, 1), new BigDecimal("1100"))));
+            when(cacRepositorio.ultimo()).thenReturn(Optional.empty());
 
-            // El CAC es un número absoluto: por sí solo no dice cuánto subió nada.
             assertThatThrownBy(() -> servicio.previaCac(5L))
                     .isInstanceOf(ReglaDeNegocioException.class)
-                    .hasMessageContaining("al menos dos meses");
+                    .hasMessageContaining("Todavía no hay ninguna actualización");
+        }
+
+        /**
+         * El caso que reportó Ricardo. Antes la tabla guardaba el NIVEL del
+         * índice y el coeficiente salía de dividir un mes por el anterior; con
+         * 0,1 y 1,6 cargados eso daba 16, y las cuotas se multiplicaban por
+         * dieciseis. Ahora el número es directamente el multiplicador.
+         */
+        @Test
+        @DisplayName("El número cargado ES el multiplicador: 1,4 sobre $1.000 da $1.400")
+        void elCoeficienteSeAplicaTalCual() {
+            Obra obra = obra();
+            planDe(obra, "1000", "1000", "1000");
+            conCac("1.4");
+            devolverLoQueSeGuarda();
+
+            var previa = servicio.previaCac(5L);
+            assertThat(previa.coeficiente()).isEqualByComparingTo("1.4");
+            // Tres cuotas de 1.000 pendientes: 3.000 pasan a 4.200.
+            assertThat(previa.saldoActual()).isEqualByComparingTo("3000");
+            assertThat(previa.saldoActualizado()).isEqualByComparingTo("4200");
+
+            var r = servicio.aplicarCac(5L);
+            assertThat(r.cuotas().get(1).montoCuota()).isEqualByComparingTo("1400.00");
+        }
+
+        @Test
+        @DisplayName("Un coeficiente de 1 deja las cuotas como estaban")
+        void coeficienteNeutro() {
+            Obra obra = obra();
+            planDe(obra, "1000", "1000");
+            conCac("1");
+            devolverLoQueSeGuarda();
+
+            var r = servicio.aplicarCac(5L);
+            assertThat(r.cuotas().get(1).montoCuota()).isEqualByComparingTo("1000.00");
         }
 
         @Test
@@ -320,7 +361,7 @@ class CobrosServiceTest {
             Obra obra = obra();
             List<Cuota> plan = planDe(obra, "300000", "175000");
             plan.forEach(c -> pagarEntera(c, LocalDate.now(), "Efectivo", null));
-            conCac("1000", "1100");
+            conCac("1.1");
 
             assertThatThrownBy(() -> servicio.aplicarCac(5L))
                     .isInstanceOf(ReglaDeNegocioException.class)
@@ -462,7 +503,7 @@ class CobrosServiceTest {
 
             // Se pagan 100000 de los 300000 del anticipo: quedan 200000.
             pagarParcial(plan.get(0), new BigDecimal("100000"));
-            conCac("1000", "1100");   // +10%
+            conCac("1.1");   // +10%
 
             PlanDeCobro r = servicio.aplicarCac(5L);
 

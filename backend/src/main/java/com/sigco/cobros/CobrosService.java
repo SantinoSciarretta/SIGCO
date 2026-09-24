@@ -353,8 +353,8 @@ public class CobrosService {
 
         RegistroCac registro = cacRepositorio.findByMesCorrespondiente(mes)
                 .orElseGet(() -> cacRepositorio.save(
-                        new RegistroCac(mes, solicitud.valorIndice())));
-        registro.corregirValor(solicitud.valorIndice());
+                        new RegistroCac(mes, solicitud.coeficiente())));
+        registro.corregirValor(solicitud.coeficiente());
 
         return IndiceCacRespuesta.desde(registro);
     }
@@ -367,16 +367,12 @@ public class CobrosService {
      */
     @Transactional(readOnly = true)
     public PreviaCac previaCac(Long idObra) {
-        List<RegistroCac> ultimos = cacRepositorio.ultimosDos();
-        if (ultimos.size() < 2) {
-            throw new ReglaDeNegocioException(
-                    "Hacen falta al menos dos meses de índice cargados para poder "
-                    + "actualizar: el ajuste sale de comparar un mes con el anterior.");
-        }
+        RegistroCac ultimo = cacRepositorio.ultimo()
+                .orElseThrow(() -> new ReglaDeNegocioException(
+                        "Todavía no hay ninguna actualización cargada. "
+                        + "Cargá el coeficiente del mes y volvé."));
 
-        RegistroCac actual = ultimos.get(0);
-        RegistroCac anterior = ultimos.get(1);
-        BigDecimal coeficiente = coeficienteEntre(anterior, actual);
+        BigDecimal coeficiente = ultimo.getCoeficiente();
 
         List<Cuota> pendientes = repositorio.delPlan(idObra).stream()
                 .filter(Cuota::estaPendiente)
@@ -387,9 +383,9 @@ public class CobrosService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         return new PreviaCac(
-                anterior.getMesCorrespondiente(), anterior.getValorIndice(),
-                actual.getMesCorrespondiente(), actual.getValorIndice(),
-                coeficiente, saldo,
+                ultimo.getMesCorrespondiente(),
+                coeficiente,
+                saldo,
                 saldo.multiply(coeficiente).setScale(DECIMALES, RoundingMode.HALF_UP),
                 pendientes.size());
     }
@@ -415,23 +411,6 @@ public class CobrosService {
         cuotas.forEach(c -> c.actualizarPorCac(previa.coeficiente()));
 
         return armarPlan(obra, cuotas);
-    }
-
-    /**
-     * Coeficiente de actualizacion: indice del mes sobre el del mes anterior.
-     *
-     * Se usa la RELACION entre dos meses y no el indice suelto: el CAC es un
-     * numero absoluto (por ejemplo 1234,56) que por si solo no dice cuanto
-     * subieron los costos. Lo que importa es cuanto crecio respecto del mes
-     * pasado.
-     */
-    private BigDecimal coeficienteEntre(RegistroCac anterior, RegistroCac actual) {
-        if (anterior.getValorIndice().signum() == 0) {
-            throw new ReglaDeNegocioException(
-                    "El índice del mes anterior es cero: no se puede calcular el ajuste.");
-        }
-        return actual.getValorIndice()
-                .divide(anterior.getValorIndice(), 6, RoundingMode.HALF_UP);
     }
 
     // ------------------------------------------------------------------

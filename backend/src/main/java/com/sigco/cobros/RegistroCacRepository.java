@@ -15,16 +15,16 @@ public interface RegistroCacRepository extends JpaRepository<RegistroCac, Long> 
     Optional<RegistroCac> findByMesCorrespondiente(LocalDate mesCorrespondiente);
 
     /**
-     * Los dos ultimos indices cargados.
+     * El ultimo coeficiente cargado.
      *
-     * La actualizacion por CAC no usa el indice suelto sino la RELACION
-     * entre el del mes y el del mes anterior: el coeficiente es
-     * nuevo/anterior. Un indice solo no dice cuanto subio nada.
+     * Con uno alcanza: desde V21 la tabla guarda directamente por cuanto se
+     * multiplican las cuotas, y no el nivel del indice publicado. Antes hacian
+     * falta dos meses porque el coeficiente salia de dividir uno por el otro.
      */
     @Query("""
             SELECT r FROM RegistroCac r
             ORDER BY r.mesCorrespondiente DESC
-            LIMIT 2
+            LIMIT 1
             """)
-    List<RegistroCac> ultimosDos();
+    Optional<RegistroCac> ultimo();
 }

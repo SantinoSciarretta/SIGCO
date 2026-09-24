@@ -39,9 +39,10 @@ dueño. Donde algo sí se aparta de una decisión anterior, está marcado como
 | 18 | Baja de presupuestos | **Desvío** | Módulo Presupuestación |
 | 19 | Dos contradicciones del informe, resueltas | Aclaración | Módulos Gastos y Accesos |
 | 20 | Dos reglas que estaban mal implementadas | Corrección | Módulo Obras |
+| 21 | `registro_cac.valor_indice` pasa a ser `coeficiente` | Campo renombrado | Diccionario, Módulo Cobros |
 
-**Totales que cambian en el documento:** de 28 a **29 tablas**; 20 migraciones de
-base de datos; 371 tests automáticos.
+**Totales que cambian en el documento:** de 28 a **29 tablas**; 21 migraciones de
+base de datos; 373 tests automáticos.
 
 ---
 
@@ -431,6 +432,38 @@ corrigieron, porque son reglas que la Propuesta enuncia:
 
 ---
 
+## 21. El CAC se carga como coeficiente, no como nivel de índice
+
+**Dice la Propuesta:** `registro_cac` tiene `valor_indice`, y el saldo se
+actualiza "por índice CAC".
+
+**Hace el sistema:** la columna se llama **`coeficiente`** y guarda por cuánto
+se multiplican las cuotas pendientes. 1,4 lleva una cuota de $1.000 a $1.400.
+
+**Por qué.** Lo reportó Ricardo: había cargado 1,6 y las cuotas subieron una
+barbaridad. La causa no era un error de cálculo sino de significado: el sistema
+guardaba el **nivel** del índice publicado por la Cámara (del orden de 1.200
+puntos) y sacaba el coeficiente dividiendo un mes por el anterior. Con 0,1 y 1,6
+cargados, esa división daba 16.
+
+El cálculo estaba bien hecho sobre datos que significaban otra cosa. Ricardo no
+busca el índice de la Cámara: decide cuánto actualizar y escribe ese número.
+
+**Es el único campo que se renombra en toda esta lista,** y conviene explicar
+por qué en el documento: fue justamente la distancia entre el nombre y el
+contenido la que produjo el error. Un campo llamado "índice" que guarda 1,4
+invita a la misma confusión de nuevo.
+
+**Consecuencia para el documento:** con un solo mes cargado alcanza. La
+Propuesta debería dejar de decir que la actualización compara dos meses.
+
+Se agregó además un `CHECK` de 0 a 10, que no es una regla de negocio sino una
+red para atrapar el caso de cargar el nivel publicado por error.
+
+Detalle completo en `docs/desarrollo/22-cac-coeficiente.md`.
+
+---
+
 ## Lo que NO cambió
 
 Vale la pena decirlo, porque es la mayor parte del documento:
@@ -457,5 +490,6 @@ Cada cambio está documentado con su justificación completa en `docs/desarrollo
 | --- | --- |
 | Planilla, agrupado por obra, balance, etapas, plazo, PDF de pedido | `20-pedidos-de-ricardo.md` |
 | WhatsApp al corralón | `21-whatsapp-al-corralon.md` |
+| El coeficiente CAC | `22-cac-coeficiente.md` |
 | Pagos parciales, endurecimiento del ingreso, contradicciones | `18-cierre-y-endurecimiento.md`, `19-auditoria.md` |
 | Cada módulo en detalle | `02-clientes.md` … `17-despliegue.md` |

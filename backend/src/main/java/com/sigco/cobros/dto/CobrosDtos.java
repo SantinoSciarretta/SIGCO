@@ -2,6 +2,7 @@ package com.sigco.cobros.dto;
 
 import com.sigco.cobros.Cuota;
 import com.sigco.cobros.RegistroCac;
+import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -68,14 +69,27 @@ public final class CobrosDtos {
             String motivo) {
     }
 
+    /**
+     * La actualizacion de un mes.
+     *
+     * El numero es el COEFICIENTE: por cuanto se multiplican las cuotas
+     * pendientes. 1,4 quiere decir que una cuota de $1.000 pasa a $1.400.
+     */
     public record NuevoIndiceCac(
 
             @NotNull(message = "El mes es obligatorio")
             LocalDate mesCorrespondiente,
 
-            @NotNull(message = "El valor del índice es obligatorio")
-            @DecimalMin(value = "0.0001", message = "El índice tiene que ser mayor a cero")
-            BigDecimal valorIndice) {
+            @NotNull(message = "El coeficiente es obligatorio")
+            @DecimalMin(value = "0.0001", message = "El coeficiente tiene que ser mayor a cero")
+            // El tope no es una regla de negocio sino una red: atrapa el error
+            // de cargar el nivel del indice publicado (1.234,5) creyendo que es
+            // el multiplicador, que es el error que motivo el cambio de V21.
+            @DecimalMax(value = "10",
+                        message = "El coeficiente parece un valor del índice publicado. "
+                                  + "Acá va por cuánto se multiplican las cuotas: "
+                                  + "1,4 sube un 40%.")
+            BigDecimal coeficiente) {
     }
 
     // ------------------------------------------------------------------
@@ -152,12 +166,14 @@ public final class CobrosDtos {
             LocalDate proximoVencimiento) {
     }
 
-    /** Vista previa de cómo quedarían las cuotas antes de aplicar el CAC. */
+    /**
+     * Vista previa de como quedarian las cuotas antes de aplicar el CAC.
+     *
+     * Es la proteccion real contra un coeficiente mal cargado: antes de tocar
+     * nada se ve en pesos cuanto pasa a deberse. Un numero absurdo se nota acá.
+     */
     public record PreviaCac(
-            LocalDate mesAnterior,
-            BigDecimal indiceAnterior,
             LocalDate mesActual,
-            BigDecimal indiceActual,
             BigDecimal coeficiente,
             BigDecimal saldoActual,
             BigDecimal saldoActualizado,
@@ -167,11 +183,11 @@ public final class CobrosDtos {
     public record IndiceCacRespuesta(
             Long idCac,
             LocalDate mesCorrespondiente,
-            BigDecimal valorIndice) {
+            BigDecimal coeficiente) {
 
         public static IndiceCacRespuesta desde(RegistroCac r) {
             return new IndiceCacRespuesta(
-                    r.getIdCac(), r.getMesCorrespondiente(), r.getValorIndice());
+                    r.getIdCac(), r.getMesCorrespondiente(), r.getCoeficiente());
         }
     }
 }

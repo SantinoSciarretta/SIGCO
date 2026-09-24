@@ -11,14 +11,27 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
- * Valor mensual del indice CAC (Camara Argentina de la Construccion).
+ * Actualizacion mensual por CAC.
  *
  * Es una tabla de referencia: no pertenece a ninguna obra en particular, sirve a
  * todas. Por eso no tiene ninguna clave foranea.
  *
+ * ------------------------------------------------------------------
+ *  Guarda el COEFICIENTE, no el nivel del indice
+ * ------------------------------------------------------------------
+ *
+ * El numero es por cuanto se multiplican las cuotas pendientes: 1,4 significa
+ * que una cuota de $1.000 pasa a $1.400, y un 1 exacto deja todo igual.
+ *
+ * Antes guardaba el nivel del indice publicado por la Camara —del orden de
+ * 1.200 puntos— y el coeficiente se sacaba dividiendo un mes por el anterior.
+ * Es lo correcto para ese indice, pero no es lo que el dueño carga: el escribe
+ * directamente cuanto quiere actualizar. Con dos meses cargados como 0,1 y 1,6
+ * la division daba 16, y las cuotas se multiplicaban por dieciseis (V21).
+ *
  * El valor se carga A MANO, como decidio el alcance del proyecto: la
  * importacion automatica desde la CAC queda explicitamente fuera de esta
- * version. El dueño lo ingresa una vez por mes, cuando se publica.
+ * version.
  */
 @Entity
 @Table(name = "registro_cac")
@@ -38,8 +51,9 @@ public class RegistroCac {
     @Column(name = "mes_correspondiente", nullable = false)
     private LocalDate mesCorrespondiente;
 
-    @Column(name = "valor_indice", nullable = false, precision = 8, scale = 4)
-    private BigDecimal valorIndice;
+    /** Por cuanto se multiplican las cuotas pendientes. 1,4 = +40%. */
+    @Column(name = "coeficiente", nullable = false, precision = 8, scale = 4)
+    private BigDecimal coeficiente;
 
     @Column(name = "fecha_carga", nullable = false)
     private LocalDateTime fechaCarga;
@@ -47,14 +61,14 @@ public class RegistroCac {
     protected RegistroCac() {
     }
 
-    public RegistroCac(LocalDate mesCorrespondiente, BigDecimal valorIndice) {
+    public RegistroCac(LocalDate mesCorrespondiente, BigDecimal coeficiente) {
         this.mesCorrespondiente = mesCorrespondiente.withDayOfMonth(1);
-        this.valorIndice = valorIndice;
+        this.coeficiente = coeficiente;
         this.fechaCarga = LocalDateTime.now();
     }
 
-    public void corregirValor(BigDecimal valorIndice) {
-        this.valorIndice = valorIndice;
+    public void corregirValor(BigDecimal coeficiente) {
+        this.coeficiente = coeficiente;
     }
 
     public Long getIdCac() {
@@ -65,8 +79,8 @@ public class RegistroCac {
         return mesCorrespondiente;
     }
 
-    public BigDecimal getValorIndice() {
-        return valorIndice;
+    public BigDecimal getCoeficiente() {
+        return coeficiente;
     }
 
     public LocalDateTime getFechaCarga() {

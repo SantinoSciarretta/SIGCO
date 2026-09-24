@@ -234,6 +234,7 @@ Documentar a medida que se desarrolla es un requisito central del proyecto (insu
 
 **Cobros**
 - El anticipo es la cuota cero. El saldo se actualiza por índice CAC (registro manual en `registro_cac`).
+- **`registro_cac` guarda el COEFICIENTE del mes, no el nivel del índice** (`V21`, 24/09). El número es por cuánto se multiplican las cuotas pendientes: 1,4 lleva una cuota de $1.000 a $1.400, y un 1 exacto deja todo igual. Antes guardaba el nivel publicado por la Cámara y el coeficiente salía de dividir un mes por el anterior; con 0,1 y 1,6 cargados eso daba 16 y las cuotas se multiplicaban por dieciséis. **La columna se llama `coeficiente` y ya no `valor_indice`**: fue esa distancia entre el nombre y el contenido la que produjo el error. Un `CHECK` de 0 a 10 atrapa el caso de cargar el nivel publicado (1.234,5) por error, y la vista previa muestra en pesos cuánto pasa a deberse antes de aplicar.
 - `fecha_pago` obligatoria al marcar una cuota como Abonada.
 - **Pagos parciales (agregado el 23/09, ALCANCE NUEVO que el informe no pide).** Una cuota puede cobrarse en partes: cada pago es una fila de la tabla `pago` (`V16`). **El estado de la cuota se DERIVA de sus pagos, nadie lo marca**: sin pagos es Pendiente, con saldo es Parcial, sin saldo es Abonada. Una cuota parcial vencida sigue Vencida: el resto se sigue debiendo. El CAC se aplica **solo sobre el saldo impago** (`totalPagado + saldo × coeficiente`); encarecer lo ya pagado sería cobrarlo dos veces. Ver `docs/PREGUNTAS-PARA-RICARDO.md` §3.
 
@@ -321,7 +322,7 @@ Nombres, tipos PostgreSQL, PK/FK exactos del Diccionario de Datos. **Respetar es
 ### Módulo Cobros
 - **pago** (agregado en `V16`, NO está en el Diccionario original): `id_pago` (PK), `id_cuota` (FK→cuota), `monto` (NUMERIC 14,2), `fecha_pago` (DATE), `medio_pago` (VARCHAR 15), `comprobante_emitido` (VARCHAR 20), `id_usuario_registro` (FK→usuario), `fecha_carga` (TIMESTAMP). Sostiene los pagos parciales; ver la regla en la sección 8.
 - **cuota**: `id_cuota` (PK), `id_obra` (FK→obra), `numero_cuota` (INTEGER, el anticipo es cuota cero), `monto_cuota` (NUMERIC 14,2), `fecha_vencimiento` (DATE), `estado` (VARCHAR 12), `fecha_pago` (DATE), `medio_pago` (VARCHAR 15), `comprobante_emitido` (VARCHAR 20)
-- **registro_cac**: `id_cac` (PK), `mes_correspondiente` (DATE), `valor_indice` (NUMERIC 8,4), `fecha_carga` (TIMESTAMP)
+- **registro_cac**: `id_cac` (PK), `mes_correspondiente` (DATE), `coeficiente` (NUMERIC 8,4 — renombrada desde `valor_indice` en `V21`, ver la regla en la sección 8), `fecha_carga` (TIMESTAMP)
 
 ### Módulo Portfolio Web
 - **publicacion_portfolio**: `id_publicacion` (PK), `id_obra` (FK→obra), `tipo_trabajo` (VARCHAR 30), `estado` (VARCHAR 15), `fecha_publicacion` (TIMESTAMP)
