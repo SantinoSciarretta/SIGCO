@@ -629,3 +629,58 @@
   text-transform: uppercase;
   color: var(--color-ok);
 }
+
+/* ---------------------------------------------------------------------------
+   La planilla, ahora en la pagina y no en una ventana
+
+   Antes era un modal. Ricardo pidio que apareciera debajo de los rubros: el
+   modal tapaba el presupuesto que se esta armando, que es justo lo que uno
+   quiere mirar mientras carga un rubro.
+
+   Al no tener el marco del modal necesita marcarse como un bloque aparte, o se
+   confunde con la tabla de items que viene abajo.
+   --------------------------------------------------------------------------- */
+
+.planillaInline {
+  margin: 14px 0 20px;
+  padding: 14px 16px 12px;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
+  background: color-mix(in srgb, var(--color-accent) 4%, transparent);
+}
+
+.planillaCabecera {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.planillaTitulo { margin: 0; font-size: 17px; }
+
+.cerrarPlanilla {
+  all: unset;
+  cursor: pointer;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+}
+
+.cerrarPlanilla:hover { color: var(--color-text); text-decoration: underline; }
+
+.cerrarPlanilla:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* El rubro cuya planilla esta abierta. Con la planilla desplegada mas abajo,
+   hay que poder ver de un vistazo a que rubro corresponde. */
+.rubroAbierto {
+  composes: rubroBoton;
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-surface);
+}
+
+.rubroAbierto:hover { background: var(--color-accent-500); }

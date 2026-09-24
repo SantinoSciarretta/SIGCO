@@ -183,6 +183,12 @@ ese total queda junto.
 
 El alta de a uno sigue existiendo para lo que no está en el catálogo.
 
+**La mano de obra se carga de las dos formas:** jornales por valor del jornal, o
+el total directo. En la práctica a veces se saben los jornales y a veces el
+proveedor pasa un precio cerrado por el trabajo. El total directo se guarda como
+una cantidad de 1 con unidad `global`, así que **no hace falta ningún campo
+nuevo**: el presupuesto ya guarda cantidad por valor unitario.
+
 ---
 
 ## 10. Los presupuestos se entran por la obra

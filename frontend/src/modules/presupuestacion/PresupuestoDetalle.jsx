@@ -210,13 +210,32 @@ export default function PresupuestoDetalle() {
                 <button
                   key={r.idRubro}
                   type="button"
-                  className={r.esManoDeObra ? estilos.rubroManoDeObra : estilos.rubroBoton}
-                  onClick={() => setRubroEnPlanilla(r)}
+                  className={claseDeRubro(r, rubroEnPlanilla, estilos)}
+                  // Volver a apretar el rubro abierto lo cierra: es el gesto
+                  // que uno espera de algo que se despliega en la pagina.
+                  onClick={() => setRubroEnPlanilla(
+                    rubroEnPlanilla?.idRubro === r.idRubro ? null : r)}
                 >
                   {r.nombreRubro}
                 </button>
               ))}
             </div>
+          )}
+
+          {/* La planilla del rubro elegido, ahi mismo. Antes era una ventana
+              emergente; Ricardo pidio que apareciera en la pagina, y tiene
+              razon: el modal tapaba el presupuesto que se esta armando, que es
+              justo lo que uno quiere mirar mientras carga un rubro. */}
+          {editable && rubroEnPlanilla && (
+            <PlanillaDeRubro
+              idPresupuesto={presupuesto.idPresupuesto}
+              rubro={rubroEnPlanilla}
+              onCerrar={() => setRubroEnPlanilla(null)}
+              onGuardado={(actualizado) => {
+                setPresupuesto(actualizado);
+                setRubroEnPlanilla(null);
+              }}
+            />
           )}
 
           {presupuesto.items.length === 0 ? (
@@ -339,15 +358,6 @@ export default function PresupuestoDetalle() {
           materiales={materiales}
           onCerrar={() => setFormularioItem(false)}
           onGuardado={(actualizado) => { setPresupuesto(actualizado); setFormularioItem(false); }}
-        />
-      )}
-
-      {rubroEnPlanilla && (
-        <PlanillaDeRubro
-          idPresupuesto={presupuesto.idPresupuesto}
-          rubro={rubroEnPlanilla}
-          onCerrar={() => setRubroEnPlanilla(null)}
-          onGuardado={(actualizado) => { setPresupuesto(actualizado); setRubroEnPlanilla(null); }}
         />
       )}
 
@@ -725,6 +735,17 @@ function DuplicarModal({ idPresupuesto, onCerrar }) {
       )}
     </Modal>
   );
+}
+
+/**
+ * La clase del boton de un rubro.
+ *
+ * Marca cual esta abierto para que, con la planilla desplegada mas abajo, se
+ * pueda ver de un vistazo a que rubro corresponde.
+ */
+function claseDeRubro(rubro, abierto, estilos) {
+  if (abierto?.idRubro === rubro.idRubro) return estilos.rubroAbierto;
+  return rubro.esManoDeObra ? estilos.rubroManoDeObra : estilos.rubroBoton;
 }
 
 function claseDeEstado(estado) {

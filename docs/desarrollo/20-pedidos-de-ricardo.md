@@ -142,6 +142,34 @@ Tres decisiones que conviene explicar:
 El "agregar ítem" de a uno sigue existiendo, para lo que no está en el catálogo:
 dirección de obra, un trabajo puntual, un material que se compró una sola vez.
 
+### Segunda vuelta: en la página, y la mano de obra por total (24/09)
+
+Al usar la planilla, Ricardo pidió dos cosas más.
+
+**Que no sea una ventana emergente.** La primera versión abría un modal. Tiene
+razón en que molesta: la ventana tapa el presupuesto que se está armando, y
+justamente lo que uno quiere mirar mientras carga un rubro es cómo se mueve el
+total y qué hay cargado en los otros. Ahora la planilla se despliega debajo de
+los botones de rubro, el rubro abierto queda marcado, y volver a apretarlo la
+cierra.
+
+**Que la mano de obra admita el total directo.** Antes solo se podía cargar
+jornales por valor del jornal. En la práctica a veces sabe los jornales y a
+veces le pasan un precio cerrado por el trabajo; obligarlo a inventar una de las
+dos partes para poder cargar la otra daría un dato falso en la planilla.
+
+Ahora la columna **Total** de esa planilla es editable. Escribir ahí pone la
+cantidad en 1 y la unidad en `global`, así que el ítem queda como
+"Albañilería, 1 global, $1.250.000".
+
+Eso **no necesitó ninguna columna nueva ni un caso especial al sumar**: el
+presupuesto ya guarda cantidad por valor unitario, y un total suelto es
+simplemente una cantidad de 1. El PDF lo muestra igual que a cualquier otro
+ítem, y las dos formas conviven en el mismo rubro.
+
+Que los jornales pasen a 1 se VE en la pantalla, y está bien que se vea: es lo
+que acaba de pasar con el dato.
+
 ### Un detalle que apareció al mirar la pantalla
 
 La primera versión hacía los campos transparentes para que la tabla pareciera
