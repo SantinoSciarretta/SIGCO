@@ -208,5 +208,6 @@ mayúsculas. Ya generó un falso positivo una vez.
 | `b0ce370` | Los presupuestos se entran por la obra, no por el listado plano |
 | (esta sesión) | Cierre de obra con balance, y etapas que alimentan el Seguimiento |
 
-Todo empujado a GitHub. La rama `main` local y `origin/main` están
-sincronizadas.
+Los commits hasta `63f8213` están en GitHub. **Los cuatro de los pedidos de
+Ricardo (`c65380a`, `083f8fe`, `b0ce370`, `1948d9a`) todavía no se empujaron**:
+`git push` cuando quieras subirlos.
