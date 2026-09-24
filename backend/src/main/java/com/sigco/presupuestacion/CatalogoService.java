@@ -74,7 +74,10 @@ public class CatalogoService {
         String nombre = solicitud.nombreRubro().trim();
         verificarNombreDeRubroLibre(nombre, null);
 
-        return RubroRespuesta.soloRubro(rubroRepositorio.save(new Rubro(nombre)));
+        Rubro rubro = new Rubro(nombre);
+        aplicarManoDeObra(rubro, solicitud.esManoDeObra());
+
+        return RubroRespuesta.soloRubro(rubroRepositorio.save(rubro));
     }
 
     @Transactional
@@ -84,8 +87,38 @@ public class CatalogoService {
 
         verificarNombreDeRubroLibre(nombre, id);
         rubro.renombrar(nombre);
+        aplicarManoDeObra(rubro, solicitud.esManoDeObra());
 
         return RubroRespuesta.soloRubro(rubro);
+    }
+
+    /**
+     * Marca este rubro como el de mano de obra, desmarcando al anterior.
+     *
+     * Hay UNO SOLO en todo el catalogo: dos marcados dejarian a la planilla sin
+     * saber cual es, y elegiria uno de los dos sin criterio. La base lo impide
+     * con un indice unico parcial (V18), pero si el servicio no desmarcara al
+     * anterior, marcar un rubro nuevo fallaria con un error de base de datos en
+     * lugar de hacer lo que el usuario pidio.
+     */
+    private void aplicarManoDeObra(Rubro rubro, boolean esManoDeObra) {
+        if (rubro.esManoDeObra() == esManoDeObra) {
+            return;
+        }
+
+        if (esManoDeObra) {
+            rubroRepositorio.findByEsManoDeObraTrue()
+                    .filter(anterior -> !anterior.getIdRubro().equals(rubro.getIdRubro()))
+                    .ifPresent(anterior -> anterior.marcarComoManoDeObra(false));
+
+            // El desmarcado del anterior tiene que llegar a la base ANTES de
+            // marcar el nuevo: si los dos cambios viajaran juntos al confirmar
+            // la transaccion, el indice unico podria ver los dos marcados a la
+            // vez y rechazar la operacion.
+            rubroRepositorio.flush();
+        }
+
+        rubro.marcarComoManoDeObra(esManoDeObra);
     }
 
     @Transactional

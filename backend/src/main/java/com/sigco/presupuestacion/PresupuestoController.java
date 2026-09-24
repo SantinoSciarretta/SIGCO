@@ -128,6 +128,36 @@ public class PresupuestoController {
 
     /** POST /api/presupuestos/{id}/items */
     @PreAuthorize("hasAuthority('presupuestos.editar')")
+    /**
+     * GET /api/presupuestos/{id}/planilla/{idRubro}
+     *
+     * La planilla de carga de un rubro: una fila por cada material del catálogo,
+     * con lo que ya esté cargado. Reemplaza al "agregar ítem de a uno".
+     */
+    @GetMapping("/{id}/planilla/{idRubro}")
+    public com.sigco.presupuestacion.dto.PlanillaDtos.PlanillaDeRubro planilla(
+            @PathVariable Long id, @PathVariable Long idRubro) {
+        return servicio.planilla(id, idRubro);
+    }
+
+    /**
+     * PUT /api/presupuestos/{id}/planilla/{idRubro}
+     *
+     * Guarda la planilla completa: reemplaza los ítems que el presupuesto tenía
+     * de ESE rubro por las filas que vinieron cargadas. Las vacías se descartan.
+     *
+     * Es PUT y no PATCH porque reemplaza el rubro entero, no lo modifica en
+     * parte: lo que llega es el estado final de ese rubro.
+     */
+    @PreAuthorize("hasAuthority('presupuestos.editar')")
+    @PutMapping("/{id}/planilla/{idRubro}")
+    public PresupuestoRespuesta guardarPlanilla(
+            @PathVariable Long id, @PathVariable Long idRubro,
+            @Valid @RequestBody
+            com.sigco.presupuestacion.dto.PlanillaDtos.PlanillaCompletada planilla) {
+        return servicio.guardarPlanilla(id, idRubro, planilla);
+    }
+
     @PostMapping("/{id}/items")
     public PresupuestoRespuesta agregarItem(@PathVariable Long id,
                                             @Valid @RequestBody ItemSolicitud solicitud) {

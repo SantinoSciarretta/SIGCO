@@ -180,11 +180,14 @@ Documentar a medida que se desarrolla es un requisito central del proyecto (insu
 **Obras**
 - No se crea una obra sin cliente asociado. Dirección y tipo de obra son obligatorios.
 - `tipo_obra` queda bloqueado para edición apenas existe un presupuesto de anteproyecto o definitivo (cambiarlo rompería el circuito de Presupuestación). **Implementado el 23/09**: hasta entonces no se podía cambiar nunca, así que una obra con el tipo equivocado había que cancelarla y rehacerla.
+- **El plazo de obra se carga y la fecha de fin se calcula** (`V17`, 23/09): con `fecha_inicio_estimada` + `meses_estimados`, el sistema escribe `fecha_fin_estimada`. Si se cargaran las dos por separado podrían contradecirse. Al registrar el inicio real, se recalcula desde esa fecha.
 - `fecha_inicio_real` no se carga hasta que el presupuesto definitivo esté aprobado. **Se comprueba contra el presupuesto** y no contra el estado de la obra (23/09): una obra pasada a ejecución a mano admitía la fecha sin definitivo aprobado.
 - Una obra con presupuesto definitivo aprobado no puede cancelarse salvo autorización explícita del dueño. **Implementado el 17/09/2026**: el servicio exige `confirmaObraEnEjecucion: true` además del motivo. Cancelar una obra en presupuestación descarta una propuesta; cancelar una con el definitivo aprobado interrumpe una obra en marcha, con material comprado y cuotas emitidas.
 - No se elimina una obra, solo se cancela (trazabilidad).
 
 **Presupuestación**
+- **La carga es por planilla** (agregado el 23/09 a pedido de Ricardo). Al elegir un rubro aparecen TODOS los materiales de ese rubro del catálogo, con su unidad, y se completa cantidad y precio en las filas que vayan; las vacías no se cargan. Guardar **reemplaza** los ítems de ese rubro: mandar solo lo que cambió obligaría a llevar la cuenta de qué fila se vació, y un despiste ahí deja ítems que no se ven pero suman al total. El "agregar ítem" de a uno sigue existiendo para lo que no está en el catálogo.
+- **Hay UN rubro marcado como mano de obra** (`rubro.es_mano_de_obra`, `V18`). Su planilla no lista materiales sino **los otros rubros**, para cargar de una sola vez cuánto sale la mano de obra de cada especialidad; los ítems que genera pertenecen al rubro Mano de obra, así ese total queda junto. Es una marca y no el nombre: reconocerlo por cómo se llama se rompería al renombrarlo. Un índice único parcial impide que haya dos.
 - No hay presupuesto sin obra creada previamente.
 - No hay presupuesto definitivo de una reforma sin anteproyecto previo de esa obra.
 - En construcción nueva, el sistema no habilita generar anteproyecto (el `tipo_obra` lo determina).
@@ -208,6 +211,8 @@ Documentar a medida que se desarrolla es un requisito central del proyecto (insu
 - Comparación presupuesto vs. gasto en tiempo real (semáforo verde/amarillo/rojo), sin traspaso manual.
 
 **Compras**
+- **Solo se piden materiales para una obra EN EJECUCIÓN** (23/09). Mientras se presupuesta no se compra nada: el presupuesto puede no aprobarse, y ese pedido generaría un gasto contra una obra que quizás nunca arranca.
+- **El pedido se puede bajar en PDF** para mandárselo al corralón (`GET /api/pedidos/{id}/orden`). Lleva materiales, cantidades con unidad, precios acordados y dónde entregar; NO lleva presupuesto, gasto, ganancia ni cliente, porque sale de la empresa hacia afuera.
 - El dueño aprueba el pedido antes de enviarlo al proveedor (no delegable).
 - El circuito de remito con foto cubre solo materiales de corralón y plomería.
 - Estados del pedido: Pendiente de Aprobación → Enviado al Proveedor → Recibido Completo / Recibido con Diferencias / Anulado. `nota_diferencia` obligatoria si hay diferencias.
@@ -264,7 +269,7 @@ Nombres, tipos PostgreSQL, PK/FK exactos del Diccionario de Datos. **Respetar es
 - **cliente**: `id_cliente` (PK), `nombre_apellido` (VARCHAR 150), `telefono_contacto` (VARCHAR 30), `email_contacto` (VARCHAR 100), `origen_recomendacion` (VARCHAR 20), `recomendado_por` (VARCHAR 150), `estado` (VARCHAR 10), `fecha_alta` (TIMESTAMP)
 
 ### Módulo Obras
-- **obra**: `id_obra` (PK), `id_cliente` (FK→cliente), `direccion_obra` (VARCHAR 200), `tipo_inmueble` (VARCHAR 15), `tipo_obra` (VARCHAR 15), `fecha_inicio_real` (DATE), `fecha_fin_estimada` (DATE), `notas` (TEXT), `estado` (VARCHAR 20), `motivo_cancelacion` (VARCHAR 200), `fecha_creacion` (TIMESTAMP)
+- **obra**: `id_obra` (PK), `id_cliente` (FK→cliente), `direccion_obra` (VARCHAR 200), `tipo_inmueble` (VARCHAR 15), `tipo_obra` (VARCHAR 15), `fecha_inicio_real` (DATE), `fecha_inicio_estimada` (DATE, `V17`), `meses_estimados` (INTEGER, `V17`), `fecha_fin_estimada` (DATE), `notas` (TEXT), `estado` (VARCHAR 20), `motivo_cancelacion` (VARCHAR 200), `fecha_creacion` (TIMESTAMP)
 
 ### Módulo Personal
 - **operario**: `id_operario` (PK), `nombre_apellido` (VARCHAR 150), `telefono_contacto` (VARCHAR 30), `estado` (VARCHAR 10), `fecha_alta` (TIMESTAMP)
@@ -272,7 +277,7 @@ Nombres, tipos PostgreSQL, PK/FK exactos del Diccionario de Datos. **Respetar es
 - **inasistencia**: `id_inasistencia` (PK), `id_operario` (FK→operario), `id_obra` (FK→obra), `fecha_falta` (DATE), `motivo` (VARCHAR 200), `id_usuario_registro` (FK→usuario)
 
 ### Módulo Presupuestación
-- **rubro**: `id_rubro` (PK), `nombre_rubro` (VARCHAR 100, único), `estado` (VARCHAR 10)
+- **rubro**: `id_rubro` (PK), `nombre_rubro` (VARCHAR 100, único), `estado` (VARCHAR 10), `es_mano_de_obra` (BOOLEAN, agregado en `V18` — ver la regla en la sección 8)
 - **subrubro**: `id_subrubro` (PK), `id_rubro` (FK→rubro), `nombre_subrubro` (VARCHAR 100), `estado` (VARCHAR 10)
 - **presupuesto**: `id_presupuesto` (PK), `id_obra` (FK→obra), `tipo_presupuesto` (VARCHAR 20), `id_presupuesto_base` (FK→presupuesto, autorreferencia), `version` (INTEGER), `estado` (VARCHAR 15), `metros_cuadrados` (NUMERIC 10,2), `valor_por_m2` (NUMERIC 12,2), `total_presupuesto` (NUMERIC 14,2), `anticipo_porcentaje` (NUMERIC 5,2), `cantidad_cuotas` (INTEGER), `plazo_estimado_obra` (VARCHAR 100), `fecha_creacion` (TIMESTAMP)
 - **item_presupuesto**: `id_item` (PK), `id_presupuesto` (FK→presupuesto), `id_rubro` (FK→rubro), `id_subrubro` (FK→subrubro), `id_material` (FK→material, opcional — **agregado en V7**, ver nota abajo), `descripcion` (VARCHAR 250), `unidad_medida` (VARCHAR 20), `cantidad` (NUMERIC 12,2), `valor_unitario` (NUMERIC 12,2, interno), `subtotal` (NUMERIC 14,2)

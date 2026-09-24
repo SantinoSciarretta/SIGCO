@@ -20,6 +20,8 @@ import com.sigco.presupuestacion.dto.PresupuestoDtos.Duplicacion;
 import com.sigco.presupuestacion.dto.PresupuestoDtos.ItemSolicitud;
 import com.sigco.presupuestacion.dto.PresupuestoDtos.NuevoPresupuesto;
 import com.sigco.presupuestacion.dto.PresupuestoDtos.PlanDePago;
+import com.sigco.presupuestacion.dto.PlanillaDtos.FilaCompletada;
+import com.sigco.presupuestacion.dto.PlanillaDtos.PlanillaCompletada;
 import com.sigco.presupuestacion.dto.PresupuestoRespuesta;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -737,6 +739,211 @@ class PresupuestoServiceTest {
                     .hasMessageContaining("Presupuesto");
 
             verify(repositorio, never()).delete(any());
+        }
+    }
+
+    // ------------------------------------------------------------------
+    //  La planilla de carga por rubro
+    // ------------------------------------------------------------------
+
+    /**
+     * Pedido de Ricardo al probar el sistema: que al elegir un rubro aparezcan
+     * TODOS los materiales del catálogo en una planilla tipo Excel, y él vaya
+     * completando cantidad y precio. Las filas que deje vacías no se cargan.
+     */
+    @Nested
+    @DisplayName("Planilla de carga")
+    class Planilla {
+
+        private Presupuesto enBorrador() {
+            Presupuesto p = presupuesto(
+                    obra(Obra.TIPO_CONSTRUCCION, 1L), Presupuesto.TIPO_DEFINITIVO, 10L);
+            lenient().when(repositorio.buscarCompleto(10L)).thenReturn(Optional.of(p));
+            return p;
+        }
+
+        @Test
+        @DisplayName("Lista TODOS los materiales del rubro, cargados o no")
+        void listaTodosLosMateriales() {
+            enBorrador();
+            Rubro albanileria = rubro("Albañilería", 1L);
+            when(rubroRepositorio.findById(1L)).thenReturn(Optional.of(albanileria));
+            when(materialRepositorio.buscarDisponibles(1L)).thenReturn(List.of(
+                    material("Cemento", albanileria, 100L),
+                    material("Arena", albanileria, 101L),
+                    material("Cal", albanileria, 102L)));
+
+            var planilla = servicio.planilla(10L, 1L);
+
+            // Las tres filas aparecen aunque no se haya cargado ninguna: de eso
+            // se trata la planilla, de ver la lista entera y completarla.
+            assertThat(planilla.filas()).hasSize(3);
+            assertThat(planilla.filas())
+                    .extracting(f -> f.descripcion())
+                    .containsExactly("Cemento", "Arena", "Cal");
+            assertThat(planilla.filas()).allMatch(f -> f.cantidad() == null);
+            assertThat(planilla.esManoDeObra()).isFalse();
+        }
+
+        @Test
+        @DisplayName("Las filas ya cargadas vienen con su cantidad y su precio")
+        void traeLoYaCargado() {
+            Presupuesto p = enBorrador();
+            Rubro albanileria = rubro("Albañilería", 1L);
+            Material cemento = material("Cemento", albanileria, 100L);
+
+            p.agregarItem(new ItemPresupuesto(p, albanileria, null, cemento,
+                    "Cemento", "bolsa", new BigDecimal("40"), new BigDecimal("9000")));
+
+            when(rubroRepositorio.findById(1L)).thenReturn(Optional.of(albanileria));
+            when(materialRepositorio.buscarDisponibles(1L)).thenReturn(List.of(
+                    cemento, material("Arena", albanileria, 101L)));
+
+            var planilla = servicio.planilla(10L, 1L);
+
+            var fila = planilla.filas().get(0);
+            assertThat(fila.cantidad()).isEqualByComparingTo("40");
+            assertThat(fila.valorUnitario()).isEqualByComparingTo("9000");
+            // Y la segunda sigue vacía.
+            assertThat(planilla.filas().get(1).cantidad()).isNull();
+            assertThat(planilla.subtotal()).isEqualByComparingTo("360000");
+        }
+
+        @Test
+        @DisplayName("Guardar toma solo las filas completas: las vacías se descartan")
+        void descartaLasVacias() {
+            Presupuesto p = enBorrador();
+            Rubro albanileria = rubro("Albañilería", 1L);
+            Material cemento = material("Cemento", albanileria, 100L);
+            Material arena = material("Arena", albanileria, 101L);
+
+            when(rubroRepositorio.findById(1L)).thenReturn(Optional.of(albanileria));
+            lenient().when(materialRepositorio.findById(100L)).thenReturn(Optional.of(cemento));
+            lenient().when(materialRepositorio.findById(101L)).thenReturn(Optional.of(arena));
+
+            servicio.guardarPlanilla(10L, 1L, new PlanillaCompletada(List.of(
+                    new FilaCompletada(100L, null, "Cemento", "bolsa",
+                            new BigDecimal("40"), new BigDecimal("9000")),
+                    // Sin cantidad ni precio: no va al presupuesto.
+                    new FilaCompletada(101L, null, "Arena", "m3", null, null))));
+
+            assertThat(p.getItems()).hasSize(1);
+            assertThat(p.getItems().get(0).getDescripcion()).isEqualTo("Cemento");
+        }
+
+        @Test
+        @DisplayName("Una fila con cantidad pero sin precio tampoco se carga")
+        void descartaLasIncompletas() {
+            Presupuesto p = enBorrador();
+            Rubro albanileria = rubro("Albañilería", 1L);
+            when(rubroRepositorio.findById(1L)).thenReturn(Optional.of(albanileria));
+
+            servicio.guardarPlanilla(10L, 1L, new PlanillaCompletada(List.of(
+                    new FilaCompletada(100L, null, "Cemento", "bolsa",
+                            new BigDecimal("40"), null))));
+
+            // Una cantidad sin precio no suma nada al total: guardarla dejaría
+            // un ítem que aporta cero y ensucia el detalle.
+            assertThat(p.getItems()).isEmpty();
+        }
+
+        /**
+         * El punto más delicado: guardar REEMPLAZA los ítems de ese rubro. Si
+         * se fueran aplicando cambios sueltos, una fila que el usuario vació
+         * quedaría como ítem fantasma — invisible en la planilla pero sumando
+         * al total del presupuesto.
+         */
+        @Test
+        @DisplayName("Guardar reemplaza lo que había: vaciar una fila la borra")
+        void reemplazaLoAnterior() {
+            Presupuesto p = enBorrador();
+            Rubro albanileria = rubro("Albañilería", 1L);
+            Material cemento = material("Cemento", albanileria, 100L);
+
+            p.agregarItem(new ItemPresupuesto(p, albanileria, null, cemento,
+                    "Cemento", "bolsa", new BigDecimal("40"), new BigDecimal("9000")));
+            assertThat(p.getTotalPresupuesto()).isEqualByComparingTo("360000");
+
+            when(rubroRepositorio.findById(1L)).thenReturn(Optional.of(albanileria));
+
+            // Se guarda la planilla con esa fila vacía.
+            servicio.guardarPlanilla(10L, 1L, new PlanillaCompletada(List.of(
+                    new FilaCompletada(100L, null, "Cemento", "bolsa", null, null))));
+
+            assertThat(p.getItems()).isEmpty();
+            assertThat(p.getTotalPresupuesto()).isEqualByComparingTo("0");
+        }
+
+        @Test
+        @DisplayName("Guardar un rubro no toca los ítems de los otros")
+        void noTocaLosOtrosRubros() {
+            Presupuesto p = enBorrador();
+            Rubro albanileria = rubro("Albañilería", 1L);
+            Rubro pintura = rubro("Pintura", 2L);
+
+            p.agregarItem(new ItemPresupuesto(p, pintura, null, null,
+                    "Látex", "litro", new BigDecimal("20"), new BigDecimal("5000")));
+
+            when(rubroRepositorio.findById(1L)).thenReturn(Optional.of(albanileria));
+
+            servicio.guardarPlanilla(10L, 1L, new PlanillaCompletada(List.of()));
+
+            // El ítem de Pintura sigue ahí: se reemplazó solo Albañilería.
+            assertThat(p.getItems()).hasSize(1);
+            assertThat(p.getItems().get(0).getRubro().getNombreRubro()).isEqualTo("Pintura");
+        }
+
+        // ---------- Mano de obra ----------
+
+        /**
+         * El rubro de mano de obra se comporta distinto: sus filas no son
+         * materiales sino los OTROS rubros, para cargar de una sola vez cuánto
+         * sale la mano de obra de cada especialidad.
+         */
+        @Test
+        @DisplayName("La planilla de mano de obra lista los otros rubros, no materiales")
+        void manoDeObraListaRubros() {
+            enBorrador();
+            Rubro manoDeObra = rubro("Mano de obra", 9L);
+            manoDeObra.marcarComoManoDeObra(true);
+
+            when(rubroRepositorio.findById(9L)).thenReturn(Optional.of(manoDeObra));
+            when(rubroRepositorio.findByEstadoOrderByNombreRubroAsc(Rubro.ESTADO_ACTIVO))
+                    .thenReturn(List.of(rubro("Albañilería", 1L), rubro("Pintura", 2L),
+                                        manoDeObra));
+
+            var planilla = servicio.planilla(10L, 9L);
+
+            assertThat(planilla.esManoDeObra()).isTrue();
+            // Los otros dos rubros, y NO se incluye a sí mismo: sería "mano de
+            // obra de la mano de obra".
+            assertThat(planilla.filas())
+                    .extracting(f -> f.descripcion())
+                    .containsExactly("Albañilería", "Pintura");
+            assertThat(planilla.filas()).allMatch(f -> f.idMaterial() == null);
+            assertThat(planilla.filas()).allMatch(f -> "jornal".equals(f.unidadMedida()));
+        }
+
+        @Test
+        @DisplayName("La mano de obra cargada queda como ítem de su propio rubro")
+        void manoDeObraSeGuardaEnSuRubro() {
+            Presupuesto p = enBorrador();
+            Rubro manoDeObra = rubro("Mano de obra", 9L);
+            manoDeObra.marcarComoManoDeObra(true);
+            when(rubroRepositorio.findById(9L)).thenReturn(Optional.of(manoDeObra));
+
+            servicio.guardarPlanilla(10L, 9L, new PlanillaCompletada(List.of(
+                    new FilaCompletada(null, null, "Albañilería", "jornal",
+                            new BigDecimal("30"), new BigDecimal("45000")),
+                    new FilaCompletada(null, null, "Pintura", "jornal",
+                            new BigDecimal("10"), new BigDecimal("40000")))));
+
+            assertThat(p.getItems()).hasSize(2);
+            // Los dos pertenecen al rubro Mano de obra: así el total de mano de
+            // obra queda junto y no repartido entre los rubros de material.
+            assertThat(p.getItems())
+                    .allMatch(i -> i.getRubro().getIdRubro().equals(9L));
+            assertThat(p.getTotalPresupuesto()).isEqualByComparingTo("1750000");
         }
     }
 }

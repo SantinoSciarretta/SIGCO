@@ -491,3 +491,97 @@
   content: "◆ ";
   font-size: 9px;
 }
+
+/* ---------- Planilla de carga por rubro ---------- */
+
+/* Filas compactas: la planilla puede tener treinta materiales y la idea es ver
+   la mayor cantidad posible sin scrollear. */
+.planilla td { padding: 3px 6px; vertical-align: middle; }
+.planilla th { white-space: nowrap; }
+
+/* Los campos ocupan toda la celda y no se ven como inputs sueltos: la planilla
+   tiene que leerse como una hoja de cálculo, no como un formulario. */
+.celda {
+  width: 100%;
+  min-height: 30px;
+  padding: 3px 6px;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  text-align: right;
+  color: var(--color-text);
+  /* El campo TIENE que verse como campo. La primera versión usaba fondo y borde
+     transparentes para que pareciera una hoja de cálculo, y el resultado fue
+     que las celdas editables se leían como texto vacío: no había forma de saber
+     dónde escribir. Un fondo tenue y un borde suave alcanzan para distinguirlas
+     sin que la planilla parezca un formulario. */
+  background: color-mix(in srgb, var(--color-text) 4%, transparent);
+  border: 1px solid var(--color-divider);
+  border-radius: 0;
+}
+
+.celda::placeholder { color: color-mix(in srgb, var(--color-text) 35%, transparent); }
+
+.celda:hover {
+  border-color: color-mix(in srgb, var(--color-text) 40%, transparent);
+  background: var(--color-bg);
+}
+
+.celda:focus-visible {
+  border-color: var(--color-accent);
+  outline: 2px solid var(--color-accent);
+  outline-offset: -1px;
+  background: var(--color-bg);
+}
+
+/* La fila que ya tiene cantidad y precio: se distingue de un vistazo cuáles
+   van al presupuesto y cuáles quedaron vacías. */
+.filaCargada { background: color-mix(in srgb, var(--color-accent) 7%, transparent); }
+
+.planillaPie {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 10px 2px 0;
+  border-top: 1px solid var(--color-divider);
+  margin-top: 8px;
+}
+
+/* Los rubros como botones, para entrar a presupuestar cada uno. */
+.elegirRubro {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px 2px 14px;
+}
+
+.rubroBoton, .rubroManoDeObra {
+  all: unset;
+  box-sizing: border-box;
+  cursor: pointer;
+  padding: 5px 12px;
+  font-size: 13px;
+  border: 1px solid var(--color-divider);
+  white-space: nowrap;
+}
+
+.rubroBoton:hover, .rubroManoDeObra:hover {
+  border-color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+}
+
+.rubroBoton:focus-visible, .rubroManoDeObra:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+/* El rubro de mano de obra se distingue: su planilla se comporta distinto
+   —lista los otros rubros en lugar de materiales— y conviene que se note antes
+   de abrirla. */
+.rubroManoDeObra {
+  border-color: var(--color-accent-600);
+  background: color-mix(in srgb, var(--color-accent) 14%, transparent);
+  font-weight: 500;
+}

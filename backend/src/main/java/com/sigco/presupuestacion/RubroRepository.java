@@ -51,4 +51,21 @@ public interface RubroRepository extends JpaRepository<Rubro, Long> {
      * entendible en lugar de un error de restriccion.
      */
     Optional<Rubro> findByNombreRubroIgnoreCase(String nombreRubro);
+
+    /**
+     * EL rubro de mano de obra, si esta definido.
+     *
+     * Se busca por la marca y no por el nombre: reconocerlo por como se llama
+     * se romperia el dia que alguien lo renombre. Hay uno solo, garantizado por
+     * un indice unico parcial (V18).
+     */
+    Optional<Rubro> findByEsManoDeObraTrue();
+
+    /**
+     * Los rubros activos, para armar la planilla de mano de obra.
+     *
+     * Ordenados por nombre para que la planilla salga siempre igual: un orden
+     * que cambia entre una vez y otra obliga a buscar cada fila de nuevo.
+     */
+    List<Rubro> findByEstadoOrderByNombreRubroAsc(String estado);
 }

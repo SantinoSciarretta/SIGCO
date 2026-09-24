@@ -9,6 +9,7 @@ import {
   UNIDADES, agregarItem, actualizarItem, cambiarEstadoPresupuesto, definirPlanDePago,
   duplicarPresupuesto, estadosPosiblesDesde, obtenerPresupuesto, pesos, quitarItem,
 } from './presupuestosApi';
+import PlanillaDeRubro from './PlanillaDeRubro';
 import estilos from './Presupuestos.module.css';
 
 /**
@@ -37,6 +38,9 @@ export default function PresupuestoDetalle() {
   const [formularioItem, setFormularioItem] = useState(false);
   const [planAbierto, setPlanAbierto] = useState(false);
   const [duplicarAbierto, setDuplicarAbierto] = useState(false);
+
+  /** Rubro que se está presupuestando en la planilla, o null. */
+  const [rubroEnPlanilla, setRubroEnPlanilla] = useState(null);
 
   /**
    * Trae el presupuesto con sus ítems.
@@ -194,6 +198,27 @@ export default function PresupuestoDetalle() {
             </span>
           </div>
 
+          {/* Presupuestar por rubro, con la planilla.
+              Es la forma principal de cargar desde el pedido de Ricardo: se
+              elige un rubro y aparecen todos sus materiales para completar.
+              El "Agregar ítem" de a uno sigue existiendo para lo que no está en
+              el catálogo (dirección de obra, un trabajo puntual). */}
+          {editable && rubros.length > 0 && (
+            <div className={estilos.elegirRubro}>
+              <span className={estilos.etiqueta}>Presupuestar un rubro:</span>
+              {rubros.filter((r) => r.estado === 'Activo').map((r) => (
+                <button
+                  key={r.idRubro}
+                  type="button"
+                  className={r.esManoDeObra ? estilos.rubroManoDeObra : estilos.rubroBoton}
+                  onClick={() => setRubroEnPlanilla(r)}
+                >
+                  {r.nombreRubro}
+                </button>
+              ))}
+            </div>
+          )}
+
           {presupuesto.items.length === 0 ? (
             <p className={estilos.aviso}>
               Todavía no hay ítems. {editable && 'Agregá el primero con el botón de arriba.'}
@@ -314,6 +339,15 @@ export default function PresupuestoDetalle() {
           materiales={materiales}
           onCerrar={() => setFormularioItem(false)}
           onGuardado={(actualizado) => { setPresupuesto(actualizado); setFormularioItem(false); }}
+        />
+      )}
+
+      {rubroEnPlanilla && (
+        <PlanillaDeRubro
+          idPresupuesto={presupuesto.idPresupuesto}
+          rubro={rubroEnPlanilla}
+          onCerrar={() => setRubroEnPlanilla(null)}
+          onGuardado={(actualizado) => { setPresupuesto(actualizado); setRubroEnPlanilla(null); }}
         />
       )}
 

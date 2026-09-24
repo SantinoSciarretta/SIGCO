@@ -84,7 +84,7 @@ class CatalogoServiceTest {
             when(rubroRepositorio.save(any(Rubro.class)))
                     .thenAnswer(i -> i.getArgument(0));
 
-            RubroRespuesta respuesta = servicio.crearRubro(new RubroSolicitud("  Albanileria  "));
+            RubroRespuesta respuesta = servicio.crearRubro(new RubroSolicitud("  Albanileria  ", false));
 
             assertThat(respuesta.estado()).isEqualTo(Rubro.ESTADO_ACTIVO);
             assertThat(respuesta.nombreRubro()).isEqualTo("Albanileria");
@@ -96,7 +96,7 @@ class CatalogoServiceTest {
             when(rubroRepositorio.findByNombreRubroIgnoreCase("Plomeria"))
                     .thenReturn(Optional.of(rubroConId("Plomeria", 5L)));
 
-            assertThatThrownBy(() -> servicio.crearRubro(new RubroSolicitud("Plomeria")))
+            assertThatThrownBy(() -> servicio.crearRubro(new RubroSolicitud("Plomeria", false)))
                     .isInstanceOf(ReglaDeNegocioException.class)
                     .hasMessageContaining("Ya existe un rubro");
 
@@ -111,7 +111,7 @@ class CatalogoServiceTest {
             when(rubroRepositorio.findByNombreRubroIgnoreCase("PLOMERIA"))
                     .thenReturn(Optional.of(rubro));
 
-            RubroRespuesta respuesta = servicio.renombrarRubro(5L, new RubroSolicitud("PLOMERIA"));
+            RubroRespuesta respuesta = servicio.renombrarRubro(5L, new RubroSolicitud("PLOMERIA", false));
 
             assertThat(respuesta.nombreRubro()).isEqualTo("PLOMERIA");
         }
@@ -123,7 +123,7 @@ class CatalogoServiceTest {
             when(rubroRepositorio.findByNombreRubroIgnoreCase("Albanileria"))
                     .thenReturn(Optional.of(rubroConId("Albanileria", 9L)));
 
-            assertThatThrownBy(() -> servicio.renombrarRubro(5L, new RubroSolicitud("Albanileria")))
+            assertThatThrownBy(() -> servicio.renombrarRubro(5L, new RubroSolicitud("Albanileria", false)))
                     .isInstanceOf(ReglaDeNegocioException.class);
         }
 

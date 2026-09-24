@@ -42,6 +42,21 @@ public class Rubro {
     private String estado;
 
     /**
+     * Si este es EL rubro de mano de obra. Hay uno solo en todo el catalogo.
+     *
+     * Cambia como se presupuesta: al abrir su planilla, en lugar de listar
+     * materiales lista los OTROS rubros, para cargar de una sola vez cuanto sale
+     * la mano de obra de cada especialidad.
+     *
+     * Es una marca y no el nombre del rubro a proposito: reconocerlo por el
+     * nombre se romperia el dia que alguien lo renombre a "Mano de obra y
+     * jornales", y la planilla dejaria de comportarse distinto sin que nadie
+     * entienda por que.
+     */
+    @Column(name = "es_mano_de_obra", nullable = false)
+    private boolean esManoDeObra;
+
+    /**
      * Subrubros del rubro.
      *
      * Aca SI se declara la coleccion, a diferencia de lo que se hizo en Cliente
@@ -66,6 +81,21 @@ public class Rubro {
     public Rubro(String nombreRubro) {
         this.nombreRubro = nombreRubro;
         this.estado = ESTADO_ACTIVO;
+    }
+
+    /**
+     * Marca o desmarca este rubro como el de mano de obra.
+     *
+     * Que no haya dos marcados lo garantiza un indice unico parcial en la base
+     * (V18), no este metodo: una comprobacion en Java se puede saltear con dos
+     * peticiones simultaneas, y la base no.
+     */
+    public void marcarComoManoDeObra(boolean esManoDeObra) {
+        this.esManoDeObra = esManoDeObra;
+    }
+
+    public boolean esManoDeObra() {
+        return esManoDeObra;
     }
 
     /** Lo unico editable de un rubro es su nombre. */

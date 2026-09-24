@@ -52,6 +52,32 @@ export async function quitarItem(idPresupuesto, idItem) {
   return respuesta.data;
 }
 
+/**
+ * La planilla de carga de un rubro.
+ *
+ * Trae una fila por cada material del catálogo de ese rubro, con la cantidad y
+ * el precio ya cargados si se presupuestó antes. Es lo que reemplaza al
+ * "agregar ítem de a uno": se ve la lista entera y se completa lo que va.
+ */
+export async function cargarPlanilla(idPresupuesto, idRubro) {
+  const { data } = await client.get(`/presupuestos/${idPresupuesto}/planilla/${idRubro}`);
+  return data;
+}
+
+/**
+ * Guarda la planilla completa de un rubro.
+ *
+ * Se manda entera —las filas cargadas y las vacías— y el backend reemplaza con
+ * eso los ítems que el presupuesto tenía de ese rubro. Mandar solo lo que
+ * cambió obligaría a llevar la cuenta de qué fila se editó y cuál se vació, y
+ * un despiste ahí deja ítems que no se ven pero suman al total.
+ */
+export async function guardarPlanilla(idPresupuesto, idRubro, filas) {
+  const { data } = await client.put(
+    `/presupuestos/${idPresupuesto}/planilla/${idRubro}`, { filas });
+  return data;
+}
+
 export async function definirPlanDePago(id, plan) {
   const respuesta = await client.put(`/presupuestos/${id}/plan-de-pago`, plan);
   return respuesta.data;

@@ -17,6 +17,10 @@
   box-shadow: var(--shadow-lg);
 }
 
+/* Para contenido tabular: la planilla del presupuesto son cinco columnas con
+   campos editables y en 560 px no se puede trabajar. */
+.ventanaAncha { width: min(980px, 100%); }
+
 .ventana:focus { outline: none; }
 
 .cabecera {

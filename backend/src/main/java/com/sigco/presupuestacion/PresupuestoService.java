@@ -11,7 +11,15 @@ import com.sigco.presupuestacion.dto.PresupuestoDtos.Duplicacion;
 import com.sigco.presupuestacion.dto.PresupuestoDtos.ItemSolicitud;
 import com.sigco.presupuestacion.dto.PresupuestoDtos.NuevoPresupuesto;
 import com.sigco.presupuestacion.dto.PresupuestoDtos.PlanDePago;
+import com.sigco.presupuestacion.dto.PlanillaDtos.FilaCompletada;
+import com.sigco.presupuestacion.dto.PlanillaDtos.FilaPlanilla;
+import com.sigco.presupuestacion.dto.PlanillaDtos.PlanillaCompletada;
+import com.sigco.presupuestacion.dto.PlanillaDtos.PlanillaDeRubro;
 import com.sigco.presupuestacion.dto.PresupuestoRespuesta;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -360,6 +368,212 @@ public class PresupuestoService {
                 + presupuesto.getObra().getIdObra()
                 + " por " + presupuesto.getTotalPresupuesto(),
                 "Presupuestacion");
+    }
+
+
+    // ------------------------------------------------------------------
+    //  La planilla de carga por rubro
+    // ------------------------------------------------------------------
+
+    /**
+     * Arma la planilla de un rubro para completar.
+     *
+     * Devuelve UNA FILA POR CADA material del catalogo de ese rubro, con la
+     * cantidad y el precio ya cargados si ese material se presupuesto antes. Es
+     * lo que pidio Ricardo: en vez de agregar items de a uno buscando cada
+     * material, ver la lista entera y completar las filas que correspondan.
+     *
+     * La misma pantalla sirve para cargar por primera vez y para corregir: las
+     * filas ya cargadas vienen completas, las demas vienen vacias.
+     *
+     * ------------------------------------------------------------------
+     *  El rubro de mano de obra se comporta distinto
+     * ------------------------------------------------------------------
+     *
+     * Si el rubro esta marcado como el de mano de obra, sus filas NO son
+     * materiales: son los otros rubros del catalogo. Asi el dueño carga de una
+     * sola vez cuanto sale la mano de obra de albañileria, de plomeria, de
+     * pintura, en lugar de repartir esos importes entre los rubros de material.
+     */
+    @Transactional(readOnly = true)
+    public PlanillaDeRubro planilla(Long idPresupuesto, Long idRubro) {
+        Presupuesto presupuesto = buscarCompletoOFallar(idPresupuesto);
+        Rubro rubro = buscarRubroOFallar(idRubro);
+
+        // Lo que ya esta cargado de este rubro, indexado para poder completar
+        // cada fila sin recorrer la lista entera por cada una.
+        Map<String, ItemPresupuesto> yaCargado = new LinkedHashMap<>();
+        BigDecimal subtotal = BigDecimal.ZERO;
+
+        for (ItemPresupuesto item : presupuesto.getItems()) {
+            if (!item.getRubro().getIdRubro().equals(idRubro)) {
+                continue;
+            }
+            yaCargado.put(claveDeFila(item), item);
+            subtotal = subtotal.add(item.getSubtotal());
+        }
+
+        List<FilaPlanilla> filas = rubro.esManoDeObra()
+                ? filasDeManoDeObra(rubro, yaCargado)
+                : filasDeMateriales(rubro, yaCargado);
+
+        return new PlanillaDeRubro(
+                rubro.getIdRubro(), rubro.getNombreRubro(), rubro.esManoDeObra(),
+                filas, subtotal);
+    }
+
+    /** Una fila por material activo del rubro. */
+    private List<FilaPlanilla> filasDeMateriales(Rubro rubro,
+                                                 Map<String, ItemPresupuesto> yaCargado) {
+        List<FilaPlanilla> filas = new ArrayList<>();
+
+        for (Material material : materialRepositorio.buscarDisponibles(rubro.getIdRubro())) {
+            ItemPresupuesto item = yaCargado.get("m" + material.getIdMaterial());
+
+            filas.add(new FilaPlanilla(
+                    material.getIdMaterial(),
+                    item != null && item.getSubrubro() != null
+                            ? item.getSubrubro().getIdSubrubro() : null,
+                    material.getNombreMaterial(),
+                    material.getUnidadMedida(),
+                    item != null ? item.getCantidad() : null,
+                    item != null ? item.getValorUnitario() : null));
+        }
+
+        // Los items de este rubro que NO salieron del catalogo —cargados a mano
+        // antes de que existiera la planilla, o materiales dados de baja
+        // despues— se agregan al final. Si no aparecieran, guardar la planilla
+        // los borraria sin que nadie los haya visto.
+        for (Map.Entry<String, ItemPresupuesto> entrada : yaCargado.entrySet()) {
+            if (entrada.getKey().startsWith("m")) {
+                continue;
+            }
+            ItemPresupuesto item = entrada.getValue();
+            filas.add(new FilaPlanilla(
+                    null,
+                    item.getSubrubro() != null ? item.getSubrubro().getIdSubrubro() : null,
+                    item.getDescripcion(),
+                    item.getUnidadMedida(),
+                    item.getCantidad(),
+                    item.getValorUnitario()));
+        }
+
+        return filas;
+    }
+
+    /**
+     * Una fila por cada OTRO rubro del catalogo.
+     *
+     * El rubro de mano de obra no se incluye a si mismo: seria "mano de obra de
+     * la mano de obra".
+     */
+    private List<FilaPlanilla> filasDeManoDeObra(Rubro manoDeObra,
+                                                 Map<String, ItemPresupuesto> yaCargado) {
+        List<FilaPlanilla> filas = new ArrayList<>();
+
+        for (Rubro otro : rubroRepositorio.findByEstadoOrderByNombreRubroAsc(Rubro.ESTADO_ACTIVO)) {
+            if (otro.getIdRubro().equals(manoDeObra.getIdRubro())) {
+                continue;
+            }
+
+            // Las filas de mano de obra no tienen material: se identifican por
+            // la descripcion, que es el nombre del rubro al que corresponden.
+            ItemPresupuesto item = yaCargado.get("d" + otro.getNombreRubro());
+
+            filas.add(new FilaPlanilla(
+                    null,
+                    null,
+                    otro.getNombreRubro(),
+                    // La mano de obra se presupuesta por jornal o global; se
+                    // propone jornal y el usuario lo cambia si hace falta.
+                    item != null ? item.getUnidadMedida() : "jornal",
+                    item != null ? item.getCantidad() : null,
+                    item != null ? item.getValorUnitario() : null));
+        }
+
+        return filas;
+    }
+
+    /**
+     * Guarda la planilla: reemplaza TODOS los items de ese rubro.
+     *
+     * ------------------------------------------------------------------
+     *  Por que reemplazar y no ir actualizando fila por fila
+     * ------------------------------------------------------------------
+     *
+     * Porque la planilla llega entera —las filas completas y las vacias— y el
+     * resultado tiene que ser exactamente lo que el usuario ve en pantalla. Si
+     * se fueran aplicando cambios sueltos habria que llevar la cuenta de que
+     * fila se edito, cual se vacio y cual quedo igual, y un despiste ahi deja
+     * items fantasma: no aparecen en la planilla pero suman al total del
+     * presupuesto.
+     *
+     * Borrar y volver a crear los items de UN rubro es barato —son unas pocas
+     * filas— y garantiza que lo guardado sea lo que se vio.
+     *
+     * Los items de los OTROS rubros no se tocan.
+     */
+    @Transactional
+    public PresupuestoRespuesta guardarPlanilla(Long idPresupuesto, Long idRubro,
+                                                PlanillaCompletada planilla) {
+        Presupuesto presupuesto = buscarCompletoOFallar(idPresupuesto);
+        exigirBorrador(presupuesto);
+        exigirQueLleveItems(presupuesto);
+
+        Rubro rubro = buscarRubroOFallar(idRubro);
+
+        // Fuera los items que este rubro tenia. Se copia la lista antes de
+        // recorrerla: quitarItem modifica la coleccion del presupuesto, y
+        // hacerlo mientras se la recorre lanza ConcurrentModificationException.
+        List<ItemPresupuesto> anteriores = presupuesto.getItems().stream()
+                .filter(i -> i.getRubro().getIdRubro().equals(idRubro))
+                .toList();
+
+        anteriores.forEach(presupuesto::quitarItem);
+
+        // Y adentro lo que vino completo.
+        for (FilaCompletada fila : planilla.filas()) {
+            if (!fila.tieneCarga()) {
+                continue;
+            }
+
+            Material material = rubro.esManoDeObra()
+                    ? null                                   // las filas son rubros, no materiales
+                    : resolverMaterial(fila.idMaterial(), rubro);
+
+            Subrubro subrubro = resolverSubrubro(fila.idSubrubro(), rubro);
+
+            String descripcion = fila.descripcion() != null && !fila.descripcion().isBlank()
+                    ? fila.descripcion().trim()
+                    : (material != null ? material.getNombreMaterial() : "");
+
+            if (descripcion.isBlank()) {
+                throw new ReglaDeNegocioException(
+                        "Hay una fila cargada sin descripción ni material.");
+            }
+
+            presupuesto.agregarItem(new ItemPresupuesto(
+                    presupuesto, rubro, subrubro, material, descripcion,
+                    fila.unidadMedida() != null && !fila.unidadMedida().isBlank()
+                            ? fila.unidadMedida().trim() : "unidad",
+                    fila.cantidad(), fila.valorUnitario()));
+        }
+
+        return PresupuestoRespuesta.completa(presupuesto);
+    }
+
+    /**
+     * Con que se reconoce una fila ya cargada.
+     *
+     * Los items que salieron del catalogo se identifican por su material; los de
+     * mano de obra —y los cargados a mano antes de que existiera la planilla— no
+     * tienen material, asi que se identifican por su descripcion. El prefijo
+     * evita que un material con id 5 choque con una descripcion "5".
+     */
+    private String claveDeFila(ItemPresupuesto item) {
+        return item.getMaterial() != null
+                ? "m" + item.getMaterial().getIdMaterial()
+                : "d" + item.getDescripcion();
     }
 
     // ------------------------------------------------------------------

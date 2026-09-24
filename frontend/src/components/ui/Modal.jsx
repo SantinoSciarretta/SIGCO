@@ -18,7 +18,7 @@ import estilos from './Modal.module.css';
  * @param {function} onCerrar
  * @param {string}   titulo
  */
-export default function Modal({ abierto, onCerrar, titulo, children }) {
+export default function Modal({ abierto, onCerrar, titulo, children, ancho }) {
   const contenedor = useRef(null);
 
   useEffect(() => {
@@ -53,7 +53,7 @@ export default function Modal({ abierto, onCerrar, titulo, children }) {
       onClick={(evento) => { if (evento.target === evento.currentTarget) onCerrar(); }}
     >
       <Blueprint
-        className={estilos.ventana}
+        className={`${estilos.ventana} ${ancho === 'ancho' ? estilos.ventanaAncha : ''}`.trim()}
         role="dialog"
         aria-modal="true"
         aria-label={titulo}
