@@ -579,3 +579,55 @@
 
 .sumaOk { color: var(--color-ok); font-weight: 600; }
 .sumaMal { color: var(--color-excedido); font-weight: 600; }
+
+/* ---------------------------------------------------------------------------
+   Las etapas cargadas por duracion
+
+   Una fila mas ancha que la de hitos: suma rubro, unidad y el porcentaje que
+   el sistema calcula. Por eso el modal es "ancho".
+   --------------------------------------------------------------------------- */
+
+.lineaEtapa,
+.encabezadoEtapas {
+  display: grid;
+  grid-template-columns: 56px 1fr 150px 74px 100px 58px auto;
+  gap: 8px;
+  align-items: end;
+}
+
+.lineaEtapa { margin-bottom: 8px; }
+
+.encabezadoEtapas {
+  margin-bottom: 6px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+/* El rotulo de la duracion cubre sus dos campos: la cantidad y la unidad son
+   un dato, no dos. */
+.rotuloDuracion { grid-column: span 2; }
+
+/* El porcentaje que le toca a la etapa. Es una previa: el reparto que manda
+   lo hace el servidor, que ademas cierra el redondeo. */
+.pesoEtapa {
+  padding-bottom: 9px;
+  font-size: 14px;
+  text-align: right;
+  color: var(--color-accent);
+}
+
+/* En pantalla chica la grilla de siete columnas no entra: se apilan. */
+@media (max-width: 720px) {
+  .encabezadoEtapas { display: none; }
+
+  .lineaEtapa {
+    grid-template-columns: 56px 1fr auto;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent);
+  }
+
+  .pesoEtapa { text-align: left; padding-bottom: 0; }
+}

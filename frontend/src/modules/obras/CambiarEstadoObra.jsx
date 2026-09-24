@@ -23,6 +23,7 @@ export default function CambiarEstadoObra({ obra, onCerrar, onCambiado }) {
   const [error, setError] = useState(null);
   const [guardando, setGuardando] = useState(false);
   const [confirmaEnMarcha, setConfirmaEnMarcha] = useState(false);
+  const [confirmaHitos, setConfirmaHitos] = useState(false);
 
   /**
    * Si cancelar esta obra interrumpe una obra en marcha.
@@ -45,6 +46,7 @@ export default function CambiarEstadoObra({ obra, onCerrar, onCambiado }) {
         motivoCancelacion: estado === 'Cancelada' ? motivo : null,
         fechaInicioReal: estado === 'En ejecución' && fechaInicio ? fechaInicio : null,
         confirmaObraEnEjecucion: estado === 'Cancelada' && confirmaEnMarcha,
+        confirmaHitosPendientes: estado === 'Finalizada' && confirmaHitos,
       }));
     } catch (fallo) {
       // Un 409 llega acá con el texto de la regla que se violó, tal como la
@@ -135,6 +137,33 @@ export default function CambiarEstadoObra({ obra, onCerrar, onCambiado }) {
                 ejecución. Confirmo que quiero interrumpirla.
               </span>
             </label>
+          </div>
+        )}
+
+        {/* Dar la obra por terminada bloquea sus hitos: ya no se puede cargar
+            más avance. Si quedan hitos sin completar el backend lo rechaza sin
+            esta confirmación, y el mensaje dice cuántos son. Se ofrece siempre
+            porque desde acá no se sabe si quedan: el que sabe es el servidor. */}
+        {estado === 'Finalizada' && (
+          <div className={estilos.campo}>
+            <label className={estilos.etiqueta} htmlFor="confirmaHitos"
+                   style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+              <input
+                id="confirmaHitos"
+                type="checkbox"
+                checked={confirmaHitos}
+                onChange={(e) => setConfirmaHitos(e.target.checked)}
+                style={{ marginTop: 3 }}
+              />
+              <span>
+                La obra terminó aunque queden hitos sin marcar. Al cerrarla, sus
+                hitos se bloquean.
+              </span>
+            </label>
+            <p className={estilos.ayuda}>
+              Si están todos completos no hace falta tildarlo. Cerrar la obra no
+              cancela lo que falte cobrar: el plan de cobro sigue vigente.
+            </p>
           </div>
         )}
 

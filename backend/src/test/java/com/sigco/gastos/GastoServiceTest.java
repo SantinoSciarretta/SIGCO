@@ -292,6 +292,53 @@ class GastoServiceTest {
             assertThat(pintura.presupuestado()).isEqualByComparingTo("0");
             assertThat(pintura.semaforo()).isEqualTo(GastoService.SEMAFORO_SIN_PRESUPUESTO);
         }
+
+        /**
+         * El balance de cierre se consulta de cualquier obra, incluso de una
+         * que se ejecutó sin definitivo aprobado. Ahí la ausencia de
+         * presupuesto no es un error: es un cero, con los gastos a la vista.
+         *
+         * Lo encontró la verificación contra el backend real: seis de las siete
+         * obras cargadas devolvían 409 al pedir su balance.
+         */
+        @Test
+        @DisplayName("Sin presupuesto aprobado, el estado financiero vacío no falla")
+        void sinPresupuestoNoFalla() {
+            Obra obra = obraEnEjecucion();
+            when(obraRepositorio.findById(5L)).thenReturn(Optional.of(obra));
+            when(presupuestoRepositorio.findByObraIdObraAndTipoPresupuestoAndEstado(
+                    5L, Presupuesto.TIPO_DEFINITIVO, Presupuesto.ESTADO_APROBADO))
+                    .thenReturn(List.of());
+            when(repositorio.totalPorRubro(5L)).thenReturn(List.<Object[]>of(
+                    new Object[]{1L, "Albañilería", new BigDecimal("150000")}));
+            when(repositorio.totalGastado(5L)).thenReturn(new BigDecimal("150000"));
+            when(repositorio.totalHormiga(5L)).thenReturn(BigDecimal.ZERO);
+
+            EstadoFinanciero e = servicio.estadoFinancieroOVacio(5L);
+
+            assertThat(e.idPresupuesto()).isNull();
+            assertThat(e.totalPresupuestado()).isEqualByComparingTo("0");
+            // Los gastos siguen ahí: es justamente lo que hay que ver.
+            assertThat(e.totalGastado()).isEqualByComparingTo("150000");
+            assertThat(e.rubros()).hasSize(1);
+        }
+
+        @Test
+        @DisplayName("Con presupuesto aprobado, la versión que no falla da lo mismo")
+        void conPresupuestoDaLoMismo() {
+            Obra obra = obraEnEjecucion();
+            when(obraRepositorio.findById(5L)).thenReturn(Optional.of(obra));
+            conPresupuestoAprobado(obra);
+            when(repositorio.totalPorRubro(5L)).thenReturn(List.<Object[]>of(
+                    new Object[]{1L, "Albañilería", new BigDecimal("800000")}));
+            when(repositorio.totalGastado(5L)).thenReturn(new BigDecimal("800000"));
+            when(repositorio.totalHormiga(5L)).thenReturn(BigDecimal.ZERO);
+
+            EstadoFinanciero e = servicio.estadoFinancieroOVacio(5L);
+
+            assertThat(e.idPresupuesto()).isNotNull();
+            assertThat(e.totalGastado()).isEqualByComparingTo("800000");
+        }
     }
 
     // ==================================================================

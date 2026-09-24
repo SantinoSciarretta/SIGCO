@@ -259,11 +259,51 @@ public class GastoService {
         Obra obra = obraRepositorio.findById(idObra)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Obra", idObra));
 
-        Presupuesto definitivo = buscarDefinitivoAprobado(obra);
+        return armar(obra, buscarDefinitivoAprobado(obra));
+    }
+
+    /**
+     * El mismo estado financiero, pero sin fallar cuando no hay presupuesto.
+     *
+     * `estadoFinanciero` lanza si la obra no tiene un definitivo aprobado, y
+     * esta bien que lo haga: quien entra a la pantalla de gastos de esa obra
+     * tiene que enterarse de que no hay contra que comparar. Pero el balance de
+     * cierre se consulta de cualquier obra, incluso una que se ejecuto sin
+     * definitivo aprobado, y ahi la ausencia de presupuesto no es un error: es
+     * un cero, con los gastos igual de visibles.
+     *
+     * Se resuelve con un metodo propio y NO atrapando la excepcion del otro. El
+     * motivo es el mismo que ya esta explicado en porcentajeConsumidoOCero:
+     * `estadoFinanciero` es @Transactional, y al lanzar deja la transaccion
+     * marcada como rollback-only. Atraparla desde afuera no deshace esa marca y
+     * la transaccion del llamador explota al confirmar.
+     */
+    @Transactional(readOnly = true)
+    public EstadoFinanciero estadoFinancieroOVacio(Long idObra) {
+        Obra obra = obraRepositorio.findById(idObra)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Obra", idObra));
+
+        List<Presupuesto> aprobados = presupuestoRepositorio
+                .findByObraIdObraAndTipoPresupuestoAndEstado(
+                        idObra, Presupuesto.TIPO_DEFINITIVO, Presupuesto.ESTADO_APROBADO);
+
+        if (aprobados.isEmpty()) {
+            return armar(obra, null);
+        }
+        return armar(obra, recargarConItems(aprobados.get(0)));
+    }
+
+    /**
+     * Arma la comparacion. El presupuesto puede faltar: en ese caso todo lo
+     * presupuestado vale cero y quedan a la vista los gastos solos.
+     */
+    private EstadoFinanciero armar(Obra obra, Presupuesto definitivo) {
+        Long idObra = obra.getIdObra();
 
         Map<Long, BigDecimal> presupuestadoPorRubro = new LinkedHashMap<>();
         Map<Long, String> nombreDeRubro = new LinkedHashMap<>();
-        for (ItemPresupuesto item : definitivo.getItems()) {
+        for (ItemPresupuesto item : definitivo != null
+                                    ? definitivo.getItems() : List.<ItemPresupuesto>of()) {
             Long id = item.getRubro().getIdRubro();
             nombreDeRubro.put(id, item.getRubro().getNombreRubro());
             presupuestadoPorRubro.merge(id, item.getSubtotal(), BigDecimal::add);
@@ -292,13 +332,14 @@ public class GastoService {
         }
         rubros.sort((a, b) -> a.nombreRubro().compareToIgnoreCase(b.nombreRubro()));
 
-        BigDecimal totalPresupuestado = definitivo.getTotalPresupuesto();
+        BigDecimal totalPresupuestado = definitivo != null
+                ? definitivo.getTotalPresupuesto() : BigDecimal.ZERO;
         BigDecimal totalGastado = repositorio.totalGastado(idObra);
         BigDecimal porcentajeGeneral = calcularPorcentaje(totalGastado, totalPresupuestado);
 
         return new EstadoFinanciero(
                 obra.getIdObra(), obra.getDireccionObra(), obra.getEstado(),
-                definitivo.getIdPresupuesto(),
+                definitivo != null ? definitivo.getIdPresupuesto() : null,
                 totalPresupuestado,
                 totalGastado,
                 // Ganancia estimada: lo presupuestado menos lo gastado. El
@@ -451,11 +492,20 @@ public class GastoService {
                     "La obra no tiene un presupuesto definitivo aprobado, "
                     + "así que no hay contra qué comparar los gastos.");
         }
-        // Se recarga con sus items: el estado financiero los necesita y con
-        // open-in-view desactivado no se pueden leer despues.
-        return presupuestoRepositorio.buscarCompleto(aprobados.get(0).getIdPresupuesto())
+        return recargarConItems(aprobados.get(0));
+    }
+
+    /**
+     * Recarga el presupuesto con sus items.
+     *
+     * El estado financiero los necesita para repartir el presupuestado por
+     * rubro, y con open-in-view desactivado no se pueden leer despues de que la
+     * consulta original cerro.
+     */
+    private Presupuesto recargarConItems(Presupuesto presupuesto) {
+        return presupuestoRepositorio.buscarCompleto(presupuesto.getIdPresupuesto())
                 .orElseThrow(() -> new RecursoNoEncontradoException(
-                        "Presupuesto", aprobados.get(0).getIdPresupuesto()));
+                        "Presupuesto", presupuesto.getIdPresupuesto()));
     }
 
     private Rubro buscarRubroOFallar(Long idRubro) {

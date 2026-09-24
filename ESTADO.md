@@ -1,4 +1,4 @@
-# Estado del proyecto — 23/09/2026
+# Estado del proyecto — 24/09/2026
 
 > Este archivo es el punto de partida de cada sesión nueva. Dice dónde está el
 > proyecto hoy, qué falta y qué hay que saber antes de tocar nada.
@@ -14,9 +14,11 @@
 de negocio, API, pantalla, tests y documentación. La seguridad está activa sobre
 todo el sistema y endurecida para salir a internet.
 
-- **301 tests** automáticos, sin fallos
-- **29 tablas**, 16 migraciones de Flyway aplicadas
+- **339 tests** automáticos, sin fallos
+- **29 tablas**, 19 migraciones de Flyway aplicadas
 - **Auditoría completa hecha** el 22–23/09: ver `docs/desarrollo/19-auditoria.md`
+- **Los ocho cambios que pidió Ricardo al probarlo están hechos** (23–24/09):
+  ver `docs/desarrollo/20-pedidos-de-ricardo.md`
 - **El código está terminado.** Lo único que falta para usarlo es publicarlo, y
   eso necesita tus cuentas: ver `docs/PUESTA-EN-MARCHA.md`
 
@@ -201,6 +203,10 @@ mayúsculas. Ya generó un falso positivo una vez.
 | `96cd9b7` | Auditoría: tope de sesión, corte al cambiar contraseña, política de contraseñas |
 | `b6fad42` | Auditoría: pagos parciales de cuotas (alcance nuevo, no pedido por el informe) |
 | `63f8213` | Auditoría: código muerto fuera y tres reglas del informe completadas |
+| `c65380a` | Primeros cuatro cambios pedidos por Ricardo al probar el sistema |
+| `083f8fe` | Presupuesto por planilla, con la mano de obra como rubro propio |
+| `b0ce370` | Los presupuestos se entran por la obra, no por el listado plano |
+| (esta sesión) | Cierre de obra con balance, y etapas que alimentan el Seguimiento |
 
 Todo empujado a GitHub. La rama `main` local y `origin/main` están
 sincronizadas.

@@ -211,6 +211,32 @@ public class CobrosService {
         return resumen;
     }
 
+    /**
+     * Lo cobrado de una obra, sin fallar si no tiene plan.
+     *
+     * `plan` lanza cuando la obra todavia no tiene cuotas generadas, y esta
+     * bien que lo haga: quien entra a la pantalla de cobros de una obra sin
+     * plan tiene que enterarse. Pero el balance de obra consulta a varios
+     * modulos y una obra sin plan de cobro es un caso normal —se genera recien
+     * cuando se aprueba el definitivo—, asi que ahi la ausencia es un cero y
+     * no un error.
+     */
+    @Transactional(readOnly = true)
+    public ResumenCobro resumenOVacio(Long idObra) {
+        Obra obra = buscarObraOFallar(idObra);
+        List<Cuota> cuotas = repositorio.delPlan(idObra);
+        cuotas.forEach(c -> c.revisarVencimiento(LocalDate.now()));
+
+        return new ResumenCobro(
+                obra.getIdObra(), obra.getDireccionObra(),
+                obra.getCliente().getNombreApellido(), obra.getEstado(),
+                sumar(cuotas, c -> true),
+                sumarPagado(cuotas),
+                sumarSaldo(cuotas),
+                (int) cuotas.stream().filter(Cuota::estaVencida).count(),
+                proximoVencimiento(cuotas));
+    }
+
     /** Cuotas que vencen en los proximos dias o que ya vencieron. */
     @Transactional(readOnly = true)
     public List<CuotaRespuesta> alertas() {

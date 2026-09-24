@@ -67,14 +67,25 @@ public class ObraService {
 
     private final com.sigco.accesos.ServicioAuditoria auditoria;
 
+    /**
+     * Para avisar, antes de cerrar una obra, si le quedan hitos sin completar.
+     *
+     * Igual que con los presupuestos, se inyecta el REPOSITORIO y no
+     * SeguimientoService: ese servicio ya depende de ObraRepository, y pedirle
+     * el servicio entero cerraria un ciclo entre los dos modulos.
+     */
+    private final com.sigco.seguimiento.HitoRepository hitoRepositorio;
+
     public ObraService(ObraRepository repositorio, ClienteRepository clienteRepositorio,
                        AlcanceDeObras alcance,
                        com.sigco.presupuestacion.PresupuestoRepository presupuestoRepositorio,
+                       com.sigco.seguimiento.HitoRepository hitoRepositorio,
                        com.sigco.accesos.ServicioAuditoria auditoria) {
         this.repositorio = repositorio;
         this.clienteRepositorio = clienteRepositorio;
         this.alcance = alcance;
         this.presupuestoRepositorio = presupuestoRepositorio;
+        this.hitoRepositorio = hitoRepositorio;
         this.auditoria = auditoria;
     }
 
@@ -245,7 +256,7 @@ public class ObraService {
 
         switch (cambio.estado()) {
             case Obra.ESTADO_EN_EJECUCION -> pasarAEjecucion(obra, cambio);
-            case Obra.ESTADO_FINALIZADA -> finalizar(obra);
+            case Obra.ESTADO_FINALIZADA -> finalizar(obra, cambio);
             case Obra.ESTADO_CANCELADA -> cancelar(obra, cambio);
             default -> throw new ReglaDeNegocioException("Estado no reconocido: " + cambio.estado());
         }
@@ -290,12 +301,45 @@ public class ObraService {
      * completarse el ultimo hito. Esta via manual queda para las obras que no
      * llevan hitos cargados.
      */
-    private void finalizar(Obra obra) {
+    private void finalizar(Obra obra, CambioEstadoObra cambio) {
         if (obra.estaEnPresupuestacion()) {
             throw new ReglaDeNegocioException(
                     "Una obra en presupuestacion no puede finalizarse: primero tiene que ejecutarse.");
         }
+
+        exigirConfirmacionSiQuedanHitos(obra, cambio);
         obra.finalizar();
+    }
+
+    /**
+     * Cerrar una obra con hitos pendientes pide una confirmacion explicita.
+     *
+     * Al pasar a Finalizada los hitos quedan bloqueados y ya no se puede seguir
+     * cargando el avance. Si quedan hitos sin marcar, una de dos: o la obra
+     * termino y esos hitos quedaron sin completar, o la obra no termino. Las
+     * dos cosas pasan, y la diferencia la sabe el dueño, no el sistema. Por eso
+     * no se impide: se pregunta.
+     *
+     * Es el mismo criterio que la cancelacion de una obra en ejecucion, y el
+     * mismo motivo: una accion que no se puede deshacer no debe poder ocurrir
+     * por un clic de mas.
+     */
+    private void exigirConfirmacionSiQuedanHitos(Obra obra, CambioEstadoObra cambio) {
+        if (cambio.confirmaHitosPendientes()) {
+            return;
+        }
+
+        long pendientes = hitoRepositorio.deLaObra(obra.getIdObra()).stream()
+                .filter(hito -> !hito.estaCompletado())
+                .count();
+
+        if (pendientes > 0) {
+            throw new ReglaDeNegocioException(
+                    "La obra tiene " + pendientes + (pendientes == 1
+                            ? " hito sin completar" : " hitos sin completar")
+                    + ". Al darla por terminada esos hitos quedan bloqueados. "
+                    + "Confirmá que la obra terminó igual.");
+        }
     }
 
     /**

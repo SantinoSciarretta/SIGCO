@@ -3,6 +3,7 @@ package com.sigco.seguimiento;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
@@ -12,7 +13,10 @@ import com.sigco.gastos.GastoService;
 import com.sigco.obras.Obra;
 import com.sigco.obras.ObraRepository;
 import com.sigco.seguimiento.dto.SeguimientoDtos.AvanceObra;
+import com.sigco.presupuestacion.Rubro;
+import com.sigco.seguimiento.dto.SeguimientoDtos.ConfiguracionEtapas;
 import com.sigco.seguimiento.dto.SeguimientoDtos.ConfiguracionHitos;
+import com.sigco.seguimiento.dto.SeguimientoDtos.EtapaDeObra;
 import com.sigco.seguimiento.dto.SeguimientoDtos.Cumplimiento;
 import com.sigco.seguimiento.dto.SeguimientoDtos.HitoSolicitud;
 import java.lang.reflect.Field;
@@ -43,6 +47,7 @@ class SeguimientoServiceTest {
     @Mock private PlantillaHitoRepository plantillaRepositorio;
     @Mock private ObraRepository obraRepositorio;
     @Mock private GastoService gastoService;
+    @Mock private com.sigco.presupuestacion.RubroRepository rubroRepositorio;
     @Mock private com.sigco.seguridad.SesionActual sesion;
     // El alcance por obra (modulo 14) se prueba aparte: aca se le dice
     // que alcanza todo, para que estos tests midan lo que vinieron a medir.
@@ -312,6 +317,141 @@ class SeguimientoServiceTest {
             // falte el otro lado de la comparación.
             assertThat(a.avanceFinanciero()).isEqualByComparingTo("0");
             assertThat(a.alertaDesfasaje()).isFalse();
+        }
+    }
+
+    // ==================================================================
+    //  Las etapas cargadas por duracion
+    // ==================================================================
+
+    /**
+     * Pedido de Ricardo: cargar que hay que hacer, de que rubro es y cuanto
+     * lleva, y que el sistema saque el porcentaje. Lo que se prueba aca es el
+     * reparto: que sume exactamente 100 y que una etapa larga pese mas.
+     */
+    @Nested
+    @DisplayName("Etapas por duración")
+    class Etapas {
+
+        private void devolverLoQueSeGuarda() {
+            when(repositorio.saveAll(anyList())).thenAnswer(i -> i.getArgument(0));
+        }
+
+        @Test
+        @DisplayName("La ponderación sale de la duración: la etapa larga pesa más")
+        void reparteSegunLaDuracion() {
+            obraEnEjecucion();
+            devolverLoQueSeGuarda();
+
+            // 10 + 30 + 10 = 50 días.
+            var etapas = servicio.configurarEtapas(5L, new ConfiguracionEtapas(List.of(
+                    new EtapaDeObra("Demolición", null, 10, 1),
+                    new EtapaDeObra("Estructura", null, 30, 2),
+                    new EtapaDeObra("Pintura", null, 10, 3))));
+
+            assertThat(etapas).extracting(h -> h.ponderacion().stripTrailingZeros().toPlainString())
+                    .containsExactly("20", "60", "20");
+            assertThat(etapas).extracting(h -> h.duracionDias()).containsExactly(10, 30, 10);
+        }
+
+        /**
+         * El caso que obliga a repartir el sobrante: tres etapas iguales dan
+         * 33,33 cada una y suman 99,99. Con eso el avance nunca llegaria a
+         * completo, asi que el centesimo que falta tiene que ir a algun lado.
+         */
+        @Test
+        @DisplayName("Con duraciones que no dividen exacto, igual suma 100")
+        void cierraEnCienAunqueNoDivida() {
+            obraEnEjecucion();
+            devolverLoQueSeGuarda();
+
+            var etapas = servicio.configurarEtapas(5L, new ConfiguracionEtapas(List.of(
+                    new EtapaDeObra("Una", null, 1, 1),
+                    new EtapaDeObra("Otra", null, 1, 2),
+                    new EtapaDeObra("Tercera", null, 1, 3))));
+
+            BigDecimal suma = etapas.stream().map(h -> h.ponderacion())
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            assertThat(suma).isEqualByComparingTo("100");
+        }
+
+        @Test
+        @DisplayName("El sobrante del redondeo va a la etapa más larga")
+        void elSobranteVaALaMasLarga() {
+            obraEnEjecucion();
+            devolverLoQueSeGuarda();
+
+            // 1 + 100 + 1 = 102 días. Las cortas dan 0,98 cada una y la
+            // larga 98,04: suman 100,00 justo por casualidad o no, el reparto
+            // se encarga de que cierre.
+            var etapas = servicio.configurarEtapas(5L, new ConfiguracionEtapas(List.of(
+                    new EtapaDeObra("Corta", null, 1, 1),
+                    new EtapaDeObra("Larga", null, 100, 2),
+                    new EtapaDeObra("Media", null, 1, 3))));
+
+            // La larga absorbe la diferencia; las cortas quedan con su valor
+            // redondeado tal cual.
+            BigDecimal suma = etapas.stream().map(h -> h.ponderacion())
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            assertThat(suma).isEqualByComparingTo("100");
+            assertThat(etapas.get(1).ponderacion()).isGreaterThan(new BigDecimal("98"));
+        }
+
+        @Test
+        @DisplayName("Guarda el rubro de cada etapa")
+        void guardaElRubro() {
+            obraEnEjecucion();
+            devolverLoQueSeGuarda();
+
+            Rubro albanileria = new Rubro("Albañilería");
+            asignarId(albanileria, "idRubro", 3L);
+            when(rubroRepositorio.findById(3L)).thenReturn(Optional.of(albanileria));
+
+            var etapas = servicio.configurarEtapas(5L, new ConfiguracionEtapas(List.of(
+                    new EtapaDeObra("Demolición de una pared", 3L, 5, 1))));
+
+            assertThat(etapas.get(0).nombreRubro()).isEqualTo("Albañilería");
+            assertThat(etapas.get(0).ponderacion()).isEqualByComparingTo("100");
+        }
+
+        @Test
+        @DisplayName("Rechaza un rubro inactivo")
+        void rechazaRubroInactivo() {
+            obraEnEjecucion();
+            Rubro dadoDeBaja = new Rubro("Viejo");
+            asignarId(dadoDeBaja, "idRubro", 9L);
+            dadoDeBaja.desactivar();
+            when(rubroRepositorio.findById(9L)).thenReturn(Optional.of(dadoDeBaja));
+
+            assertThatThrownBy(() -> servicio.configurarEtapas(5L, new ConfiguracionEtapas(
+                    List.of(new EtapaDeObra("Algo", 9L, 5, 1)))))
+                    .isInstanceOf(ReglaDeNegocioException.class)
+                    .hasMessageContaining("inactivo");
+        }
+
+        @Test
+        @DisplayName("No redefine las etapas si ya hay hitos completados")
+        void noPisaLoYaCumplido() {
+            Obra obra = obraEnEjecucion();
+            List<Hito> hitos = tresHitos(obra);
+            hitos.get(0).completar(LocalDate.of(2027, 3, 1), null, null);
+
+            assertThatThrownBy(() -> servicio.configurarEtapas(5L, new ConfiguracionEtapas(
+                    List.of(new EtapaDeObra("Otra cosa", null, 5, 1)))))
+                    .isInstanceOf(ReglaDeNegocioException.class)
+                    .hasMessageContaining("hitos completados");
+        }
+
+        @Test
+        @DisplayName("No admite dos etapas con el mismo nombre")
+        void rechazaNombresRepetidos() {
+            obraEnEjecucion();
+
+            assertThatThrownBy(() -> servicio.configurarEtapas(5L, new ConfiguracionEtapas(List.of(
+                    new EtapaDeObra("Pintura", null, 5, 1),
+                    new EtapaDeObra("pintura", null, 3, 2)))))
+                    .isInstanceOf(ReglaDeNegocioException.class)
+                    .hasMessageContaining("mismo nombre");
         }
     }
 }

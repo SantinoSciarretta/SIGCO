@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import Blueprint from '../../components/ui/Blueprint';
 import Modal from '../../components/ui/Modal';
 import { listarObras } from '../obras/obrasApi';
+import ConfigurarEtapas from './ConfigurarEtapas';
 import ConfigurarHitos from './ConfigurarHitos';
 import {
   avanceDeObra, completarHito, fecha, reabrirHito, textoDePlazo,
@@ -27,6 +28,7 @@ export default function SeguimientoPage() {
   const [recarga, setRecarga] = useState(0);
 
   const [configAbierta, setConfigAbierta] = useState(false);
+  const [etapasAbiertas, setEtapasAbiertas] = useState(false);
   const [aCompletar, setACompletar] = useState(null);
 
   const recargar = useCallback(() => setRecarga((n) => n + 1), []);
@@ -82,9 +84,17 @@ export default function SeguimientoPage() {
               </option>
             ))}
           </select>
+          {/* Dos formas de cargar lo mismo. La de etapas es la que pidió
+              Ricardo: se carga la duración y el porcentaje lo saca el sistema.
+              La de hitos, con el porcentaje escrito a mano, se conserva para
+              quien ya tiene los pesos decididos. */}
           <button type="button" className={estilos.botonPrimario}
+                  onClick={() => setEtapasAbiertas(true)} disabled={!editable}>
+            Cargar etapas
+          </button>
+          <button type="button" className={estilos.botonSecundario}
                   onClick={() => setConfigAbierta(true)} disabled={!editable}>
-            {avanceVisible?.hitosTotales > 0 ? 'Redefinir hitos' : 'Definir hitos'}
+            {avanceVisible?.hitosTotales > 0 ? 'Redefinir por %' : 'Definir por %'}
           </button>
         </div>
       </div>
@@ -201,6 +211,14 @@ export default function SeguimientoPage() {
             )}
           </Blueprint>
         </>
+      )}
+
+      {etapasAbiertas && (
+        <ConfigurarEtapas
+          idObra={idObra}
+          onCerrar={() => setEtapasAbiertas(false)}
+          onGuardado={() => { setEtapasAbiertas(false); recargar(); }}
+        />
       )}
 
       {configAbierta && (

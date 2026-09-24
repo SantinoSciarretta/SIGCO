@@ -24,8 +24,8 @@ presupuesto, mandarle un papel al corralón. El relevamiento capturó bien el
 | 4 | Filtro por obra en el Tablero | **Hecho** (`c65380a`) |
 | 5 | Presupuestos tipo planilla, con mano de obra como rubro propio | **Hecho** (`083f8fe`) |
 | 6 | Agrupar presupuestos por obra y ver las tres instancias | **Hecho** (este documento) |
-| 7 | Botón de obra terminada para ver el balance | Pendiente |
-| 8 | Etapas por obra que alimenten el Seguimiento | Pendiente |
+| 7 | Botón de obra terminada para ver el balance | **Hecho** |
+| 8 | Etapas por obra que alimenten el Seguimiento | **Hecho** |
 
 ---
 
@@ -225,32 +225,177 @@ abriéndose en su detalle.
 
 ---
 
-## 7 y 8 — Lo que falta
+## 7. Cerrar la obra y ver el balance
 
-### Botón de obra terminada para ver el balance
+**Lo que pidió:** *"Que también haya un botón para poner obra terminada para
+ver balance."*
 
-*"Que también haya un botón para poner obra terminada para ver balance."*
+### El cierre
 
-Hoy la obra pasa a Finalizada sola, al completarse el último hito. Falta la
-acción explícita y, sobre todo, **la pantalla de balance**: presupuestado contra
-gastado por rubro, cobrado contra total, y la ganancia real de la obra. Los tres
-números existen por separado en Gastos, Cobros y Presupuestación; lo que falta es
-juntarlos en un cierre.
+Dar la obra por terminada ya era posible (`PATCH /api/obras/{id}/estado`), pero
+tenía un agujero: al pasar a Finalizada **los hitos quedan bloqueados** y ya no
+se puede cargar avance. Cerrar por error una obra que sigue no se podía deshacer
+desde la pantalla.
 
-### Etapas por obra que alimenten el Seguimiento
+Ahora, si quedan hitos sin completar, el servicio pide una confirmación
+explícita (`confirmaHitosPendientes`) y el mensaje dice cuántos son. No lo
+impide —una obra puede terminarse con hitos sin marcar, pasa— pero deja de ser
+un clic de más. Es el mismo criterio que la cancelación de una obra en ejecución.
 
-*"Que pueda cargar un ítem de algo que se tenga que hacer, por ejemplo demolición
-de una pared, que ponga el rubro al que pertenece, cuántas semanas o días cree
-que va a tardar, y que eso calcule el porcentaje que representaría en avance en
-cuanto a la duración de la obra, y que pueda ordenarlos por cuál va primero."*
+Lo que el cierre **no** hace: cancelar lo que falte cobrar. El plan de cobro
+sigue vigente después de terminada la obra, que es como funciona en la realidad.
 
-Esto es, en el fondo, **una forma distinta de cargar los hitos que ya existen**.
-Hoy el hito tiene nombre, ponderación y orden, y la ponderación se escribe a
-mano cuidando que sumen 100. Lo que Ricardo pide es no escribir la ponderación:
-cargar cuánto dura cada etapa y que el porcentaje salga de ahí.
+### El balance
 
-La dirección decidida: agregarle al hito el rubro y la duración en días, y
-**derivar la ponderación de la duración** (la de cada etapa sobre el total de
-días). Es menos trabajo para él y da un número más honesto: una etapa que lleva
-tres semanas pesa más que una que lleva dos días, sin que nadie tenga que
-estimarlo.
+`GET /api/balance/{idObra}` devuelve el cierre económico. La pantalla está en
+`/obras/{id}/balance`, con acceso desde la ficha de la obra.
+
+**Tres números, no uno.** Es lo que justifica la pantalla entera. "Cuánto gané
+con esta obra" tiene tres respuestas distintas, y confundirlas hace que una obra
+parezca rentable cuando no lo es:
+
+| Número | Cuenta | Qué dice |
+| --- | --- | --- |
+| Ganancia estimada | presupuestado − gastado | Lo que deja **si** el cliente termina de pagar. Es una proyección. |
+| Resultado de caja | cobrado − gastado | La plata que de verdad entró menos la que salió. |
+| Falta cobrar | plan − cobrado | Lo que separa a los dos anteriores. |
+
+Una obra puede tener buena ganancia estimada y caja negativa sin que haya nada
+mal: se compró material que todavía no se cobró. Mostrar un solo número
+escondería eso. La obra de prueba lo ilustra: ganancia estimada −$1.744.000 pero
+caja −$10.739.000, con $17.293.854 todavía por cobrar.
+
+**Lo que queda abierto.** Arriba de todo, antes de los números: cuántos hitos
+faltan, cuánto falta cobrar, cuántas cuotas están vencidas y cuántos rubros se
+pasaron del presupuesto. Es la parte útil del botón de cerrar — conviene verlo
+*antes* de dar la obra por cerrada, no después.
+
+### Dónde vive y por qué
+
+En el módulo **Dashboard**, no en Obras. Gastos, Cobros y Seguimiento ya
+dependen de Obras; si el balance viviera ahí, Obras pasaría a depender de los
+tres y quedaría un ciclo. Dashboard es el módulo que consolida, y esto es una
+consolidación.
+
+Como el Tablero, **no calcula nada propio salvo las tres restas**: el
+presupuestado y el gastado por rubro los pide a Gastos, lo cobrado a Cobros y el
+avance a Seguimiento.
+
+### Los dos permisos
+
+El endpoint exige `gastos.ver` **y** `cobros.ver`. Según la matriz del informe,
+el Capataz General tiene consulta sobre Gastos pero no accede a Cobros. Si el
+balance pidiera solo `gastos.ver`, vería por acá la información financiera que
+la matriz le niega. Con los dos, hoy queda solo el Dueño, y si mañana se crea un
+rol que administre cobros alcanza con darle los dos permisos.
+
+### Un hallazgo de la verificación
+
+La primera versión usaba `GastoService.estadoFinanciero`, que **lanza** cuando la
+obra no tiene un definitivo aprobado. Al probar contra la base real, **seis de
+las siete obras devolvían 409** al pedir su balance.
+
+Está bien que ese método falle: quien entra a la pantalla de gastos de esa obra
+tiene que enterarse de que no hay contra qué comparar. Pero el balance se
+consulta de cualquier obra, y ahí la ausencia de presupuesto no es un error: es
+un cero, con los gastos igual de visibles. Se agregó `estadoFinancieroOVacio`.
+
+No se resolvió atrapando la excepción, y el motivo ya estaba documentado en el
+mismo archivo para un caso anterior: `estadoFinanciero` es `@Transactional`, y al
+lanzar deja la transacción marcada como rollback-only. Atraparla desde afuera no
+deshace esa marca y la transacción del llamador explota al confirmar. **Una
+excepción no sirve como control de flujo cruzando un límite transaccional.**
+
+---
+
+## 8. Las etapas que alimentan el Seguimiento
+
+**Lo que pidió:** *"Que pueda cargar un ítem de algo que se tenga que hacer, por
+ejemplo demolición de una pared, que ponga el rubro al que pertenece, cuántas
+semanas o días cree que va a tardar, y que eso calcule el porcentaje que
+representaría en avance en cuanto a la duración de la obra, y que pueda
+ordenarlos por cuál va primero."*
+
+### Por qué NO hay una tabla `etapa`
+
+Esto **es** el hito que ya existe, cargado de otra manera. Hoy el hito tiene
+nombre, ponderación y orden, y la ponderación se escribe a mano cuidando que el
+conjunto sume 100. Lo que Ricardo pide es no escribirla: cargar cuánto dura cada
+etapa y que el porcentaje salga de ahí.
+
+Una tabla nueva significaría **dos fuentes de avance para la misma obra**, y en
+algún momento se contradirían: la sección de etapas diría 60% y la de
+seguimiento 45%. Duplicar el concepto es exactamente lo que el sistema viene a
+evitar.
+
+`V19` le agrega al hito dos columnas, las dos **nullable**: `id_rubro` (FK a
+rubro) y `duracion_dias`. Nullable porque los hitos ya cargados no las tienen, y
+obligarlos retroactivamente sería inventarles un dato.
+
+### El reparto, y el centavo que sobra
+
+`PUT /api/obras/{id}/etapas` recibe las etapas con su duración y reparte 100
+puntos en proporción. Tres etapas de 5, 30 y 15 días dan 10%, 60% y 30%.
+
+El problema fino: **tres etapas de un día dan 33,33 cada una y suman 99,99.** La
+regla del módulo exige que la suma sea exactamente 100 —con 99,99 el avance
+nunca llegaría a completo— así que el centésimo que falta hay que ponerlo en
+algún lado.
+
+Se lo suma a la etapa **más larga**. Podría ir a la primera o a la última, pero
+en la más larga es donde menos se nota: sumarle un centésimo a una etapa de 45
+días la distorsiona muchísimo menos que a una de un día. Con duraciones iguales
+gana la primera, que es estable y no depende del orden en que llegaron.
+
+### Días o semanas
+
+La pantalla deja elegir la unidad y convierte a días antes de mandar, porque **la
+base guarda días**. Mezclar unidades en la tabla obligaría a convertir en cada
+consulta, y tarde o temprano alguien sumaría semanas con días.
+
+El porcentaje que se ve al lado de cada etapa mientras se escribe es una
+**previa**: el reparto que manda lo hace el servidor, que además se ocupa del
+redondeo.
+
+### Dos formas de cargar, no una con un campo opcional
+
+`configurarEtapas` es un endpoint aparte de `configurarHitos`, y la pantalla
+tiene dos botones: "Cargar etapas" y "Definir por %". Son dos formas
+excluyentes: o se escriben las ponderaciones o se derivan. Un solo endpoint que
+aceptara las dos cosas tendría que decidir cuál gana cuando llegan ambas, y esa
+decisión no la puede tomar el servidor sin adivinar.
+
+La carga por porcentaje se conserva para quien ya tiene los pesos decididos, y
+porque las plantillas de hitos siguen funcionando así.
+
+### Lo que se reutiliza
+
+Las reglas del módulo se aplican igual: la obra tiene que estar en ejecución, no
+puede haber dos etapas con el mismo nombre ni con el mismo orden, y **no se
+redefine el plan si ya hay hitos completados** (borraría el registro histórico).
+Los métodos que las comprueban se extrajeron para que vivan en un solo lugar.
+
+### Verificación
+
+**Tests (16 nuevos entre los dos pedidos, 339 en total):** el reparto por
+duración, que cierre en 100 cuando no divide exacto, que el sobrante vaya a la
+más larga, que guarde el rubro, que rechace un rubro inactivo, que no pise hitos
+completados, que no admita nombres repetidos; y del lado del cierre, las tres
+restas, el margen sin presupuesto, la lista de pendientes y la confirmación de
+hitos.
+
+**Contra el backend real:** las siete obras devuelven su balance y las tres
+restas cierran contra sus propios insumos en todas. En etapas: 5 + 30 + 15 días
+→ 10% / 60% / 30%; tres etapas de un día → 33,34 + 33,33 + 33,33 = 100;
+completar la etapa de 30 días da 60% de avance; duración cero → 400; rubro
+inexistente → 404; rubro inactivo → 409. La obra de prueba se dejó exactamente
+como estaba (5 hitos, 2 completados, 45% de avance).
+
+**En el navegador:** el balance con sus tres tarjetas y los pendientes, el
+acceso desde la ficha de la obra, y el formulario de etapas recalculando el
+reparto con cada tecla (5 + 15 días → 25% / 75%).
+
+Dos cosas salieron de mirar las capturas, no de los tests: el monto del
+pendiente salía sin separador de miles (`$ 17293854`), y el color de las tres
+tarjetas no se veía porque el borde chocaba con el del bloque `.blueprint`. El
+color pasó a la cifra, que además es lo que uno mira.

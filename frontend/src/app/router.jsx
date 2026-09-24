@@ -14,6 +14,7 @@ import CatalogoPage from '../modules/presupuestacion/CatalogoPage';
 import PresupuestosPage from '../modules/presupuestacion/PresupuestosPage';
 import PresupuestoDetalle from '../modules/presupuestacion/PresupuestoDetalle';
 import ObraPresupuestosPage from '../modules/presupuestacion/ObraPresupuestosPage';
+import BalancePage from '../modules/obras/BalancePage';
 import PedidosPage from '../modules/compras/PedidosPage';
 import CobrosPage from '../modules/cobros/CobrosPage';
 import PersonalPage from '../modules/personal/PersonalPage';
@@ -85,6 +86,11 @@ export default function Router() {
 
         {/* La ficha de obra: donde convergen todos los módulos para UNA obra.
             Reemplaza a la pantalla de muestra de /vista-diseno/obra. */}
+        {/* El balance exige gastos.ver Y cobros.ver: muestra la ganancia, y
+            la matriz del informe no le da Cobros a ningún capataz. La ruta
+            filtra por el más restrictivo; el backend vuelve a exigir los dos. */}
+        <Route path="/obras/:id/balance" element={
+          <RutaProtegida permiso="cobros.ver"><BalancePage /></RutaProtegida>} />
         <Route path="/obras/:id" element={
           <RutaProtegida permiso="obras.ver"><DetalleObraPage /></RutaProtegida>} />
 

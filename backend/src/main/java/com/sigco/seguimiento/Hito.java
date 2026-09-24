@@ -1,6 +1,7 @@
 package com.sigco.seguimiento;
 
 import com.sigco.obras.Obra;
+import com.sigco.presupuestacion.Rubro;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -52,6 +53,31 @@ public class Hito {
     @Column(name = "orden", nullable = false)
     private Integer orden;
 
+    /**
+     * Rubro al que pertenece la etapa. Opcional.
+     *
+     * Lo pidio Ricardo al cargar las etapas ("demolicion de una pared" es del
+     * rubro Albañileria). Sirve para leer el avance por especialidad, no para
+     * el calculo: el porcentaje sale de la duracion, no del rubro.
+     *
+     * Nullable porque los hitos cargados antes de V19 no lo tienen, y tampoco
+     * lo tienen los que se cargan por ponderacion directa.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_rubro")
+    private Rubro rubro;
+
+    /**
+     * Dias que se estima que lleva la etapa. Opcional.
+     *
+     * Cuando esta presente, es de donde sale la ponderacion. Se guarda aunque
+     * la ponderacion ya este calculada porque es el dato que cargo el usuario:
+     * si mañana se agrega o se saca una etapa, hay que poder recalcular todos
+     * los porcentajes, y para eso hacen falta las duraciones originales.
+     */
+    @Column(name = "duracion_dias")
+    private Integer duracionDias;
+
     @Column(name = "estado", nullable = false, length = 12)
     private String estado;
 
@@ -69,10 +95,18 @@ public class Hito {
     }
 
     public Hito(Obra obra, String nombreHito, BigDecimal ponderacion, Integer orden) {
+        this(obra, nombreHito, ponderacion, orden, null, null);
+    }
+
+    /** Una etapa cargada por duracion: lleva ademas su rubro y sus dias. */
+    public Hito(Obra obra, String nombreHito, BigDecimal ponderacion, Integer orden,
+                Rubro rubro, Integer duracionDias) {
         this.obra = obra;
         this.nombreHito = nombreHito;
         this.ponderacion = ponderacion;
         this.orden = orden;
+        this.rubro = rubro;
+        this.duracionDias = duracionDias;
         this.estado = ESTADO_PENDIENTE;
     }
 
@@ -142,5 +176,13 @@ public class Hito {
 
     public Long getIdUsuarioCompleta() {
         return idUsuarioCompleta;
+    }
+
+    public Rubro getRubro() {
+        return rubro;
+    }
+
+    public Integer getDuracionDias() {
+        return duracionDias;
     }
 }

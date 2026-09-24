@@ -1,0 +1,131 @@
+/* ---------------------------------------------------------------------------
+   Balance de obra — el cierre económico
+
+   Tres tarjetas con los números del cierre, y debajo de dónde salen. El color
+   se usa con cuidado: verde y rojo significan acá lo mismo que en el semáforo
+   de Gastos (bien / mal), y no se reutilizan para nada decorativo.
+   --------------------------------------------------------------------------- */
+
+.volver { margin: 0 0 12px; font-size: 13px; }
+
+.encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.titulo { margin: 6px 0 0; font-size: 32px; }
+
+.subtitulo {
+  margin: 6px 0 0;
+  font-size: 13.5px;
+  color: color-mix(in srgb, var(--color-text) 62%, transparent);
+}
+
+.avanceBloque { text-align: right; }
+.avanceCifra { font-size: 34px; line-height: 1.1; }
+
+.avanceDetalle {
+  display: block;
+  font-size: 12.5px;
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+}
+
+/* ---------- Las tres tarjetas del cierre ---------- */
+
+.tarjetas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.tarjeta { padding: 16px 18px 14px; }
+
+.tarjetaValor { font-size: 30px; line-height: 1.15; margin-top: 2px; }
+
+.tarjetaPie {
+  display: block;
+  font-size: 12.5px;
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+}
+
+/* La explicación va en la tarjeta y no en un tooltip: la diferencia entre
+   ganancia estimada y resultado de caja es justamente lo que hay que tener a
+   la vista, no escondido detrás de un ícono. */
+.tarjetaExplicacion {
+  margin: 10px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+/* El color va en la cifra y no en un borde de la tarjeta.
+   Dos motivos: el borde chocaba con el del propio bloque .blueprint —que es la
+   firma visual del sistema y no conviene pisar—, y sobre todo, lo que hay que
+   ver de un vistazo es si el numero es bueno o malo, no una franja arriba.
+   Son los mismos tres colores del semaforo de Gastos: significan lo mismo. */
+.bien .tarjetaValor { color: var(--color-ok); }
+.mal .tarjetaValor { color: var(--color-excedido); }
+.atencion .tarjetaValor { color: var(--color-alerta); }
+
+/* ---------- Bloques ---------- */
+
+.bloque { padding: 16px 20px 14px; margin-bottom: 20px; }
+
+.bloqueCabecera {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.bloqueTitulo { margin: 0 0 10px; font-size: 19px; }
+.bloqueCabecera .bloqueTitulo { margin: 0; }
+
+.pendientes { border-left: 3px solid var(--color-alerta); }
+
+.listaPendientes {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 14px;
+  line-height: 1.9;
+}
+
+.ayuda {
+  margin: 10px 0 0;
+  font-size: 12.5px;
+  color: color-mix(in srgb, var(--color-text) 58%, transparent);
+}
+
+.concepto { font-weight: 500; }
+
+.conceptoDetalle {
+  font-size: 12.5px;
+  color: color-mix(in srgb, var(--color-text) 58%, transparent);
+}
+
+.monto { font-size: 16px; text-align: right; }
+.negativo { color: var(--color-excedido); }
+
+.filaExcedida { background: color-mix(in srgb, var(--color-excedido) 7%, transparent); }
+
+.aviso {
+  margin: 0;
+  padding: 18px 0;
+  font-size: 14px;
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+}
+
+.errorGeneral {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--color-excedido);
+  background: color-mix(in srgb, var(--color-excedido) 8%, transparent);
+  font-size: 13.5px;
+}

@@ -1,6 +1,7 @@
 package com.sigco.seguimiento;
 
 import com.sigco.seguimiento.dto.SeguimientoDtos.AvanceObra;
+import com.sigco.seguimiento.dto.SeguimientoDtos.ConfiguracionEtapas;
 import com.sigco.seguimiento.dto.SeguimientoDtos.ConfiguracionHitos;
 import com.sigco.seguimiento.dto.SeguimientoDtos.Cumplimiento;
 import com.sigco.seguimiento.dto.SeguimientoDtos.HitoRespuesta;
@@ -61,6 +62,26 @@ public class SeguimientoController {
     public List<HitoRespuesta> configurar(@PathVariable Long id,
                                           @Valid @RequestBody ConfiguracionHitos configuracion) {
         return servicio.configurar(id, configuracion);
+    }
+
+    /**
+     * PUT /api/obras/{id}/etapas
+     *
+     * La misma configuración, cargada por duración en lugar de por porcentaje:
+     * se manda qué hay que hacer, de qué rubro es y cuántos días lleva, y el
+     * servidor reparte el 100% entre las etapas.
+     *
+     * Es un endpoint aparte y no un campo opcional del anterior porque son dos
+     * formas de cargar excluyentes: o se escriben las ponderaciones o se
+     * derivan. Un solo endpoint que acepte las dos cosas tendría que decidir
+     * cuál gana cuando llegan ambas, y esa decisión no la puede tomar el
+     * servidor sin adivinar.
+     */
+    @PreAuthorize("hasAuthority('seguimiento.editar')")
+    @PutMapping("/api/obras/{id}/etapas")
+    public List<HitoRespuesta> configurarEtapas(
+            @PathVariable Long id, @Valid @RequestBody ConfiguracionEtapas configuracion) {
+        return servicio.configurarEtapas(id, configuracion);
     }
 
     /** POST /api/obras/{id}/hitos/desde-plantilla/{idPlantilla} */

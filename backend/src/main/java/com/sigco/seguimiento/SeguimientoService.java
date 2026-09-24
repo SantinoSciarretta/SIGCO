@@ -8,7 +8,11 @@ import com.sigco.obras.ObraRepository;
 import com.sigco.seguridad.SesionActual;
 import com.sigco.seguridad.AlcanceDeObras;
 import com.sigco.seguimiento.dto.SeguimientoDtos.AvanceObra;
+import com.sigco.presupuestacion.Rubro;
+import com.sigco.presupuestacion.RubroRepository;
+import com.sigco.seguimiento.dto.SeguimientoDtos.ConfiguracionEtapas;
 import com.sigco.seguimiento.dto.SeguimientoDtos.ConfiguracionHitos;
+import com.sigco.seguimiento.dto.SeguimientoDtos.EtapaDeObra;
 import com.sigco.seguimiento.dto.SeguimientoDtos.Cumplimiento;
 import com.sigco.seguimiento.dto.SeguimientoDtos.HitoRespuesta;
 import com.sigco.seguimiento.dto.SeguimientoDtos.HitoSolicitud;
@@ -16,8 +20,10 @@ import com.sigco.seguimiento.dto.SeguimientoDtos.NuevaPlantilla;
 import com.sigco.seguimiento.dto.SeguimientoDtos.ObservacionHito;
 import com.sigco.seguimiento.dto.SeguimientoDtos.PlantillaRespuesta;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +53,15 @@ public class SeguimientoService {
     private final ObraRepository obraRepositorio;
     private final GastoService gastoService;
 
+    /**
+     * Para validar el rubro de una etapa.
+     *
+     * Se inyecta el repositorio y no CatalogoService por el mismo motivo de
+     * siempre: la dependencia va en un solo sentido y no se arma un ciclo entre
+     * modulos.
+     */
+    private final RubroRepository rubroRepositorio;
+
     /** Quien marca el hito como completado. */
     private final SesionActual sesion;
 
@@ -57,12 +72,14 @@ public class SeguimientoService {
                               PlantillaHitoRepository plantillaRepositorio,
                               ObraRepository obraRepositorio,
                               GastoService gastoService,
+                              RubroRepository rubroRepositorio,
                               SesionActual sesion,
                               AlcanceDeObras alcance) {
         this.repositorio = repositorio;
         this.plantillaRepositorio = plantillaRepositorio;
         this.obraRepositorio = obraRepositorio;
         this.gastoService = gastoService;
+        this.rubroRepositorio = rubroRepositorio;
         this.sesion = sesion;
         this.alcance = alcance;
     }
@@ -83,11 +100,7 @@ public class SeguimientoService {
     public List<HitoRespuesta> configurar(Long idObra, ConfiguracionHitos configuracion) {
         Obra obra = buscarObraOFallar(idObra);
 
-        if (!obra.estaEnEjecucion()) {
-            throw new ReglaDeNegocioException(
-                    "La obra está " + obra.getEstado().toLowerCase()
-                    + " y solo se definen hitos de obras en ejecución.");
-        }
+        exigirObraEnEjecucion(obra);
 
         exigirQueSumeCien(configuracion.hitos());
         exigirNombresYOrdenesUnicos(configuracion.hitos());
@@ -95,12 +108,7 @@ public class SeguimientoService {
         // Si ya habia hitos completados, redefinir el conjunto borraria ese
         // registro historico. El informe no lo contempla, pero es la misma
         // logica que en el resto del sistema: lo que ya paso no se pisa.
-        List<Hito> existentes = repositorio.deLaObra(idObra);
-        if (existentes.stream().anyMatch(Hito::estaCompletado)) {
-            throw new ReglaDeNegocioException(
-                    "La obra ya tiene hitos completados. Redefinir el plan borraría "
-                    + "ese registro. Si hay que cambiarlo, hacelo antes de completar el primero.");
-        }
+        exigirQueNoHayaCompletados(idObra);
 
         repositorio.borrarDeLaObra(idObra);
 
@@ -112,6 +120,151 @@ public class SeguimientoService {
                 .sorted((a, b) -> a.getOrden().compareTo(b.getOrden()))
                 .map(HitoRespuesta::desde)
                 .toList();
+    }
+
+    /**
+     * Define las etapas de la obra cargandolas por duracion.
+     *
+     * ------------------------------------------------------------------
+     *  Que cambia respecto de configurar()
+     * ------------------------------------------------------------------
+     *
+     * Nada, del lado de los datos: termina creando los mismos hitos. Lo que
+     * cambia es de donde sale la ponderacion. En configurar() la escribe el
+     * usuario y el sistema verifica que sume 100; aca el usuario carga cuantos
+     * dias lleva cada etapa y el sistema reparte el 100 entre ellas.
+     *
+     * Es lo que pidio Ricardo, y da un numero mas honesto: una etapa de tres
+     * semanas pesa mas que una de dos dias sin que nadie tenga que estimar
+     * cuanto. Ademas saca de encima el trabajo de cuadrar los porcentajes a
+     * mano, que es donde aparecen los planes que suman 97 o 103.
+     */
+    @Transactional
+    public List<HitoRespuesta> configurarEtapas(Long idObra, ConfiguracionEtapas configuracion) {
+        Obra obra = buscarObraOFallar(idObra);
+        exigirObraEnEjecucion(obra);
+        exigirNombresYOrdenesUnicosDeEtapas(configuracion.etapas());
+        exigirQueNoHayaCompletados(idObra);
+
+        List<BigDecimal> ponderaciones = repartirPorDuracion(configuracion.etapas());
+
+        repositorio.borrarDeLaObra(idObra);
+
+        List<Hito> nuevos = new ArrayList<>();
+        for (int i = 0; i < configuracion.etapas().size(); i++) {
+            EtapaDeObra etapa = configuracion.etapas().get(i);
+            nuevos.add(new Hito(obra, etapa.nombreHito().trim(), ponderaciones.get(i),
+                                etapa.orden(), buscarRubro(etapa.idRubro()),
+                                etapa.duracionDias()));
+        }
+
+        return repositorio.saveAll(nuevos).stream()
+                .sorted((a, b) -> a.getOrden().compareTo(b.getOrden()))
+                .map(HitoRespuesta::desde)
+                .toList();
+    }
+
+    /**
+     * Reparte 100 puntos entre las etapas, en proporcion a su duracion.
+     *
+     * ------------------------------------------------------------------
+     *  El problema del redondeo
+     * ------------------------------------------------------------------
+     *
+     * Tres etapas de un dia cada una dan 33,33 cada una: 99,99. La regla del
+     * modulo exige que la suma sea exactamente 100 —con 99,99 el avance nunca
+     * llegaria a completo— asi que el centavo que falta hay que ponerlo en
+     * algun lado.
+     *
+     * Se lo suma a la etapa MAS LARGA. Podria ir a la primera o a la ultima,
+     * pero en la mas larga es donde menos se nota: sumarle un centesimo a una
+     * etapa de 45 dias la distorsiona muchisimo menos que a una de un dia. Con
+     * duraciones iguales gana la primera, que es estable y no depende del orden
+     * en que llegaron.
+     */
+    private List<BigDecimal> repartirPorDuracion(List<EtapaDeObra> etapas) {
+        BigDecimal totalDias = etapas.stream()
+                .map(e -> BigDecimal.valueOf(e.duracionDias()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        List<BigDecimal> ponderaciones = new ArrayList<>();
+        BigDecimal repartido = BigDecimal.ZERO;
+
+        for (EtapaDeObra etapa : etapas) {
+            BigDecimal parte = BigDecimal.valueOf(etapa.duracionDias())
+                    .multiply(CIEN)
+                    .divide(totalDias, 2, RoundingMode.HALF_UP);
+            ponderaciones.add(parte);
+            repartido = repartido.add(parte);
+        }
+
+        BigDecimal sobrante = CIEN.subtract(repartido);
+        if (sobrante.signum() != 0) {
+            int masLarga = indiceDeLaMasLarga(etapas);
+            ponderaciones.set(masLarga, ponderaciones.get(masLarga).add(sobrante));
+        }
+
+        return ponderaciones;
+    }
+
+    private int indiceDeLaMasLarga(List<EtapaDeObra> etapas) {
+        int elegido = 0;
+        for (int i = 1; i < etapas.size(); i++) {
+            if (etapas.get(i).duracionDias() > etapas.get(elegido).duracionDias()) {
+                elegido = i;
+            }
+        }
+        return elegido;
+    }
+
+    /**
+     * El rubro de la etapa. Opcional: no toda etapa cae limpio en uno.
+     *
+     * Un rubro inactivo se rechaza: seguir asignandolo mantendria vivo algo que
+     * el catalogo ya dio de baja.
+     */
+    private Rubro buscarRubro(Long idRubro) {
+        if (idRubro == null) {
+            return null;
+        }
+        Rubro rubro = rubroRepositorio.findById(idRubro)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Rubro", idRubro));
+
+        if (!Rubro.ESTADO_ACTIVO.equals(rubro.getEstado())) {
+            throw new ReglaDeNegocioException(
+                    "El rubro " + rubro.getNombreRubro() + " está inactivo.");
+        }
+        return rubro;
+    }
+
+    private void exigirObraEnEjecucion(Obra obra) {
+        if (!obra.estaEnEjecucion()) {
+            throw new ReglaDeNegocioException(
+                    "La obra está " + obra.getEstado().toLowerCase()
+                    + " y solo se definen hitos de obras en ejecución.");
+        }
+    }
+
+    private void exigirQueNoHayaCompletados(Long idObra) {
+        List<Hito> existentes = repositorio.deLaObra(idObra);
+        if (existentes.stream().anyMatch(Hito::estaCompletado)) {
+            throw new ReglaDeNegocioException(
+                    "La obra ya tiene hitos completados. Redefinir el plan borraría "
+                    + "ese registro. Si hay que cambiarlo, hacelo antes de completar el primero.");
+        }
+    }
+
+    private void exigirNombresYOrdenesUnicosDeEtapas(List<EtapaDeObra> etapas) {
+        long nombres = etapas.stream()
+                .map(e -> e.nombreHito().trim().toLowerCase()).distinct().count();
+        if (nombres != etapas.size()) {
+            throw new ReglaDeNegocioException("Hay dos etapas con el mismo nombre.");
+        }
+
+        long ordenes = etapas.stream().map(EtapaDeObra::orden).distinct().count();
+        if (ordenes != etapas.size()) {
+            throw new ReglaDeNegocioException("Hay dos etapas con el mismo número de orden.");
+        }
     }
 
     /**

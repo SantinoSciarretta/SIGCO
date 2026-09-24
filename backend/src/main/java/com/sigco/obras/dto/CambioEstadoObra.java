@@ -35,5 +35,20 @@ public record CambioEstadoObra(
          * la decisión sea deliberada y no un clic de más. Este campo es esa
          * confirmación: el servicio rechaza la cancelación si no viene en true.
          */
-        boolean confirmaObraEnEjecucion) {
+        boolean confirmaObraEnEjecucion,
+
+        /**
+         * Confirmación para dar por terminada una obra que todavía tiene hitos
+         * sin completar.
+         *
+         * Ricardo pidió un botón de "obra terminada" para ver el balance. El
+         * riesgo de ese botón es cerrar una obra que en realidad sigue: al
+         * quedar Finalizada, sus hitos se bloquean y no se puede seguir
+         * cargando el avance. Cuando hay hitos pendientes el servicio pide esta
+         * confirmación, porque o bien la obra terminó y esos hitos quedaron sin
+         * marcar, o bien no terminó.
+         *
+         * Cuando no hay hitos pendientes —el caso normal— no hace falta.
+         */
+        boolean confirmaHitosPendientes) {
 }

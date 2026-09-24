@@ -183,6 +183,8 @@ Documentar a medida que se desarrolla es un requisito central del proyecto (insu
 - **El plazo de obra se carga y la fecha de fin se calcula** (`V17`, 23/09): con `fecha_inicio_estimada` + `meses_estimados`, el sistema escribe `fecha_fin_estimada`. Si se cargaran las dos por separado podrían contradecirse. Al registrar el inicio real, se recalcula desde esa fecha.
 - `fecha_inicio_real` no se carga hasta que el presupuesto definitivo esté aprobado. **Se comprueba contra el presupuesto** y no contra el estado de la obra (23/09): una obra pasada a ejecución a mano admitía la fecha sin definitivo aprobado.
 - Una obra con presupuesto definitivo aprobado no puede cancelarse salvo autorización explícita del dueño. **Implementado el 17/09/2026**: el servicio exige `confirmaObraEnEjecucion: true` además del motivo. Cancelar una obra en presupuestación descarta una propuesta; cancelar una con el definitivo aprobado interrumpe una obra en marcha, con material comprado y cuotas emitidas.
+- **Dar una obra por terminada con hitos pendientes exige confirmación** (`confirmaHitosPendientes`, 23/09). Al pasar a Finalizada los hitos quedan bloqueados y ya no se puede cargar avance; si quedan sin completar, o la obra terminó igual o no terminó, y eso lo sabe el dueño, no el sistema. Por eso no se impide: se pregunta. Cerrar la obra **no** cancela lo que falte cobrar.
+- **El balance de cierre vive en `GET /api/balance/{idObra}`** (módulo Dashboard, no Obras: Gastos, Cobros y Seguimiento ya dependen de Obras y ahí habría un ciclo). Da **tres números distintos**: ganancia estimada (presupuestado − gastado, una proyección), resultado de caja (cobrado − gastado, plata de verdad) y saldo por cobrar. Confundirlos hace que una obra parezca rentable cuando no lo es. Exige `gastos.ver` **y** `cobros.ver`: con uno solo, el Capataz General vería por acá la información financiera que la matriz le niega.
 - No se elimina una obra, solo se cancela (trazabilidad).
 
 **Presupuestación**
@@ -224,6 +226,7 @@ Documentar a medida que se desarrolla es un requisito central del proyecto (insu
 - Al marcar operario Inactivo se lo desvincula de obras activas pero se conserva su historial. `motivo` de falta no es obligatorio.
 
 **Seguimiento**
+- **Las etapas se cargan por duración y la ponderación se deriva** (`V19`, 23/09, pedido de Ricardo). `PUT /api/obras/{id}/etapas` recibe qué hay que hacer, de qué rubro es y cuántos días lleva, y **reparte 100 puntos en proporción a la duración**. El centavo que sobra del redondeo (tres etapas de un día dan 33,33 y suman 99,99) se le suma a la **etapa más larga**, que es donde menos se nota. **NO hay tabla `etapa`**: son los mismos hitos. Una tabla aparte daría dos fuentes de avance para la misma obra y en algún momento se contradirían. La carga por porcentaje (`PUT /api/obras/{id}/hitos`) se conserva y es un endpoint aparte: son formas excluyentes, y uno solo que aceptara las dos tendría que adivinar cuál gana.
 - Los hitos tienen ponderación; el porcentaje de avance sale de los hitos completados.
 - `fecha_cumplimiento` obligatoria al marcar un hito como Completado. Al completar el último hito, la obra pasa a "Finalizada".
 
@@ -309,7 +312,7 @@ Nombres, tipos PostgreSQL, PK/FK exactos del Diccionario de Datos. **Respetar es
 - **gasto**: `id_gasto` (PK), `id_obra` (FK→obra), `id_rubro` (FK→rubro), `id_subrubro` (FK→subrubro), `tipo_gasto` (VARCHAR 15), `monto` (NUMERIC 14,2), `fecha_gasto` (DATE), `fecha_carga` (TIMESTAMP), `id_pedido` (FK→pedido), `id_operario` (FK→operario), `descripcion` (VARCHAR 250), `comprobante_adjunto` (VARCHAR 255, ref Supabase), `id_usuario_registro` (FK→usuario), `estado` (VARCHAR 12), `motivo_anulacion` (VARCHAR 200)
 
 ### Módulo Seguimiento de Obras
-- **hito**: `id_hito` (PK), `id_obra` (FK→obra), `nombre_hito` (VARCHAR 150), `ponderacion` (NUMERIC 5,2), `orden` (INTEGER), `estado` (VARCHAR 12), `fecha_cumplimiento` (DATE), `observacion` (VARCHAR 250), `id_usuario_completa` (FK→usuario)
+- **hito**: `id_hito` (PK), `id_obra` (FK→obra), `nombre_hito` (VARCHAR 150), `ponderacion` (NUMERIC 5,2), `orden` (INTEGER), `estado` (VARCHAR 12), `fecha_cumplimiento` (DATE), `observacion` (VARCHAR 250), `id_usuario_completa` (FK→usuario), `id_rubro` (FK→rubro, opcional, `V19`), `duracion_dias` (INTEGER, opcional, `V19` — ver la regla en la sección 8)
 - **plantilla_hito**: `id_plantilla` (PK), `nombre_plantilla` (VARCHAR 100), `fecha_creacion` (TIMESTAMP)
 - **plantilla_hito_detalle**: `id_detalle` (PK), `id_plantilla` (FK→plantilla_hito), `nombre_hito` (VARCHAR 150), `ponderacion` (NUMERIC 5,2), `orden` (INTEGER)
 

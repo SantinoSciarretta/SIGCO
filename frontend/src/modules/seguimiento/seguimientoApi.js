@@ -19,6 +19,19 @@ export async function configurarHitos(idObra, hitos) {
   return respuesta.data;
 }
 
+/**
+ * Define las etapas cargándolas por duración en lugar de por porcentaje.
+ *
+ * Es un endpoint aparte de configurarHitos y no un campo opcional porque son
+ * dos formas de cargar excluyentes: o se escriben las ponderaciones o se
+ * derivan. Uno solo que aceptara las dos tendría que decidir cuál gana cuando
+ * llegan ambas, y eso el servidor no lo puede saber sin adivinar.
+ */
+export async function configurarEtapas(idObra, etapas) {
+  const respuesta = await client.put(`/obras/${idObra}/etapas`, { etapas });
+  return respuesta.data;
+}
+
 export async function aplicarPlantilla(idObra, idPlantilla) {
   const respuesta = await client.post(
     `/obras/${idObra}/hitos/desde-plantilla/${idPlantilla}`);

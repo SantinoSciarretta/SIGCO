@@ -426,6 +426,11 @@ export default function DetalleObraPage() {
           <Acceso permiso="personal.ver" puede={puede}
                   a={`/personal?obra=${obra.idObra}`}
                   titulo="Personal" detalle="Operarios asignados e inasistencias" />
+          {/* El cierre económico. Pide cobros.ver porque muestra la ganancia,
+              y la matriz no le da Cobros a ningún capataz. */}
+          <Acceso permiso="cobros.ver" puede={puede}
+                  a={`/obras/${obra.idObra}/balance`}
+                  titulo="Balance" detalle="Qué dejó la obra y qué queda abierto" />
         </div>
       </Blueprint>
     </>

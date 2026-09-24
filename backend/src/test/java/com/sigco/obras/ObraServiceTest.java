@@ -13,7 +13,10 @@ import com.sigco.obras.dto.CambioEstadoObra;
 import com.sigco.obras.dto.ObraEdicion;
 import com.sigco.obras.dto.ObraRespuesta;
 import com.sigco.obras.dto.ObraSolicitud;
+import com.sigco.seguimiento.Hito;
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -53,6 +56,12 @@ class ObraServiceTest {
     // mayoria de estos tests.
     @Mock
     private com.sigco.presupuestacion.PresupuestoRepository presupuestoRepositorio;
+
+    // Para la regla de cierre: dar por terminada una obra con hitos pendientes
+    // exige confirmacion. Por defecto el mock devuelve lista vacia, o sea "no
+    // hay hitos cargados", que es el caso de la mayoria de estos tests.
+    @Mock
+    private com.sigco.seguimiento.HitoRepository hitoRepositorio;
 
     @Mock
     private com.sigco.accesos.ServicioAuditoria auditoria;
@@ -224,10 +233,62 @@ class ObraServiceTest {
             when(repositorio.buscarConCliente(1L)).thenReturn(Optional.of(obra));
 
             ObraRespuesta respuesta = servicio.cambiarEstado(1L, new CambioEstadoObra(
-                    Obra.ESTADO_EN_EJECUCION, null, LocalDate.of(2026, 3, 4), false));
+                    Obra.ESTADO_EN_EJECUCION, null, LocalDate.of(2026, 3, 4), false, false));
 
             assertThat(respuesta.estado()).isEqualTo(Obra.ESTADO_EN_EJECUCION);
             assertThat(respuesta.fechaInicioReal()).isEqualTo(LocalDate.of(2026, 3, 4));
+        }
+
+        /**
+         * El botón de "obra terminada" que pidió Ricardo. El riesgo es cerrar
+         * una obra que en realidad sigue: al pasar a Finalizada los hitos
+         * quedan bloqueados y ya no se puede cargar avance.
+         */
+        @Test
+        @DisplayName("No cierra una obra con hitos pendientes sin confirmarlo")
+        void pideConfirmacionSiQuedanHitos() {
+            Obra obra = unaObra();
+            obra.pasarAEjecucion();
+            when(repositorio.buscarConCliente(1L)).thenReturn(Optional.of(obra));
+
+            Hito pendiente = new Hito(obra, "Pintura", new BigDecimal("50"), 2);
+            Hito completado = new Hito(obra, "Demolición", new BigDecimal("50"), 1);
+            completado.completar(LocalDate.of(2026, 5, 2), null, null);
+            when(hitoRepositorio.deLaObra(any())).thenReturn(List.of(completado, pendiente));
+
+            assertThatThrownBy(() -> servicio.cambiarEstado(1L,
+                    new CambioEstadoObra(Obra.ESTADO_FINALIZADA, null, null, false, false)))
+                    .isInstanceOf(ReglaDeNegocioException.class)
+                    .hasMessageContaining("1 hito sin completar");
+
+            assertThat(obra.getEstado()).isEqualTo(Obra.ESTADO_EN_EJECUCION);
+        }
+
+        @Test
+        @DisplayName("Con la confirmación, la cierra igual")
+        void cierraConConfirmacion() {
+            Obra obra = unaObra();
+            obra.pasarAEjecucion();
+            when(repositorio.buscarConCliente(1L)).thenReturn(Optional.of(obra));
+
+            ObraRespuesta respuesta = servicio.cambiarEstado(1L,
+                    new CambioEstadoObra(Obra.ESTADO_FINALIZADA, null, null, false, true));
+
+            assertThat(respuesta.estado()).isEqualTo(Obra.ESTADO_FINALIZADA);
+        }
+
+        @Test
+        @DisplayName("Sin hitos pendientes cierra sin pedir nada")
+        void cierraSinHitosPendientes() {
+            Obra obra = unaObra();
+            obra.pasarAEjecucion();
+            when(repositorio.buscarConCliente(1L)).thenReturn(Optional.of(obra));
+            when(hitoRepositorio.deLaObra(any())).thenReturn(List.of());
+
+            ObraRespuesta respuesta = servicio.cambiarEstado(1L,
+                    new CambioEstadoObra(Obra.ESTADO_FINALIZADA, null, null, false, false));
+
+            assertThat(respuesta.estado()).isEqualTo(Obra.ESTADO_FINALIZADA);
         }
 
         @Test
@@ -236,7 +297,7 @@ class ObraServiceTest {
             when(repositorio.buscarConCliente(1L)).thenReturn(Optional.of(unaObra()));
 
             assertThatThrownBy(() -> servicio.cambiarEstado(1L,
-                    new CambioEstadoObra(Obra.ESTADO_FINALIZADA, null, null, false)))
+                    new CambioEstadoObra(Obra.ESTADO_FINALIZADA, null, null, false, false)))
                     .isInstanceOf(ReglaDeNegocioException.class)
                     .hasMessageContaining("primero tiene que ejecutarse");
         }
@@ -249,7 +310,7 @@ class ObraServiceTest {
             when(repositorio.buscarConCliente(1L)).thenReturn(Optional.of(obra));
 
             assertThatThrownBy(() -> servicio.cambiarEstado(1L,
-                    new CambioEstadoObra(Obra.ESTADO_EN_EJECUCION, null, null, false)))
+                    new CambioEstadoObra(Obra.ESTADO_EN_EJECUCION, null, null, false, false)))
                     .isInstanceOf(ReglaDeNegocioException.class);
         }
 
@@ -262,7 +323,7 @@ class ObraServiceTest {
             when(repositorio.buscarConCliente(1L)).thenReturn(Optional.of(obra));
 
             assertThatThrownBy(() -> servicio.cambiarEstado(1L,
-                    new CambioEstadoObra(Obra.ESTADO_CANCELADA, "Ya no va", null, false)))
+                    new CambioEstadoObra(Obra.ESTADO_CANCELADA, "Ya no va", null, false, false)))
                     .isInstanceOf(ReglaDeNegocioException.class)
                     .hasMessageContaining("ya no admite cambios");
         }
@@ -275,7 +336,7 @@ class ObraServiceTest {
             when(repositorio.buscarConCliente(1L)).thenReturn(Optional.of(obra));
 
             assertThatThrownBy(() -> servicio.cambiarEstado(1L,
-                    new CambioEstadoObra(Obra.ESTADO_EN_EJECUCION, null, null, false)))
+                    new CambioEstadoObra(Obra.ESTADO_EN_EJECUCION, null, null, false, false)))
                     .isInstanceOf(ReglaDeNegocioException.class);
         }
     }
@@ -294,7 +355,7 @@ class ObraServiceTest {
             when(repositorio.buscarConCliente(1L)).thenReturn(Optional.of(unaObra()));
 
             assertThatThrownBy(() -> servicio.cambiarEstado(1L,
-                    new CambioEstadoObra(Obra.ESTADO_CANCELADA, "   ", null, false)))
+                    new CambioEstadoObra(Obra.ESTADO_CANCELADA, "   ", null, false, false)))
                     .isInstanceOf(ReglaDeNegocioException.class)
                     .hasMessageContaining("motivo");
         }
@@ -305,7 +366,7 @@ class ObraServiceTest {
             when(repositorio.buscarConCliente(1L)).thenReturn(Optional.of(unaObra()));
 
             ObraRespuesta respuesta = servicio.cambiarEstado(1L, new CambioEstadoObra(
-                    Obra.ESTADO_CANCELADA, "El cliente no aceptó el precio", null, false));
+                    Obra.ESTADO_CANCELADA, "El cliente no aceptó el precio", null, false, false));
 
             assertThat(respuesta.estado()).isEqualTo(Obra.ESTADO_CANCELADA);
             assertThat(respuesta.motivoCancelacion()).isEqualTo("El cliente no aceptó el precio");
@@ -330,7 +391,7 @@ class ObraServiceTest {
             conDefinitivoAprobado();
 
             assertThatThrownBy(() -> servicio.cambiarEstado(1L, new CambioEstadoObra(
-                    Obra.ESTADO_CANCELADA, "El cliente se arrepintió", null, false)))
+                    Obra.ESTADO_CANCELADA, "El cliente se arrepintió", null, false, false)))
                     .isInstanceOf(ReglaDeNegocioException.class)
                     .hasMessageContaining("definitivo aprobado");
         }
@@ -342,7 +403,7 @@ class ObraServiceTest {
             conDefinitivoAprobado();
 
             ObraRespuesta respuesta = servicio.cambiarEstado(1L, new CambioEstadoObra(
-                    Obra.ESTADO_CANCELADA, "Se interrumpió la obra", null, true));
+                    Obra.ESTADO_CANCELADA, "Se interrumpió la obra", null, true, false));
 
             assertThat(respuesta.estado()).isEqualTo(Obra.ESTADO_CANCELADA);
         }
@@ -354,7 +415,7 @@ class ObraServiceTest {
             // El mock devuelve lista vacía por defecto: no hay definitivo aprobado.
 
             ObraRespuesta respuesta = servicio.cambiarEstado(1L, new CambioEstadoObra(
-                    Obra.ESTADO_CANCELADA, "No prosperó", null, false));
+                    Obra.ESTADO_CANCELADA, "No prosperó", null, false, false));
 
             assertThat(respuesta.estado()).isEqualTo(Obra.ESTADO_CANCELADA);
         }

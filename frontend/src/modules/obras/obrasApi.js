@@ -61,6 +61,18 @@ export async function cambiarEstadoObra(id, cambio) {
   return respuesta.data;
 }
 
+/**
+ * El balance de cierre de una obra.
+ *
+ * Vive en /api/balance y no en /api/obras porque no es un dato de la obra sino
+ * el cruce de Gastos, Cobros y Seguimiento sobre ella. Exige los permisos de
+ * gastos Y de cobros: muestra la ganancia.
+ */
+export async function balanceDeObra(idObra) {
+  const respuesta = await client.get(`/balance/${idObra}`);
+  return respuesta.data;
+}
+
 /** Valores validos, los mismos que valida el backend. */
 export const TIPOS_INMUEBLE = ['Casa', 'Departamento', 'Local'];
 export const TIPOS_OBRA = ['Construcción', 'Reforma'];

@@ -5,6 +5,7 @@ import com.sigco.seguimiento.PlantillaHito;
 import com.sigco.seguimiento.PlantillaHitoDetalle;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -48,6 +49,40 @@ public final class SeguimientoDtos {
             @NotNull(message = "La ponderación es obligatoria")
             @DecimalMin(value = "0.01", message = "La ponderación tiene que ser mayor a cero")
             BigDecimal ponderacion,
+
+            @NotNull(message = "El orden es obligatorio")
+            @Min(value = 1, message = "El orden arranca en 1")
+            Integer orden) {
+    }
+
+    /**
+     * Las etapas de la obra, cargadas por duracion en lugar de por porcentaje.
+     *
+     * Es la forma que pidio Ricardo: cargar que hay que hacer, de que rubro es
+     * y cuanto lleva, y que el sistema saque el porcentaje. Termina creando los
+     * mismos hitos que ConfiguracionHitos —no hay una entidad "etapa" aparte—
+     * pero con la ponderacion derivada.
+     */
+    public record ConfiguracionEtapas(
+
+            @NotEmpty(message = "Hay que definir al menos una etapa")
+            @Valid
+            List<EtapaDeObra> etapas) {
+    }
+
+    public record EtapaDeObra(
+
+            @NotBlank(message = "El nombre de la etapa es obligatorio")
+            @Size(max = 150, message = "El nombre no puede superar los 150 caracteres")
+            String nombreHito,
+
+            /** Opcional: no toda etapa cae limpio en un rubro (limpieza de obra, mudanza). */
+            Long idRubro,
+
+            @NotNull(message = "La duracion es obligatoria")
+            @Min(value = 1, message = "La etapa tiene que durar al menos un dia")
+            @Max(value = 1095, message = "Una etapa no puede durar mas de tres años")
+            Integer duracionDias,
 
             @NotNull(message = "El orden es obligatorio")
             @Min(value = 1, message = "El orden arranca en 1")
@@ -112,11 +147,19 @@ public final class SeguimientoDtos {
             Integer orden,
             String estado,
             LocalDate fechaCumplimiento,
-            String observacion) {
+            String observacion,
+
+            /** Presentes solo en las etapas cargadas por duracion (V19). */
+            Long idRubro,
+            String nombreRubro,
+            Integer duracionDias) {
 
         public static HitoRespuesta desde(Hito h) {
             return new HitoRespuesta(h.getIdHito(), h.getNombreHito(), h.getPonderacion(),
-                    h.getOrden(), h.getEstado(), h.getFechaCumplimiento(), h.getObservacion());
+                    h.getOrden(), h.getEstado(), h.getFechaCumplimiento(), h.getObservacion(),
+                    h.getRubro() != null ? h.getRubro().getIdRubro() : null,
+                    h.getRubro() != null ? h.getRubro().getNombreRubro() : null,
+                    h.getDuracionDias());
         }
     }
 
