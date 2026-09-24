@@ -15,6 +15,17 @@ export async function listarPresupuestos({ obra, tipo, estado } = {}) {
   return respuesta.data;
 }
 
+/**
+ * El listado agrupado: una entrada por obra, con sus instancias adentro.
+ *
+ * Es la pantalla de entrada del módulo. El agrupado y la elección de cuál
+ * presupuesto gobierna la obra los hace el backend, no esta pantalla.
+ */
+export async function listarPorObra() {
+  const respuesta = await client.get('/presupuestos/por-obra');
+  return respuesta.data;
+}
+
 /** Trae el presupuesto con sus ítems y los subtotales por rubro. */
 export async function obtenerPresupuesto(id) {
   const respuesta = await client.get(`/presupuestos/${id}`);

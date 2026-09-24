@@ -13,6 +13,7 @@ import DetalleObraPage from '../modules/obras/DetalleObraPage';
 import CatalogoPage from '../modules/presupuestacion/CatalogoPage';
 import PresupuestosPage from '../modules/presupuestacion/PresupuestosPage';
 import PresupuestoDetalle from '../modules/presupuestacion/PresupuestoDetalle';
+import ObraPresupuestosPage from '../modules/presupuestacion/ObraPresupuestosPage';
 import PedidosPage from '../modules/compras/PedidosPage';
 import CobrosPage from '../modules/cobros/CobrosPage';
 import PersonalPage from '../modules/personal/PersonalPage';
@@ -111,6 +112,9 @@ export default function Router() {
           <RutaProtegida permiso="presupuestos.ver"><PresupuestosPage /></RutaProtegida>} />
         <Route path="/presupuestos/catalogo" element={
           <RutaProtegida permiso="presupuestos.ver"><CatalogoPage /></RutaProtegida>} />
+        {/* Tres segmentos, asi que no compite con /presupuestos/:id. */}
+        <Route path="/presupuestos/obra/:idObra" element={
+          <RutaProtegida permiso="presupuestos.ver"><ObraPresupuestosPage /></RutaProtegida>} />
         <Route path="/presupuestos/:id" element={
           <RutaProtegida permiso="presupuestos.ver"><PresupuestoDetalle /></RutaProtegida>} />
 

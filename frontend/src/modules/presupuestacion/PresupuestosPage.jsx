@@ -4,45 +4,42 @@ import Blueprint from '../../components/ui/Blueprint';
 import Modal from '../../components/ui/Modal';
 import { listarObras } from '../obras/obrasApi';
 import {
-  ESTADOS, TIPOS, crearPresupuesto, eliminarPresupuesto, listarPresupuestos, pesos,
+  TIPOS, crearPresupuesto, eliminarPresupuesto, listarPorObra, pesos,
 } from './presupuestosApi';
 import estilos from './Presupuestos.module.css';
 
 /**
- * Listado de presupuestos.
+ * Listado de presupuestos, agrupado por obra.
  *
  * Reemplaza el circuito actual, donde cada presupuesto se arma desde cero en
- * Excel, las versiones se pisan entre sí y no queda registro de cuál aprobó el
- * cliente. Acá cada versión es un registro propio, con su tipo, su número y su
+ * Excel, las versiones se pisan entre si y no queda registro de cual aprobo el
+ * cliente. Aca cada version es un registro propio, con su tipo, su numero y su
  * estado.
+ *
+ * Ricardo pidio al probar el sistema que la entrada fuera la obra y no el
+ * presupuesto: antes esta pantalla mezclaba en una sola lista los presupuestos
+ * de todas las obras, y para saber en que instancia estaba una habia que
+ * buscarla entre las filas. Ahora hay una fila por obra, y al abrirla se ven
+ * sus instancias.
  */
 export default function PresupuestosPage() {
-  const [presupuestos, setPresupuestos] = useState([]);
+  const [obras, setObras] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
 
-  const [tipo, setTipo] = useState('');
-  const [estado, setEstado] = useState('');
+  const [busqueda, setBusqueda] = useState('');
   const [altaAbierta, setAltaAbierta] = useState(false);
-  const [aEliminar, setAEliminar] = useState(null);
 
   const [recarga, setRecarga] = useState(0);
 
-  /**
-   * Carga el listado cada vez que cambian los filtros.
-   *
-   * La bandera `vigente` resuelve una carrera real: si el usuario cambia de
-   * filtro antes de que llegue la respuesta anterior, esa respuesta vieja
-   * llegaría después y pisaría la nueva. Al limpiar el efecto se la descarta.
-   */
   useEffect(() => {
     let vigente = true;
 
     (async () => {
       try {
-        const datos = await listarPresupuestos({ tipo, estado });
+        const datos = await listarPorObra();
         if (vigente) {
-          setPresupuestos(datos);
+          setObras(datos);
           setError(null);
         }
       } catch (fallo) {
@@ -53,14 +50,19 @@ export default function PresupuestosPage() {
     })();
 
     return () => { vigente = false; };
-  }, [tipo, estado, recarga]);
+  }, [recarga]);
 
   const recargar = useCallback(() => {
     setCargando(true);
     setRecarga((n) => n + 1);
   }, []);
 
-  const hayFiltros = tipo || estado;
+  // La busqueda filtra aca y no en el servidor: son pocas obras y el listado ya
+  // esta en memoria, asi que pedirlo de nuevo en cada tecla seria peor.
+  const texto = busqueda.trim().toLowerCase();
+  const visibles = texto
+    ? obras.filter((o) => (o.direccionObra + ' ' + o.nombreCliente).toLowerCase().includes(texto))
+    : obras;
 
   return (
     <>
@@ -69,22 +71,16 @@ export default function PresupuestosPage() {
           <span className="kicker kicker-acento">Módulo</span>
           <h2 className={estilos.titulo}>Presupuestos</h2>
           <p className={estilos.bajada}>
-            Cada versión queda como un registro propio.{' '}
+            Una fila por obra; adentro, sus instancias.{' '}
             <Link to="/presupuestos/catalogo">Ver catálogo de rubros</Link>
           </p>
         </div>
 
         <div className={estilos.herramientas}>
-          <select className={estilos.filtro} value={tipo}
-                  onChange={(e) => setTipo(e.target.value)} aria-label="Filtrar por tipo">
-            <option value="">Todo tipo</option>
-            {TIPOS.map((t) => <option key={t} value={t}>{t}</option>)}
-          </select>
-          <select className={estilos.filtro} value={estado}
-                  onChange={(e) => setEstado(e.target.value)} aria-label="Filtrar por estado">
-            <option value="">Todo estado</option>
-            {ESTADOS.map((e) => <option key={e} value={e}>{e}</option>)}
-          </select>
+          <input className={`${estilos.filtro} ${estilos.buscador}`} value={busqueda} type="search"
+                 placeholder="Buscar por obra o cliente"
+                 onChange={(e) => setBusqueda(e.target.value)}
+                 aria-label="Buscar por obra o cliente" />
           <button type="button" className={estilos.botonPrimario} onClick={() => setAltaAbierta(true)}>
             Nuevo presupuesto
           </button>
@@ -95,60 +91,65 @@ export default function PresupuestosPage() {
         {error && <p className={estilos.errorGeneral}>{error}</p>}
         {cargando && <p className={estilos.aviso}>Consultando…</p>}
 
-        {!cargando && !error && presupuestos.length === 0 && (
+        {!cargando && !error && visibles.length === 0 && (
           <div className={estilos.vacio}>
             <p className={estilos.vacioTitulo}>
-              {hayFiltros ? 'Ningún presupuesto coincide' : 'Todavía no hay presupuestos'}
+              {texto ? 'Ninguna obra coincide' : 'Todavía no hay presupuestos'}
             </p>
             <p className={estilos.vacioTexto}>
-              {hayFiltros
-                ? 'Probá con otros filtros.'
+              {texto
+                ? 'Probá con otra dirección o con el nombre del cliente.'
                 : 'El circuito arranca con la cotización inicial de una obra ya creada.'}
             </p>
           </div>
         )}
 
-        {!cargando && presupuestos.length > 0 && (
+        {!cargando && visibles.length > 0 && (
           <div className="scroll-x">
             <table className="table">
               <thead>
                 <tr>
                   <th>Obra</th>
-                  <th>Tipo</th>
-                  <th>Ver.</th>
-                  <th style={{ textAlign: 'right' }}>Total</th>
-                  <th>Estado</th>
+                  <th>Instancias</th>
+                  <th>Vigente</th>
+                  <th style={{ textAlign: 'right' }}>Total vigente</th>
                   <th />
                 </tr>
               </thead>
               <tbody>
-                {presupuestos.map((p) => (
-                  <tr key={p.idPresupuesto}
-                      className={p.estado === 'Aprobado' ? estilos.filaAprobada : undefined}>
+                {visibles.map((o) => (
+                  <tr key={o.idObra}>
                     <td>
-                      <div className={estilos.obra}>{p.direccionObra}</div>
-                      <div className={estilos.cliente}>{p.nombreCliente}</div>
+                      <div className={estilos.obra}>{o.direccionObra}</div>
+                      <div className={estilos.cliente}>
+                        {o.nombreCliente} · {o.tipoObra} · {o.estadoObra}
+                      </div>
                     </td>
-                    <td className={estilos.dato}>{p.tipoPresupuesto}</td>
-                    <td className={`cifra ${estilos.version}`}>
-                      v{p.version}
-                      {/* La cadena de versiones: de qué presupuesto salió éste. */}
-                      {p.idPresupuestoBase && (
-                        <span className={estilos.base} title="Generado a partir de otro presupuesto">
-                          ← #{p.idPresupuestoBase}
-                        </span>
-                      )}
+
+                    {/* El recorrido del circuito de un vistazo: qué instancias
+                        tiene la obra y cuántas versiones de cada una. */}
+                    <td>
+                      <div className={estilos.instancias}>
+                        {resumirInstancias(o.presupuestos).map((i) => (
+                          <span key={i.tipo} className={estilos.instancia}>
+                            {i.tipo}
+                            {i.veces > 1 && <b className={estilos.veces}>×{i.veces}</b>}
+                          </span>
+                        ))}
+                      </div>
                     </td>
-                    <td className={`cifra ${estilos.total}`}>{pesos(p.totalPresupuesto)}</td>
-                    <td><span className={claseDeEstado(p.estado)}>{p.estado}</span></td>
+
+                    <td>
+                      <div className={estilos.dato}>{o.tipoVigente}</div>
+                      <span className={claseDeEstado(o.estadoVigente)}>{o.estadoVigente}</span>
+                    </td>
+
+                    <td className={`cifra ${estilos.total}`}>{pesos(o.totalVigente)}</td>
+
                     <td className={estilos.acciones}>
-                      <Link className={estilos.accion} to={`/presupuestos/${p.idPresupuesto}`}>
-                        Abrir
+                      <Link className={estilos.accion} to={`/presupuestos/obra/${o.idObra}`}>
+                        Ver las instancias
                       </Link>
-                      <button type="button" className={estilos.accionPeligro}
-                              onClick={() => setAEliminar(p)}>
-                        Eliminar
-                      </button>
                     </td>
                   </tr>
                 ))}
@@ -156,15 +157,8 @@ export default function PresupuestosPage() {
             </table>
           </div>
         )}
-      </Blueprint>
 
-      {aEliminar && (
-        <ConfirmarEliminacion
-          presupuesto={aEliminar}
-          onCerrar={() => setAEliminar(null)}
-          onEliminado={() => { setAEliminar(null); recargar(); }}
-        />
-      )}
+      </Blueprint>
 
       {altaAbierta && (
         <NuevoPresupuestoModal
@@ -186,7 +180,7 @@ export default function PresupuestosPage() {
  * real cuando no se puede borrar (por ejemplo, que otro presupuesto se generó a
  * partir de éste), y duplicar esa regla acá la dejaría desactualizada.
  */
-function ConfirmarEliminacion({ presupuesto, onCerrar, onEliminado }) {
+export function ConfirmarEliminacion({ presupuesto, onCerrar, onEliminado }) {
   const [error, setError] = useState(null);
   const [eliminando, setEliminando] = useState(false);
 
@@ -394,7 +388,23 @@ function NuevoPresupuestoModal({ onCerrar, onCreado }) {
   );
 }
 
-function claseDeEstado(estado) {
+/**
+ * Cuantas versiones tiene cada instancia, en el orden en que llegan.
+ *
+ * El backend ya devuelve los presupuestos ordenados por el circuito, asi que
+ * alcanza con recorrerlos y contar: no hay que volver a ordenar nada aca.
+ */
+function resumirInstancias(presupuestos) {
+  const conteo = [];
+  presupuestos.forEach((p) => {
+    const ya = conteo.find((i) => i.tipo === p.tipoPresupuesto);
+    if (ya) ya.veces += 1;
+    else conteo.push({ tipo: p.tipoPresupuesto, veces: 1 });
+  });
+  return conteo;
+}
+
+export function claseDeEstado(estado) {
   if (estado === 'Aprobado') return estilos.estadoAprobado;
   if (estado === 'Enviado') return estilos.estadoEnviado;
   if (estado === 'Rechazado') return estilos.estadoRechazado;

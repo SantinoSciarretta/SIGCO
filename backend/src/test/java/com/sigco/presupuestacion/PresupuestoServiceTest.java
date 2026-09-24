@@ -946,4 +946,131 @@ class PresupuestoServiceTest {
             assertThat(p.getTotalPresupuesto()).isEqualByComparingTo("1750000");
         }
     }
+
+    // ------------------------------------------------------------------
+    //  El listado agrupado por obra
+    // ------------------------------------------------------------------
+
+    /**
+     * Pedido de Ricardo: que la pantalla muestre primero la obra y, al entrar,
+     * sus instancias. Lo que se prueba aca es el agrupado y, sobre todo, cual
+     * de los presupuestos se marca como el que gobierna la obra.
+     */
+    @Nested
+    @DisplayName("Listado agrupado por obra")
+    class PorObra {
+
+        private Presupuesto version(Obra obra, String tipo, int numero, Long id) {
+            Presupuesto p = new Presupuesto(obra, tipo, numero, null, null);
+            asignarId(p, "idPresupuesto", id);
+            return p;
+        }
+
+        @Test
+        @DisplayName("Junta los presupuestos de cada obra en una sola entrada")
+        void agrupaPorObra() {
+            Obra cabildo = obra(Obra.TIPO_REFORMA, 1L);
+            Obra pilar = obra(Obra.TIPO_CONSTRUCCION, 2L);
+
+            when(repositorio.buscar(0L, "", "")).thenReturn(List.of(
+                    version(cabildo, Presupuesto.TIPO_DEFINITIVO, 1, 12L),
+                    version(pilar, Presupuesto.TIPO_COTIZACION_INICIAL, 1, 20L),
+                    version(cabildo, Presupuesto.TIPO_ANTEPROYECTO, 1, 11L)));
+
+            var agrupado = servicio.listarPorObra();
+
+            assertThat(agrupado).hasSize(2);
+            assertThat(agrupado.get(0).idObra()).isEqualTo(1L);
+            assertThat(agrupado.get(0).presupuestos()).hasSize(2);
+            assertThat(agrupado.get(1).idObra()).isEqualTo(2L);
+            assertThat(agrupado.get(1).presupuestos()).hasSize(1);
+        }
+
+        @Test
+        @DisplayName("Los ordena por el circuito, no por como vinieron")
+        void ordenaPorElCircuito() {
+            Obra cabildo = obra(Obra.TIPO_REFORMA, 1L);
+
+            // Llegan al reves: primero el definitivo, despues el anteproyecto.
+            when(repositorio.buscar(0L, "", "")).thenReturn(List.of(
+                    version(cabildo, Presupuesto.TIPO_DEFINITIVO, 1, 12L),
+                    version(cabildo, Presupuesto.TIPO_ANTEPROYECTO, 1, 11L),
+                    version(cabildo, Presupuesto.TIPO_COTIZACION_INICIAL, 1, 10L)));
+
+            var instancias = servicio.listarPorObra().get(0).presupuestos();
+
+            assertThat(instancias)
+                    .extracting(PresupuestoRespuesta::tipoPresupuesto)
+                    .containsExactly("Cotización inicial", "Anteproyecto", "Definitivo");
+        }
+
+        @Test
+        @DisplayName("El definitivo aprobado es el que gobierna la obra")
+        void elDefinitivoAprobadoGobierna() {
+            Obra cabildo = obra(Obra.TIPO_REFORMA, 1L);
+            Presupuesto anteproyecto = version(cabildo, Presupuesto.TIPO_ANTEPROYECTO, 1, 11L);
+            Presupuesto definitivo = version(cabildo, Presupuesto.TIPO_DEFINITIVO, 1, 12L);
+            definitivo.enviar();
+            definitivo.aprobar();
+
+            when(repositorio.buscar(0L, "", ""))
+                    .thenReturn(List.of(anteproyecto, definitivo));
+
+            var laObra = servicio.listarPorObra().get(0);
+
+            assertThat(laObra.idPresupuestoVigente()).isEqualTo(12L);
+            assertThat(laObra.estadoVigente()).isEqualTo("Aprobado");
+        }
+
+        /**
+         * El caso que justifica la regla: si el definitivo se rechazo, lo que
+         * sigue en pie es el anteproyecto. Mostrar el rechazado como vigente
+         * seria decir que la obra vale un numero que el cliente no acepto.
+         */
+        @Test
+        @DisplayName("Un presupuesto rechazado no representa a la obra")
+        void elRechazadoNoGobierna() {
+            Obra cabildo = obra(Obra.TIPO_REFORMA, 1L);
+            Presupuesto anteproyecto = version(cabildo, Presupuesto.TIPO_ANTEPROYECTO, 1, 11L);
+            Presupuesto definitivo = version(cabildo, Presupuesto.TIPO_DEFINITIVO, 1, 12L);
+            definitivo.enviar();
+            definitivo.rechazar();
+
+            when(repositorio.buscar(0L, "", ""))
+                    .thenReturn(List.of(anteproyecto, definitivo));
+
+            assertThat(servicio.listarPorObra().get(0).idPresupuestoVigente()).isEqualTo(11L);
+        }
+
+        @Test
+        @DisplayName("Entre dos definitivos aprobados manda el de mayor versión")
+        void mandaLaUltimaVersion() {
+            Obra cabildo = obra(Obra.TIPO_REFORMA, 1L);
+            Presupuesto v1 = version(cabildo, Presupuesto.TIPO_DEFINITIVO, 1, 12L);
+            Presupuesto v2 = version(cabildo, Presupuesto.TIPO_DEFINITIVO, 2, 13L);
+            v1.enviar();
+            v1.aprobar();
+            v2.enviar();
+            v2.aprobar();
+
+            when(repositorio.buscar(0L, "", "")).thenReturn(List.of(v2, v1));
+
+            assertThat(servicio.listarPorObra().get(0).idPresupuestoVigente()).isEqualTo(13L);
+        }
+
+        @Test
+        @DisplayName("Si están todos rechazados igual devuelve uno, no null")
+        void siempreHayVigente() {
+            Obra cabildo = obra(Obra.TIPO_REFORMA, 1L);
+            Presupuesto anteproyecto = version(cabildo, Presupuesto.TIPO_ANTEPROYECTO, 1, 11L);
+            anteproyecto.enviar();
+            anteproyecto.rechazar();
+
+            when(repositorio.buscar(0L, "", "")).thenReturn(List.of(anteproyecto));
+
+            var laObra = servicio.listarPorObra().get(0);
+            assertThat(laObra.idPresupuestoVigente()).isEqualTo(11L);
+            assertThat(laObra.estadoVigente()).isEqualTo("Rechazado");
+        }
+    }
 }

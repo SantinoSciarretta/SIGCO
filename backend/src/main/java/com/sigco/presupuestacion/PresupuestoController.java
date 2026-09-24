@@ -5,6 +5,7 @@ import com.sigco.presupuestacion.dto.PresupuestoDtos.Duplicacion;
 import com.sigco.presupuestacion.dto.PresupuestoDtos.ItemSolicitud;
 import com.sigco.presupuestacion.dto.PresupuestoDtos.NuevoPresupuesto;
 import com.sigco.presupuestacion.dto.PresupuestoDtos.PlanDePago;
+import com.sigco.presupuestacion.dto.ObraPresupuestada;
 import com.sigco.presupuestacion.dto.PresupuestoRespuesta;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -63,6 +64,21 @@ public class PresupuestoController {
             @RequestParam(required = false) String estado) {
 
         return servicio.listar(obra, tipo, estado);
+    }
+
+    /**
+     * GET /api/presupuestos/por-obra
+     *
+     * El listado agrupado: una entrada por obra, con sus instancias adentro y
+     * cual de ellas gobierna. Es la pantalla de entrada del modulo.
+     *
+     * La ruta literal va antes que /{id} para que quede claro que no compiten:
+     * Spring resuelve primero la exacta, asi que "por-obra" nunca se toma como
+     * un identificador.
+     */
+    @GetMapping("/por-obra")
+    public List<ObraPresupuestada> listarPorObra() {
+        return servicio.listarPorObra();
     }
 
     /** GET /api/presupuestos/{id} — con items y subtotales por rubro. */

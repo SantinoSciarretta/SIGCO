@@ -585,3 +585,47 @@
   background: color-mix(in srgb, var(--color-accent) 14%, transparent);
   font-weight: 500;
 }
+
+/* ------------------------------------------------------------------
+   Las instancias de una obra en el listado agrupado
+   ------------------------------------------------------------------ */
+
+.instancias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.instancia {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border: 1px solid color-mix(in srgb, var(--color-text) 16%, transparent);
+  border-radius: 999px;
+  font-size: 12px;
+  white-space: nowrap;
+  color: color-mix(in srgb, var(--color-text) 72%, transparent);
+}
+
+/* Cuantas versiones hay de esa instancia. Solo aparece a partir de dos:
+   escribir "x1" en todas agregaria ruido sin decir nada. */
+.veces {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-accent);
+}
+
+/* El buscador necesita mas ancho que un desplegable: el texto que se escribe
+   es una direccion, no una opcion de una lista corta. */
+.buscador { min-width: 240px; }
+
+/* Marca cual de las versiones es la que gobierna la obra. El color de la fila
+   solo no alcanza: hay que poder leer por que esta resaltada. */
+.marcaVigente {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ok);
+}

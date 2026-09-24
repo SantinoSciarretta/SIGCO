@@ -15,6 +15,7 @@ import com.sigco.presupuestacion.dto.PlanillaDtos.FilaCompletada;
 import com.sigco.presupuestacion.dto.PlanillaDtos.FilaPlanilla;
 import com.sigco.presupuestacion.dto.PlanillaDtos.PlanillaCompletada;
 import com.sigco.presupuestacion.dto.PlanillaDtos.PlanillaDeRubro;
+import com.sigco.presupuestacion.dto.ObraPresupuestada;
 import com.sigco.presupuestacion.dto.PresupuestoRespuesta;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -84,6 +85,34 @@ public class PresupuestoService {
                         sinFiltro(estado))
                 .stream()
                 .map(PresupuestoRespuesta::resumida)
+                .toList();
+    }
+
+    /**
+     * El mismo listado, pero agrupado por obra.
+     *
+     * Es la vista que pidio Ricardo: primero la obra, y al entrar sus
+     * instancias. El agrupado se hace aca y no en la pantalla porque incluye
+     * decidir cual presupuesto gobierna la obra, que es una regla de negocio
+     * (ver ObraPresupuestada).
+     *
+     * Se apoya en la misma consulta del listado plano, que ya trae la obra y su
+     * cliente en un JOIN FETCH y viene ordenada por fecha de creacion
+     * descendente. Al recorrerla en orden y usar un LinkedHashMap, la obra con
+     * movimiento mas reciente queda primera sin ordenar nada de nuevo.
+     */
+    @Transactional(readOnly = true)
+    public List<ObraPresupuestada> listarPorObra() {
+        Map<Long, List<Presupuesto>> porObra = new LinkedHashMap<>();
+
+        for (Presupuesto presupuesto : repositorio.buscar(TODAS_LAS_OBRAS, "", "")) {
+            porObra.computeIfAbsent(presupuesto.getObra().getIdObra(),
+                                    clave -> new ArrayList<>())
+                   .add(presupuesto);
+        }
+
+        return porObra.values().stream()
+                .map(deLaObra -> ObraPresupuestada.de(deLaObra.get(0).getObra(), deLaObra))
                 .toList();
     }
 
