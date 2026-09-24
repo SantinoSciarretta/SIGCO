@@ -4,6 +4,7 @@ import com.sigco.compras.dto.PedidoDtos.Anulacion;
 import com.sigco.compras.dto.PedidoDtos.Aprobacion;
 import com.sigco.compras.dto.PedidoDtos.NuevoPedido;
 import com.sigco.compras.dto.PedidoDtos.Recepcion;
+import com.sigco.compras.dto.EnvioPorWhatsApp;
 import com.sigco.compras.dto.PedidoRespuesta;
 import jakarta.validation.Valid;
 import java.math.BigDecimal;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -136,6 +138,41 @@ public class PedidoController {
                 .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION,
                         "inline; filename=\"" + servicio.nombreDeOrden(id) + "\"")
                 .body(pdf);
+    }
+
+    /**
+     * POST /api/pedidos/{id}/envio-whatsapp
+     *
+     * Prepara el envio de la orden al corralon: genera el link publico del PDF
+     * y devuelve el link de WhatsApp con el mensaje listo. NO manda nada — el
+     * envio lo hace el dueño desde su propio WhatsApp.
+     *
+     * Exige compras.aprobar y no compras.editar, que es mas fuerte de lo que
+     * parece. El informe dice que enviarle el pedido al proveedor es del dueño
+     * y no se delega; los capataces tienen compras.editar para armar pedidos y
+     * confirmar recepciones. Si este endpoint pidiera compras.editar, un
+     * capataz podria mandarle una orden a un proveedor por su cuenta, y ademas
+     * generar un link publico de un documento de la empresa.
+     *
+     * Es POST y no GET porque cambia algo: genera un token nuevo y deja sin
+     * efecto el anterior.
+     */
+    @PreAuthorize("hasAuthority('compras.aprobar')")
+    @PostMapping("/{id}/envio-whatsapp")
+    public EnvioPorWhatsApp prepararEnvio(@PathVariable Long id) {
+        return servicio.prepararEnvioPorWhatsApp(id);
+    }
+
+    /**
+     * DELETE /api/pedidos/{id}/envio-whatsapp
+     *
+     * Corta el link publico. Si la orden se le mando al corralon equivocado,
+     * esperar a que venza no sirve de nada.
+     */
+    @PreAuthorize("hasAuthority('compras.aprobar')")
+    @DeleteMapping("/{id}/envio-whatsapp")
+    public PedidoRespuesta dejarDeCompartir(@PathVariable Long id) {
+        return servicio.dejarDeCompartirOrden(id);
     }
 
     @PreAuthorize("hasAuthority('compras.editar')")

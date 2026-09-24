@@ -216,6 +216,8 @@ Documentar a medida que se desarrolla es un requisito central del proyecto (insu
 **Compras**
 - **Solo se piden materiales para una obra EN EJECUCIÓN** (23/09). Mientras se presupuesta no se compra nada: el presupuesto puede no aprobarse, y ese pedido generaría un gasto contra una obra que quizás nunca arranca.
 - **El pedido se puede bajar en PDF** para mandárselo al corralón (`GET /api/pedidos/{id}/orden`). Lleva materiales, cantidades con unidad, precios acordados y dónde entregar; NO lleva presupuesto, gasto, ganancia ni cliente, porque sale de la empresa hacia afuera.
+- **Y se le puede mandar por WhatsApp** (24/09, `V20`). SIGCO **no manda el mensaje**: arma el link `wa.me` y lo abre, y el envío lo hace el dueño desde su propio número. Un link de WhatsApp **no puede adjuntar archivos**, así que el PDF viaja como enlace público (`/api/ordenes-publicas/{token}`): 32 bytes de azar, vence a los 30 días y se puede cortar al instante poniendo el token en NULL. Exige **`compras.aprobar`**, no `compras.editar`: enviarle el pedido al proveedor es del dueño y no se delega, y un capataz no debería poder generar un link público de un documento de la empresa.
+- **El teléfono del proveedor se normaliza, y si no se entiende NO se adivina** (`NumeroDeWhatsApp`). El 15 del celular argentino se reemplaza por el 9 después del 54, y eso exige saber dónde termina el código de área (2, 3 o 4 dígitos). Cuando no se puede interpretar devuelve vacío: adivinar mal abriría una conversación con un desconocido para mandarle el pedido de una obra.
 - El dueño aprueba el pedido antes de enviarlo al proveedor (no delegable).
 - El circuito de remito con foto cubre solo materiales de corralón y plomería.
 - Estados del pedido: Pendiente de Aprobación → Enviado al Proveedor → Recibido Completo / Recibido con Diferencias / Anulado. `nota_diferencia` obligatoria si hay diferencias.
@@ -305,7 +307,7 @@ Nombres, tipos PostgreSQL, PK/FK exactos del Diccionario de Datos. **Respetar es
 - **observacion_proveedor**: `id_observacion` (PK), `id_proveedor` (FK→proveedor), `id_pedido` (FK→pedido), `descripcion` (VARCHAR 300), `fecha` (TIMESTAMP)
 
 ### Módulo Compras
-- **pedido**: `id_pedido` (PK), `id_obra` (FK→obra), `id_proveedor` (FK→proveedor), `id_usuario_solicita` (FK→usuario), `id_usuario_recibe` (FK→usuario), `estado` (VARCHAR 25), `foto_remito` (VARCHAR 255, ref Supabase), `nota_diferencia` (VARCHAR 300), `fecha_solicitud` (TIMESTAMP), `fecha_aprobacion` (TIMESTAMP), `fecha_recepcion` (TIMESTAMP)
+- **pedido**: `id_pedido` (PK), `id_obra` (FK→obra), `id_proveedor` (FK→proveedor), `id_usuario_solicita` (FK→usuario), `id_usuario_recibe` (FK→usuario), `estado` (VARCHAR 25), `foto_remito` (VARCHAR 255, ref Supabase), `nota_diferencia` (VARCHAR 300), `fecha_solicitud` (TIMESTAMP), `fecha_aprobacion` (TIMESTAMP), `fecha_recepcion` (TIMESTAMP), `token_orden` (VARCHAR 64, único parcial, `V20`), `token_orden_vence` (TIMESTAMP, `V20`)
 - **pedido_material** (intermedia N:M): `id_pedido` (PK, FK→pedido), `id_material` (PK, FK→material), `cantidad` (NUMERIC 12,2)
 
 ### Módulo Gastos
@@ -370,5 +372,6 @@ Matriz (Total = consulta+edición, Consulta = solo lectura, — = sin acceso):
 
 - App móvil nativa (el acceso desde celular es por navegador responsivo).
 - Integraciones externas automáticas: API de WhatsApp, importación automática del índice CAC, servicios de correo. El índice CAC se carga a mano.
+  **Aclaración (24/09):** el botón de WhatsApp de Compras NO es esa integración. Es un link `wa.me`, la misma tecnología que un `mailto:`; el mensaje lo manda una persona desde su propio teléfono. La API oficial de Meta sigue fuera del alcance. Ver `docs/desarrollo/21-whatsapp-al-corralon.md`.
 - Liquidación de sueldos ni contabilidad/impuestos.
 - La arquitectura queda preparada para sumar estas cosas después sin reescribir.

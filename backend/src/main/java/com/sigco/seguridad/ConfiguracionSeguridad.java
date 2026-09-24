@@ -124,6 +124,14 @@ public class ConfiguracionSeguridad {
                         .requestMatchers(HttpMethod.GET, "/api/archivos/publico/**")
                         .permitAll()
 
+                        // La orden de pedido que se le manda al corralon por
+                        // WhatsApp. El que la abre no tiene cuenta en SIGCO ni
+                        // va a tenerla: lo que la protege es que el token sea
+                        // imposible de adivinar y que venza. El PDF, ademas, no
+                        // lleva presupuesto, gasto, ganancia ni cliente.
+                        .requestMatchers(HttpMethod.GET, "/api/ordenes-publicas/**")
+                        .permitAll()
+
                         // El navegador manda OPTIONS antes de ciertas peticiones
                         // para preguntar si tiene permiso. Esa consulta no lleva
                         // token y no debe rechazarse.

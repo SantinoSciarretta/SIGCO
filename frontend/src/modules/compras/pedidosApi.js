@@ -98,3 +98,24 @@ export function fechaHora(valor) {
     day: '2-digit', month: '2-digit', year: 'numeric',
   });
 }
+
+/**
+ * Prepara el envío de la orden al corralón por WhatsApp.
+ *
+ * NO manda nada: genera el link público del PDF y devuelve el link de WhatsApp
+ * con el mensaje ya escrito, para que el dueño lo abra y apriete enviar.
+ *
+ * Es POST porque cambia algo: genera un token nuevo y el anterior deja de
+ * servir, así un link viejo no muestra una orden que ya se modificó.
+ */
+export async function prepararEnvioPorWhatsApp(idPedido) {
+  const respuesta = await client.post(`/pedidos/${idPedido}/envio-whatsapp`);
+  return respuesta.data;
+}
+
+/** Corta el link público de la orden al instante. */
+export async function dejarDeCompartirOrden(idPedido) {
+  const respuesta = await client.delete(`/pedidos/${idPedido}/envio-whatsapp`);
+  return respuesta.data;
+}
+

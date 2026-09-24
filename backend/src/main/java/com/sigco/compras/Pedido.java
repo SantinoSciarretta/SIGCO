@@ -94,6 +94,20 @@ public class Pedido {
     private LocalDateTime fechaRecepcion;
 
     /**
+     * Token del link publico de la orden. NULL = no hay link vigente.
+     *
+     * El link de WhatsApp no puede adjuntar archivos, asi que el PDF de la
+     * orden viaja como enlace dentro del mensaje y tiene que abrirse sin estar
+     * logueado: el corralon no tiene cuenta en SIGCO. El token es lo que hace
+     * que ese enlace no se pueda adivinar ni enumerar.
+     */
+    @Column(name = "token_orden", length = 64)
+    private String tokenOrden;
+
+    @Column(name = "token_orden_vence")
+    private LocalDateTime tokenOrdenVence;
+
+    /**
      * Materiales pedidos. cascade = ALL con orphanRemoval, igual que los items
      * de un presupuesto: una linea de pedido no existe fuera de su pedido.
      */
@@ -256,5 +270,46 @@ public class Pedido {
 
     public List<PedidoMaterial> getMateriales() {
         return materiales;
+    }
+
+    // ------------------------------------------------------------------
+    //  El link publico de la orden
+    // ------------------------------------------------------------------
+
+    /**
+     * Deja el pedido con un link vigente.
+     *
+     * El token lo genera el servicio, que es quien tiene la fuente de azar. La
+     * entidad solo lo guarda junto con su vencimiento, para que no pueda quedar
+     * un token sin fecha o una fecha sin token.
+     */
+    public void compartirOrden(String token, LocalDateTime vence) {
+        this.tokenOrden = token;
+        this.tokenOrdenVence = vence;
+    }
+
+    /**
+     * Corta el acceso al link al instante.
+     *
+     * Existe porque el caso real es inmediato: si la orden se le mando al
+     * corralon equivocado, esperar a que venza no sirve de nada.
+     */
+    public void dejarDeCompartirOrden() {
+        this.tokenOrden = null;
+        this.tokenOrdenVence = null;
+    }
+
+    /** Si el link sigue sirviendo ahora mismo. */
+    public boolean tieneOrdenCompartida() {
+        return tokenOrden != null && tokenOrdenVence != null
+                && tokenOrdenVence.isAfter(LocalDateTime.now());
+    }
+
+    public String getTokenOrden() {
+        return tokenOrden;
+    }
+
+    public LocalDateTime getTokenOrdenVence() {
+        return tokenOrdenVence;
     }
 }

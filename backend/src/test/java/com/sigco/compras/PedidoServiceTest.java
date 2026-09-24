@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.sigco.clientes.Cliente;
@@ -27,6 +29,7 @@ import com.sigco.proveedores.Proveedor;
 import com.sigco.proveedores.ProveedorRepository;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -64,6 +67,10 @@ class PedidoServiceTest {
     // La auditoria de las acciones sensibles se simula: lo que se verifica aca
     // es la regla de negocio, no que se escriba la traza.
     @Mock private com.sigco.accesos.ServicioAuditoria auditoria;
+
+    // El PDF en si se prueba aparte; aca solo hace falta que el generador
+    // exista y devuelva algo, para verificar que el link publico lo entrega.
+    @Mock private GeneradorDeOrdenDePedido generadorDeOrden;
 
     @InjectMocks private PedidoService servicio;
 
@@ -391,5 +398,235 @@ class PedidoServiceTest {
         assertThatThrownBy(() -> servicio.obtener(999L))
                 .isInstanceOf(RecursoNoEncontradoException.class)
                 .hasMessageContaining("Pedido");
+    }
+
+    // ==================================================================
+    //  Mandarle la orden al corralon por WhatsApp
+    // ==================================================================
+
+    /**
+     * Pedido de Ricardo: que al enviar el pedido se le pueda mandar al corralón
+     * por WhatsApp con el PDF.
+     *
+     * SIGCO no manda el mensaje: arma el link y lo abre. Lo que se prueba acá
+     * es que ese link quede bien armado, que el PDF se pueda abrir sin login, y
+     * que cuando el teléfono no se entiende NO se invente uno.
+     */
+    @Nested
+    @DisplayName("Envío de la orden por WhatsApp")
+    class EnvioPorWhatsApp {
+
+        /**
+         * El servicio se arma a mano acá porque necesita la dirección pública,
+         * que es un String y @InjectMocks le pasa null: Mockito no puede
+         * inventar un valor para un tipo que no se puede simular.
+         */
+        private PedidoService conUrl(String url) {
+            return new PedidoService(repositorio, obraRepositorio, materialRepositorio,
+                    proveedorRepositorio, cotizacionRepositorio, gastoService, sesion,
+                    alcance, auditoria, generadorDeOrden, url);
+        }
+
+        private Pedido pedidoAprobado(String telefonoDelProveedor) {
+            Pedido pedido = pedidoPendiente();
+            Proveedor corralon = new Proveedor("Corralón San Martín", "Zona Norte",
+                                               telefonoDelProveedor, null);
+            asignarId(corralon, "idProveedor", 3L);
+            pedido.aprobar(corralon);
+            devolverLoQueSeGuarda();
+            return pedido;
+        }
+
+        @Test
+        @DisplayName("Arma el link de WhatsApp con el número y el mensaje")
+        void armaElLink() {
+            pedidoAprobado("11 4567-8900");
+
+            var envio = conUrl("https://sigco.app").prepararEnvioPorWhatsApp(10L);
+
+            assertThat(envio.telefonoParaWhatsApp()).isEqualTo("5491145678900");
+            assertThat(envio.urlWhatsApp()).startsWith("https://wa.me/5491145678900?text=");
+            assertThat(envio.aviso()).isNull();
+        }
+
+        @Test
+        @DisplayName("El mensaje dice de qué obra es y qué materiales lleva")
+        void elMensajeTieneLoQueElCorralonNecesita() {
+            pedidoAprobado("11 4567-8900");
+
+            var envio = conUrl("https://sigco.app").prepararEnvioPorWhatsApp(10L);
+
+            assertThat(envio.mensaje())
+                    .contains("Granica SRL")
+                    .contains("Pedido #10")
+                    .contains("Av. Cabildo 2340")
+                    .contains("Cemento CP40")
+                    .contains("Arena gruesa")
+                    .contains(envio.urlOrden());
+        }
+
+        @Test
+        @DisplayName("Genera un link público con token y vencimiento")
+        void generaElLinkPublico() {
+            Pedido pedido = pedidoAprobado("11 4567-8900");
+
+            var envio = conUrl("https://sigco.app").prepararEnvioPorWhatsApp(10L);
+
+            assertThat(pedido.getTokenOrden()).isNotNull().hasSizeGreaterThan(30);
+            assertThat(pedido.tieneOrdenCompartida()).isTrue();
+            assertThat(envio.urlOrden())
+                    .isEqualTo("https://sigco.app/api/ordenes-publicas/" + pedido.getTokenOrden());
+            assertThat(envio.vence()).isAfter(LocalDateTime.now().plusDays(29));
+        }
+
+        @Test
+        @DisplayName("Una barra final en la dirección no duplica la del link")
+        void noDuplicaLaBarra() {
+            pedidoAprobado("11 4567-8900");
+
+            var envio = conUrl("https://sigco.app/").prepararEnvioPorWhatsApp(10L);
+
+            assertThat(envio.urlOrden()).contains("sigco.app/api/ordenes-publicas/");
+            assertThat(envio.urlOrden()).doesNotContain("//api");
+        }
+
+        /**
+         * Volver a preparar el envío REUSA el link. Si el corralón ya lo tiene
+         * en el chat, mandárselo de nuevo no debería romperle el anterior.
+         *
+         * Y sobre todo: generar uno nuevo cada vez hacía que dos llamadas
+         * cruzadas dejaran la pantalla mostrando un token ya invalidado. Lo
+         * encontró la prueba en el navegador, donde React llama al efecto dos
+         * veces en desarrollo.
+         */
+        @Test
+        @DisplayName("Preparar de nuevo reusa el link vigente")
+        void elTokenSeReusa() {
+            Pedido pedido = pedidoAprobado("11 4567-8900");
+            PedidoService servicioConUrl = conUrl("https://sigco.app");
+
+            servicioConUrl.prepararEnvioPorWhatsApp(10L);
+            String primero = pedido.getTokenOrden();
+
+            var segundo = servicioConUrl.prepararEnvioPorWhatsApp(10L);
+
+            assertThat(pedido.getTokenOrden()).isEqualTo(primero);
+            assertThat(segundo.urlOrden()).endsWith(primero);
+        }
+
+        @Test
+        @DisplayName("Si el link venció, prepara uno nuevo")
+        void elTokenVencidoSeReemplaza() {
+            Pedido pedido = pedidoAprobado("11 4567-8900");
+            pedido.compartirOrden("vencido", LocalDateTime.now().minusDays(1));
+
+            conUrl("https://sigco.app").prepararEnvioPorWhatsApp(10L);
+
+            assertThat(pedido.getTokenOrden()).isNotEqualTo("vencido");
+            assertThat(pedido.tieneOrdenCompartida()).isTrue();
+        }
+
+        /**
+         * La regla más importante de todo esto: si el teléfono no se entiende,
+         * NO se abre una conversación con un número inventado.
+         */
+        @Test
+        @DisplayName("Con un teléfono que no se entiende, no arma el link y avisa")
+        void noInventaUnNumero() {
+            pedidoAprobado("preguntar por Jorge");
+
+            var envio = conUrl("https://sigco.app").prepararEnvioPorWhatsApp(10L);
+
+            assertThat(envio.telefonoParaWhatsApp()).isNull();
+            assertThat(envio.urlWhatsApp()).isNull();
+            assertThat(envio.aviso()).contains("No se pudo interpretar el teléfono");
+            // El link de la orden SÍ se genera: se puede copiar y mandar a mano.
+            assertThat(envio.urlOrden()).isNotNull();
+        }
+
+        @Test
+        @DisplayName("Sin teléfono cargado, dice dónde cargarlo")
+        void sinTelefono() {
+            pedidoAprobado(null);
+
+            var envio = conUrl("https://sigco.app").prepararEnvioPorWhatsApp(10L);
+
+            assertThat(envio.urlWhatsApp()).isNull();
+            assertThat(envio.aviso()).contains("no tiene teléfono cargado");
+        }
+
+        @Test
+        @DisplayName("No se prepara el envío de un pedido sin proveedor")
+        void sinProveedor() {
+            pedidoPendiente();
+
+            assertThatThrownBy(() -> conUrl("https://sigco.app").prepararEnvioPorWhatsApp(10L))
+                    .isInstanceOf(ReglaDeNegocioException.class)
+                    .hasMessageContaining("no tiene proveedor");
+        }
+
+        @Test
+        @DisplayName("No se prepara el envío de un pedido anulado")
+        void anulado() {
+            Pedido pedido = pedidoAprobado("11 4567-8900");
+            pedido.anular("Se consiguió en otro lado");
+
+            assertThatThrownBy(() -> conUrl("https://sigco.app").prepararEnvioPorWhatsApp(10L))
+                    .isInstanceOf(ReglaDeNegocioException.class)
+                    .hasMessageContaining("anulado");
+        }
+
+        // ---------- El link público ----------
+
+        @Test
+        @DisplayName("El link público devuelve el PDF sin pedir sesión")
+        void elLinkPublicoEntregaElPdf() {
+            Pedido pedido = pedidoAprobado("11 4567-8900");
+            // El token se pone a mano en vez de llamar a prepararEnvio: ese
+            // método sí comprueba alcance, y acá se mide justamente que
+            // ordenPorToken NO lo haga.
+            pedido.compartirOrden("token-de-prueba", LocalDateTime.now().plusDays(30));
+
+            when(repositorio.buscarPorTokenDeOrden("token-de-prueba"))
+                    .thenReturn(Optional.of(pedido));
+            when(generadorDeOrden.generar(pedido)).thenReturn(new byte[]{1, 2, 3});
+
+            assertThat(servicio.ordenPorToken("token-de-prueba")).hasSize(3);
+            // Y no se comprobó alcance: el corralón no tiene sesión.
+            verify(alcance, never()).exigirAlcance(any());
+        }
+
+        @Test
+        @DisplayName("Un token inventado no devuelve nada")
+        void tokenInexistente() {
+            when(repositorio.buscarPorTokenDeOrden("inventado")).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> servicio.ordenPorToken("inventado"))
+                    .isInstanceOf(RecursoNoEncontradoException.class);
+        }
+
+        @Test
+        @DisplayName("Un link vencido deja de servir")
+        void tokenVencido() {
+            Pedido pedido = pedidoAprobado("11 4567-8900");
+            pedido.compartirOrden("viejo", LocalDateTime.now().minusDays(1));
+            when(repositorio.buscarPorTokenDeOrden("viejo")).thenReturn(Optional.of(pedido));
+
+            assertThatThrownBy(() -> servicio.ordenPorToken("viejo"))
+                    .isInstanceOf(RecursoNoEncontradoException.class);
+        }
+
+        @Test
+        @DisplayName("Cortar el link lo deja inservible al instante")
+        void cortarElLink() {
+            Pedido pedido = pedidoAprobado("11 4567-8900");
+            conUrl("https://sigco.app").prepararEnvioPorWhatsApp(10L);
+            assertThat(pedido.tieneOrdenCompartida()).isTrue();
+
+            servicio.dejarDeCompartirOrden(10L);
+
+            assertThat(pedido.getTokenOrden()).isNull();
+            assertThat(pedido.tieneOrdenCompartida()).isFalse();
+        }
     }
 }

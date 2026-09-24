@@ -583,3 +583,51 @@
   padding-left: 10px;
   margin: 6px 0 0;
 }
+
+/* ---------------------------------------------------------------------------
+   Enviar la orden por WhatsApp
+
+   Tres bloques de lectura: a quien se le escribe, que dice el mensaje y cual
+   es el link. Todo se MUESTRA antes de abrir nada, porque una vez que se abre
+   el chat el error ya esta a un toque de mandarse.
+   --------------------------------------------------------------------------- */
+
+/* De que pedido y para que proveedor. Igual que en los otros modales del
+   sistema: lo primero que se lee es sobre que se esta por actuar. */
+.contexto {
+  margin: 0 0 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-divider);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* El numero al que se va a escribir. Grande a proposito: es el dato que hay
+   que mirar antes de mandar el pedido de una obra. */
+.numeroWhatsApp {
+  margin: 2px 0 0;
+  font-size: 22px;
+}
+
+/* El mensaje tal cual va a salir. <pre> para respetar los saltos de linea, con
+   ajuste porque las direcciones de obra son largas. */
+.mensajeWhatsApp {
+  margin: 2px 0 0;
+  padding: 10px 12px;
+  border: 1px solid var(--color-divider);
+  background: color-mix(in srgb, var(--color-text) 3%, transparent);
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.linkOrden {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  word-break: break-all;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+}

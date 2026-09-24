@@ -5,7 +5,9 @@ import { abrirPdf } from '../../api/documentos';
 import { listarMaterialesDisponibles } from '../materiales/materialesApi';
 import { listarObras } from '../obras/obrasApi';
 import { listarProveedores } from '../proveedores/proveedoresApi';
+import { useSesion } from '../sesion/useSesion';
 import AprobarPedido from './AprobarPedido';
+import EnviarPorWhatsApp from './EnviarPorWhatsApp';
 import RecibirPedido from './RecibirPedido';
 import {
   ESTADOS_PEDIDO, anularPedido, claseDeEstadoPedido, crearPedido,
@@ -25,7 +27,10 @@ import estilos from './Compras.module.css';
  * algo que va a fallar.
  */
 export default function PedidosPage() {
+  const { puede } = useSesion();
+
   const [pedidos, setPedidos] = useState([]);
+  const [aEnviar, setAEnviar] = useState(null);
   const [obras, setObras] = useState([]);
   const [proveedores, setProveedores] = useState([]);
   const [materiales, setMateriales] = useState([]);
@@ -175,6 +180,17 @@ export default function PedidosPage() {
                           Aprobar
                         </button>
                       )}
+                      {/* Mandarle la orden al corralón. Aparece recién cuando
+                          el pedido se aprobó, porque antes no hay proveedor
+                          elegido: lo elige el dueño al aprobar. El permiso lo
+                          vuelve a exigir el backend — enviarle el pedido al
+                          proveedor es del dueño y no se delega. */}
+                      {p.estado === 'Enviado al Proveedor' && puede('compras.aprobar') && (
+                        <button type="button" className={estilos.accion}
+                                onClick={() => setAEnviar(p)}>
+                          WhatsApp
+                        </button>
+                      )}
                       {p.estado === 'Enviado al Proveedor' && (
                         <button type="button" className={estilos.accion}
                                 onClick={() => setARecibir(p)}>
@@ -213,6 +229,10 @@ export default function PedidosPage() {
           onCerrar={() => setAAprobar(null)}
           onAprobado={() => { setAAprobar(null); recargar(); }}
         />
+      )}
+
+      {aEnviar && (
+        <EnviarPorWhatsApp pedido={aEnviar} onCerrar={() => setAEnviar(null)} />
       )}
 
       {aRecibir && (

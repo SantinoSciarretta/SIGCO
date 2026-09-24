@@ -54,4 +54,22 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 
     /** Pedidos esperando aprobacion, para el panel del dueño y el Dashboard. */
     List<Pedido> findByEstadoOrderByFechaSolicitudAsc(String estado);
+
+    /**
+     * El pedido de un link publico de orden, con todo lo que el PDF necesita.
+     *
+     * Trae obra, cliente, proveedor y materiales en una sola consulta: lo
+     * atiende alguien sin sesion y con open-in-view desactivado, asi que lo que
+     * no venga cargado aca no se puede leer despues.
+     */
+    @Query("""
+            SELECT DISTINCT p FROM Pedido p
+            JOIN FETCH p.obra o
+            JOIN FETCH o.cliente
+            LEFT JOIN FETCH p.proveedor
+            LEFT JOIN FETCH p.materiales m
+            LEFT JOIN FETCH m.material
+            WHERE p.tokenOrden = :token
+            """)
+    Optional<Pedido> buscarPorTokenDeOrden(@Param("token") String token);
 }

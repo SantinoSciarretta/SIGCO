@@ -14,11 +14,13 @@
 de negocio, API, pantalla, tests y documentación. La seguridad está activa sobre
 todo el sistema y endurecida para salir a internet.
 
-- **339 tests** automáticos, sin fallos
-- **29 tablas**, 19 migraciones de Flyway aplicadas
+- **368 tests** automáticos, sin fallos
+- **29 tablas**, 20 migraciones de Flyway aplicadas
 - **Auditoría completa hecha** el 22–23/09: ver `docs/desarrollo/19-auditoria.md`
 - **Los ocho cambios que pidió Ricardo al probarlo están hechos** (23–24/09):
   ver `docs/desarrollo/20-pedidos-de-ricardo.md`
+- **La orden de pedido se le manda al corralón por WhatsApp** (24/09):
+  ver `docs/desarrollo/21-whatsapp-al-corralon.md`
 - **El código está terminado.** Lo único que falta para usarlo es publicarlo, y
   eso necesita tus cuentas: ver `docs/PUESTA-EN-MARCHA.md`
 
@@ -206,8 +208,8 @@ mayúsculas. Ya generó un falso positivo una vez.
 | `c65380a` | Primeros cuatro cambios pedidos por Ricardo al probar el sistema |
 | `083f8fe` | Presupuesto por planilla, con la mano de obra como rubro propio |
 | `b0ce370` | Los presupuestos se entran por la obra, no por el listado plano |
-| (esta sesión) | Cierre de obra con balance, y etapas que alimentan el Seguimiento |
+| `1948d9a` | Cierre de obra con balance, y etapas que alimentan el Seguimiento |
+| (esta sesión) | La orden de pedido se le manda al corralón por WhatsApp |
 
-Los commits hasta `63f8213` están en GitHub. **Los cuatro de los pedidos de
-Ricardo (`c65380a`, `083f8fe`, `b0ce370`, `1948d9a`) todavía no se empujaron**:
-`git push` cuando quieras subirlos.
+Los commits hasta `63f8213` están en GitHub. **Los de los pedidos de Ricardo y el
+de WhatsApp todavía no se empujaron**: `git push` cuando quieras subirlos.
