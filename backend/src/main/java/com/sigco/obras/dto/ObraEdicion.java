@@ -46,6 +46,26 @@ public record ObraEdicion(
         // La comprobacion la hace el servicio.
         LocalDate fechaInicioReal,
 
+        /**
+         * Cuándo se estima que arranca la obra.
+         *
+         * Distinta de la fecha de inicio real, que no se puede cargar hasta que
+         * el presupuesto definitivo esté aprobado. Esta es del momento del alta
+         * y no compromete nada.
+         */
+        LocalDate fechaInicioEstimada,
+
+        /**
+         * Cuántos meses se estima que dura.
+         *
+         * Con esto y la fecha de inicio, el sistema calcula la fecha tentativa
+         * de finalización: no hay que escribirla a mano.
+         */
+        @jakarta.validation.constraints.Min(value = 1, message = "El plazo tiene que ser de al menos un mes")
+        @jakarta.validation.constraints.Max(value = 120, message = "El plazo no puede superar los 120 meses")
+        Integer mesesEstimados,
+
+        /** Se ignora si hay plazo en meses: ahí la calcula el sistema. */
         LocalDate fechaFinEstimada,
 
         String notas) {

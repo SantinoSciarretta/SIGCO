@@ -73,6 +73,20 @@ public class Obra {
     @Column(name = "fecha_fin_estimada")
     private LocalDate fechaFinEstimada;
 
+    /**
+     * Cuando se ESTIMA que arranca la obra.
+     *
+     * Distinta de fechaInicioReal: una es una intencion —"calculo que empezamos
+     * en marzo"— y la otra un hecho. Ademas la real no se puede cargar hasta que
+     * el definitivo este aprobado, y esta se carga al dar de alta la obra.
+     */
+    @Column(name = "fecha_inicio_estimada")
+    private LocalDate fechaInicioEstimada;
+
+    /** Cuantos meses se estima que dura. En meses porque asi se habla en la obra. */
+    @Column(name = "meses_estimados")
+    private Integer mesesEstimados;
+
     @Column(name = "notas", columnDefinition = "TEXT")
     private String notas;
 
@@ -138,9 +152,60 @@ public class Obra {
         this.tipoObra = tipoObra;
     }
 
+    /**
+     * Carga el plazo estimado y recalcula la fecha tentativa de finalizacion.
+     *
+     * ------------------------------------------------------------------
+     *  Por que la fecha de fin se calcula y no se escribe a mano
+     * ------------------------------------------------------------------
+     *
+     * Porque si se cargan las dos por separado, tarde o temprano se
+     * contradicen: alguien cambia "son tres meses" a "son cinco" y se olvida de
+     * mover la fecha de fin, y el sistema queda afirmando dos cosas distintas
+     * sobre la misma obra. Con el calculo, la fecha de fin no puede quedar
+     * desactualizada respecto del plazo.
+     *
+     * La cuenta usa el inicio REAL si ya existe, y el estimado si no. Una vez
+     * que la obra arranco de verdad, esa es la fecha que vale: seguir contando
+     * desde una estimacion vieja daria un plazo que nadie reconoce.
+     *
+     * Si falta alguno de los dos datos no se toca nada: la obra conserva la
+     * fecha de fin que tuviera cargada a mano, que es el caso de todas las que
+     * existen desde antes.
+     */
+    public void estimarPlazo(LocalDate fechaInicioEstimada, Integer mesesEstimados) {
+        this.fechaInicioEstimada = fechaInicioEstimada;
+        this.mesesEstimados = mesesEstimados;
+        recalcularFinEstimado();
+    }
+
+    /**
+     * La fecha tentativa de fin, a partir del plazo.
+     *
+     * Se llama tambien al registrar el inicio real, porque ahi cambia la fecha
+     * desde la que hay que contar.
+     */
+    private void recalcularFinEstimado() {
+        LocalDate desde = fechaInicioReal != null ? fechaInicioReal : fechaInicioEstimada;
+
+        if (desde != null && mesesEstimados != null) {
+            this.fechaFinEstimada = desde.plusMonths(mesesEstimados);
+        }
+    }
+
+    /** Si la fecha de fin la calcula el sistema y no hay que escribirla a mano. */
+    public boolean tienePlazoCalculado() {
+        return mesesEstimados != null
+                && (fechaInicioReal != null || fechaInicioEstimada != null);
+    }
+
     /** Registra la fecha en que arrancaron los trabajos en el lugar. */
     public void registrarInicioReal(LocalDate fechaInicioReal) {
         this.fechaInicioReal = fechaInicioReal;
+
+        // La obra arranco de verdad: la fecha de fin se recalcula desde aca y no
+        // desde lo que se habia estimado hace meses.
+        recalcularFinEstimado();
     }
 
     public void pasarAEjecucion() {
@@ -214,6 +279,14 @@ public class Obra {
 
     public LocalDate getFechaInicioReal() {
         return fechaInicioReal;
+    }
+
+    public LocalDate getFechaInicioEstimada() {
+        return fechaInicioEstimada;
+    }
+
+    public Integer getMesesEstimados() {
+        return mesesEstimados;
     }
 
     public LocalDate getFechaFinEstimada() {

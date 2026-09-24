@@ -153,6 +153,13 @@ public class ObraService {
                 solicitud.fechaFinEstimada(),
                 normalizar(solicitud.notas()));
 
+        // El plazo va DESPUES de construir la obra, porque al cargarlo se
+        // recalcula la fecha de fin: si se pasara al constructor, el orden de
+        // los parametros decidiria cual de las dos fechas gana.
+        obra.estimarPlazo(solicitud.fechaInicioEstimada(), solicitud.mesesEstimados());
+
+        validarOrdenDeFechas(solicitud.fechaInicioEstimada(), obra.getFechaFinEstimada());
+
         return ObraRespuesta.desde(repositorio.save(obra));
     }
 
@@ -206,6 +213,11 @@ public class ObraService {
                 edicion.tipoInmueble(),
                 edicion.fechaFinEstimada(),
                 normalizar(edicion.notas()));
+
+        // Recalcula la fecha tentativa de fin. Va DESPUES de actualizarDatos()
+        // porque pisa la fecha de fin que venga en la edicion: con plazo
+        // cargado, esa fecha la decide el sistema y no el formulario.
+        obra.estimarPlazo(edicion.fechaInicioEstimada(), edicion.mesesEstimados());
 
         if (edicion.fechaInicioReal() != null) {
             obra.registrarInicioReal(edicion.fechaInicioReal());

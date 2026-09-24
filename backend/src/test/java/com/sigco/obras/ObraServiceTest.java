@@ -101,8 +101,11 @@ class ObraServiceTest {
     }
 
     private ObraSolicitud unaSolicitud() {
+        // Sin plazo estimado (los dos null): esta obra de prueba carga la fecha
+        // de fin a mano, que es como estaban todas antes del plazo calculado.
         return new ObraSolicitud(1L, "Av. Cabildo 2340", Obra.INMUEBLE_DEPARTAMENTO,
-                Obra.TIPO_REFORMA, LocalDate.of(2026, 12, 1), "Acceso por cochera");
+                Obra.TIPO_REFORMA, null, null,
+                LocalDate.of(2026, 12, 1), "Acceso por cochera");
     }
 
     // ------------------------------------------------------------------
@@ -136,6 +139,73 @@ class ObraServiceTest {
             assertThatThrownBy(() -> servicio.crear(unaSolicitud()))
                     .isInstanceOf(RecursoNoEncontradoException.class)
                     .hasMessageContaining("Cliente");
+        }
+    }
+
+    // ------------------------------------------------------------------
+    //  Plazo estimado
+    // ------------------------------------------------------------------
+
+    /**
+     * Pedido de Ricardo al probar el sistema: quiere cargar cuándo cree que
+     * arranca la obra y cuántos meses cree que dura, y que el sistema calcule
+     * solo la fecha tentativa de finalización.
+     */
+    @Nested
+    @DisplayName("Plazo estimado")
+    class Plazo {
+
+        @Test
+        @DisplayName("Con comienzo y duración, la fecha de fin se calcula sola")
+        void calculaElFin() {
+            Obra obra = unaObra();
+
+            obra.estimarPlazo(LocalDate.of(2026, 3, 1), 4);
+
+            assertThat(obra.getFechaFinEstimada()).isEqualTo(LocalDate.of(2026, 7, 1));
+            assertThat(obra.tienePlazoCalculado()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Sin duración cargada, la fecha de fin queda como estaba")
+        void sinPlazoNoToca() {
+            Obra obra = unaObra();   // nace con fin estimado 01/12/2026
+
+            obra.estimarPlazo(LocalDate.of(2026, 3, 1), null);
+
+            assertThat(obra.getFechaFinEstimada()).isEqualTo(LocalDate.of(2026, 12, 1));
+            assertThat(obra.tienePlazoCalculado()).isFalse();
+        }
+
+        /**
+         * Una vez que la obra arrancó de verdad, esa es la fecha que vale:
+         * seguir contando desde una estimación vieja daría un plazo que nadie
+         * reconoce.
+         */
+        @Test
+        @DisplayName("Al arrancar la obra, el fin se recalcula desde el inicio REAL")
+        void recalculaDesdeElInicioReal() {
+            Obra obra = unaObra();
+            obra.estimarPlazo(LocalDate.of(2026, 3, 1), 4);
+            assertThat(obra.getFechaFinEstimada()).isEqualTo(LocalDate.of(2026, 7, 1));
+
+            // La obra arrancó un mes más tarde de lo previsto.
+            obra.registrarInicioReal(LocalDate.of(2026, 4, 1));
+
+            assertThat(obra.getFechaFinEstimada()).isEqualTo(LocalDate.of(2026, 8, 1));
+        }
+
+        @Test
+        @DisplayName("Cambiar la duración mueve la fecha de fin")
+        void cambiarLaDuracionMueveElFin() {
+            Obra obra = unaObra();
+            obra.estimarPlazo(LocalDate.of(2026, 3, 1), 4);
+
+            // Sin el cálculo, acá quedarían dos datos contradictorios: "son 6
+            // meses" conviviendo con una fecha de fin de 4 meses.
+            obra.estimarPlazo(LocalDate.of(2026, 3, 1), 6);
+
+            assertThat(obra.getFechaFinEstimada()).isEqualTo(LocalDate.of(2026, 9, 1));
         }
     }
 
@@ -306,7 +376,7 @@ class ObraServiceTest {
 
             assertThatThrownBy(() -> servicio.actualizar(1L, new ObraEdicion(
                     "Av. Cabildo 2340", Obra.INMUEBLE_DEPARTAMENTO, null,
-                    LocalDate.of(2026, 3, 4), null, null)))
+                    LocalDate.of(2026, 3, 4), null, null, null, null)))
                     .isInstanceOf(ReglaDeNegocioException.class)
                     .hasMessageContaining("presupuesto definitivo");
         }
@@ -321,7 +391,8 @@ class ObraServiceTest {
 
             ObraRespuesta respuesta = servicio.actualizar(1L, new ObraEdicion(
                     "Av. Cabildo 2340", Obra.INMUEBLE_DEPARTAMENTO, null,
-                    LocalDate.of(2026, 3, 10), LocalDate.of(2026, 12, 1), null));
+                    LocalDate.of(2026, 3, 10), null, null,
+                    LocalDate.of(2026, 12, 1), null));
 
             assertThat(respuesta.fechaInicioReal()).isEqualTo(LocalDate.of(2026, 3, 10));
         }
@@ -336,7 +407,8 @@ class ObraServiceTest {
 
             assertThatThrownBy(() -> servicio.actualizar(1L, new ObraEdicion(
                     "Av. Cabildo 2340", Obra.INMUEBLE_DEPARTAMENTO, null,
-                    LocalDate.of(2026, 6, 1), LocalDate.of(2026, 3, 1), null)))
+                    LocalDate.of(2026, 6, 1), null, null,
+                    LocalDate.of(2026, 3, 1), null)))
                     .isInstanceOf(ReglaDeNegocioException.class)
                     .hasMessageContaining("anterior");
         }
@@ -356,8 +428,7 @@ class ObraServiceTest {
             // Sin presupuestos: el mock devuelve lista vacía por defecto.
 
             ObraRespuesta respuesta = servicio.actualizar(1L, new ObraEdicion(
-                    "Av. Cabildo 2340", Obra.INMUEBLE_DEPARTAMENTO,
-                    Obra.TIPO_CONSTRUCCION, null, null, null));
+                    "Av. Cabildo 2340", Obra.INMUEBLE_DEPARTAMENTO, Obra.TIPO_CONSTRUCCION, null, null, null, null, null));
 
             assertThat(respuesta.tipoObra()).isEqualTo(Obra.TIPO_CONSTRUCCION);
         }
@@ -370,8 +441,7 @@ class ObraServiceTest {
             conAlgunPresupuesto();
 
             assertThatThrownBy(() -> servicio.actualizar(1L, new ObraEdicion(
-                    "Av. Cabildo 2340", Obra.INMUEBLE_DEPARTAMENTO,
-                    Obra.TIPO_CONSTRUCCION, null, null, null)))
+                    "Av. Cabildo 2340", Obra.INMUEBLE_DEPARTAMENTO, Obra.TIPO_CONSTRUCCION, null, null, null, null, null)))
                     .isInstanceOf(ReglaDeNegocioException.class)
                     .hasMessageContaining("tipo de obra");
         }
@@ -385,8 +455,7 @@ class ObraServiceTest {
             // igual, el stub estricto de Mockito haría fallar este test.
 
             ObraRespuesta respuesta = servicio.actualizar(1L, new ObraEdicion(
-                    "Av. Cabildo 2340", Obra.INMUEBLE_DEPARTAMENTO,
-                    Obra.TIPO_REFORMA, null, null, null));
+                    "Av. Cabildo 2340", Obra.INMUEBLE_DEPARTAMENTO, Obra.TIPO_REFORMA, null, null, null, null, null));
 
             assertThat(respuesta.tipoObra()).isEqualTo(Obra.TIPO_REFORMA);
         }
@@ -398,7 +467,7 @@ class ObraServiceTest {
             when(repositorio.buscarConCliente(1L)).thenReturn(Optional.of(obra));
 
             ObraRespuesta respuesta = servicio.actualizar(1L, new ObraEdicion(
-                    "Otra dirección 100", Obra.INMUEBLE_LOCAL, null, null, null, "Nota nueva"));
+                    "Otra dirección 100", Obra.INMUEBLE_LOCAL, null, null, null, null, null, "Nota nueva"));
 
             assertThat(respuesta.direccionObra()).isEqualTo("Otra dirección 100");
             assertThat(respuesta.tipoInmueble()).isEqualTo(Obra.INMUEBLE_LOCAL);

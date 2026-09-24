@@ -62,6 +62,9 @@ public class PedidoService {
 
     private final com.sigco.accesos.ServicioAuditoria auditoria;
 
+    /** Arma la orden en PDF que se le manda al corralon. */
+    private final GeneradorDeOrdenDePedido generadorDeOrden;
+
     public PedidoService(PedidoRepository repositorio,
                          ObraRepository obraRepositorio,
                          MaterialRepository materialRepositorio,
@@ -70,8 +73,10 @@ public class PedidoService {
                          GastoService gastoService,
                          SesionActual sesion,
                          AlcanceDeObras alcance,
-                         com.sigco.accesos.ServicioAuditoria auditoria) {
+                         com.sigco.accesos.ServicioAuditoria auditoria,
+                         GeneradorDeOrdenDePedido generadorDeOrden) {
         this.auditoria = auditoria;
+        this.generadorDeOrden = generadorDeOrden;
         this.repositorio = repositorio;
         this.obraRepositorio = obraRepositorio;
         this.materialRepositorio = materialRepositorio;
@@ -336,6 +341,33 @@ public class PedidoService {
     }
 
     // ------------------------------------------------------------------
+    //  La orden para el proveedor
+    // ------------------------------------------------------------------
+
+    /**
+     * El PDF con el pedido, para mandarselo al corralon.
+     *
+     * Existe porque el circuito quedaba a medias: el pedido se registraba en el
+     * sistema y despues habia que escribirle al proveedor copiando los
+     * materiales a mano, que es justo lo que el modulo vino a reemplazar.
+     *
+     * Se puede generar en cualquier estado, no solo aprobado: sirve tambien para
+     * pedir una cotizacion antes de decidir. Cuando todavia no hay precios
+     * acordados, las columnas de precio salen vacias.
+     */
+    @Transactional(readOnly = true)
+    public byte[] generarOrden(Long id) {
+        Pedido pedido = buscarCompletoOFallar(id);
+        alcance.exigirAlcance(pedido.getObra().getIdObra());
+        return generadorDeOrden.generar(pedido);
+    }
+
+    @Transactional(readOnly = true)
+    public String nombreDeOrden(Long id) {
+        return generadorDeOrden.nombreDeArchivo(buscarCompletoOFallar(id));
+    }
+
+    // ------------------------------------------------------------------
     //  Auxiliares
     // ------------------------------------------------------------------
 
@@ -345,18 +377,30 @@ public class PedidoService {
     }
 
     /**
-     * Una obra cancelada o finalizada no recibe material nuevo.
+     * Solo se piden materiales para una obra EN EJECUCION.
      *
-     * El informe no lo dice con estas palabras, pero pedir materiales para una
-     * obra que ya termino o se cancelo no tiene sentido y ensuciaria el gasto
-     * de una obra cerrada.
+     * Antes solo se rechazaban las canceladas y las finalizadas, asi que se
+     * podia pedir material para una obra que todavia estaba en presupuestacion.
+     * Lo detecto Ricardo al probar el sistema, y tiene razon: mientras se esta
+     * cotizando no se compra nada —el presupuesto todavia puede no aprobarse— y
+     * ese pedido generaria un gasto contra una obra que quizas nunca arranca.
+     *
+     * Que la obra este en ejecucion implica ademas que tiene un presupuesto
+     * definitivo aprobado, que es contra lo que Gastos compara la compra cuando
+     * el pedido se recibe.
      */
     private void exigirObraOperativa(Obra obra) {
-        if (obra.estaCancelada() || obra.estaFinalizada()) {
-            throw new ReglaDeNegocioException(
-                    "La obra está " + obra.getEstado().toLowerCase()
-                    + " y no admite pedidos de materiales.");
+        if (obra.estaEnEjecucion()) {
+            return;
         }
+
+        String motivo = obra.estaEnPresupuestacion()
+                ? "todavía está en presupuestación: los pedidos se habilitan "
+                  + "cuando se aprueba el presupuesto y la obra arranca"
+                : "está " + obra.getEstado().toLowerCase()
+                  + " y no admite pedidos de materiales";
+
+        throw new ReglaDeNegocioException("La obra " + motivo + ".");
     }
 
     /**

@@ -9,9 +9,25 @@ const VACIO = {
   direccionObra: '',
   tipoInmueble: '',
   tipoObra: '',
+  fechaInicioEstimada: '',
+  mesesEstimados: '',
   fechaFinEstimada: '',
   notas: '',
 };
+
+/**
+ * La fecha tentativa de fin, calculada en el navegador.
+ *
+ * El cálculo que vale es el del backend; esto es solo para que el usuario vea
+ * el resultado mientras escribe, sin tener que guardar para enterarse. Si los
+ * dos dieran distinto, manda el backend.
+ */
+function finTentativo(inicio, meses) {
+  if (!inicio || !meses) return null;
+  const d = new Date(inicio + 'T00:00:00');
+  d.setMonth(d.getMonth() + Number(meses));
+  return d.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
 
 /**
  * Formulario de alta y edición de una obra.
@@ -34,6 +50,12 @@ export default function ObraFormulario({ abierto, obra, onCerrar, onGuardado }) 
   const [camposInvalidos, setCamposInvalidos] = useState({});
   const [errorGeneral, setErrorGeneral] = useState(null);
   const [guardando, setGuardando] = useState(false);
+
+  // La fecha de fin que resulta del comienzo y la duración. Se calcula desde el
+  // inicio REAL si la obra ya arrancó, que es lo mismo que hace el backend.
+  const finCalculado = finTentativo(
+    (editando && obra?.fechaInicioReal) || datos.fechaInicioEstimada,
+    datos.mesesEstimados);
 
   // Alta rápida de cliente
   const [altaRapida, setAltaRapida] = useState(false);
@@ -80,17 +102,23 @@ export default function ObraFormulario({ abierto, obra, onCerrar, onGuardado }) 
     // backend espera una fecha o nada.
     const cuerpo = {
       ...datos,
+      fechaInicioEstimada: datos.fechaInicioEstimada || null,
+      // El número vacío va como null y no como 0: cero meses no es un plazo.
+      mesesEstimados: datos.mesesEstimados ? Number(datos.mesesEstimados) : null,
       fechaFinEstimada: datos.fechaFinEstimada || null,
       notas: datos.notas || null,
     };
 
     try {
       if (editando) {
-        const { direccionObra, tipoInmueble, fechaFinEstimada, notas } = cuerpo;
+        const { direccionObra, tipoInmueble, fechaInicioEstimada,
+                mesesEstimados, fechaFinEstimada, notas } = cuerpo;
         onGuardado(await actualizarObra(obra.idObra, {
           direccionObra,
           tipoInmueble,
           fechaInicioReal: datos.fechaInicioReal || null,
+          fechaInicioEstimada,
+          mesesEstimados,
           fechaFinEstimada,
           notas,
         }));
@@ -264,16 +292,64 @@ export default function ObraFormulario({ abierto, obra, onCerrar, onGuardado }) 
           )}
 
           <div className={estilos.campo}>
-            <label className={estilos.etiqueta} htmlFor="fechaFinEstimada">Fin estimado</label>
+            <label className={estilos.etiqueta} htmlFor="fechaInicioEstimada">
+              Comienzo estimado
+            </label>
+            <input
+              id="fechaInicioEstimada"
+              type="date"
+              className={estilos.control}
+              value={datos.fechaInicioEstimada ?? ''}
+              onChange={cambiar('fechaInicioEstimada')}
+            />
+          </div>
+
+          <div className={estilos.campo}>
+            <label className={estilos.etiqueta} htmlFor="mesesEstimados">
+              Duración estimada
+            </label>
+            <input
+              id="mesesEstimados"
+              type="number"
+              min="1"
+              max="120"
+              className={estilos.control}
+              value={datos.mesesEstimados ?? ''}
+              onChange={cambiar('mesesEstimados')}
+              placeholder="meses"
+            />
+          </div>
+        </div>
+
+        {/* La fecha de fin se calcula con el comienzo y la duración. Se muestra
+            en lugar de pedirla, para que no puedan contradecirse: si alguien
+            cambia "3 meses" por "5" y la fecha quedara escrita a mano, el
+            sistema afirmaría dos cosas distintas sobre la misma obra. */}
+        {finCalculado ? (
+          <p className={estilos.ayuda} style={{ marginTop: -6 }}>
+            Finalización tentativa: <strong>{finCalculado}</strong>
+            {editando && obra?.fechaInicioReal
+              ? ' — contada desde el inicio real de la obra.'
+              : ' — se recalcula cuando la obra arranque de verdad.'}
+          </p>
+        ) : (
+          <div className={estilos.campo}>
+            <label className={estilos.etiqueta} htmlFor="fechaFinEstimada">
+              Fin estimado
+            </label>
             <input
               id="fechaFinEstimada"
               type="date"
               className={estilos.control}
-              value={datos.fechaFinEstimada}
+              value={datos.fechaFinEstimada ?? ''}
               onChange={cambiar('fechaFinEstimada')}
             />
+            <p className={estilos.ayuda}>
+              Si cargás el comienzo y la duración, esta fecha la calcula el
+              sistema y no hace falta escribirla.
+            </p>
           </div>
-        </div>
+        )}
 
         <div className={estilos.campo}>
           <label className={estilos.etiqueta} htmlFor="notas">Notas</label>
@@ -307,6 +383,8 @@ function desdeObra(obra) {
     tipoInmueble: obra.tipoInmueble ?? '',
     tipoObra: obra.tipoObra ?? '',
     fechaInicioReal: obra.fechaInicioReal ?? '',
+    fechaInicioEstimada: obra.fechaInicioEstimada ?? '',
+    mesesEstimados: obra.mesesEstimados ?? '',
     fechaFinEstimada: obra.fechaFinEstimada ?? '',
     notas: obra.notas ?? '',
   };

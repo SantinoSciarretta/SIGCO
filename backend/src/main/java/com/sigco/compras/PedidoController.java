@@ -121,6 +121,23 @@ public class PedidoController {
         return servicio.recibir(id, recepcion);
     }
 
+    /**
+     * GET /api/pedidos/{id}/orden — el PDF para mandarle al proveedor.
+     *
+     * Solo compras.ver, como el resto de las lecturas del modulo: generar el
+     * documento no cambia nada del pedido. Quien puede verlo puede mandarlo.
+     */
+    @GetMapping("/{id}/orden")
+    public ResponseEntity<byte[]> orden(@PathVariable Long id) {
+        byte[] pdf = servicio.generarOrden(id);
+
+        return ResponseEntity.ok()
+                .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION,
+                        "inline; filename=\"" + servicio.nombreDeOrden(id) + "\"")
+                .body(pdf);
+    }
+
     @PreAuthorize("hasAuthority('compras.editar')")
     @PatchMapping("/{id}/anulacion")
     public PedidoRespuesta anular(@PathVariable Long id,

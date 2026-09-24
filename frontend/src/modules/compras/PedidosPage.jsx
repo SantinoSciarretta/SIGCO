@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Blueprint from '../../components/ui/Blueprint';
 import Modal from '../../components/ui/Modal';
+import { abrirPdf } from '../../api/documentos';
 import { listarMaterialesDisponibles } from '../materiales/materialesApi';
 import { listarObras } from '../obras/obrasApi';
 import { listarProveedores } from '../proveedores/proveedoresApi';
@@ -160,6 +161,14 @@ export default function PedidosPage() {
                       {p.notaDiferencia && <p className={estilos.nota}>{p.notaDiferencia}</p>}
                     </td>
                     <td className={estilos.acciones}>
+                      {/* La orden en PDF para mandarle al corralón. Va en
+                          cualquier estado: sirve aprobada, para que preparen el
+                          pedido, y sin aprobar, para pedir cotización. */}
+                      <button type="button" className={estilos.accion}
+                              onClick={() => abrirPdf(`/pedidos/${p.idPedido}/orden`,
+                                                      `pedido-${p.idPedido}.pdf`)}>
+                        Orden PDF
+                      </button>
                       {p.estado === 'Pendiente de Aprobación' && (
                         <button type="button" className={estilos.accion}
                                 onClick={() => setAAprobar(p)}>

@@ -78,7 +78,41 @@ class PedidoServiceTest {
         }
     }
 
+    /**
+     * Una obra EN EJECUCION, que es la unica que admite pedidos.
+     *
+     * Desde el pedido de Ricardo del 23/09, una obra en presupuestacion ya no
+     * acepta pedidos de materiales: mientras se esta cotizando no se compra
+     * nada, porque el presupuesto todavia puede no aprobarse. La obra de prueba
+     * arranca en ejecucion para que estos tests midan lo suyo.
+     */
     private Obra obra(Long id) {
+        Cliente cliente = new Cliente("Marcela Ferrari", null, null, null, null);
+        asignarId(cliente, "idCliente", 1L);
+        Obra o = new Obra(cliente, "Av. Cabildo 2340", "Departamento",
+                          Obra.TIPO_REFORMA, null, null);
+        asignarId(o, "idObra", id);
+        o.pasarAEjecucion();
+        return o;
+    }
+
+    @org.junit.jupiter.api.Test
+    @org.junit.jupiter.api.DisplayName("No se piden materiales para una obra en presupuestación")
+    void noSePideEnPresupuestacion() {
+        // Mientras se está cotizando no se compra nada: el presupuesto todavía
+        // puede no aprobarse, y ese pedido generaría un gasto contra una obra
+        // que quizás nunca arranca. Lo detectó Ricardo al probar el sistema.
+        when(obraRepositorio.findById(5L))
+                .thenReturn(java.util.Optional.of(obraEnPresupuestacion(5L)));
+
+        assertThatThrownBy(() -> servicio.crear(new NuevoPedido(5L,
+                java.util.List.of(new LineaSolicitud(1L, new java.math.BigDecimal("10"))))))
+                .isInstanceOf(ReglaDeNegocioException.class)
+                .hasMessageContaining("presupuestación");
+    }
+
+    /** Una obra que todavia se esta presupuestando: no admite pedidos. */
+    private Obra obraEnPresupuestacion(Long id) {
         Cliente cliente = new Cliente("Marcela Ferrari", null, null, null, null);
         asignarId(cliente, "idCliente", 1L);
         Obra o = new Obra(cliente, "Av. Cabildo 2340", "Departamento",

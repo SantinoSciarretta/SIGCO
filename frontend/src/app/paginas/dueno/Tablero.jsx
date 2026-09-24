@@ -25,6 +25,16 @@ export default function Tablero() {
   const [tablero, setTablero] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
+
+  /**
+   * Obra por la que se está filtrando, o '' para ver todas.
+   *
+   * El filtro se aplica en el navegador y no pidiéndole al backend un tablero
+   * por obra: el tablero llega entero en una sola llamada —a propósito, para
+   * que todos los números correspondan al mismo instante— así que filtrar acá
+   * es instantáneo y no dispara otra consulta.
+   */
+  const [obraFiltrada, setObraFiltrada] = useState('');
   const navegar = useNavigate();
 
   useEffect(() => {
@@ -48,7 +58,17 @@ export default function Tablero() {
     );
   }
 
-  const { resumen, obras, pendientes } = tablero;
+  const { resumen, obras: todasLasObras, pendientes: todosLosPendientes } = tablero;
+
+  const obras = obraFiltrada
+    ? todasLasObras.filter((o) => String(o.idObra) === obraFiltrada)
+    : todasLasObras;
+
+  // Los pendientes que no son de ninguna obra en particular (un presupuesto sin
+  // obra asignada, por ejemplo) se ocultan al filtrar: no son de esta obra.
+  const pendientes = obraFiltrada
+    ? todosLosPendientes.filter((p) => String(p.idObra) === obraFiltrada)
+    : todosLosPendientes;
 
   // Escala del gráfico: la barra más alta es el mayor valor de todo el
   // conjunto, así todas las obras se comparan contra la misma referencia.
@@ -118,11 +138,31 @@ export default function Tablero() {
     <>
       <div className={estilos.tituloFila}>
         <h2 className={estilos.fecha}>{fechaDeHoy()}</h2>
-        <span className="kicker">
-          {resumen.obrasExcedidas > 0
-            ? `${resumen.obrasExcedidas} obra${resumen.obrasExcedidas > 1 ? 's' : ''} excedida${resumen.obrasExcedidas > 1 ? 's' : ''}`
-            : 'Ninguna obra excedida'}
-        </span>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+          {/* Filtrar por obra: mirar una sola sin el ruido de las demás. */}
+          {todasLasObras.length > 1 && (
+            <select
+              aria-label="Filtrar por obra"
+              className={estilos.filtroObra}
+              value={obraFiltrada}
+              onChange={(e) => setObraFiltrada(e.target.value)}
+            >
+              <option value="">Todas las obras</option>
+              {todasLasObras.map((o) => (
+                <option key={o.idObra} value={String(o.idObra)}>{o.direccionObra}</option>
+              ))}
+            </select>
+          )}
+
+          <span className="kicker">
+            {obraFiltrada
+              ? 'Viendo una obra'
+              : resumen.obrasExcedidas > 0
+                ? `${resumen.obrasExcedidas} obra${resumen.obrasExcedidas > 1 ? 's' : ''} excedida${resumen.obrasExcedidas > 1 ? 's' : ''}`
+                : 'Ninguna obra excedida'}
+          </span>
+        </div>
       </div>
 
       {/* ---------- Indicadores ---------- */}
