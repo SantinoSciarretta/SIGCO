@@ -392,8 +392,22 @@ public class PedidoService {
     /** Cuanto vive el link publico de una orden. */
     private static final int DIAS_DE_VIGENCIA = 30;
 
-    /** Cuantos materiales se listan en el mensaje antes de resumir el resto. */
-    private static final int MATERIALES_EN_EL_MENSAJE = 8;
+    /**
+     * A partir de que largo el mensaje deja de mandarse entero.
+     *
+     * El texto viaja DENTRO de una URL, y una URL muy larga la cortan el
+     * navegador o el sistema operativo antes de que WhatsApp la vea. Como el
+     * texto ademas se codifica —cada acento y cada salto de linea ocupan tres
+     * caracteres— el margen real es bastante menor que el que uno diria.
+     *
+     * Con este limite entran alrededor de treinta materiales con su precio, que
+     * es mas de lo que tiene cualquier pedido de Granica. Cuando no entran, el
+     * mensaje pasa a ser un resumen y el detalle queda en el PDF.
+     */
+    private static final int LARGO_MAXIMO_DEL_MENSAJE = 1500;
+
+    /** Cuantos materiales se listan cuando el pedido no entra entero. */
+    private static final int MATERIALES_EN_EL_RESUMEN = 8;
 
     private static final SecureRandom AZAR = new SecureRandom();
 
@@ -509,40 +523,114 @@ public class PedidoService {
     }
 
     /**
-     * El texto del mensaje.
+     * El texto del mensaje que recibe el corralon.
      *
-     * Lleva lo que el corralon necesita para saber de que se trata sin abrir el
-     * PDF: quien pide, para que obra y que materiales. Los precios NO van en el
-     * mensaje —estan en la orden— porque el texto tiene que poder leerse de un
-     * vistazo en la pantalla del telefono.
+     * ------------------------------------------------------------------
+     *  Va el pedido entero, no un resumen
+     * ------------------------------------------------------------------
+     *
+     * Ricardo lo pidio asi: que el mensaje se pueda leer y entender sin abrir
+     * nada. Lleva cada material con su cantidad, su unidad, el precio acordado
+     * y el subtotal, mas el total y donde entregar. El PDF sigue yendo como
+     * link, pero ya no hace falta abrirlo para saber que se esta pidiendo.
+     *
+     * Tiene sentido para como se usa: el del corralon lee el mensaje en el
+     * telefono, prepara el pedido, y abre el PDF solo si necesita el documento
+     * formal con membrete.
+     *
+     * ------------------------------------------------------------------
+     *  Cuando no entra
+     * ------------------------------------------------------------------
+     *
+     * El texto viaja dentro de una URL y una URL muy larga se corta. Si el
+     * pedido no entra, el mensaje pasa a ser un resumen —los primeros
+     * materiales, sin precios— y el detalle queda en el PDF. Es preferible un
+     * mensaje corto y completo en el PDF antes que uno largo que llegue
+     * cortado por la mitad.
      */
     private String armarMensaje(Pedido pedido, String urlOrden) {
-        StringBuilder texto = new StringBuilder();
-        texto.append("Hola! Les paso un pedido de materiales de Granica SRL.\n\n");
-        texto.append("Pedido #").append(pedido.getIdPedido()).append("\n");
-        texto.append("Obra: ").append(pedido.getObra().getDireccionObra()).append("\n\n");
+        String completo = mensajeDetallado(pedido, urlOrden);
+        return completo.length() <= LARGO_MAXIMO_DEL_MENSAJE
+                ? completo
+                : mensajeResumido(pedido, urlOrden);
+    }
 
-        List<PedidoMaterial> lineas = pedido.getMateriales();
-        for (PedidoMaterial linea : lineas.stream().limit(MATERIALES_EN_EL_MENSAJE).toList()) {
+    /** El pedido escrito entero: cada material con su precio, y el total. */
+    private String mensajeDetallado(Pedido pedido, String urlOrden) {
+        StringBuilder texto = new StringBuilder(encabezadoDelMensaje(pedido));
+
+        for (PedidoMaterial linea : pedido.getMateriales()) {
             texto.append("- ")
                  .append(linea.getMaterial().getNombreMaterial())
                  .append(": ")
-                 .append(linea.getCantidad().stripTrailingZeros().toPlainString())
-                 .append(" ")
-                 .append(linea.getMaterial().getUnidadMedida())
-                 .append("\n");
+                 .append(cantidad(linea));
+
+            // El precio puede no estar: se confirma al aprobar, y un pedido se
+            // puede mandar a pedir cotizacion antes de tenerlo.
+            if (linea.getPrecioUnitario() != null) {
+                texto.append(" x ").append(pesos(linea.getPrecioUnitario()))
+                     .append(" = ").append(pesos(linea.calcularSubtotal()));
+            }
+            texto.append("\n");
         }
 
-        int resto = lineas.size() - MATERIALES_EN_EL_MENSAJE;
+        if (pedido.tieneTodosLosPrecios()) {
+            texto.append("\nTOTAL: ").append(pesos(pedido.calcularTotal())).append("\n");
+        }
+
+        texto.append("\nLa orden con membrete, en PDF:\n").append(urlOrden);
+        return texto.toString();
+    }
+
+    /** La version corta, para cuando el pedido no entra en el link. */
+    private String mensajeResumido(Pedido pedido, String urlOrden) {
+        StringBuilder texto = new StringBuilder(encabezadoDelMensaje(pedido));
+
+        List<PedidoMaterial> lineas = pedido.getMateriales();
+        for (PedidoMaterial linea : lineas.stream().limit(MATERIALES_EN_EL_RESUMEN).toList()) {
+            texto.append("- ")
+                 .append(linea.getMaterial().getNombreMaterial())
+                 .append(": ").append(cantidad(linea)).append("\n");
+        }
+
+        int resto = lineas.size() - MATERIALES_EN_EL_RESUMEN;
         if (resto > 0) {
             texto.append("- y ").append(resto)
-                 .append(resto == 1 ? " material más" : " materiales más")
-                 .append("\n");
+                 .append(resto == 1 ? " material mas" : " materiales mas").append("\n");
         }
 
-        texto.append("\nLa orden completa, con cantidades y precios acordados:\n");
-        texto.append(urlOrden);
+        texto.append("\nEl detalle completo, con cantidades y precios acordados:\n")
+             .append(urlOrden);
         return texto.toString();
+    }
+
+    /**
+     * Quien pide y donde entregar.
+     *
+     * La direccion de la obra es el dato operativo del mensaje: es a donde va
+     * el camion. Por eso dice "Entregar en" y no "Obra".
+     */
+    private String encabezadoDelMensaje(Pedido pedido) {
+        return "Hola! Les paso un pedido de materiales de Granica SRL.\n\n"
+               + "Pedido #" + pedido.getIdPedido() + "\n"
+               + "Entregar en: " + pedido.getObra().getDireccionObra() + "\n\n";
+    }
+
+    /** "2 bolsa 50 kg": la cantidad con la unidad del material. */
+    private String cantidad(PedidoMaterial linea) {
+        return linea.getCantidad().stripTrailingZeros().toPlainString()
+               + " " + linea.getMaterial().getUnidadMedida();
+    }
+
+    /**
+     * Importes con separador de miles y sin centavos.
+     *
+     * Sin centavos porque son precios de materiales que se leen en el telefono:
+     * "$ 12.500" se entiende de un vistazo y "$ 12.500,00" solo agrega ruido.
+     */
+    private String pesos(BigDecimal monto) {
+        return "$ " + String.format(java.util.Locale.forLanguageTag("es-AR"), "%,d",
+                monto.setScale(0, java.math.RoundingMode.HALF_UP).toBigInteger());
     }
 
     private String avisoDeTelefono(Proveedor proveedor) {

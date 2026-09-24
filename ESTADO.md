@@ -14,13 +14,17 @@
 de negocio, API, pantalla, tests y documentación. La seguridad está activa sobre
 todo el sistema y endurecida para salir a internet.
 
-- **368 tests** automáticos, sin fallos
+- **371 tests** automáticos, sin fallos
 - **29 tablas**, 20 migraciones de Flyway aplicadas
 - **Auditoría completa hecha** el 22–23/09: ver `docs/desarrollo/19-auditoria.md`
 - **Los ocho cambios que pidió Ricardo al probarlo están hechos** (23–24/09):
   ver `docs/desarrollo/20-pedidos-de-ricardo.md`
 - **La orden de pedido se le manda al corralón por WhatsApp** (24/09):
   ver `docs/desarrollo/21-whatsapp-al-corralon.md`
+- **Los cambios a incorporar a la Propuesta Técnica están listados** en
+  `docs/CAMBIOS-PARA-LA-PROPUESTA-TECNICA.md`: veinte puntos con qué dice hoy el
+  documento, qué hace el sistema y por qué. Es el insumo para actualizar la
+  entrega de la cátedra.
 - **El código está terminado.** Lo único que falta para usarlo es publicarlo, y
   eso necesita tus cuentas: ver `docs/PUESTA-EN-MARCHA.md`
 

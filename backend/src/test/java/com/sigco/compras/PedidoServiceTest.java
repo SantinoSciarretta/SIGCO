@@ -459,10 +459,69 @@ class PedidoServiceTest {
             assertThat(envio.mensaje())
                     .contains("Granica SRL")
                     .contains("Pedido #10")
-                    .contains("Av. Cabildo 2340")
+                    // "Entregar en" y no "Obra": es a donde va el camión.
+                    .contains("Entregar en: Av. Cabildo 2340")
                     .contains("Cemento CP40")
                     .contains("Arena gruesa")
                     .contains(envio.urlOrden());
+        }
+
+        /**
+         * Lo que pidió Ricardo después de ver la primera versión: que el
+         * mensaje se pueda leer y entender sin abrir el PDF.
+         */
+        @Test
+        @DisplayName("El mensaje lleva el pedido entero: cantidades, precios y total")
+        void elMensajeLlevaElPedidoEntero() {
+            Pedido pedido = pedidoAprobado("11 4567-8900");
+            pedido.getMateriales().get(0).ponerPrecio(new BigDecimal("12500"));
+            pedido.getMateriales().get(1).ponerPrecio(new BigDecimal("8000"));
+
+            var envio = conUrl("https://sigco.app").prepararEnvioPorWhatsApp(10L);
+
+            // 20 bolsas a 12.500 = 250.000; 5 bolsas a 8.000 = 40.000.
+            assertThat(envio.mensaje())
+                    .contains("Cemento CP40: 20 bolsa x $ 12.500 = $ 250.000")
+                    .contains("Arena gruesa: 5 bolsa x $ 8.000 = $ 40.000")
+                    .contains("TOTAL: $ 290.000");
+        }
+
+        @Test
+        @DisplayName("Sin precios confirmados, lista los materiales sin importes")
+        void sinPreciosNoInventaTotal() {
+            pedidoAprobado("11 4567-8900");
+
+            var envio = conUrl("https://sigco.app").prepararEnvioPorWhatsApp(10L);
+
+            assertThat(envio.mensaje())
+                    .contains("Cemento CP40: 20 bolsa")
+                    .doesNotContain("TOTAL")
+                    .doesNotContain("$");
+        }
+
+        /**
+         * El texto viaja DENTRO de una URL, y una URL muy larga se corta antes
+         * de que WhatsApp la vea. Con un pedido enorme, el mensaje pasa a ser
+         * un resumen y el detalle queda en el PDF: es preferible un mensaje
+         * corto y completo en el PDF antes que uno largo que llegue partido.
+         */
+        @Test
+        @DisplayName("Un pedido enorme se resume y deja el detalle en el PDF")
+        void pedidoQueNoEntraEnElLink() {
+            Pedido pedido = pedidoAprobado("11 4567-8900");
+            for (int i = 0; i < 60; i++) {
+                PedidoMaterial linea = new PedidoMaterial(
+                        pedido, material("Material de nombre bastante largo " + i, 100L + i),
+                        new BigDecimal("10"));
+                linea.ponerPrecio(new BigDecimal("9999"));
+                pedido.agregarMaterial(linea);
+            }
+
+            var envio = conUrl("https://sigco.app").prepararEnvioPorWhatsApp(10L);
+
+            assertThat(envio.mensaje()).hasSizeLessThan(1500);
+            assertThat(envio.mensaje()).contains("materiales mas");
+            assertThat(envio.mensaje()).contains(envio.urlOrden());
         }
 
         @Test

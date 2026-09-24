@@ -34,7 +34,11 @@ orden de magnitud:
 
 Lo que se pierde es concreto y conviene tenerlo escrito: **el PDF no va
 adjunto**, va como link, y **el mensaje no se manda solo** — Ricardo aprieta
-enviar. En la práctica el corralón abre el link con un toque.
+enviar.
+
+Lo primero se compensa: **el mensaje lleva el pedido escrito entero** (ver más
+abajo), así que el corralón no necesita abrir nada para saber qué se le está
+pidiendo. El PDF queda para cuando hace falta el documento formal con membrete.
 
 ---
 
@@ -48,6 +52,52 @@ enviar. En la práctica el corralón abre el link con un toque.
    antes de abrir nada.
 4. "Abrir WhatsApp" lleva a `wa.me/<número>?text=<mensaje>`, en una pestaña
    nueva.
+
+---
+
+## El mensaje lleva el pedido entero
+
+La primera versión mandaba un resumen —los primeros materiales, sin precios— y
+dependía de que el corralón abriera el PDF. Ricardo preguntó si no se podía
+mandar el pedido redactado directamente, y sí: es texto, y el texto no cuesta
+nada.
+
+Ahora el mensaje lleva cada material con su cantidad, su unidad, el precio
+acordado y el subtotal, más el total y dónde entregar:
+
+```
+Hola! Les paso un pedido de materiales de Granica SRL.
+
+Pedido #7
+Entregar en: PRADOS DEL OESTE
+
+- Cemento CP40: 2 bolsa 50 kg x $ 21.000 = $ 42.000
+
+TOTAL: $ 42.000
+
+La orden con membrete, en PDF:
+http://…/api/ordenes-publicas/kdXdXnL9hTJloHJ…
+```
+
+Dice **"Entregar en"** y no "Obra" porque ese es el dato operativo del mensaje:
+es a dónde va el camión.
+
+**Si falta algún precio no se inventa un total.** El precio se confirma al
+aprobar, y un pedido se puede mandar antes para pedir cotización; en ese caso el
+mensaje lista los materiales con su cantidad y nada más.
+
+### Cuando el pedido no entra
+
+El texto viaja **dentro de una URL**, y una URL muy larga la cortan el navegador
+o el sistema operativo antes de que WhatsApp la vea. Como el texto además se
+codifica —cada acento y cada salto de línea ocupan tres caracteres— el margen
+real es bastante menor que el que uno diría.
+
+El límite quedó en 1500 caracteres, con los que entran alrededor de treinta
+materiales con precio: más de lo que tiene cualquier pedido de Granica. Si un
+pedido no entra, el mensaje pasa a ser un resumen y el detalle queda en el PDF.
+Es preferible un mensaje corto y completo en el PDF antes que uno largo que
+llegue partido por la mitad.
 
 ---
 
@@ -149,11 +199,14 @@ la segunda trampa de Puppeteer de este proyecto, después de la de
 
 ## Verificación
 
-**Tests (29 nuevos, 368 en total).** Quince son del teléfono solo: el mismo
+**Tests (32 nuevos, 371 en total).** Quince son del teléfono solo: el mismo
 celular escrito de siete maneras, códigos de área de tres y cuatro dígitos, y
 seis casos que no se pueden interpretar y tienen que devolver vacío. El resto
 cubre el armado del link, la reutilización del token, el vencimiento, el corte
-inmediato y los pedidos sin proveedor o anulados.
+inmediato, los pedidos sin proveedor o anulados, y el contenido del mensaje: que
+lleve cantidades, precios y total; que no invente un total si falta algún
+precio; y que un pedido de sesenta materiales se resuma para no pasarse del
+largo del link.
 
 **Contra el backend real,** con el teléfono del proveedor cambiado y restaurado
 al final: normaliza `011 15 4567-8900` a `5491145678900`; el texto del link es
