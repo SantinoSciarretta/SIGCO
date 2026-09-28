@@ -225,5 +225,8 @@ mayúsculas. Ya generó un falso positivo una vez.
 | `1948d9a` | Cierre de obra con balance, y etapas que alimentan el Seguimiento |
 | (esta sesión) | La orden de pedido se le manda al corralón por WhatsApp |
 
-Los commits hasta `63f8213` están en GitHub. **Los de los pedidos de Ricardo y el
-de WhatsApp todavía no se empujaron**: `git push` cuando quieras subirlos.
+Están todos en GitHub salvo los tres últimos —los diagramas, el logo y la guía
+de puesta en marcha—, que siguen solo acá: `git push` para subirlos.
+
+**Eso hay que hacerlo antes de publicar**, porque Railway y Vercel construyen
+desde GitHub: lo que no esté empujado, no se despliega.
