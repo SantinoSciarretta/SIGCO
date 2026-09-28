@@ -27,6 +27,9 @@ todo el sistema y endurecida para salir a internet.
   `docs/CAMBIOS-PARA-LA-PROPUESTA-TECNICA.md`: veinte puntos con qué dice hoy el
   documento, qué hace el sistema y por qué. Es el insumo para actualizar la
   entrega de la cátedra.
+- **Los cuatro diagramas que pidió la cátedra están hechos** (28/09): casos de
+  uso, flujo de datos (niveles 0 y 1), clases y secuencia. Están sacados del
+  código, no del informe. Ver `docs/diagramas/diagramas-uml.md`
 - **El código está terminado.** Lo único que falta para usarlo es publicarlo, y
   eso necesita tus cuentas: ver `docs/PUESTA-EN-MARCHA.md`
 

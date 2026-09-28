@@ -1,0 +1,277 @@
+/*
+ * SIGCO — Diagrama de flujo de datos, NIVEL 1
+ *
+ * Abre el proceso 0 del diagrama de contexto en los siete procesos que lo
+ * componen, y muestra los almacenes de datos que los conectan.
+ *
+ * Lo que este diagrama deja ver, y que es el punto del sistema: los procesos
+ * NO se hablan directamente entre sí. Se comunican a través de los almacenes.
+ * Por eso controlar gastos puede comparar contra el presupuesto sin que nadie
+ * copie un número de una planilla a otra, que es el trabajo manual que SIGCO
+ * viene a eliminar. Esos flujos van marcados en rojo.
+ *
+ * Notación (DeMarco / Yourdon):
+ *   - Entidad externa: rectángulo relleno.
+ *   - Proceso:         círculo numerado.
+ *   - Almacén:         rectángulo con su código Dn.
+ *   - Flujo:           flecha con el nombre del DATO que viaja, no la acción.
+ *
+ * ENTIDADES Y ALMACENES REPETIDOS
+ *
+ * El Dueño participa en los siete procesos, y varios almacenes los usan tres
+ * o cuatro. Dibujarlos una sola vez obliga a cruzar el diagrama entero con
+ * líneas largas: se probó y el resultado era una maraña de 5735 px de ancho.
+ *
+ * La notación DFD prevé esto: una entidad o un almacén se puede REPETIR cerca
+ * de cada proceso que lo usa, y se marca con un asterisco para que se entienda
+ * que es el mismo. Es lo que se hace acá.
+ *
+ * Los almacenes corresponden a tablas reales del modelo (28 tablas), agrupadas
+ * por afinidad para que el diagrama se lea.
+ *
+ * Render:  dot -Tpng dfd-nivel-1.dot -o img/uml-03-dfd-nivel-1.png
+ */
+digraph DFD1 {
+    rankdir=LR;
+    splines=spline;
+    nodesep=0.3;
+    ranksep=1.15;
+    bgcolor="white";
+    fontname="Segoe UI,Arial";
+    node [fontname="Segoe UI,Arial"];
+    edge [fontname="Segoe UI,Arial", fontsize=9, fontcolor="#41617f",
+          color="#8aa8c4", penwidth=0.9, arrowsize=0.7];
+
+    /* Estilos, para no repetirlos en cada nodo. */
+    node [shape=box, style="filled", fillcolor="#1d2d3d", fontcolor="white",
+          fontsize=11, width=1.45, height=0.5, penwidth=0];
+
+    /* ================================================================
+       LOS SIETE PROCESOS
+
+       OJO con el orden: van declarados de 7 a 1 a propósito. Graphviz apila
+       los clusters en orden INVERSO al de declaración, así que declarándolos
+       al revés el diagrama se lee de arriba hacia abajo en el orden del
+       circuito: administrar la obra, presupuestar, comprar, gastar, avanzar,
+       cobrar y publicar.
+       ================================================================ */
+
+    /* ================================================================
+       7. PUBLICAR PORTFOLIO
+       ================================================================ */
+    subgraph cluster_p7 {
+        label="7 · Publicar portfolio";
+        fontsize=12; fontcolor="#1d2d3d"; color="#c3ccd6"; style="rounded";
+        margin=14;
+
+        e7_dueno     [label="Dueño *"];
+        e7_visitante [label="Visitante"];
+        p7 [label="7\nPublicar\nportfolio", shape=circle, fillcolor="#eef6ff",
+            fontcolor="#1d2d3d", fontsize=10, width=1.35, fixedsize=true,
+            penwidth=1.3, color="#5980a6"];
+        d1d [label="D1 │ Obras *", fillcolor="#f5f5f8", fontcolor="#1d1f20",
+             fontsize=10, width=1.6, penwidth=1.1, color="#5d6b7a"];
+        d8  [label="D8 │ Portfolio", fillcolor="#f5f5f8", fontcolor="#1d1f20",
+             fontsize=10, width=1.7, penwidth=1.1, color="#5d6b7a"];
+
+        e7_dueno -> p7 [label="fotos y tipo\nde trabajo"];
+        d1d -> p7      [label="obras finalizadas"];
+        p7 -> d8       [label="publicación\ne imágenes"];
+        d8 -> p7       [label="obras publicadas"];
+        p7 -> e7_visitante [label="vidriera pública", color="#3f7d63",
+                            fontcolor="#3f7d63"];
+    }
+
+    /* ================================================================
+       6. COBRAR
+
+       El plan sale del presupuesto aprobado y no se vuelve a cargar: por eso
+       D2 alimenta a este proceso. Pedir el total de nuevo abriría la puerta a
+       que el plan no coincida con lo que el cliente aceptó, que es exactamente
+       el error que hoy se comete al copiar números entre planillas.
+       ================================================================ */
+    subgraph cluster_p6 {
+        label="6 · Cobrar";
+        fontsize=12; fontcolor="#1d2d3d"; color="#c3ccd6"; style="rounded";
+        margin=14;
+
+        e6_dueno   [label="Dueño *"];
+        e6_cliente [label="Cliente *"];
+        e6_cac     [label="Cámara Arg. de\nla Construcción", height=0.55];
+        p6 [label="6\nCobrar", shape=circle, fillcolor="#eef6ff",
+            fontcolor="#1d2d3d", fontsize=10, width=1.35, fixedsize=true,
+            penwidth=1.3, color="#5980a6"];
+        d2c [label="D2 │ Presupuestos *", fillcolor="#f5f5f8",
+             fontcolor="#1d1f20", fontsize=10, width=1.95, penwidth=1.1,
+             color="#5d6b7a"];
+        d7  [label="D7 │ Cuotas y pagos", fillcolor="#f5f5f8",
+             fontcolor="#1d1f20", fontsize=10, width=1.95, penwidth=1.1,
+             color="#5d6b7a"];
+
+        e6_dueno -> p6 [label="pago recibido"];
+        e6_cac -> p6   [label="coeficiente mensual", style=dashed,
+                        color="#5d6b7a", fontcolor="#5d6b7a"];
+        d2c -> p6      [label="total y plan de pago", color="#a83e32",
+                        fontcolor="#a83e32", penwidth=1.3];
+        p6 -> d7       [label="cuotas y pagos"];
+        d7 -> p6       [label="saldo\ny vencimientos"];
+        p6 -> e6_dueno [label="alertas de cobro"];
+        p6 -> e6_cliente [label="planilla de pagos"];
+    }
+
+    /* ================================================================
+       5. SEGUIR EL AVANCE
+       ================================================================ */
+    subgraph cluster_p5 {
+        label="5 · Seguir el avance";
+        fontsize=12; fontcolor="#1d2d3d"; color="#c3ccd6"; style="rounded";
+        margin=14;
+
+        e5_capataz [label="Capataz *"];
+        p5 [label="5\nSeguir el\navance", shape=circle, fillcolor="#eef6ff",
+            fontcolor="#1d2d3d", fontsize=10, width=1.35, fixedsize=true,
+            penwidth=1.3, color="#5980a6"];
+        d6  [label="D6 │ Etapas de obra", fillcolor="#f5f5f8",
+             fontcolor="#1d1f20", fontsize=10, width=1.9, penwidth=1.1,
+             color="#5d6b7a"];
+        d5c [label="D5 │ Gastos *", fillcolor="#f5f5f8", fontcolor="#1d1f20",
+             fontsize=10, width=1.6, penwidth=1.1, color="#5d6b7a"];
+        d1c [label="D1 │ Obras *", fillcolor="#f5f5f8", fontcolor="#1d1f20",
+             fontsize=10, width=1.6, penwidth=1.1, color="#5d6b7a"];
+
+        e5_capataz -> p5 [label="etapa cumplida"];
+        p5 -> d6         [label="etapas\ny ponderación"];
+        d6 -> p5         [label="etapas completadas"];
+        d5c -> p5        [label="avance financiero"];
+        p5 -> e5_capataz [label="avance de la obra"];
+        p5 -> d1c        [label="obra → finalizada", color="#a83e32",
+                          fontcolor="#a83e32", penwidth=1.3];
+    }
+
+    /* ================================================================
+       4. CONTROLAR GASTOS
+
+       El corazón del sistema: el semáforo sale de comparar D5 contra D2. Los
+       dos almacenes ya existen, así que la comparación es una consulta y no un
+       traspaso manual de números entre planillas.
+       ================================================================ */
+    subgraph cluster_p4 {
+        label="4 · Controlar gastos";
+        fontsize=12; fontcolor="#1d2d3d"; color="#c3ccd6"; style="rounded";
+        margin=14;
+
+        e4_dueno [label="Dueño *"];
+        p4 [label="4\nControlar\ngastos", shape=circle, fillcolor="#eef6ff",
+            fontcolor="#1d2d3d", fontsize=10, width=1.35, fixedsize=true,
+            penwidth=1.3, color="#5980a6"];
+        d5b [label="D5 │ Gastos *", fillcolor="#f5f5f8", fontcolor="#1d1f20",
+             fontsize=10, width=1.6, penwidth=1.1, color="#5d6b7a"];
+        d2b [label="D2 │ Presupuestos *", fillcolor="#f5f5f8",
+             fontcolor="#1d1f20", fontsize=10, width=1.95, penwidth=1.1,
+             color="#5d6b7a"];
+
+        e4_dueno -> p4 [label="gasto y comprobante"];
+        p4 -> d5b      [label="gasto registrado"];
+        d5b -> p4      [label="gastado por rubro"];
+        d2b -> p4      [label="presupuestado\npor rubro", color="#a83e32",
+                        fontcolor="#a83e32", penwidth=1.3];
+        p4 -> e4_dueno [label="desvío y semáforo\nganancia estimada"];
+    }
+
+    /* ================================================================
+       3. COMPRAR MATERIALES
+
+       El flujo que cierra el circuito: al confirmar la recepción, el proceso
+       escribe en D5 el gasto de los materiales. Nadie lo carga a mano, y es
+       justamente lo que hoy se pierde entre el remito de papel y la planilla.
+       ================================================================ */
+    subgraph cluster_p3 {
+        label="3 · Comprar materiales";
+        fontsize=12; fontcolor="#1d2d3d"; color="#c3ccd6"; style="rounded";
+        margin=14;
+
+        e3_capataz [label="Capataz"];
+        e3_dueno   [label="Dueño *"];
+        e3_prov    [label="Proveedor"];
+        p3 [label="3\nComprar\nmateriales", shape=circle, fillcolor="#eef6ff",
+            fontcolor="#1d2d3d", fontsize=10, width=1.35, fixedsize=true,
+            penwidth=1.3, color="#5980a6"];
+        d3b [label="D3 │ Catálogo *", fillcolor="#f5f5f8", fontcolor="#1d1f20",
+             fontsize=10, width=1.7, penwidth=1.1, color="#5d6b7a"];
+        d4  [label="D4 │ Pedidos", fillcolor="#f5f5f8", fontcolor="#1d1f20",
+             fontsize=10, width=1.6, penwidth=1.1, color="#5d6b7a"];
+        d5a [label="D5 │ Gastos *", fillcolor="#f5f5f8", fontcolor="#1d1f20",
+             fontsize=10, width=1.6, penwidth=1.1, color="#5d6b7a"];
+
+        e3_capataz -> p3 [label="pedido\nremito recibido"];
+        e3_dueno -> p3   [label="aprobación\ny proveedor"];
+        d3b -> p3        [label="catálogo\ny cotizaciones"];
+        p3 -> d4         [label="pedido y estado"];
+        p3 -> e3_prov    [label="orden de pedido\n(WhatsApp + PDF)"];
+        p3 -> d5a        [label="gasto de materiales", color="#a83e32",
+                          fontcolor="#a83e32", penwidth=1.3];
+    }
+
+    /* ================================================================
+       2. PRESUPUESTAR
+
+       Al aprobarse el definitivo, este proceso DEVUELVE a D1 el cambio de
+       estado de la obra. Ese flujo es el que hace que aprobar un presupuesto
+       habilite todo lo demás: sin él, no se pueden cargar gastos ni pedir
+       materiales.
+       ================================================================ */
+    subgraph cluster_p2 {
+        label="2 · Presupuestar";
+        fontsize=12; fontcolor="#1d2d3d"; color="#c3ccd6"; style="rounded";
+        margin=14;
+
+        e2_dueno   [label="Dueño *"];
+        e2_cliente [label="Cliente"];
+        p2 [label="2\nPresupuestar", shape=circle, fillcolor="#eef6ff",
+            fontcolor="#1d2d3d", fontsize=10, width=1.35, fixedsize=true,
+            penwidth=1.3, color="#5980a6"];
+        d3a [label="D3 │ Catálogo *", fillcolor="#f5f5f8", fontcolor="#1d1f20",
+             fontsize=10, width=1.7, penwidth=1.1, color="#5d6b7a"];
+        d2a [label="D2 │ Presupuestos", fillcolor="#f5f5f8",
+             fontcolor="#1d1f20", fontsize=10, width=1.85, penwidth=1.1,
+             color="#5d6b7a"];
+        d1b [label="D1 │ Obras *", fillcolor="#f5f5f8", fontcolor="#1d1f20",
+             fontsize=10, width=1.6, penwidth=1.1, color="#5d6b7a"];
+
+        e2_dueno -> p2 [label="ítems por rubro\naprobación"];
+        d3a -> p2      [label="materiales\ny precios"];
+        p2 -> d2a      [label="presupuesto\ne ítems"];
+        p2 -> e2_cliente [label="presupuesto\nen PDF"];
+        p2 -> d1b      [label="obra → en ejecución", color="#a83e32",
+                        fontcolor="#a83e32", penwidth=1.3];
+    }
+
+    /* ================================================================
+       1. ADMINISTRAR OBRAS
+       ================================================================ */
+    subgraph cluster_p1 {
+        label="1 · Administrar obras y clientes";
+        fontsize=12; fontcolor="#1d2d3d"; color="#c3ccd6"; style="rounded";
+        margin=14;
+
+        e1_dueno [label="Dueño *"];
+        p1 [label="1\nAdministrar\nobras", shape=circle, fillcolor="#eef6ff",
+            fontcolor="#1d2d3d", fontsize=10, width=1.35, fixedsize=true,
+            penwidth=1.3, color="#5980a6"];
+        d1a [label="D1 │ Clientes y obras", fillcolor="#f5f5f8",
+             fontcolor="#1d1f20", fontsize=10, width=1.95, penwidth=1.1,
+             color="#5d6b7a"];
+
+        e1_dueno -> p1 [label="alta de cliente\ny de obra"];
+        p1 -> d1a      [label="obra registrada"];
+        d1a -> p1      [label="obras y su estado"];
+        p1 -> e1_dueno [label="listado"];
+    }
+
+    /* ================================================================
+       NOTA DE LECTURA
+       ================================================================ */
+    nota [shape=note, style=filled, fillcolor="#fffbe8", fontcolor="#5d6b7a",
+          fontsize=10, penwidth=0.8, color="#c08a2e", margin=0.18,
+          label="*  la entidad o el almacén se repite: es el mismo, dibujado\l   cerca de cada proceso que lo usa, para no cruzar el diagrama.\l\lEn rojo, los flujos que conectan un circuito con otro. Son los\lque reemplazan el traspaso manual de números entre planillas.\l"];
+}

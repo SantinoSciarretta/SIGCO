@@ -1,0 +1,291 @@
+%% SIGCO — Diagrama de clases del dominio
+%%
+%% ALCANCE: las clases del circuito CORE. El sistema tiene 29 entidades; acá
+%% están las trece que participan del recorrido obra → presupuesto → compra →
+%% gasto → avance → cobro. Los catálogos de apoyo (Proveedor, Cotización,
+%% Operario, Portfolio) y la seguridad (Usuario, Rol, Permiso) quedan afuera
+%% por el mismo criterio con el que se recortó el diagrama de casos de uso: la
+%% cátedra pidió centrarse en los procesos core.
+%%
+%% LO QUE HAY QUE MIRAR EN ESTE DIAGRAMA
+%%
+%% Las clases NO tienen setters. Tienen OPERACIONES CON NOMBRE: aprobar(),
+%% recibir(), anular(), completar(). Es una decisión de diseño del proyecto y
+%% se ve directamente acá: a una obra no se le "setea el estado", se le pide
+%% que pase a ejecución, y la clase decide si puede.
+%%
+%% Eso es lo que impide que una regla de negocio se saltee desde afuera. Si
+%% Obra tuviera setEstado(), cualquier servicio podría poner "Finalizada" sin
+%% pasar por la comprobación de los hitos.
+%%
+%% Las firmas de abajo son las reales de las entidades JPA, no una versión
+%% simplificada para el diagrama.
+%%
+%% Render:  mmdc -i clases.mmd -o img/uml-04-clases.png
+
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#eef6ff','primaryBorderColor':'#94bce3','primaryTextColor':'#1d1f20','lineColor':'#5980a6','textColor':'#1d2d3d','fontFamily':'Segoe UI,Arial','fontSize':'13px','classText':'#1d1f20'}} }%%
+classDiagram
+    direction LR
+
+    %% ================================================================
+    %%  El núcleo: cliente y obra
+    %% ================================================================
+
+    class Cliente {
+        -Long idCliente
+        -String nombreApellido
+        -String telefonoContacto
+        -String emailContacto
+        -String origenRecomendacion
+        -String recomendadoPor
+        -String estado
+        +actualizarDatos(nombre, tel, email, origen, recomendadoPor)
+        +activar()
+        +desactivar()
+        +estaActivo() boolean
+    }
+
+    class Obra {
+        -Long idObra
+        -String direccionObra
+        -String tipoInmueble
+        -String tipoObra
+        -LocalDate fechaInicioEstimada
+        -Integer mesesEstimados
+        -LocalDate fechaFinEstimada
+        -LocalDate fechaInicioReal
+        -String estado
+        -String motivoCancelacion
+        +actualizarDatos(direccion, inmueble, notas)
+        +corregirTipoObra(tipoObra)
+        +estimarPlazo(fechaInicioEstimada, meses)
+        +registrarInicioReal(fecha)
+        +pasarAEjecucion()
+        +volverAPresupuestacion()
+        +finalizar()
+        +cancelar(motivo)
+        +estaEnEjecucion() boolean
+        +estaFinalizada() boolean
+    }
+
+    %% ================================================================
+    %%  Presupuestación
+    %%
+    %%  La autorreferencia de Presupuesto es el versionado real: el definitivo
+    %%  toma el anteproyecto como base SIN sobreescribirlo. Quedan los dos.
+    %% ================================================================
+
+    class Presupuesto {
+        -Long idPresupuesto
+        -String tipoPresupuesto
+        -Integer version
+        -String estado
+        -BigDecimal metrosCuadrados
+        -BigDecimal valorPorM2
+        -BigDecimal totalPresupuesto
+        -BigDecimal anticipoPorcentaje
+        -Integer cantidadCuotas
+        +calcularCotizacionInicial(m2, valorPorM2)
+        +agregarItem(item)
+        +quitarItem(item)
+        +recalcularTotal()
+        +definirPlanDePago(anticipo, cuotas, plazo)
+        +calcularAnticipo() BigDecimal
+        +calcularMontoDeCuota() BigDecimal
+        +enviar()
+        +aprobar()
+        +rechazar()
+        +esDefinitivo() boolean
+        +estaAprobado() boolean
+    }
+
+    class ItemPresupuesto {
+        -Long idItem
+        -String descripcion
+        -String unidadMedida
+        -BigDecimal cantidad
+        -BigDecimal valorUnitario
+        -BigDecimal subtotal
+        +actualizar(rubro, subrubro, material, desc, unidad, cant, valor)
+        -calcularSubtotal(cantidad, valorUnitario)$ BigDecimal
+    }
+
+    class Rubro {
+        -Long idRubro
+        -String nombreRubro
+        -String estado
+        -boolean esManoDeObra
+        +renombrar(nombreRubro)
+        +marcarComoManoDeObra(esManoDeObra)
+        +esManoDeObra() boolean
+        +activar()
+        +desactivar()
+    }
+
+    class Subrubro {
+        -Long idSubrubro
+        -String nombreSubrubro
+        -String estado
+        +renombrar(nombreSubrubro)
+        +activar()
+        +desactivar()
+    }
+
+    class Material {
+        -Long idMaterial
+        -String nombreMaterial
+        -String unidadMedida
+        -String estado
+        +actualizarDatos(nombre, rubro, unidad)
+        +activar()
+        +desactivar()
+    }
+
+    %% ================================================================
+    %%  Compras
+    %%
+    %%  El estado de la recepción NO se elige: recibir() lo DERIVA de si vino
+    %%  o no una nota de diferencia. Que el capataz pudiera elegir "Recibido
+    %%  Completo" y además escribir una nota dejaría el pedido mintiendo.
+    %% ================================================================
+
+    class Pedido {
+        -Long idPedido
+        -String estado
+        -String fotoRemito
+        -String notaDiferencia
+        -LocalDateTime fechaSolicitud
+        -LocalDateTime fechaAprobacion
+        -LocalDateTime fechaRecepcion
+        -String tokenOrden
+        -LocalDateTime tokenOrdenVence
+        +agregarMaterial(linea)
+        +quitarMaterial(linea)
+        +aprobar(proveedor)
+        +recibir(idUsuarioRecibe, fotoRemito, notaDiferencia)
+        +anular(motivo)
+        +calcularTotal() BigDecimal
+        +tieneTodosLosPrecios() boolean
+        +compartirOrden(token, vence)
+        +dejarDeCompartirOrden()
+        +fueEnviado() boolean
+    }
+
+    class PedidoMaterial {
+        -BigDecimal cantidad
+        -BigDecimal precioUnitario
+        +cambiarCantidad(cantidad)
+        +ponerPrecio(precioUnitario)
+        +calcularSubtotal() BigDecimal
+    }
+
+    %% ================================================================
+    %%  Gastos
+    %% ================================================================
+
+    class Gasto {
+        -Long idGasto
+        -String tipoGasto
+        -BigDecimal monto
+        -LocalDate fechaGasto
+        -String descripcion
+        -String comprobanteAdjunto
+        -String estado
+        -String motivoAnulacion
+        -Long idUsuarioRegistro
+        +actualizar(rubro, subrubro, tipoGasto, monto, fecha, desc)
+        +anular(motivo)
+        +registradoPor(idUsuario)
+        +esHormiga() boolean
+        +estaConfirmado() boolean
+    }
+
+    %% ================================================================
+    %%  Seguimiento
+    %% ================================================================
+
+    class Hito {
+        -Long idHito
+        -String nombreHito
+        -BigDecimal ponderacion
+        -Integer orden
+        -String estado
+        -LocalDate fechaCumplimiento
+        -String observacion
+        -Integer duracionDias
+        +completar(fechaCumplimiento, observacion, idUsuario)
+        +reabrir()
+        +registrarObservacion(observacion)
+        +estaCompletado() boolean
+    }
+
+    %% ================================================================
+    %%  Cobros
+    %%
+    %%  El estado de la cuota se DERIVA de sus pagos: sin pagos es Pendiente,
+    %%  con saldo es Parcial, sin saldo es Abonada. Nadie lo marca a mano, y
+    %%  por eso no existe un método cambiarEstado().
+    %% ================================================================
+
+    class Cuota {
+        -Long idCuota
+        -Integer numeroCuota
+        -BigDecimal montoCuota
+        -LocalDate fechaVencimiento
+        -String estado
+        +registrarPago(pago)
+        +anularPago(motivo)
+        +actualizarPorCac(coeficiente)
+        +revisarVencimiento(hoy)
+        +totalPagado() BigDecimal
+        +saldo() BigDecimal
+        +esParcial() boolean
+        +esAnticipo() boolean
+    }
+
+    class Pago {
+        -Long idPago
+        -BigDecimal monto
+        -LocalDate fechaPago
+        -String medioPago
+        -String comprobanteEmitido
+        -Long idUsuarioRegistro
+        -LocalDateTime fechaCarga
+    }
+
+    %% ================================================================
+    %%  RELACIONES
+    %%
+    %%  Las de composición (*--) marcan que la parte no vive sin el todo: un
+    %%  ítem sin su presupuesto no significa nada, y al borrarse el presupuesto
+    %%  se van con él. Las de asociación (-->) son referencias: un gasto apunta
+    %%  a un rubro, pero el rubro existe por su cuenta.
+    %% ================================================================
+
+    Cliente "1" --> "0..*" Obra : tiene
+
+    Obra "1" *-- "0..*" Presupuesto : se presupuesta con
+    Obra "1" *-- "0..*" Pedido : abastece
+    Obra "1" *-- "0..*" Gasto : consume
+    Obra "1" *-- "0..*" Hito : avanza por
+    Obra "1" *-- "0..*" Cuota : se cobra en
+
+    Presupuesto "1" *-- "0..*" ItemPresupuesto : detalla
+    Presupuesto "0..1" --> "0..*" Presupuesto : deriva de
+
+    ItemPresupuesto "0..*" --> "1" Rubro : clasifica
+    ItemPresupuesto "0..*" --> "0..1" Subrubro : precisa
+    ItemPresupuesto "0..*" --> "0..1" Material : toma del catálogo
+
+    Rubro "1" *-- "0..*" Subrubro : agrupa
+    Rubro "1" --> "0..*" Material : clasifica
+
+    Pedido "1" *-- "1..*" PedidoMaterial : pide
+    PedidoMaterial "0..*" --> "1" Material : de
+
+    Pedido "1" --> "0..*" Gasto : genera al recibirse
+    Gasto "0..*" --> "1" Rubro : imputa a
+    Gasto "0..*" --> "0..1" Subrubro : precisa
+    Hito "0..*" --> "0..1" Rubro : corresponde a
+
+    Cuota "1" *-- "0..*" Pago : se salda con

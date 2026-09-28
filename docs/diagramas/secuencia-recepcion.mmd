@@ -1,0 +1,145 @@
+%% SIGCO — Diagrama de secuencia
+%% Caso de uso: "Confirmar la recepción del pedido con el remito"
+%%
+%% POR QUÉ ESTE CASO Y NO OTRO
+%%
+%% Es el único del sistema que cruza dos módulos: el capataz confirma en
+%% Compras y el gasto aparece solo en Gastos. Ese cruce es la razón de ser del
+%% relevamiento — hoy la empresa tipea el material dos veces, una al pedirlo por
+%% WhatsApp y otra al cargarlo como gasto en la planilla.
+%%
+%% Y además recorre todas las capas del sistema: pantalla React → Axios →
+%% filtro JWT → controlador → servicio → entidad → repositorio, con el
+%% almacenamiento de archivos y el alcance por obra de por medio. Un caso más
+%% simple no mostraría ni la mitad.
+%%
+%% LOS TRES MOMENTOS QUE HAY QUE MIRAR
+%%
+%%  1. La foto se sube ANTES, en una petición aparte. Cuando se confirma la
+%%     recepción el archivo ya está guardado y lo que viaja es su referencia.
+%%  2. El estado del pedido lo decide la ENTIDAD a partir de la nota, no el
+%%     usuario ni el controlador.
+%%  3. El gasto se genera dentro de la MISMA transacción. Si algo falla al
+%%     generarlo, la recepción tampoco queda registrada: no puede existir un
+%%     pedido recibido sin su gasto.
+%%
+%% Render:  mmdc -i secuencia-recepcion.mmd -o img/uml-05-secuencia-recepcion.png
+
+%%{init: {'theme':'base','themeVariables':{
+  'primaryColor':'#eef6ff','primaryBorderColor':'#94bce3','primaryTextColor':'#1d1f20',
+  'lineColor':'#5980a6','textColor':'#1d2d3d','actorBkg':'#1d2d3d','actorTextColor':'#ffffff',
+  'actorBorder':'#1d2d3d','signalColor':'#1d2d3d','signalTextColor':'#1d2d3d',
+  'labelBoxBkgColor':'#eef6ff','labelBoxBorderColor':'#94bce3','labelTextColor':'#1d2d3d',
+  'altBackground':'#ffffff','noteBkgColor':'#f5f5f8','noteBorderColor':'#98989b','noteTextColor':'#5d6b7a',
+  'fontFamily':'Segoe UI,Arial','fontSize':'13px'}} }%%
+
+sequenceDiagram
+    autonumber
+
+    actor Capataz as Capataz<br/>(en la obra, desde el celular)
+
+    participant UI as Materiales.jsx<br/>«pantalla React»
+    participant Http as client.js<br/>«Axios»
+    participant Jwt as FiltroJwt<br/>«Spring Security»
+    participant Arch as ArchivoController<br/>+ AlmacenDeArchivos
+    participant Ctrl as PedidoController
+    participant Serv as PedidoService
+    participant Alc as AlcanceDeObras
+    participant Ped as Pedido<br/>«entidad»
+    participant GServ as GastoService
+    participant Repo as Repositorios JPA
+
+    %% ============================================================
+    %%  PASO PREVIO — la foto del remito
+    %%
+    %%  Viaja en su propia petición porque es un binario y el resto de la
+    %%  recepción es JSON. El backend devuelve una referencia (la ruta dentro
+    %%  del almacén) y eso es lo que después se guarda en pedido.foto_remito:
+    %%  la base nunca guarda la imagen, solo dónde está.
+    %% ============================================================
+    rect rgb(245, 248, 252)
+    Note over Capataz, Arch: Paso previo — se sube la foto del remito
+
+    Capataz ->> UI: saca la foto del remito
+    UI ->> UI: comprime la imagen en el navegador
+    UI ->> Http: POST /api/archivos (multipart)
+    Http ->> Jwt: agrega Authorization: Bearer «token»
+    Jwt ->> Arch: petición autenticada
+    Arch ->> Arch: ValidadorDeArchivos<br/>(tipo real, tamaño, extensión)
+    Arch -->> UI: referencia del archivo guardado
+    end
+
+    %% ============================================================
+    %%  LA CONFIRMACIÓN
+    %% ============================================================
+    Note over Capataz, Repo: Confirmación de la recepción
+
+    Capataz ->> UI: marca lo que llegó y escribe la diferencia si la hubo
+    UI ->> Http: PATCH /api/pedidos/{id}/recepcion<br/>{fotoRemito, notaDiferencia}
+    Http ->> Jwt: Authorization: Bearer «token»
+
+    Jwt ->> Jwt: valida firma, vencimiento<br/>y versión de sesión
+    Jwt ->> Repo: lee los permisos del usuario
+    Note right of Jwt: Los permisos NO viajan dentro del token:<br/>se leen en cada petición, así un cambio<br/>en Accesos se aplica en la siguiente.
+
+    Jwt ->> Ctrl: recibir(id, recepcion)
+
+    Note over Ctrl: @PreAuthorize("hasAuthority('compras.editar')")<br/>Si no lo tiene, 403 y no se ejecuta nada.
+
+    Ctrl ->> Serv: recibir(id, recepcion)
+
+    %% ---- Todo lo que sigue ocurre dentro de una sola transacción ----
+    rect rgb(238, 246, 255)
+    Note over Serv, Repo: @Transactional — o queda todo, o no queda nada
+
+    Serv ->> Repo: buscarCompletoOFallar(id)
+    Repo -->> Serv: Pedido con materiales y obra (JOIN FETCH)
+
+    Serv ->> Alc: exigirAlcance(idObra)
+    Note right of Alc: El Capataz de Obra solo alcanza SU obra.<br/>La cadena es usuario → operario → obras<br/>asignadas, y se resuelve en cada petición.
+    Alc -->> Serv: ok
+
+    Serv ->> Ped: fueEnviado()
+    Ped -->> Serv: true
+
+    break si el pedido todavía no fue enviado al proveedor
+        Note right of Serv: No se puede recibir lo que no se envió: si no,<br/>se daría por recibido un pedido que el dueño<br/>ni siquiera aprobó. La transacción se deshace.
+        Serv -->> Capataz: ReglaDeNegocioException → 409
+    end
+
+    Serv ->> Ped: recibir(idUsuarioRecibe, fotoRemito, notaDiferencia)
+
+    Note right of Ped: El ESTADO LO DECIDE LA ENTIDAD:<br/>con nota → "Recibido con Diferencias"<br/>sin nota → "Recibido Completo"<br/>Si lo eligiera el usuario, podría marcar<br/>"Completo" y escribir una diferencia.
+
+    Ped ->> Ped: fija estado, fechaRecepcion<br/>y quién recibió
+
+    %% ---- El cruce a Gastos ----
+    Serv ->> Ped: tieneTodosLosPrecios()
+    Ped -->> Serv: true
+
+    Serv ->> Ped: getMateriales() → calcularSubtotal()
+    Serv ->> Serv: agrupa los subtotales POR RUBRO
+    Note right of Serv: Un pedido puede mezclar cemento (Albañilería)<br/>con cable (Electricidad). Un gasto único habría<br/>que imputarlo a un solo rubro y ensuciaría<br/>el semáforo, que compara rubro por rubro.
+
+    Serv ->> GServ: generarDesdeRecepcion(obra, idPedido,<br/>montoPorRubro, fecha)
+
+    GServ ->> Repo: countByIdPedido(idPedido)
+    Note right of GServ: Si ya se generaron, no se duplican.<br/>Reprocesar una recepción no puede<br/>cobrarle dos veces el material a la obra.
+
+    GServ ->> Repo: ¿la obra tiene definitivo aprobado?
+    Note right of GServ: Sin definitivo aprobado no hay contra qué<br/>comparar: el gasto no se genera.
+
+    loop por cada rubro del pedido
+        GServ ->> Repo: save(Gasto tipo "Material")
+    end
+    GServ -->> Serv: cantidad de gastos generados
+
+    Note over Serv, Repo: Hibernate escribe el pedido y los gastos al<br/>cerrar la transacción. Si algo falla acá, la<br/>recepción se deshace con ellos.
+    end
+
+    Serv -->> Ctrl: PedidoRespuesta.completa(pedido)
+    Ctrl -->> Http: 200 OK (JSON)
+    Http -->> UI: pedido actualizado
+    UI -->> Capataz: "Recepción confirmada"<br/>y el pedido sale de la lista de pendientes
+
+    Note over Capataz, Repo: El gasto ya está cargado en la obra y el semáforo<br/>de desvío se movió, sin que nadie lo tipee de nuevo.<br/>Eso es lo que el sistema vino a resolver.

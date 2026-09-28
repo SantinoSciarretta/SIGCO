@@ -1,0 +1,215 @@
+/*
+ * SIGCO — Diagrama de casos de uso
+ *
+ * ALCANCE: los procesos CORE del sistema.
+ *
+ * La cátedra pidió expresamente centrarse en ellos y saltear los ABM ("obviemos
+ * diagramar el proceso de alta de usuario, por ejemplo"). Por eso los seis
+ * módulos de mantenimiento —clientes, materiales, proveedores, personal,
+ * usuarios y accesos— entran como UN caso de uso agrupado: existen, se ven, y
+ * no ocupan el diagrama.
+ *
+ * Y hay un motivo práctico además del pedido: con los 28 casos de uso del
+ * sistema completo, ningún acomodamiento queda legible. Se probó en columna
+ * (1037 x 3127 px) y apaisado (4153 x 310): o es una tira vertical o es una
+ * cinta horizontal. Recortado a lo core, entra en una hoja.
+ *
+ * Los actores y lo que puede hacer cada uno salen de la matriz de permisos del
+ * informe, que en el sistema vive en la tabla `rol_permiso` (migración V13) y
+ * se hace cumplir con @PreAuthorize en cada controlador. Cada caso de uso de
+ * abajo corresponde a endpoints reales.
+ *
+ * Render:  dot -Tpng casos-de-uso.dot -o img/uml-01-casos-de-uso.png
+ */
+digraph CasosDeUso {
+    rankdir=LR;
+    compound=true;
+    splines=spline;
+    nodesep=0.3;
+    ranksep=2.2;
+    bgcolor="white";
+    fontname="Segoe UI,Arial";
+    node [fontname="Segoe UI,Arial"];
+    edge [fontname="Segoe UI,Arial", color="#8aa8c4", arrowhead=none, penwidth=1.0];
+
+    /* ================================================================
+       ACTORES
+
+       Cuatro, y el cuarto importa: el VISITANTE no tiene cuenta. Es quien mira
+       la vidriera del portfolio, que es pública por diseño. Dejarlo afuera
+       escondería que el sistema tiene una superficie abierta.
+       ================================================================ */
+    node [shape=box, style="rounded,filled", fillcolor="#1d2d3d",
+          fontcolor="white", fontsize=14, width=1.9, height=0.72];
+
+    dueno     [label="Dueño"];
+    general   [label="Capataz\nGeneral"];
+    capataz   [label="Capataz\nde Obra"];
+    visitante [label="Visitante\nsin cuenta"];
+
+    /* En el mismo rango se apilan en columna. Encadenarlos con aristas
+       invisibles los pondría en fila, y las flechas del Dueño cruzarían el
+       diagrama entero. */
+    { rank=same; dueno; general; capataz; visitante; }
+
+    /* ================================================================
+       LÍMITE DEL SISTEMA
+       ================================================================ */
+    subgraph cluster_sistema {
+        label="SIGCO — Sistema Integral de Gestión de Obras";
+        labelloc="t";
+        labeljust="l";
+        fontsize=17;
+        fontcolor="#1d2d3d";
+        style="rounded";
+        color="#1d2d3d";
+        penwidth=1.4;
+        margin=20;
+
+        node [shape=ellipse, style=filled, fillcolor="#eef6ff",
+              fontcolor="#1d1f20", fontsize=11.5, width=2.5, height=0.56,
+              penwidth=0.9, color="#94bce3"];
+
+        /* ---------- El circuito comercial ---------- */
+        subgraph cluster_comercial {
+            label="Presupuestación";
+            fontsize=11; fontcolor="#5d6b7a"; color="#c3ccd6"; style="rounded";
+            margin=12;
+            uc_presup   [label="Armar el presupuesto"];
+            uc_aprobarP [label="Aprobar el definitivo"];
+            uc_pdf      [label="Emitir el PDF\npara el cliente"];
+        }
+
+        /* ---------- El circuito de materiales ---------- */
+        subgraph cluster_abastecimiento {
+            label="Compras";
+            fontsize=11; fontcolor="#5d6b7a"; color="#c3ccd6"; style="rounded";
+            margin=12;
+            uc_pedir    [label="Generar el pedido\nde materiales"];
+            uc_aprobarC [label="Aprobar el pedido"];
+            uc_whatsapp [label="Enviarlo al corralón\npor WhatsApp"];
+            uc_recibir  [label="Confirmar la recepción\ncon el remito"];
+        }
+
+        /* ---------- Lo que pasa mientras la obra corre ---------- */
+        subgraph cluster_ejecucion {
+            label="Ejecución y control";
+            fontsize=11; fontcolor="#5d6b7a"; color="#c3ccd6"; style="rounded";
+            margin=12;
+            uc_etapas   [label="Definir las etapas"];
+            uc_hito     [label="Marcar una etapa\ncumplida"];
+            uc_gasto    [label="Registrar un gasto"];
+            uc_desvio   [label="Ver el desvío\ncontra el presupuesto"];
+            uc_cerrar   [label="Cerrar la obra"];
+        }
+
+        /* ---------- La plata que entra ---------- */
+        subgraph cluster_cobros {
+            label="Cobros";
+            fontsize=11; fontcolor="#5d6b7a"; color="#c3ccd6"; style="rounded";
+            margin=12;
+            uc_plan     [label="Generar el plan\nde cobro"];
+            uc_cobrar   [label="Registrar un pago"];
+            uc_cac      [label="Actualizar el saldo\npor índice CAC"];
+        }
+
+        /* ---------- Hacia afuera ---------- */
+        subgraph cluster_difusion {
+            label="Portfolio y tablero";
+            fontsize=11; fontcolor="#5d6b7a"; color="#c3ccd6"; style="rounded";
+            margin=12;
+            uc_publicar [label="Publicar una obra\nterminada"];
+            uc_vidriera [label="Ver la vidriera"];
+            uc_tablero  [label="Ver el tablero"];
+        }
+
+        /* ---------- Lo que la cátedra pidió no detallar ----------
+         *
+         * Un solo caso agrupado, con borde punteado para que se lea que
+         * representa varios. Están en el sistema y funcionan; no se abren acá
+         * porque son altas y bajas de catálogo y no aportan al circuito.
+         */
+        uc_abm [label="Administrar catálogos,\npersonal y cuentas",
+                style="filled,dashed", fillcolor="#f5f5f8", color="#98989b",
+                fontcolor="#5d6b7a", height=0.7];
+    }
+
+    /* ================================================================
+       QUIÉN HACE QUÉ
+       ================================================================ */
+
+    /* ---------- Dueño ---------- */
+    edge [color="#5980a6"];
+    dueno -> uc_presup;
+    dueno -> uc_aprobarP;
+    dueno -> uc_pdf;
+    dueno -> uc_aprobarC;
+    dueno -> uc_whatsapp;
+    dueno -> uc_etapas;
+    dueno -> uc_gasto;
+    dueno -> uc_desvio;
+    dueno -> uc_cerrar;
+    dueno -> uc_plan;
+    dueno -> uc_cobrar;
+    dueno -> uc_cac;
+    dueno -> uc_publicar;
+    dueno -> uc_tablero;
+    dueno -> uc_abm;
+
+    /* ---------- Capataz General ----------
+     *
+     * Opera sobre CUALQUIER obra: pide materiales, confirma recepciones y
+     * marca el avance. No entra a presupuestos ni a cobros: es la línea que
+     * separa lo operativo de lo financiero, y es lo que permite delegar sin
+     * abrir los números.
+     */
+    edge [color="#749dc4"];
+    general -> uc_pedir;
+    general -> uc_recibir;
+    general -> uc_etapas;
+    general -> uc_hito;
+    general -> uc_desvio;
+    general -> uc_tablero;
+
+    /* ---------- Capataz de Obra ----------
+     *
+     * El más restringido, y SOLO sobre la obra que tiene asignada. Ese límite
+     * no es un permiso: lo resuelve AlcanceDeObras siguiendo la cadena
+     * usuario -> operario -> obras asignadas, en cada petición.
+     *
+     * NO marca etapas: la matriz del informe le da Seguimiento en "Consulta".
+     */
+    edge [color="#94bce3"];
+    capataz -> uc_pedir;
+    capataz -> uc_recibir;
+
+    /* ---------- Visitante ---------- */
+    edge [color="#3f7d63"];
+    visitante -> uc_vidriera;
+
+    /* ================================================================
+       RELACIONES ENTRE CASOS DE USO
+
+       En UML, «include» apunta del caso base al incluido: pasa SIEMPRE.
+       «extend» va al revés, desde el caso que extiende hacia el base: pasa a
+       veces.
+
+       constraint=false: sin eso estas flechas mandan sobre la ubicación de los
+       nodos y desarman el agrupamiento por módulo.
+       ================================================================ */
+    edge [style=dashed, arrowhead=vee, color="#5d6b7a", fontsize=9.5,
+          fontcolor="#5d6b7a", constraint=false, penwidth=0.9];
+
+    /* Aprobar el definitivo pone la obra en ejecución y habilita el plan. */
+    uc_plan     -> uc_aprobarP [label="«include»"];
+    /* Confirmar la recepción carga el gasto de los materiales, siempre. */
+    uc_recibir  -> uc_gasto    [label="«include»"];
+    /* Al completar la última etapa, la obra se da por terminada. */
+    uc_hito     -> uc_cerrar   [label="«include»"];
+
+    /* Opcionales: el pedido se puede mandar o no, el PDF se emite o no. */
+    uc_whatsapp -> uc_aprobarC [label="«extend»"];
+    uc_pdf      -> uc_presup   [label="«extend»"];
+    uc_cac      -> uc_plan     [label="«extend»"];
+    uc_publicar -> uc_cerrar   [label="«extend»"];
+}

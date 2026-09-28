@@ -1,0 +1,102 @@
+/*
+ * SIGCO — Diagrama de flujo de datos, NIVEL 0 (diagrama de contexto)
+ *
+ * El sistema entero como un solo proceso, y qué datos cruzan su frontera.
+ * Responde a una pregunta: ¿con quién habla SIGCO y qué le manda a cada uno?
+ *
+ * Notación (DeMarco / Yourdon):
+ *   - Entidad externa: rectángulo. Está afuera del sistema.
+ *   - Proceso:         círculo.
+ *   - Flujo de datos:  flecha con el nombre del dato que viaja.
+ *
+ * En el nivel 0 NO se dibujan almacenes de datos: son internos al proceso, y
+ * este nivel muestra justamente lo que se ve desde afuera.
+ *
+ * Render:  dot -Tpng dfd-nivel-0.dot -o img/uml-02-dfd-nivel-0.png
+ */
+digraph DFD0 {
+    rankdir=LR;
+    splines=spline;
+    nodesep=0.75;
+    ranksep=2.4;
+    bgcolor="white";
+    fontname="Segoe UI,Arial";
+    node [fontname="Segoe UI,Arial"];
+    edge [fontname="Segoe UI,Arial", fontsize=10, fontcolor="#1d2d3d",
+          color="#5980a6", penwidth=1.1, arrowsize=0.8];
+
+    /* ================================================================
+       ENTIDADES EXTERNAS
+
+       Quienes le dan datos al sistema o los reciben, pero no son parte de él.
+       El CLIENTE y el PROVEEDOR nunca entran a SIGCO: reciben documentos que
+       el sistema emite y devuelven información que alguien de adentro carga.
+       Están igual, porque el dato cruza la frontera.
+       ================================================================ */
+    node [shape=box, style="filled", fillcolor="#1d2d3d", fontcolor="white",
+          fontsize=12.5, width=1.85, height=0.65, penwidth=0];
+
+    dueno     [label="Dueño"];
+    capataz   [label="Capataz"];
+    cliente   [label="Cliente"];
+    proveedor [label="Proveedor\n(corralón)"];
+    visitante [label="Visitante"];
+    cac       [label="Cámara Arg. de\nla Construcción"];
+
+    { rank=same; dueno; capataz; cac; }
+    { rank=same; cliente; proveedor; visitante; }
+
+    /* ================================================================
+       EL SISTEMA, COMO UN SOLO PROCESO
+       ================================================================ */
+    node [shape=circle, style="filled", fillcolor="#eef6ff", fontcolor="#1d2d3d",
+          fontsize=14, width=2.3, fixedsize=true, penwidth=1.6, color="#1d2d3d"];
+
+    sigco [label="0\n\nSIGCO"];
+
+    /* ================================================================
+       FLUJOS
+
+       Cada flecha lleva el nombre del DATO que viaja, no la acción. Es la
+       diferencia entre un DFD y un diagrama de actividad: acá interesa qué
+       información se mueve, no en qué orden ocurre.
+       ================================================================ */
+
+    /* ---------- El dueño: administra y recibe el panorama ---------- */
+    dueno -> sigco [label="datos de obra y cliente\npresupuesto\naprobaciones\npagos cobrados"];
+    sigco -> dueno [label="tablero consolidado\ndesvío por rubro\nalertas de cobro\nbalance de la obra"];
+
+    /* ---------- El capataz: carga lo que pasa en obra ---------- */
+    capataz -> sigco [label="pedido de materiales\nremito recibido\netapas cumplidas"];
+    sigco -> capataz [label="obra asignada\ncatálogo de materiales\navance de la obra"];
+
+    /* ---------- El cliente: recibe documentos, entrega plata ----------
+     *
+     * Nunca usa el sistema. El dueño le manda el PDF y la planilla, y le
+     * informa los pagos que el cliente hizo.
+     */
+    sigco -> cliente [label="presupuesto en PDF\nplanilla de pagos"];
+    cliente -> sigco [label="aceptación del presupuesto\npagos realizados", style=dashed];
+
+    /* ---------- El proveedor: recibe el pedido, entrega el remito ----------
+     *
+     * El pedido le llega por WhatsApp, con el detalle escrito y un enlace
+     * público al PDF de la orden. El remito vuelve como foto, que el capataz
+     * carga al confirmar la recepción.
+     */
+    sigco -> proveedor [label="orden de pedido\n(WhatsApp + PDF)"];
+    proveedor -> sigco [label="remito y diferencias\ncotizaciones", style=dashed];
+
+    /* ---------- El visitante: solo mira ---------- */
+    sigco -> visitante [label="vidriera de obras\nterminadas", color="#3f7d63",
+                        fontcolor="#3f7d63"];
+
+    /* ---------- El índice CAC ----------
+     *
+     * Entra a mano: la importación automática está fuera del alcance de esta
+     * versión, y el informe lo dice. Por eso es una entidad externa y no una
+     * integración.
+     */
+    cac -> sigco [label="coeficiente mensual\n(se carga a mano)", style=dashed,
+                  color="#5d6b7a", fontcolor="#5d6b7a"];
+}
