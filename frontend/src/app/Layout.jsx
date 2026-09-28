@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { MODULOS, MODULOS_ADMINISTRACION, modulosVisibles } from './modulos';
 import { useSesion } from '../modules/sesion/useSesion';
+import LogoGranica from '../components/ui/LogoGranica';
 import estilos from './Layout.module.css';
 
 /**
@@ -40,7 +41,10 @@ export default function Layout() {
     <div className={estilos.contenedor}>
 
       <header className={estilos.barra}>
-        <span className={estilos.marca}>SIGCO</span>
+        {/* El logo, no la palabra SIGCO: la barra es lo que Ricardo tiene
+            abierto todo el día, y lo que corresponde ahí es su empresa.
+            El nombre del sistema queda en el ingreso y en la pestaña. */}
+        <LogoGranica claro alto={17} />
         <span className={estilos.separador} />
 
         <nav className={estilos.navegacion}>

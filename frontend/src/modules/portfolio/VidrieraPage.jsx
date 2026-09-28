@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import client from '../../api/client';
 import { urlDeArchivo, esArchivoSubido } from '../../components/ui/archivos';
+import LogoGranica from '../../components/ui/LogoGranica';
 import estilos from './Vidriera.module.css';
 
 /**
@@ -62,7 +63,11 @@ export default function VidrieraPage() {
       <div className={estilos.cuadricula} aria-hidden="true" />
 
       <header className={estilos.encabezado}>
-        <div className={estilos.marca}>GRANICA</div>
+        {/* Acá el logo importa más que en ninguna otra pantalla: es lo
+            único de esta página que ve un cliente que todavía no es
+            cliente. No lleva `alto`: el tamaño lo decide el CSS, que
+            lo achica en el celular. */}
+        <LogoGranica claro className={estilos.logo} />
         <p className={estilos.bajada}>
           Construcción, refacción y decoración de locales<br />
           CABA y Gran Buenos Aires
@@ -105,7 +110,7 @@ export default function VidrieraPage() {
 
       <footer className={estilos.pie}>
         {/* Sin teléfono ni correo: decisión del dueño, no un olvido. */}
-        <p>Granica SRL · Trabajamos por recomendación</p>
+        <p>Gránica SRL · Trabajamos por recomendación</p>
       </footer>
     </div>
   );

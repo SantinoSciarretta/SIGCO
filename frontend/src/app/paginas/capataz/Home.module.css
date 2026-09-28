@@ -13,13 +13,6 @@
   gap: 12px;
 }
 
-.marca {
-  font-family: var(--font-heading);
-  font-weight: var(--font-heading-weight);
-  font-size: 20px;
-  letter-spacing: 0.16em;
-}
-
 .momento {
   font-size: 11.5px;
   letter-spacing: 0.1em;

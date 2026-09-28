@@ -128,7 +128,7 @@ export default function CatalogoPage() {
           <p className={estilos.vacioTexto}>
             {hayFiltros
               ? 'Probá con otro nombre o quitá los filtros.'
-              : 'Cargá los rubros con los que Granica arma sus presupuestos: Albañilería, Plomería, Electricidad…'}
+              : 'Cargá los rubros con los que Gránica arma sus presupuestos: Albañilería, Plomería, Electricidad…'}
           </p>
         </Blueprint>
       )}

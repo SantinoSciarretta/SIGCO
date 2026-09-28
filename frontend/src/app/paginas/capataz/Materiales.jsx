@@ -123,7 +123,7 @@ function Pedido({ obra }) {
   return (
     <>
       <div className={estilos.catalogoCabecera}>
-        <span className="kicker">Catálogo Granica</span>
+        <span className="kicker">Catálogo Gránica</span>
         <span className={estilos.entrega}>{materiales.length} materiales</span>
       </div>
 

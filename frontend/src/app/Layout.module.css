@@ -17,13 +17,6 @@
   color: var(--color-sobre-oscuro);
 }
 
-.marca {
-  font-family: var(--font-heading);
-  font-weight: var(--font-heading-weight);
-  font-size: 22px;
-  letter-spacing: 0.16em;
-}
-
 .separador {
   width: 1px;
   height: 24px;

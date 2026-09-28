@@ -6,19 +6,23 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
+import com.lowagie.text.Image;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import java.awt.Color;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 
 /**
  * Lo que comparten todos los documentos en PDF del sistema.
  *
- * Hay tres: el presupuesto que se le manda al cliente, la planilla de pagos y
- * el reporte de gastos. Los tres llevan el mismo membrete, los mismos colores y
- * la misma tipografia, porque los tres salen de la misma empresa.
+ * Hay cuatro: el presupuesto que se le manda al cliente, la orden de pedido que
+ * va al corralon, la planilla de pagos y el reporte de gastos. Los cuatro llevan
+ * el mismo membrete con el logo de la empresa, los mismos colores y la misma
+ * tipografia, porque los cuatro salen de la misma empresa.
  *
  * Esta clase existe para que eso sea cierto sin depender de que alguien se
  * acuerde: si el membrete viviera copiado en cada generador, el dia que cambie
@@ -52,12 +56,73 @@ public final class EstiloPdf {
     public static final Font DESTACADO = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11, Color.BLACK);
     public static final Font TOTAL = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14, ACERO);
 
-    /** Membrete de la empresa. El mismo en los tres documentos. */
+    // ------------------------------------------------------------------
+    //  Logo
+    // ------------------------------------------------------------------
+
+    /**
+     * El logo, dentro del jar.
+     *
+     * Es un PNG y no el SVG original porque OpenPDF no dibuja SVG: solo sabe
+     * insertar imagenes de mapa de bits. El PNG se genera a partir de
+     * frontend/public/granica-logo.svg, que es la fuente unica del logo; si hay
+     * que cambiarlo, se cambia el SVG y se vuelve a exportar (ver
+     * docs/desarrollo/23-logo-de-la-empresa.md).
+     */
+    private static final String RUTA_LOGO = "/documentos/granica-logo.png";
+
+    /** Ancho del logo en el membrete, en puntos. El alto sale de la proporcion. */
+    private static final float ANCHO_LOGO = 185f;
+
+    /**
+     * Los bytes del PNG, leidos una sola vez.
+     *
+     * Se cachean los BYTES y no el objeto Image a proposito: una Image de
+     * OpenPDF guarda adentro en que documento y en que posicion quedo colocada,
+     * asi que reutilizar la misma instancia en dos PDF distintos la deja
+     * apuntando al documento equivocado. Crear una Image nueva por documento
+     * cuesta nada; releer el archivo del disco en cada presupuesto, si.
+     */
+    private static final byte[] LOGO = cargarLogo();
+
+    private static byte[] cargarLogo() {
+        try (InputStream entrada = EstiloPdf.class.getResourceAsStream(RUTA_LOGO)) {
+            return entrada == null ? null : entrada.readAllBytes();
+        } catch (IOException e) {
+            // No se propaga: que falte el logo no puede impedir que se emita un
+            // presupuesto. El membrete cae al nombre en texto, que es lo que
+            // habia antes de que el logo existiera.
+            return null;
+        }
+    }
+
+    /**
+     * Membrete de la empresa. El mismo en los cuatro documentos.
+     *
+     * Si el logo no esta disponible se escribe el nombre en texto. Es el mismo
+     * criterio que en pantalla: el documento tiene que salir igual, porque un
+     * presupuesto sin membrete es peor que uno sin logo.
+     */
     public static void membrete(Document documento) throws DocumentException {
-        documento.add(new Paragraph("GRANICA SRL", TITULO));
+        boolean conLogo = false;
+        if (LOGO != null) {
+            try {
+                Image logo = Image.getInstance(LOGO);
+                logo.scaleToFit(ANCHO_LOGO, ANCHO_LOGO);
+                logo.setAlignment(Element.ALIGN_LEFT);
+                documento.add(logo);
+                conLogo = true;
+            } catch (IOException e) {
+                conLogo = false;
+            }
+        }
+        if (!conLogo) {
+            documento.add(new Paragraph("GRÁNICA S.R.L.", TITULO));
+        }
 
         Paragraph rubro = new Paragraph(
                 "Construcción civil, refacción y decoración de locales", SUBTITULO);
+        rubro.setSpacingBefore(conLogo ? 4 : 0);
         rubro.setSpacingAfter(14);
         documento.add(rubro);
 

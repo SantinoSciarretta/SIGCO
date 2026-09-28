@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Blueprint from '../../components/ui/Blueprint';
 import { useSesion } from '../../modules/sesion/useSesion';
+import LogoGranica from '../../components/ui/LogoGranica';
 import estilos from './Login.module.css';
 
 /**
@@ -57,8 +58,11 @@ export default function Login() {
 
         <header className={estilos.encabezado}>
           <div>
+            {/* Primero la empresa y después el sistema: quien entra acá
+                trabaja en Gránica, SIGCO es la herramienta. */}
+            <LogoGranica claro alto={30} className={estilos.logo} />
             <div className={estilos.marca}>SIGCO</div>
-            <div className={estilos.marcaSub}>Granica SRL · obra y refacción</div>
+            <div className={estilos.marcaSub}>Sistema integral de gestión de obras</div>
           </div>
           <div className={estilos.version}>v1.0<br />CABA-AR</div>
         </header>

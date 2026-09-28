@@ -30,12 +30,23 @@
   border-bottom: 1px solid rgba(242, 242, 243, .14);
 }
 
-.marca {
-  font-size: 46px;
-  letter-spacing: 0.24em;
-  /* El margen compensa el espaciado de la última letra, que si no deja la
-     palabra corrida hacia la izquierda. */
-  margin-left: 0.24em;
+/* El logo mide 930 x 99,5: casi diez veces más ancho que alto. A 44 px de alto
+   ocupa 410 px de ancho, que en un celular no entra. Por eso el alto se fija
+   acá y no en el componente, y se achica con la pantalla. */
+.logo {
+  height: 44px;
+}
+
+@media (max-width: 600px) {
+  .logo {
+    height: 30px;
+  }
+}
+
+@media (max-width: 380px) {
+  .logo {
+    height: 24px;
+  }
 }
 
 .bajada {

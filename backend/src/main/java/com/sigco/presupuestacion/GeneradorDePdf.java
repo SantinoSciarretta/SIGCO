@@ -12,6 +12,8 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
+
+import static com.sigco.documentos.EstiloPdf.membrete;
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
@@ -48,8 +50,6 @@ public class GeneradorDePdf {
     private static final Color GRIS_LINEA = new Color(0xd4, 0xd4, 0xd7);
     private static final Color GRIS_TEXTO = new Color(0x5d, 0x5d, 0x60);
 
-    private static final Font TITULO = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 22, ACERO);
-    private static final Font SUBTITULO = FontFactory.getFont(FontFactory.HELVETICA, 9, GRIS_TEXTO);
     private static final Font ETIQUETA = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 8, GRIS_TEXTO);
     private static final Font TEXTO = FontFactory.getFont(FontFactory.HELVETICA, 10, Color.BLACK);
     private static final Font TEXTO_CHICO = FontFactory.getFont(FontFactory.HELVETICA, 9, GRIS_TEXTO);
@@ -69,7 +69,10 @@ public class GeneradorDePdf {
             PdfWriter.getInstance(documento, salida);
             documento.open();
 
-            escribirMembrete(documento);
+            // El membrete con el logo es el mismo de los otros tres PDF del
+            // sistema y vive en un solo lugar (EstiloPdf). Antes estaba copiado
+            // aca, y eso significaba que el logo habria que ponerlo dos veces.
+            membrete(documento);
             escribirDatosDeObra(documento, presupuesto);
             escribirRubros(documento, presupuesto);
             escribirTotal(documento, presupuesto);
@@ -87,19 +90,6 @@ public class GeneradorDePdf {
     }
 
     // ------------------------------------------------------------------
-
-    /** Membrete de la empresa. */
-    private void escribirMembrete(Document documento) throws DocumentException {
-        Paragraph marca = new Paragraph("GRANICA SRL", TITULO);
-        documento.add(marca);
-
-        Paragraph rubroEmpresa = new Paragraph(
-                "Construcción civil, refacción y decoración de locales", SUBTITULO);
-        rubroEmpresa.setSpacingAfter(14);
-        documento.add(rubroEmpresa);
-
-        documento.add(linea());
-    }
 
     /** Datos del proyecto: cliente, direccion, instancia y fecha. */
     private void escribirDatosDeObra(Document documento, Presupuesto p) throws DocumentException {

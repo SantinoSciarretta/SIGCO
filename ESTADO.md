@@ -14,7 +14,7 @@
 de negocio, API, pantalla, tests y documentación. La seguridad está activa sobre
 todo el sistema y endurecida para salir a internet.
 
-- **373 tests** automáticos, sin fallos
+- **374 tests** automáticos, sin fallos
 - **29 tablas**, 21 migraciones de Flyway aplicadas
 - **Auditoría completa hecha** el 22–23/09: ver `docs/desarrollo/19-auditoria.md`
 - **Los ocho cambios que pidió Ricardo al probarlo están hechos** (23–24/09):
@@ -30,6 +30,10 @@ todo el sistema y endurecida para salir a internet.
 - **Los cuatro diagramas que pidió la cátedra están hechos** (28/09): casos de
   uso, flujo de datos (niveles 0 y 1), clases y secuencia. Están sacados del
   código, no del informe. Ver `docs/diagramas/diagramas-uml.md`
+- **El logo de Gránica está puesto** (28/09): en los cuatro PDF, en la barra, en
+  el ingreso, en las pantallas del capataz, en la vidriera y en el icono de la
+  pestaña. Sale todo de un solo archivo. Ver
+  `docs/desarrollo/23-logo-de-la-empresa.md`
 - **El código está terminado.** Lo único que falta para usarlo es publicarlo, y
   eso necesita tus cuentas: ver `docs/PUESTA-EN-MARCHA.md`
 
@@ -108,6 +112,7 @@ El detalle y el porqué de cada una, en `docs/PREGUNTAS-PARA-RICARDO.md`.
 | Consultas agregadas en el tablero si algún día hay muchas obras | `14-dashboard.md` |
 | Sin límite de peticiones fuera del login | `19-auditoria.md` §9 |
 | Poder cargar gastos sin poder anularlos (hoy `gastos.editar` habilita las dos) | `19-auditoria.md` §9 |
+| El PDF de presupuesto todavía duplica cinco helpers de `EstiloPdf` | `23-logo-de-la-empresa.md` §4 |
 
 ---
 

@@ -38,6 +38,10 @@
   padding-bottom: 14px;
 }
 
+.logo {
+  margin-bottom: 14px;
+}
+
 .marca {
   font-family: var(--font-heading);
   font-weight: var(--font-heading-weight);

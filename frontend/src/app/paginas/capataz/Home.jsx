@@ -5,6 +5,7 @@ import { avanceDeObra } from '../../../modules/seguimiento/seguimientoApi';
 import { listarPedidos } from '../../../modules/compras/pedidosApi';
 import { useSesion } from '../../../modules/sesion/useSesion';
 import { useObraDelCapataz } from './useObraDelCapataz';
+import LogoGranica from '../../../components/ui/LogoGranica';
 import estilos from './Home.module.css';
 
 /**
@@ -70,7 +71,7 @@ export default function Home() {
       <>
         <header className={estilos.cabecera}>
           <div className={estilos.cabeceraFila}>
-            <span className={estilos.marca}>SIGCO</span>
+            <LogoGranica claro alto={15} />
             <span className={estilos.momento}>{momentoActual()}</span>
           </div>
           <p className={estilos.kicker}>Elegí la obra</p>
@@ -100,7 +101,7 @@ export default function Home() {
     <>
       <header className={estilos.cabecera}>
         <div className={estilos.cabeceraFila}>
-          <span className={estilos.marca}>SIGCO</span>
+          <LogoGranica claro alto={15} />
           <span className={estilos.momento}>{momentoActual()}</span>
         </div>
 

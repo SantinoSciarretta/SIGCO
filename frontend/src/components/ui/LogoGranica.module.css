@@ -1,0 +1,51 @@
+/* ============================================================================
+   Logo de la empresa
+
+   El archivo SVG trae sus colores propios (#191919 el marco de la G, #666666 el
+   interior, #464646 la palabra). Acá se los pisa.
+
+   Funciona porque `fill` escrito como ATRIBUTO en el SVG es un "atributo de
+   presentación", y esos pierden contra cualquier regla de hoja de estilos. Por
+   eso no hace falta tocar el archivo ni mantener dos versiones del logo.
+   ============================================================================ */
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  /* Alto por defecto, para quien no pase `alto` ni lo defina por CSS. El ancho
+     lo pone el SVG según su proporción (930 x 99,5). */
+  height: 26px;
+  flex: 0 0 auto;
+}
+
+.logo svg {
+  height: 100%;
+  width: auto;
+  /* Que nunca desborde: en el celular la vidriera lo manda por ancho. */
+  max-width: 100%;
+  display: block;
+}
+
+/* ---------- Sobre fondo claro: el acero del sistema ----------
+   No se deja el negro original: el resto de la interfaz no usa negro puro en
+   ningún lado, y el logo quedaría más pesado que todo lo que tiene alrededor. */
+.logo svg path {
+  fill: var(--color-accent-900);
+}
+
+/* El interior de la G, un paso más claro. Es la relación que tiene el logo
+   original entre su marco y su interior, sostenida con los tonos del sistema. */
+.logo svg path:nth-of-type(2) {
+  fill: var(--color-accent-600);
+}
+
+/* ---------- Sobre fondo oscuro (la barra, el ingreso, la vidriera) ---------- */
+.claro svg path {
+  fill: #f2f2f3;
+}
+
+.claro svg path:nth-of-type(2) {
+  /* Acá no sirve el azul: sobre el fondo oscuro se apagaría. Un blanco velado
+     mantiene la lectura de dos tonos sin perder contraste. */
+  fill: rgba(242, 242, 243, 0.45);
+}
