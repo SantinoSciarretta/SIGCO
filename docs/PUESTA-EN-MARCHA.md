@@ -153,12 +153,22 @@ ALMACENAMIENTO_TIPO=supabase
 SUPABASE_URL=      (https://abcdefghijk.supabase.co — sin el "db." y sin el puerto)
 SUPABASE_SERVICE_KEY=   (la clave service_role del paso 1.4)
 FRONTEND_URL=https://ejemplo.vercel.app
+URL_PUBLICA=https://ejemplo.up.railway.app
 ```
 
-`FRONTEND_URL` todavía no lo sabés: poné cualquier cosa por ahora y lo
-corregimos en el paso 4. Es el último eslabón.
+**Las dos últimas todavía no las sabés**: dependen de dominios que no existen
+hasta los pasos 2.5 y 3.3. Poné cualquier cosa por ahora y las corregimos en el
+paso 4.
 
 `PORT` no lo cargues: lo pone Railway y el backend ya lo lee.
+
+> **`URL_PUBLICA` es fácil de pasar por alto y el error no se ve.** Es la
+> dirección con la que el sistema arma el enlace al PDF de la orden que se le
+> manda al corralón por WhatsApp. Si no la cargás, el backend usa el valor por
+> defecto —`http://localhost:8080`— y el mensaje le va a llegar al proveedor con
+> un enlace que **solo funciona en tu computadora**. Todo lo demás anda
+> perfecto; el único que se entera es el corralón, cuando toca el link y no
+> abre nada.
 
 ### 2.4 Esperar y mirar los registros
 
@@ -166,13 +176,16 @@ El primer despliegue tarda unos minutos porque descarga las dependencias de
 Maven. Cuando termine, abrí *Deployments → View logs* y buscá:
 
 ```
-Successfully applied 14 migrations
+Successfully applied 21 migrations
 Started SigcoBackendApplication
 ```
 
-**Ese "14 migrations" es la señal de que la base quedó armada sola**: las 28
+**Ese "21 migrations" es la señal de que la base quedó armada sola**: las 29
 tablas, los tres roles, los 28 permisos y la cuenta de Ricardo. No tenés que
 crear ninguna tabla a mano.
+
+Si el número es menor, no seguiste un paso mal: es que la base no estaba vacía.
+Mirá el log completo, porque Flyway avisa exactamente en cuál se plantó.
 
 ### 2.5 Copiar el dominio
 
@@ -219,13 +232,16 @@ Copialo.
 
 ## Paso 4 — Cerrar el círculo
 
-Volvé a Railway y corregí la variable que dejaste pendiente:
+Volvé a Railway y corregí las **dos** variables que dejaste pendientes, las dos
+sin barra al final:
 
 ```
-FRONTEND_URL=https://sigco.vercel.app
+FRONTEND_URL=https://sigco.vercel.app                 (el dominio de Vercel, paso 3.3)
+URL_PUBLICA=https://sigco-backend-production.up.railway.app   (el de Railway, paso 2.5)
 ```
 
-(el dominio real de Vercel, sin barra al final).
+Ojo que son distintas y es fácil confundirlas: `FRONTEND_URL` es la pantalla,
+`URL_PUBLICA` es este mismo backend.
 
 Railway vuelve a desplegar solo.
 
@@ -275,6 +291,7 @@ Media hora, y te ahorra descubrir un problema con Ricardo mirando.
 | Abrir `/obras-realizadas` sin entrar | **SÍ** se tiene que ver |
 | Entrar como capataz general | El tablero **no** muestra ganancia ni saldo por cobrar |
 | Errar la contraseña cinco veces seguidas | Avisa que la cuenta quedó bloqueada 15 minutos |
+| Aprobar un pedido y tocar *Enviar por WhatsApp* | El enlace del mensaje abre el PDF, y **no** dice `localhost` |
 
 Las dos pruebas de fotos son las más importantes, porque son lo único que
 **nunca se pudo probar contra Supabase real** desde acá: no había cuenta.
@@ -295,6 +312,7 @@ Si una foto no sube, revisá que los buckets se llamen exactamente
 | El backend no arranca | Mirá los registros: casi siempre es `DB_URL`, `DB_PASSWORD` o un `JWT_SECRETO` de menos de 32 caracteres |
 | Entra pero no sube fotos | La clave es la `anon` y no la `service_role`, o los buckets tienen otro nombre |
 | Entra y todo da error 403 | Falta cambiar la contraseña: es la obligación del primer ingreso |
+| El corralón dice que el link de WhatsApp no abre | Falta `URL_PUBLICA` en Railway: el mensaje salió apuntando a `localhost` |
 
 Los registros de Railway (*Deployments → View logs*) dicen casi siempre qué
 pasó. En producción el detalle del error **no** se le manda al navegador —a
@@ -311,10 +329,6 @@ Publicar el sistema no es ponerlo en uso. Lo que queda:
    Sin el catálogo cargado, Presupuestación y Compras no tienen de dónde elegir.
    Es una sentada con Ricardo, no es código.
 
-2. **Resolver una duda del informe**: si el subrubro de un gasto es obligatorio
-   o no. El informe se contradice y hoy está implementado como **opcional**.
-   Preguntale a Ricardo si al cargar un gasto siempre sabe el subrubro.
-
-3. **El manual de usuario** (Etapa 4). Ahora sí se puede hacer, porque todas las
+2. **El manual de usuario** (Etapa 4). Ahora sí se puede hacer, porque todas las
    pantallas existen y se pueden capturar. El insumo son los `.md` de
    `docs/desarrollo/`.
