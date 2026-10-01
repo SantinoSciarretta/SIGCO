@@ -79,6 +79,22 @@ public class Pago {
     @Column(name = "fecha_carga", nullable = false)
     private LocalDateTime fechaCarga;
 
+    /**
+     * Si este pago fue anulado.
+     *
+     * No se borra la fila: es el mismo criterio que usa Gasto (estado +
+     * motivo_anulacion) en vez de un DELETE. Un pago anulado deja de contar
+     * para totalPagado()/saldo(), pero el detalle —cuánto fue, cuándo, por qué
+     * medio y quién lo cargó— queda disponible para reconstruir el historial.
+     * Antes, anular un pago hacía un DELETE real (pagos.clear() con
+     * orphanRemoval) y esa información se perdía para siempre.
+     */
+    @Column(name = "anulado", nullable = false)
+    private boolean anulado = false;
+
+    @Column(name = "motivo_anulacion", length = 200)
+    private String motivoAnulacion;
+
     protected Pago() {
     }
 
@@ -123,5 +139,19 @@ public class Pago {
 
     public LocalDateTime getFechaCarga() {
         return fechaCarga;
+    }
+
+    public boolean estaAnulado() {
+        return anulado;
+    }
+
+    public String getMotivoAnulacion() {
+        return motivoAnulacion;
+    }
+
+    /** Marca el pago como anulado. No borra nada: ver el comentario del campo. */
+    void anular(String motivo) {
+        this.anulado = true;
+        this.motivoAnulacion = motivo;
     }
 }

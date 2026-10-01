@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import Blueprint from '../../components/ui/Blueprint';
 import Modal from '../../components/ui/Modal';
 import { listarObras } from '../obras/obrasApi';
@@ -17,8 +18,15 @@ import estilos from './Cobros.module.css';
  * vencidas se marcan solas, a partir del calendario.
  */
 export default function CobrosPage() {
+  // Si se llega desde "Cada módulo, ya filtrado" de la ficha de obra
+  // (/cobranzas?obra=123), esa obra tiene que quedar preseleccionada: antes
+  // este parámetro se ignoraba por completo y el link siempre terminaba
+  // mostrando la primera obra con cobros de la lista, no la que se vino a ver.
+  const [parametros] = useSearchParams();
+  const obraDesdeUrl = parametros.get('obra');
+
   const [obras, setObras] = useState([]);
-  const [idObra, setIdObra] = useState('');
+  const [idObra, setIdObra] = useState(obraDesdeUrl || '');
   const [plan, setPlan] = useState(null);
   const [resumen, setResumen] = useState([]);
   const [error, setError] = useState(null);
@@ -36,11 +44,12 @@ export default function CobrosPage() {
     listarObras().then((d) => {
       if (!vigente) return;
       setObras(d);
+      if (obraDesdeUrl) return;
       const conCobros = d.find((o) => o.estado === 'En ejecución' || o.estado === 'Finalizada');
       if (conCobros) setIdObra(String(conCobros.idObra));
     }).catch(() => {});
     return () => { vigente = false; };
-  }, []);
+  }, [obraDesdeUrl]);
 
   useEffect(() => {
     let vigente = true;

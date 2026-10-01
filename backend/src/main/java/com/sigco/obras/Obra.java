@@ -96,6 +96,19 @@ public class Obra {
     @Column(name = "motivo_cancelacion", length = 200)
     private String motivoCancelacion;
 
+    /**
+     * Id del ultimo registro_cac que ya se aplico a esta obra.
+     *
+     * Sin esto, aplicar el mismo coeficiente dos veces (dos clics, una doble
+     * llamada) componia el ajuste sobre un saldo que ya lo tenia: un 1,4
+     * aplicado dos veces dejaba las cuotas multiplicadas por 1,96 y no por 1,4,
+     * sin ningun rastro de que eso habia pasado. Guardar que id_cac fue el
+     * ultimo aplicado alcanza para rechazar la repeticion sin necesitar una
+     * tabla aparte: cuando se carga un CAC nuevo (otro id), se puede aplicar.
+     */
+    @Column(name = "id_ultimo_cac_aplicado")
+    private Long idUltimoCacAplicado;
+
     @Column(name = "fecha_creacion", nullable = false)
     private LocalDateTime fechaCreacion;
 
@@ -307,5 +320,13 @@ public class Obra {
 
     public LocalDateTime getFechaCreacion() {
         return fechaCreacion;
+    }
+
+    public Long getIdUltimoCacAplicado() {
+        return idUltimoCacAplicado;
+    }
+
+    public void registrarCacAplicado(Long idCac) {
+        this.idUltimoCacAplicado = idCac;
     }
 }

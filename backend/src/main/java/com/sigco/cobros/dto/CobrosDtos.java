@@ -120,7 +120,12 @@ public final class CobrosDtos {
                     c.totalPagado(), c.saldo(),
                     c.getFechaVencimiento(), c.getEstado(), c.getFechaPago(),
                     c.getMedioPago(), c.getComprobanteEmitido(), c.getMotivoAnulacion(),
-                    c.getPagos().stream().map(PagoRespuesta::desde).toList());
+                    // Solo los VIGENTES: un pago anulado ya no se borra (se marca,
+                    // para conservar el detalle con fines de auditoría), pero no
+                    // tiene que seguir apareciendo en el detalle que ve el cliente.
+                    c.getPagos().stream()
+                            .filter(p -> !p.estaAnulado())
+                            .map(PagoRespuesta::desde).toList());
         }
     }
 

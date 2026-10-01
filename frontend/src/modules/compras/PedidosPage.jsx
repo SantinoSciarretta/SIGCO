@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import Blueprint from '../../components/ui/Blueprint';
 import Modal from '../../components/ui/Modal';
 import { abrirPdf } from '../../api/documentos';
@@ -29,6 +30,11 @@ import estilos from './Compras.module.css';
 export default function PedidosPage() {
   const { puede } = useSesion();
 
+  // Llegar desde "Cada módulo, ya filtrado" de la ficha de obra
+  // (/pedidos?obra=123) tiene que dejar ese filtro cargado: antes se ignoraba
+  // y el link mostraba los pedidos de todas las obras.
+  const [parametros] = useSearchParams();
+
   const [pedidos, setPedidos] = useState([]);
   const [aEnviar, setAEnviar] = useState(null);
   const [obras, setObras] = useState([]);
@@ -37,7 +43,7 @@ export default function PedidosPage() {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
 
-  const [obra, setObra] = useState('');
+  const [obra, setObra] = useState(parametros.get('obra') || '');
   const [estado, setEstado] = useState('');
   const [recarga, setRecarga] = useState(0);
 

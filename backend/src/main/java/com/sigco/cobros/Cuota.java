@@ -123,7 +123,7 @@ public class Cuota {
     }
 
     /**
-     * Anula TODOS los pagos: la cuota vuelve a deberse entera.
+     * Anula TODOS los pagos vigentes: la cuota vuelve a deberse entera.
      *
      * Se anula la cobranza completa y no un pago suelto, y es una decision
      * deliberada: anular una parte de lo cobrado deja un estado de cuenta que
@@ -131,10 +131,18 @@ public class Cuota {
      * un pago, se anula todo y se vuelven a cargar los que si entraron, que
      * ademas es como se corrige en una planilla.
      *
-     * El informe pide dejar el motivo para conservar la trazabilidad.
+     * El informe pide dejar el motivo para conservar la trazabilidad. Por eso
+     * cada Pago se MARCA anulado en vez de borrarse (antes `pagos.clear()` con
+     * orphanRemoval hacia un DELETE real y el detalle de cada pago —monto,
+     * fecha, medio, comprobante— se perdia para siempre, a diferencia de como
+     * el resto del sistema maneja las anulaciones, por ejemplo en Gasto).
      */
     public void anularPago(String motivo) {
-        this.pagos.clear();
+        for (Pago pago : pagos) {
+            if (!pago.estaAnulado()) {
+                pago.anular(motivo);
+            }
+        }
         this.fechaPago = null;
         this.medioPago = null;
         this.comprobanteEmitido = null;
@@ -166,9 +174,10 @@ public class Cuota {
         }
     }
 
-    /** Lo que entro hasta ahora por esta cuota. */
+    /** Lo que entro hasta ahora por esta cuota. Los pagos anulados no cuentan. */
     public BigDecimal totalPagado() {
         return pagos.stream()
+                .filter(p -> !p.estaAnulado())
                 .map(Pago::getMonto)
                 .reduce(BigDecimal.ZERO, BigDecimal::add)
                 .setScale(DECIMALES, RoundingMode.HALF_UP);
@@ -184,8 +193,9 @@ public class Cuota {
         return java.util.Collections.unmodifiableList(pagos);
     }
 
+    /** Si tiene algun pago vigente (no anulado) que se pueda anular. */
     public boolean tienePagos() {
-        return !pagos.isEmpty();
+        return pagos.stream().anyMatch(p -> !p.estaAnulado());
     }
 
 

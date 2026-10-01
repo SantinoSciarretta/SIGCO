@@ -2,6 +2,7 @@ package com.sigco.compras.dto;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -76,10 +77,14 @@ public final class PedidoDtos {
      * La foto del remito es obligatoria: es la regla del informe y es lo que
      * reemplaza al papel que hoy se pierde. La nota solo se completa si hubo
      * diferencias, y su presencia es la que define el estado final.
+     *
+     * @NotBlank y no @NotNull: un string vacío ("") pasa @NotNull porque no es
+     * null, y dejaría un pedido "Recibido" sin foto real. @NotBlank rechaza
+     * también la cadena vacía y la de solo espacios.
      */
     public record Recepcion(
 
-            @NotNull(message = "La foto del remito es obligatoria")
+            @NotBlank(message = "La foto del remito es obligatoria")
             @Size(max = 255, message = "La referencia de la foto no puede superar los 255 caracteres")
             String fotoRemito,
 

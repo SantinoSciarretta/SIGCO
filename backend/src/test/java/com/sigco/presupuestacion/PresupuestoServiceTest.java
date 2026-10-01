@@ -740,6 +740,26 @@ class PresupuestoServiceTest {
 
             verify(repositorio, never()).delete(any());
         }
+
+        /**
+         * Es la operación más irreversible del módulo —admite incluso un
+         * presupuesto Aprobado— y hasta esta auditoría era la única que no
+         * dejaba ningún rastro de quién la ejecutó ni cuándo.
+         */
+        @Test
+        @DisplayName("Eliminar un presupuesto queda registrado en la auditoría")
+        void eliminarQuedaAuditado() {
+            Presupuesto p = presupuesto(obra(Obra.TIPO_REFORMA, 1L),
+                    Presupuesto.TIPO_ANTEPROYECTO, 5L);
+            when(repositorio.findById(5L)).thenReturn(Optional.of(p));
+            when(repositorio.existsByPresupuestoBaseIdPresupuesto(5L)).thenReturn(false);
+
+            servicio.eliminar(5L);
+
+            verify(auditoria).registrar(
+                    org.mockito.ArgumentMatchers.contains("presupuesto #5"),
+                    org.mockito.ArgumentMatchers.eq("Presupuestación"));
+        }
     }
 
     // ------------------------------------------------------------------

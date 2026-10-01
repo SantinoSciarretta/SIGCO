@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import Blueprint from '../../components/ui/Blueprint';
 import Modal from '../../components/ui/Modal';
 import { listarObras } from '../obras/obrasApi';
@@ -15,6 +16,11 @@ import estilos from './Personal.module.css';
  * destaca cuando empieza a ser significativa.
  */
 export default function PersonalPage() {
+  // Llegar desde "Cada módulo, ya filtrado" de la ficha de obra
+  // (/personal?obra=123) tiene que dejar ese filtro cargado: antes se
+  // ignoraba y el link mostraba el personal de todas las obras.
+  const [parametros] = useSearchParams();
+
   const [operarios, setOperarios] = useState([]);
   const [obras, setObras] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -22,7 +28,7 @@ export default function PersonalPage() {
 
   const [busqueda, setBusqueda] = useState('');
   const [estado, setEstado] = useState('');
-  const [obra, setObra] = useState('');
+  const [obra, setObra] = useState(parametros.get('obra') || '');
   const [recarga, setRecarga] = useState(0);
 
   const [altaAbierta, setAltaAbierta] = useState(false);

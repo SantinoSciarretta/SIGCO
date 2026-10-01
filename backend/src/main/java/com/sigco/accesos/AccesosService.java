@@ -37,6 +37,17 @@ public class AccesosService {
     private static final LocalDateTime DESDE_SIEMPRE = LocalDateTime.of(2000, 1, 1, 0, 0);
     private static final LocalDateTime HASTA_SIEMPRE = LocalDateTime.of(2999, 12, 31, 23, 59);
 
+    /**
+     * Presupuestacion y Cobros son, segun el informe, indelegables igual que
+     * compras.aprobar: "quedan reservadas exclusivamente al rol de dueño y no
+     * pueden asignarse a otros roles". Se bloquean ambos permisos de cada
+     * modulo (ver y editar), no solo editar: la matriz del informe tambien le
+     * niega la consulta a Capataz General y de Obra en los dos modulos.
+     */
+    private static final List<String> PERMISOS_RESERVADOS_A_DUENO = List.of(
+            "presupuestos.ver", "presupuestos.editar",
+            "cobros.ver", "cobros.editar");
+
     private final RolRepository rolRepositorio;
     private final PermisoRepository permisoRepositorio;
     private final RegistroAuditoriaRepository auditoriaRepositorio;
@@ -109,6 +120,25 @@ public class AccesosService {
         if (!rol.esDueno() && contiene(nuevos, Permiso.COMPRAS_APROBAR)) {
             throw new ReglaDeNegocioException(
                     "La aprobación de pedidos es indelegable: solo el rol Dueño puede tenerla.");
+        }
+
+        // El informe (modulo 14) dice que presupuestar y cobrar "quedan
+        // reservadas exclusivamente al rol de dueño y no pueden asignarse a
+        // otros roles". Hasta ahora eso solo se respetaba por los datos de
+        // semilla (la migracion V13 nunca le asigna estos permisos a un
+        // capataz), pero nada en este metodo lo impedia: desde esta misma
+        // pantalla se le podia tildar presupuestos.editar o cobros.ver a
+        // Capataz General sin que el backend lo rechazara. Es el mismo tipo
+        // de guarda que ya existe arriba para compras.aprobar, extendida a los
+        // otros dos modulos no delegables.
+        if (!rol.esDueno()) {
+            for (String permisoReservado : PERMISOS_RESERVADOS_A_DUENO) {
+                if (contiene(nuevos, permisoReservado)) {
+                    throw new ReglaDeNegocioException(
+                            "\"" + permisoReservado + "\" es indelegable: solo el rol Dueño "
+                            + "puede tenerlo.");
+                }
+            }
         }
 
         rol.definirPermisos(nuevos);

@@ -154,8 +154,10 @@ public class PedidoController {
      * capataz podria mandarle una orden a un proveedor por su cuenta, y ademas
      * generar un link publico de un documento de la empresa.
      *
-     * Es POST y no GET porque cambia algo: genera un token nuevo y deja sin
-     * efecto el anterior.
+     * Es POST y no GET porque cambia algo: si no hay un link vigente, genera
+     * uno nuevo. Si ya hay uno vigente, lo REUSA en vez de reemplazarlo (ver
+     * PedidoService.prepararEnvioPorWhatsApp). Para cortar el link a proposito
+     * esta el DELETE de aca abajo.
      */
     @PreAuthorize("hasAuthority('compras.aprobar')")
     @PostMapping("/{id}/envio-whatsapp")

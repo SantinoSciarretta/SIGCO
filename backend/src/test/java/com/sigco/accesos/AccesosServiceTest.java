@@ -172,6 +172,61 @@ class AccesosServiceTest {
     }
 
     // ------------------------------------------------------------------
+    //  Presupuestar y cobrar tampoco se delegan
+    // ------------------------------------------------------------------
+
+    /**
+     * El informe (módulo 14) dice que presupuestar y cobrar "quedan
+     * reservadas exclusivamente al rol de dueño y no pueden asignarse a otros
+     * roles", igual que la aprobación de pedidos. Hasta esta auditoría, nada
+     * en este método lo impedía: la regla solo se respetaba porque la
+     * migración V13 nunca le asigna estos permisos a un capataz en el seed de
+     * datos, pero desde esta misma pantalla se le podía tildar
+     * presupuestos.editar o cobros.ver a un capataz sin que el backend lo
+     * rechazara.
+     */
+    @Test
+    @DisplayName("Un capataz no puede recibir ningún permiso de Presupuestación")
+    void presupuestosEsIndelegable() {
+        Rol capataz = rol(2L, Rol.CAPATAZ_GENERAL);
+        conRol(capataz);
+        Permiso presupuestosVer = permiso(5L, "presupuestos.ver");
+        conPermisos(List.of(5L, 4L), List.of(presupuestosVer, OBRAS_VER));
+
+        assertThatThrownBy(() -> servicio.definirPermisos(2L, new PermisosDelRol(List.of(5L, 4L))))
+                .isInstanceOf(ReglaDeNegocioException.class)
+                .hasMessageContaining("presupuestos.ver")
+                .hasMessageContaining("indelegable");
+    }
+
+    @Test
+    @DisplayName("Un capataz no puede recibir ningún permiso de Cobros")
+    void cobrosEsIndelegable() {
+        Rol capataz = rol(2L, Rol.CAPATAZ_DE_OBRA);
+        conRol(capataz);
+        Permiso cobrosEditar = permiso(6L, "cobros.editar");
+        conPermisos(List.of(6L), List.of(cobrosEditar));
+
+        assertThatThrownBy(() -> servicio.definirPermisos(2L, new PermisosDelRol(List.of(6L))))
+                .isInstanceOf(ReglaDeNegocioException.class)
+                .hasMessageContaining("cobros.editar");
+    }
+
+    @Test
+    @DisplayName("El Dueño sí puede tener los permisos de Presupuestación y Cobros")
+    void elDuenoSiPuedeTenerPresupuestosYCobros() {
+        Rol dueno = rol(1L, Rol.DUENO);
+        conRol(dueno);
+        Permiso presupuestosEditar = permiso(5L, "presupuestos.editar");
+        conPermisos(List.of(1L, 2L, 5L),
+                List.of(ACCESOS_EDITAR, USUARIOS_EDITAR, presupuestosEditar));
+
+        servicio.definirPermisos(1L, new PermisosDelRol(List.of(1L, 2L, 5L)));
+
+        assertThat(dueno.tienePermiso("presupuestos.editar")).isTrue();
+    }
+
+    // ------------------------------------------------------------------
     //  Validación de la entrada
     // ------------------------------------------------------------------
 

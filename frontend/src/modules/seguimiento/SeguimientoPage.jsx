@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import Blueprint from '../../components/ui/Blueprint';
 import Modal from '../../components/ui/Modal';
 import { listarObras } from '../obras/obrasApi';
@@ -21,8 +22,14 @@ import estilos from './Seguimiento.module.css';
  * existe en ninguna parte.
  */
 export default function SeguimientoPage() {
+  // Llegar desde "Cada módulo, ya filtrado" de la ficha de obra
+  // (/seguimiento?obra=123) tiene que mostrar esa obra, no la primera en
+  // ejecución.
+  const [parametros] = useSearchParams();
+  const obraDesdeUrl = parametros.get('obra');
+
   const [obras, setObras] = useState([]);
-  const [idObra, setIdObra] = useState('');
+  const [idObra, setIdObra] = useState(obraDesdeUrl || '');
   const [avance, setAvance] = useState(null);
   const [error, setError] = useState(null);
   const [recarga, setRecarga] = useState(0);
@@ -38,11 +45,12 @@ export default function SeguimientoPage() {
     listarObras().then((d) => {
       if (!vigente) return;
       setObras(d);
+      if (obraDesdeUrl) return;
       const enEjecucion = d.find((o) => o.estado === 'En ejecución');
       if (enEjecucion) setIdObra(String(enEjecucion.idObra));
     }).catch(() => {});
     return () => { vigente = false; };
-  }, []);
+  }, [obraDesdeUrl]);
 
   useEffect(() => {
     if (!idObra) return undefined;

@@ -364,6 +364,18 @@ public class CobrosService {
      *
      * El informe pide esta previa explicitamente: el dueño ve el efecto antes de
      * confirmar. Una actualizacion de saldo no deberia ser una sorpresa.
+     *
+     * ------------------------------------------------------------------
+     *  La previa tiene que calcular EXACTAMENTE lo mismo que aplicarCac
+     * ------------------------------------------------------------------
+     *
+     * Antes esta cuenta sumaba el monto COMPLETO de cada cuota pendiente
+     * (getMontoCuota) y mostraba saldo x coeficiente sin mas. Con una cuota
+     * Parcial eso no es lo que Cuota.actualizarPorCac hace de verdad: ese
+     * metodo aplica el coeficiente solo sobre saldo() y conserva lo ya pagado
+     * (totalPagado + saldo x coeficiente). El resultado era que el dueño veia
+     * un numero en la previa y el sistema aplicaba otro. Por eso aca se usa la
+     * misma formula, termino a termino.
      */
     @Transactional(readOnly = true)
     public PreviaCac previaCac(Long idObra) {
@@ -378,15 +390,22 @@ public class CobrosService {
                 .filter(Cuota::estaPendiente)
                 .toList();
 
-        BigDecimal saldo = pendientes.stream()
-                .map(Cuota::getMontoCuota)
+        BigDecimal pagadoActual = pendientes.stream()
+                .map(Cuota::totalPagado)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal saldoActual = pendientes.stream()
+                .map(Cuota::saldo)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal saldoActualizado = pagadoActual
+                .add(saldoActual.multiply(coeficiente))
+                .setScale(DECIMALES, RoundingMode.HALF_UP);
 
         return new PreviaCac(
                 ultimo.getMesCorrespondiente(),
                 coeficiente,
-                saldo,
-                saldo.multiply(coeficiente).setScale(DECIMALES, RoundingMode.HALF_UP),
+                pagadoActual.add(saldoActual),
+                saldoActualizado,
                 pendientes.size());
     }
 
@@ -396,19 +415,57 @@ public class CobrosService {
      * SOLO LAS PENDIENTES. El informe es explicito: "recalcula unicamente las
      * cuotas que todavia no fueron abonadas, sin modificar las ya cobradas".
      * Reajustar una cuota ya pagada seria cobrar dos veces por lo mismo.
+     *
+     * ------------------------------------------------------------------
+     *  No se puede aplicar el mismo coeficiente dos veces a la misma obra
+     * ------------------------------------------------------------------
+     *
+     * Sin este control, un doble clic (o reintentar tras un timeout de red)
+     * volvia a ejecutar actualizarPorCac sobre el saldo que el primer llamado
+     * ya habia actualizado: un coeficiente de 1,4 aplicado dos veces dejaba el
+     * saldo multiplicado por 1,96, sin que nada lo distinguiera de una sola
+     * aplicacion correcta. Se rechaza si el id_cac que se va a aplicar es el
+     * mismo que el ultimo ya aplicado a esta obra; un CAC nuevo (otro id) si
+     * se puede aplicar.
      */
     @Transactional
     public PlanDeCobro aplicarCac(Long idObra) {
-        PreviaCac previa = previaCac(idObra);
+        RegistroCac ultimo = cacRepositorio.ultimo()
+                .orElseThrow(() -> new ReglaDeNegocioException(
+                        "Todavía no hay ninguna actualización cargada. "
+                        + "Cargá el coeficiente del mes y volvé."));
 
+        Obra obra = buscarObraOFallar(idObra);
+
+        // ultimo.getIdCac() solo es null antes de guardarse (p. ej. en un test
+        // que no pasa por la base): ahi no hay id que comparar, asi que no hay
+        // nada que rechazar.
+        if (ultimo.getIdCac() != null
+                && ultimo.getIdCac().equals(obra.getIdUltimoCacAplicado())) {
+            throw new ReglaDeNegocioException(
+                    "El coeficiente del " + ultimo.getMesCorrespondiente()
+                    + " ya se aplicó a esta obra. Cargá un coeficiente nuevo para "
+                    + "volver a actualizar el saldo.");
+        }
+
+        PreviaCac previa = previaCac(idObra);
         if (previa.cuotasAfectadas() == 0) {
             throw new ReglaDeNegocioException(
                     "No quedan cuotas pendientes: no hay saldo que actualizar.");
         }
 
-        Obra obra = buscarObraOFallar(idObra);
         List<Cuota> cuotas = repositorio.delPlan(idObra);
         cuotas.forEach(c -> c.actualizarPorCac(previa.coeficiente()));
+        obra.registrarCacAplicado(ultimo.getIdCac());
+
+        // Actualiza el saldo de TODAS las cuotas pendientes de la obra de una
+        // sola vez: es al menos tan sensible como registrar un pago, que si
+        // queda auditado.
+        auditoria.registrar(
+                "Actualización por CAC del " + ultimo.getMesCorrespondiente()
+                + " (coeficiente " + previa.coeficiente() + ") en la obra #" + idObra
+                + ": " + previa.cuotasAfectadas() + " cuota(s) afectada(s)",
+                "Cobros");
 
         return armarPlan(obra, cuotas);
     }

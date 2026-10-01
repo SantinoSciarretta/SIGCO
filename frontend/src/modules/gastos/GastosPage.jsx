@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import Blueprint from '../../components/ui/Blueprint';
 import Modal from '../../components/ui/Modal';
 import SubirImagen from '../../components/ui/SubirImagen';
@@ -22,13 +23,18 @@ import estilos from './Gastos.module.css';
  * real del dueño no es "listame gastos", es "cómo viene esta obra".
  */
 export default function GastosPage() {
+  // Llegar desde "Cada módulo, ya filtrado" de la ficha de obra
+  // (/gastos?obra=123) tiene que mostrar esa obra, no la primera en ejecución.
+  const [parametros] = useSearchParams();
+  const obraDesdeUrl = parametros.get('obra');
+
   const [obras, setObras] = useState([]);
   const [rubros, setRubros] = useState([]);
   const [gastos, setGastos] = useState([]);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState(null);
 
-  const [idObra, setIdObra] = useState('');
+  const [idObra, setIdObra] = useState(obraDesdeUrl || '');
   const [tipo, setTipo] = useState('');
   const [recarga, setRecarga] = useState(0);
 
@@ -42,6 +48,7 @@ export default function GastosPage() {
     listarObras().then((d) => {
       if (!vigente) return;
       setObras(d);
+      if (obraDesdeUrl) return;
       // Se preselecciona la primera obra en ejecución: es la única que admite
       // gastos, así la pantalla arranca mostrando algo útil.
       const enEjecucion = d.find((o) => o.estado === 'En ejecución');
@@ -50,7 +57,7 @@ export default function GastosPage() {
     listarRubros({ estado: 'Activo' })
       .then((d) => { if (vigente) setRubros(d); }).catch(() => {});
     return () => { vigente = false; };
-  }, []);
+  }, [obraDesdeUrl]);
 
   useEffect(() => {
     if (!idObra) return undefined;

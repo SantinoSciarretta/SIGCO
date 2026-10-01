@@ -186,7 +186,7 @@ export default function DetalleObraPage() {
             Esta obra todavía no tiene un presupuesto definitivo aprobado, así que
             no hay contra qué comparar los gastos.{' '}
             {puede('presupuestos.ver') && (
-              <Link to={`/presupuestos?obra=${obra.idObra}`}>Ver sus presupuestos</Link>
+              <Link to={`/presupuestos/obra/${obra.idObra}`}>Ver sus presupuestos</Link>
             )}
           </p>
         </Blueprint>
@@ -403,7 +403,7 @@ export default function DetalleObraPage() {
 
         <div className={estilos.accesos}>
           <Acceso permiso="presupuestos.ver" puede={puede}
-                  a={`/presupuestos?obra=${obra.idObra}`}
+                  a={`/presupuestos/obra/${obra.idObra}`}
                   titulo="Presupuestos" detalle="Cotización, anteproyecto y definitivo" />
           <Acceso permiso="gastos.ver" puede={puede}
                   a={`/gastos?obra=${obra.idObra}`}

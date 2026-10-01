@@ -86,7 +86,6 @@ public class CobrosController {
 
     // ---------- Vista consolidada y alertas ----------
 
-    /** GET /api/cobros — cuánto resta cobrar de cada obra. */
     /**
      * GET /api/obras/{id}/cobros/planilla — la planilla de pagos en PDF.
      *
@@ -103,6 +102,7 @@ public class CobrosController {
                 .body(servicio.generarPlanilla(id));
     }
 
+    /** GET /api/cobros — cuánto resta cobrar de cada obra. */
     @GetMapping("/api/cobros")
     public List<ResumenCobro> consolidado() {
         return servicio.consolidado();

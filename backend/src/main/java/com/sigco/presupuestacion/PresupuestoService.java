@@ -624,6 +624,12 @@ public class PresupuestoService {
      *
      * Los items se van con el presupuesto: la relacion es cascade = ALL con
      * orphanRemoval, porque un item no existe fuera de su presupuesto.
+     *
+     * Se audita ANTES de borrar, con los datos del presupuesto que va a
+     * desaparecer: es la operacion mas irreversible del modulo —admite incluso
+     * un presupuesto Aprobado, que puede tener un plan de cobro generado a
+     * partir de el— y hasta ahora era la unica que no dejaba ningun rastro de
+     * quien la ejecuto ni cuando.
      */
     @Transactional
     public void eliminar(Long id) {
@@ -635,6 +641,12 @@ public class PresupuestoService {
                     "No se puede eliminar: otro presupuesto se generó a partir de este. "
                     + "Eliminá primero el que deriva de él.");
         }
+
+        auditoria.registrar(
+                "Eliminación del presupuesto #" + id
+                + " (" + presupuesto.getTipoPresupuesto() + ", estado " + presupuesto.getEstado()
+                + ") de la obra #" + presupuesto.getObra().getIdObra(),
+                "Presupuestación");
 
         deshacerEfectoSobreLaObra(presupuesto);
 

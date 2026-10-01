@@ -142,7 +142,6 @@ public class PresupuestoController {
 
     // ---------- Items ----------
 
-    /** POST /api/presupuestos/{id}/items */
     @PreAuthorize("hasAuthority('presupuestos.editar')")
     /**
      * GET /api/presupuestos/{id}/planilla/{idRubro}
@@ -174,6 +173,7 @@ public class PresupuestoController {
         return servicio.guardarPlanilla(id, idRubro, planilla);
     }
 
+    /** POST /api/presupuestos/{id}/items — agrega un ítem suelto, fuera de la planilla. */
     @PostMapping("/{id}/items")
     public PresupuestoRespuesta agregarItem(@PathVariable Long id,
                                             @Valid @RequestBody ItemSolicitud solicitud) {

@@ -7,6 +7,25 @@ import {
 import estilos from './Tablero.module.css';
 
 /**
+ * A qué rutas del tablero hay que agregarles `?obra=`.
+ *
+ * Antes, hacer clic en un pendiente ("Pedido para tal obra") llevaba a la
+ * lista general de /pedidos o /cobranzas sin preseleccionar esa obra: el
+ * backend ya manda `idObra` en cada Pendiente (TableroDtos.Pendiente), pero
+ * el click navegaba a p.ruta tal cual y el dato se perdía. La ruta de
+ * presupuestos ya apunta a un presupuesto puntual (/presupuestos/{id}) y no
+ * necesita el filtro.
+ */
+const RUTAS_SIN_FILTRO_DE_OBRA = new Set(['/pedidos', '/cobranzas']);
+
+function rutaConObra(pendiente) {
+  if (!pendiente.idObra || !RUTAS_SIN_FILTRO_DE_OBRA.has(pendiente.ruta)) {
+    return pendiente.ruta;
+  }
+  return `${pendiente.ruta}?obra=${pendiente.idObra}`;
+}
+
+/**
  * Tablero del dueño — pantalla de entrada del sistema.
  *
  * Reúne en un solo lugar lo que hoy el dueño tiene que ir a buscar obra por
@@ -198,7 +217,7 @@ export default function Tablero() {
             {pendientes.map((p, i) => (
               <li key={`${p.tipo}-${i}`}>
                 <button type="button" className={estilos.pendiente}
-                        onClick={() => navegar(p.ruta)}>
+                        onClick={() => navegar(rutaConObra(p))}>
                   <span className={`${estilos.pendienteTipo} ${
                     p.urgencia === 'alta' ? estilos.pendienteUrgente : ''}`.trim()}>
                     {p.tipo}

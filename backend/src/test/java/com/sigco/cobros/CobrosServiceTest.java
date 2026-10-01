@@ -367,6 +367,55 @@ class CobrosServiceTest {
                     .isInstanceOf(ReglaDeNegocioException.class)
                     .hasMessageContaining("No quedan cuotas pendientes");
         }
+
+        /**
+         * El riesgo que motivó esta guarda: antes, aplicar el mismo coeficiente
+         * dos veces (un doble clic, o reintentar tras un timeout) componía el
+         * ajuste sobre el saldo que el primer llamado ya había actualizado, y
+         * 1,4 aplicado dos veces dejaba el saldo multiplicado por 1,96.
+         */
+        @Test
+        @DisplayName("El mismo CAC no se puede aplicar dos veces a la misma obra")
+        void elMismoCacNoSeAplicaDosVeces() {
+            Obra obra = obra();
+            planDe(obra, "1000", "1000", "1000");
+            RegistroCac registro = new RegistroCac(LocalDate.of(2026, 9, 1), new BigDecimal("1.4"));
+            asignarId(registro, "idCac", 900L);
+            when(cacRepositorio.ultimo()).thenReturn(Optional.of(registro));
+            devolverLoQueSeGuarda();
+
+            servicio.aplicarCac(5L);
+
+            assertThatThrownBy(() -> servicio.aplicarCac(5L))
+                    .isInstanceOf(ReglaDeNegocioException.class)
+                    .hasMessageContaining("ya se aplicó a esta obra");
+        }
+
+        @Test
+        @DisplayName("Un coeficiente nuevo sí se puede aplicar después de uno ya aplicado")
+        void unCacNuevoSePuedeAplicar() {
+            Obra obra = obra();
+            planDe(obra, "1000", "1000", "1000");
+            RegistroCac primero = new RegistroCac(LocalDate.of(2026, 9, 1), new BigDecimal("1.1"));
+            asignarId(primero, "idCac", 900L);
+            when(cacRepositorio.ultimo()).thenReturn(Optional.of(primero));
+            devolverLoQueSeGuarda();
+            servicio.aplicarCac(5L);
+
+            // El CAC solo actualiza el MONTO; las cuotas siguen pendientes
+            // (actualizarPorCac no las abona), asi que un coeficiente nuevo
+            // tiene sobre que aplicarse.
+            RegistroCac segundo = new RegistroCac(LocalDate.of(2026, 10, 1), new BigDecimal("1.1"));
+            asignarId(segundo, "idCac", 901L);
+            when(cacRepositorio.ultimo()).thenReturn(Optional.of(segundo));
+
+            PlanDeCobro r = servicio.aplicarCac(5L);
+
+            // 1000 x 1.1 x 1.1 = 1210: los dos coeficientes se compusieron, que
+            // es lo correcto porque son DOS actualizaciones reales y distintas,
+            // a diferencia del caso anterior donde era la MISMA dos veces.
+            assertThat(r.cuotas().get(1).montoCuota()).isEqualByComparingTo("1210.00");
+        }
     }
 
     // ==================================================================
@@ -459,8 +508,8 @@ class CobrosServiceTest {
         }
 
         @Test
-        @DisplayName("Anular devuelve la cuota a deberse entera, con todos sus pagos")
-        void anularBorraTodosLosPagos() {
+        @DisplayName("Anular devuelve la cuota a deberse entera, y los pagos dejan de contar")
+        void anularDejaLaCuotaSinSaldoACuenta() {
             Obra obra = obra();
             planDe(obra, "300000", "175000");
             servicio.registrarPago(100L, new RegistrarPago(
@@ -473,8 +522,36 @@ class CobrosServiceTest {
             var anticipo = plan.cuotas().get(0);
             assertThat(anticipo.totalPagado()).isEqualByComparingTo("0");
             assertThat(anticipo.saldo()).isEqualByComparingTo("300000");
+            // El detalle que se muestra ya no lista los pagos anulados.
             assertThat(anticipo.pagos()).isEmpty();
             assertThat(anticipo.motivoAnulacion()).isEqualTo("Rebotó");
+        }
+
+        /**
+         * Antes, anular hacía pagos.clear() sobre una colección con
+         * orphanRemoval = true: Hibernate borraba la fila de `pago` de la base y
+         * el detalle de cada pago (monto, fecha, medio, quién lo cargó) se
+         * perdía para siempre. Ahora se MARCA, como Gasto hace con sus
+         * anulaciones: la entidad conserva el historial completo aunque el DTO
+         * de cara al cliente (el test de arriba) ya no lo muestre.
+         */
+        @Test
+        @DisplayName("Anular NO borra los pagos: quedan marcados para la auditoría")
+        void anularNoBorraLosPagosDeLaEntidad() {
+            Obra obra = obra();
+            List<Cuota> plan = planDe(obra, "300000", "175000");
+            servicio.registrarPago(100L, new RegistrarPago(
+                    new BigDecimal("120000"), LocalDate.now(), "Efectivo", "Recibo 1"));
+            servicio.registrarPago(100L, new RegistrarPago(
+                    new BigDecimal("50000"), LocalDate.now(), "Efectivo", "Recibo 2"));
+
+            Cuota anticipo = plan.get(0);
+            servicio.anularPago(100L, new AnularPago("Rebotó"));
+
+            assertThat(anticipo.getPagos()).hasSize(2);
+            assertThat(anticipo.getPagos()).allMatch(Pago::estaAnulado);
+            assertThat(anticipo.getPagos()).extracting(Pago::getMonto)
+                    .containsExactlyInAnyOrder(new BigDecimal("120000"), new BigDecimal("50000"));
         }
 
         @Test
