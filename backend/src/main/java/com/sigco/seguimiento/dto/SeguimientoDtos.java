@@ -88,9 +88,24 @@ public final class SeguimientoDtos {
             @Max(value = 1095, message = "Una etapa no puede durar mas de tres años")
             Integer duracionDias,
 
-            @NotNull(message = "El orden es obligatorio")
+            /**
+             * La posición en que se cargó. Opcional. No es el orden final: ese
+             * sale de la fecha de inicio. Sirve para encadenar las etapas que
+             * no tienen fecha (cada una arranca cuando termina la anterior).
+             */
             @Min(value = 1, message = "El orden arranca en 1")
-            Integer orden) {
+            Integer orden,
+
+            /**
+             * Cuándo arranca la etapa. Opcional: sin fecha, arranca cuando
+             * termina la anterior. Con fecha, puede solaparse con otras.
+             */
+            LocalDate fechaInicio) {
+
+        /** Una etapa sin fecha de inicio. */
+        public EtapaDeObra(String nombreHito, Long idRubro, Integer duracionDias, Integer orden) {
+            this(nombreHito, idRubro, duracionDias, orden, null);
+        }
     }
 
     /**
@@ -161,7 +176,10 @@ public final class SeguimientoDtos {
             /** Presentes solo en las etapas cargadas por duracion (V19). */
             Long idRubro,
             String nombreRubro,
-            Integer duracionDias) {
+            Integer duracionDias,
+            /** Cuándo arranca y cuándo termina la etapa, si tiene fecha. */
+            LocalDate fechaInicio,
+            LocalDate fechaFin) {
 
         /**
          * Convierte un hito en el formato que se le envía a la pantalla.
@@ -171,7 +189,9 @@ public final class SeguimientoDtos {
                     h.getOrden(), h.getEstado(), h.getFechaCumplimiento(), h.getObservacion(),
                     h.getRubro() != null ? h.getRubro().getIdRubro() : null,
                     h.getRubro() != null ? h.getRubro().getNombreRubro() : null,
-                    h.getDuracionDias());
+                    h.getDuracionDias(),
+                    h.getFechaInicio(),
+                    h.getFechaFin());
         }
     }
 

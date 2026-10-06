@@ -78,6 +78,16 @@ public class Hito {
     @Column(name = "duracion_dias")
     private Integer duracionDias;
 
+    /**
+     * Cuándo arranca la etapa (V27). Opcional.
+     *
+     * Permite que dos etapas se solapen: la instalación eléctrica puede
+     * arrancar antes de que termine la albañilería. El orden de las etapas sale
+     * de esta fecha.
+     */
+    @Column(name = "fecha_inicio")
+    private LocalDate fechaInicio;
+
     @Column(name = "estado", nullable = false, length = 12)
     private String estado;
 
@@ -109,6 +119,13 @@ public class Hito {
     /** Una etapa cargada por duracion: lleva ademas su rubro y sus dias. */
     public Hito(Obra obra, String nombreHito, BigDecimal ponderacion, Integer orden,
                 Rubro rubro, Integer duracionDias) {
+        this(obra, nombreHito, ponderacion, orden, rubro, duracionDias, null);
+    }
+
+    /** Una etapa con fecha de inicio: puede solaparse con otras. */
+    public Hito(Obra obra, String nombreHito, BigDecimal ponderacion, Integer orden,
+                Rubro rubro, Integer duracionDias, LocalDate fechaInicio) {
+        this.fechaInicio = fechaInicio;
         this.obra = obra;
         this.nombreHito = nombreHito;
         this.ponderacion = ponderacion;
@@ -203,5 +220,20 @@ public class Hito {
 
     public Integer getDuracionDias() {
         return duracionDias;
+    }
+
+    public LocalDate getFechaInicio() {
+        return fechaInicio;
+    }
+
+    /**
+     * El último día de la etapa: el de inicio más la duración, menos uno (una
+     * etapa de un día empieza y termina el mismo día). Los días son corridos.
+     */
+    public LocalDate getFechaFin() {
+        if (fechaInicio == null || duracionDias == null) {
+            return null;
+        }
+        return fechaInicio.plusDays(duracionDias - 1L);
     }
 }

@@ -143,6 +143,14 @@ public class SeguimientoService {
      * semanas pesa mas que una de dos dias sin que nadie tenga que estimar
      * cuanto. Ademas saca de encima el trabajo de cuadrar los porcentajes a
      * mano, que es donde aparecen los planes que suman 97 o 103.
+     *
+     * ------------------------------------------------------------------
+     *  Fecha de inicio y orden (06/10/2026)
+     * ------------------------------------------------------------------
+     *
+     * Cada etapa puede traer su fecha de inicio, y asi dos etapas se pueden
+     * solapar: hay tareas que se hacen en simultaneo. El orden ya no lo
+     * escribe el usuario: sale de la fecha de inicio. Ver fechasDeInicio().
      */
     @Transactional
     public List<HitoRespuesta> configurarEtapas(Long idObra, ConfiguracionEtapas configuracion) {
@@ -151,22 +159,83 @@ public class SeguimientoService {
         exigirNombresYOrdenesUnicosDeEtapas(configuracion.etapas());
         exigirQueNoHayaCompletados(idObra);
 
-        List<BigDecimal> ponderaciones = repartirPorDuracion(configuracion.etapas());
+        // Las etapas en el orden en que se cargaron: es el que se usa para
+        // encadenar las que no traen fecha.
+        List<EtapaDeObra> etapas = enOrdenDeCarga(configuracion.etapas());
+        List<BigDecimal> ponderaciones = repartirPorDuracion(etapas);
+        List<LocalDate> inicios = fechasDeInicio(etapas, obra);
+
+        // El orden final sale de la fecha de inicio. Las que arrancan el mismo
+        // dia (o no tienen fecha) conservan el orden en que se cargaron.
+        List<Integer> posiciones = new ArrayList<>();
+        for (int i = 0; i < etapas.size(); i++) {
+            posiciones.add(i);
+        }
+        posiciones.sort(java.util.Comparator.comparing(
+                (Integer i) -> inicios.get(i),
+                java.util.Comparator.nullsLast(java.util.Comparator.naturalOrder())));
 
         repositorio.borrarDeLaObra(idObra);
 
         List<Hito> nuevos = new ArrayList<>();
-        for (int i = 0; i < configuracion.etapas().size(); i++) {
-            EtapaDeObra etapa = configuracion.etapas().get(i);
+        int orden = 1;
+        for (int i : posiciones) {
+            EtapaDeObra etapa = etapas.get(i);
             nuevos.add(new Hito(obra, etapa.nombreHito().trim(), ponderaciones.get(i),
-                                etapa.orden(), buscarRubro(etapa.idRubro()),
-                                etapa.duracionDias()));
+                                orden++, buscarRubro(etapa.idRubro()),
+                                etapa.duracionDias(), inicios.get(i)));
         }
 
         return repositorio.saveAll(nuevos).stream()
                 .sorted((a, b) -> a.getOrden().compareTo(b.getOrden()))
                 .map(HitoRespuesta::desde)
                 .toList();
+    }
+
+    /**
+     * Las etapas en el orden en que se cargaron: por su campo orden si lo
+     * traen, y si no por su posicion en la lista.
+     */
+    private List<EtapaDeObra> enOrdenDeCarga(List<EtapaDeObra> etapas) {
+        List<EtapaDeObra> copia = new ArrayList<>(etapas);
+        if (copia.stream().allMatch(e -> e.orden() != null)) {
+            copia.sort(java.util.Comparator.comparing(EtapaDeObra::orden));
+        }
+        return copia;
+    }
+
+    /**
+     * La fecha de inicio de cada etapa.
+     *
+     * La que trae fecha, arranca ese dia. La que no, arranca el dia siguiente
+     * a que termina la anterior (en el orden de carga), que es como se
+     * planificaba hasta ahora. La primera, si no trae fecha, arranca cuando
+     * arranca la obra: el inicio real si ya se registro, y si no el estimado.
+     *
+     * Si no hay de donde sacar una fecha (la obra no tiene ninguna y la etapa
+     * tampoco), queda sin fecha, y las que le siguen sin fecha tambien.
+     */
+    private List<LocalDate> fechasDeInicio(List<EtapaDeObra> etapas, Obra obra) {
+        LocalDate inicioDeLaObra = obra.getFechaInicioReal() != null
+                ? obra.getFechaInicioReal() : obra.getFechaInicioEstimada();
+
+        List<LocalDate> inicios = new ArrayList<>();
+        for (int i = 0; i < etapas.size(); i++) {
+            EtapaDeObra etapa = etapas.get(i);
+            LocalDate inicio;
+            if (etapa.fechaInicio() != null) {
+                inicio = etapa.fechaInicio();
+            } else if (i == 0) {
+                inicio = inicioDeLaObra;
+            } else {
+                LocalDate anterior = inicios.get(i - 1);
+                inicio = anterior != null
+                        ? anterior.plusDays(etapas.get(i - 1).duracionDias())
+                        : null;
+            }
+            inicios.add(inicio);
+        }
+        return inicios;
     }
 
     /**
@@ -282,8 +351,10 @@ public class SeguimientoService {
             throw new ReglaDeNegocioException("Hay dos etapas con el mismo nombre.");
         }
 
-        long ordenes = etapas.stream().map(EtapaDeObra::orden).distinct().count();
-        if (ordenes != etapas.size()) {
+        // El orden de carga es opcional; si viene, no puede repetirse.
+        List<Integer> ordenes = etapas.stream()
+                .map(EtapaDeObra::orden).filter(java.util.Objects::nonNull).toList();
+        if (ordenes.stream().distinct().count() != ordenes.size()) {
             throw new ReglaDeNegocioException("Hay dos etapas con el mismo número de orden.");
         }
     }

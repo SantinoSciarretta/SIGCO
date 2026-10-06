@@ -713,16 +713,20 @@ Los hitos se definen una vez que la obra está en ejecución. Hay dos formas de 
 
 **Por duración (recomendada).** No hace falta calcular porcentajes:
 
-1. En "Avance", elegí la obra y tocá "Cargar etapas".
-2. Para cada etapa escribí qué hay que hacer (por ejemplo "Demolición de una pared"), de qué rubro es y cuánto lleva, en días o semanas.
+1. En "Avance", elegí la obra y tocá "Cargar etapas". Si la obra ya tiene etapas cargadas, aparecen para corregirlas.
+2. Para cada etapa escribí qué hay que hacer (por ejemplo "Demolición de una pared"), de qué rubro es, cuándo arranca y cuánto lleva, en días o semanas.
 3. Con "Agregar etapa" sumás más.
 4. Tocá "Guardar las etapas".
+
+**La fecha de inicio.** Es opcional. Si la dejás vacía, la etapa arranca el día siguiente a que termina la anterior, y la primera arranca cuando arranca la obra. Debajo del campo se ve qué fecha le tocaría. Si le ponés fecha, la etapa arranca ese día aunque la anterior no haya terminado: así se cargan las tareas que se hacen en simultáneo, por ejemplo la instalación eléctrica mientras se termina la albañilería. Al lado se ve el día en que termina cada etapa. Los días son corridos.
+
+**El orden lo pone el sistema** según la fecha de inicio de cada etapa, así que no hace falta numerarlas. Abajo se ve el plazo de punta a punta, del primer día al último.
 
 El sistema reparte el 100% del avance según la duración de cada etapa: una etapa de tres semanas pesa más que una de dos días sin que tengas que calcularlo.
 
 **[ESPACIO PARA CAPTURA 33]**
 *Figura 33. Carga de etapas por duración.*
-*Cómo sacarla: en una obra en ejecución sin hitos, tocar "Cargar etapas" y completar cinco etapas con rubros y duraciones distintas, de modo que se vea la columna "Pesa".*
+*Cómo sacarla: en una obra en ejecución sin hitos, tocar "Cargar etapas" y completar cinco etapas con rubros y duraciones distintas, dos de ellas con fechas que se solapen, de modo que se vean las columnas "Arranca", "Termina" y "Pesa".*
 
 **Por porcentaje.** Si preferís asignar el peso a mano:
 

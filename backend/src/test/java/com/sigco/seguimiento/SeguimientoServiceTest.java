@@ -397,6 +397,74 @@ class SeguimientoServiceTest {
             assertThat(etapas.get(1).ponderacion()).isGreaterThan(new BigDecimal("98"));
         }
 
+        // ---------- Fecha de inicio y solapamiento (06/10/2026) ----------
+
+        @Test
+        @DisplayName("Sin fechas, cada etapa arranca cuando termina la anterior, desde el inicio de la obra")
+        void sinFechasSeEncadenan() {
+            obraEnEjecucion().estimarPlazo(LocalDate.of(2026, 11, 2), 3);
+            devolverLoQueSeGuarda();
+
+            var etapas = servicio.configurarEtapas(5L, new ConfiguracionEtapas(List.of(
+                    new EtapaDeObra("Demolición", null, 5, 1),
+                    new EtapaDeObra("Albañilería", null, 10, 2))));
+
+            // Demolición: 2 al 6 de noviembre. Albañilería arranca el 7.
+            assertThat(etapas.get(0).fechaInicio()).isEqualTo(LocalDate.of(2026, 11, 2));
+            assertThat(etapas.get(0).fechaFin()).isEqualTo(LocalDate.of(2026, 11, 6));
+            assertThat(etapas.get(1).fechaInicio()).isEqualTo(LocalDate.of(2026, 11, 7));
+            assertThat(etapas.get(1).fechaFin()).isEqualTo(LocalDate.of(2026, 11, 16));
+        }
+
+        @Test
+        @DisplayName("Con fecha de inicio, dos etapas se solapan y el orden sale de la fecha")
+        void conFechaSeSolapanYSeOrdenan() {
+            obraEnEjecucion();
+            devolverLoQueSeGuarda();
+
+            // Se cargan en un orden y las fechas dicen otro: la electricidad
+            // arranca en medio de la albañilería.
+            var etapas = servicio.configurarEtapas(5L, new ConfiguracionEtapas(List.of(
+                    new EtapaDeObra("Electricidad", null, 10, 1, LocalDate.of(2026, 11, 10)),
+                    new EtapaDeObra("Albañilería", null, 20, 2, LocalDate.of(2026, 11, 2)),
+                    new EtapaDeObra("Pintura", null, 10, 3, LocalDate.of(2026, 11, 23)))));
+
+            assertThat(etapas).extracting(h -> h.nombreHito())
+                    .containsExactly("Albañilería", "Electricidad", "Pintura");
+            assertThat(etapas).extracting(h -> h.orden()).containsExactly(1, 2, 3);
+            // La ponderación sigue saliendo de la duración: 20 + 10 + 10 = 40.
+            assertThat(etapas).extracting(h -> h.ponderacion().stripTrailingZeros().toPlainString())
+                    .containsExactly("50", "25", "25");
+        }
+
+        @Test
+        @DisplayName("Una etapa sin fecha arranca cuando termina la anterior aunque esa tenga fecha")
+        void mezclaDeConYSinFecha() {
+            obraEnEjecucion();
+            devolverLoQueSeGuarda();
+
+            var etapas = servicio.configurarEtapas(5L, new ConfiguracionEtapas(List.of(
+                    new EtapaDeObra("Demolición", null, 3, 1, LocalDate.of(2026, 11, 2)),
+                    new EtapaDeObra("Contrapiso", null, 4, 2))));
+
+            assertThat(etapas.get(1).fechaInicio()).isEqualTo(LocalDate.of(2026, 11, 5));
+        }
+
+        @Test
+        @DisplayName("Si ni la obra ni la etapa tienen fecha, queda sin fecha y conserva el orden")
+        void sinNingunaFecha() {
+            obraEnEjecucion();
+            devolverLoQueSeGuarda();
+
+            var etapas = servicio.configurarEtapas(5L, new ConfiguracionEtapas(List.of(
+                    new EtapaDeObra("Primera", null, 3, 1),
+                    new EtapaDeObra("Segunda", null, 4, 2))));
+
+            assertThat(etapas).extracting(h -> h.nombreHito()).containsExactly("Primera", "Segunda");
+            assertThat(etapas.get(0).fechaInicio()).isNull();
+            assertThat(etapas.get(1).fechaInicio()).isNull();
+        }
+
         @Test
         @DisplayName("Guarda el rubro de cada etapa")
         void guardaElRubro() {

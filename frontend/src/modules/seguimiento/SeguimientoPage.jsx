@@ -169,6 +169,7 @@ export default function SeguimientoPage() {
                     <tr>
                       <th style={{ width: 50 }}>#</th>
                       <th>Etapa</th>
+                      <th>Fechas</th>
                       <th style={{ textAlign: 'right' }}>Peso</th>
                       <th>Estado</th>
                       <th>Cumplido</th>
@@ -185,6 +186,11 @@ export default function SeguimientoPage() {
                           {h.observacion && (
                             <div className={estilos.subrubroNombre}>{h.observacion}</div>
                           )}
+                        </td>
+                        {/* Cuándo arranca y termina. Dos etapas pueden
+                            solaparse: hay tareas que se hacen en simultáneo. */}
+                        <td className={estilos.dato}>
+                          {h.fechaInicio ? `${fecha(h.fechaInicio)} al ${fecha(h.fechaFin)}` : '—'}
                         </td>
                         <td className={`cifra ${estilos.ponderacion}`}>{h.ponderacion}%</td>
                         <td>
@@ -224,6 +230,7 @@ export default function SeguimientoPage() {
       {etapasAbiertas && (
         <ConfigurarEtapas
           idObra={idObra}
+          hitosActuales={avanceVisible?.hitos ?? []}
           onCerrar={() => setEtapasAbiertas(false)}
           onGuardado={() => { setEtapasAbiertas(false); recargar(); }}
         />

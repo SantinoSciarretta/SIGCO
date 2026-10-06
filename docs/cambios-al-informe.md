@@ -669,10 +669,11 @@ Es el módulo que más alcance nuevo ganó (orden en PDF y pedido de cotización
 ### 9.1 [Agregar] Funcionalidades Principales, después del segundo punto
 
 **Pegá estos dos puntos:**
-> * Carga del plan de obra por etapas, indicando para cada una qué hay que hacer, a qué rubro corresponde y cuántos días lleva. El sistema reparte el cien por ciento del avance en proporción a la duración de cada etapa, de modo que el dueño no tenga que calcular las ponderaciones a mano.
+> * Carga del plan de obra por etapas, indicando para cada una qué hay que hacer, a qué rubro corresponde, cuándo arranca y cuántos días lleva. El sistema reparte el cien por ciento del avance en proporción a la duración de cada etapa, de modo que el dueño no tenga que calcular las ponderaciones a mano.
+> * Planificación de tareas en simultáneo. Cada etapa puede llevar su fecha de inicio, de modo que dos etapas se superpongan en el tiempo, y el sistema ordena las etapas según esa fecha. Una etapa sin fecha arranca cuando termina la anterior.
 > * Reapertura de un hito marcado como completado por error, siempre que la obra no esté finalizada.
 
-**Por qué:** la carga por duración es V19, pedido de Ricardo. La reapertura existe (`/api/hitos/{id}/reapertura`) y no figuraba.
+**Por qué:** la carga por duración es V19, pedido de Ricardo. La fecha de inicio es V27, del 06/10/2026, porque en obra hay tareas que se hacen en paralelo. La reapertura existe (`/api/hitos/{id}/reapertura`) y no figuraba.
 
 ### 9.2 [Reemplazar] Circuito Descriptivo, paso 2
 
@@ -705,6 +706,7 @@ Es el módulo que más alcance nuevo ganó (orden en PDF y pedido de cotización
 **Pegá estos dos puntos:**
 > * En la carga por duración, el sistema reparte cien puntos en proporción a los días de cada etapa. El centavo que puede sobrar por redondeo se le suma a la etapa más larga, que es donde menos se nota. Las etapas no se guardan en una tabla aparte sino que son los mismos hitos, para que la obra tenga una sola fuente de avance y no dos que en algún momento se contradigan.
 > * No se puede redefinir el plan de hitos de una obra que ya tiene hitos completados, ya que se perdería el avance registrado.
+> * El orden de las etapas no lo escribe el usuario: el sistema lo calcula a partir de la fecha de inicio de cada una. Una etapa sin fecha arranca el día siguiente a que termina la anterior, y la primera arranca en la fecha de inicio de la obra. Las duraciones se cuentan en días corridos.
 
 ### 9.6 [Reemplazar] Vistas de Interfaz, puntos 3 y 4
 
@@ -723,6 +725,7 @@ Es el módulo que más alcance nuevo ganó (orden en PDF y pedido de cotización
 **Pegá:**
 > | Rubro_Asociado | Relación (opcional) | Rubro al que corresponde la etapa, cuando se carga por duración. |
 > | Duracion_Dias | Numérico (opcional) | Días que lleva la etapa. A partir de este dato se calcula la ponderación. |
+> | Fecha_Inicio | Fecha (opcional) | Día en que arranca la etapa. Permite que dos etapas se superpongan, y de ella sale el orden. Si se deja vacía, la etapa arranca cuando termina la anterior. |
 
 ### 9.8 [Reemplazar y Agregar] Botones y Acciones Disponibles
 
@@ -1293,6 +1296,7 @@ Te recomiendo **reemplazar entera** la lista de Validaciones (cambio 13.3). Los 
 **Pegá:**
 > | id_rubro | BIGINT | FK | Rubro al que corresponde la etapa, cuando se carga por duración. Referencia a rubro. |
 > | duracion_dias | INTEGER |  | Días que lleva la etapa. A partir de este dato se calcula la ponderación. |
+> | fecha_inicio | DATE |  | Día en que arranca la etapa. De ella sale el orden de las etapas, y permite que dos se superpongan. Opcional. |
 
 **Por qué:** V19.
 

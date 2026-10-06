@@ -590,12 +590,14 @@
 .lineaEtapa,
 .encabezadoEtapas {
   display: grid;
-  grid-template-columns: 56px 1fr 150px 74px 100px 58px auto;
+  grid-template-columns: 34px minmax(0, 1fr) 130px 140px 64px 96px 84px 54px auto;
   gap: 8px;
   align-items: end;
 }
 
-.lineaEtapa { margin-bottom: 8px; }
+/* Arriba y no abajo: la celda de la fecha puede llevar debajo la fecha
+   sugerida, y alineando abajo los campos quedarían a distinta altura. */
+.lineaEtapa { margin-bottom: 8px; align-items: start; }
 
 .encabezadoEtapas {
   margin-bottom: 6px;
@@ -609,10 +611,32 @@
    un dato, no dos. */
 .rotuloDuracion { grid-column: span 2; }
 
+/* El número de orden: sale de la fecha de inicio, no se edita. */
+.ordenEtapa {
+  padding-top: 9px;
+  font-size: 14px;
+  text-align: center;
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+}
+
+/* Debajo de una fecha vacía: qué día le tocaría arrancar. */
+.fechaSugerida {
+  display: block;
+  margin-top: 3px;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+/* El día en que termina la etapa, calculado. */
+.finEtapa {
+  padding-top: 9px;
+  font-size: 13px;
+}
+
 /* El porcentaje que le toca a la etapa. Es una previa: el reparto que manda
    lo hace el servidor, que ademas cierra el redondeo. */
 .pesoEtapa {
-  padding-bottom: 9px;
+  padding-top: 9px;
   font-size: 14px;
   text-align: right;
   color: var(--color-accent);
@@ -623,11 +647,11 @@
   .encabezadoEtapas { display: none; }
 
   .lineaEtapa {
-    grid-template-columns: 56px 1fr auto;
+    grid-template-columns: 34px 1fr 1fr auto;
     padding-bottom: 10px;
     margin-bottom: 10px;
     border-bottom: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent);
   }
 
-  .pesoEtapa { text-align: left; padding-bottom: 0; }
+  .pesoEtapa { text-align: left; padding-top: 0; }
 }
