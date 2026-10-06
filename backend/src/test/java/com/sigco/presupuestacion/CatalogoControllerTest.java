@@ -55,7 +55,7 @@ class CatalogoControllerTest {
     private MockMvc mockMvc;
 
     private RubroRespuesta rubroDeEjemplo() {
-        return new RubroRespuesta(7L, "ELECTRICIDAD", "Activo", false, List.of());
+        return new RubroRespuesta(7L, "ELECTRICIDAD", "Activo", false, false, List.of());
     }
 
     @Test

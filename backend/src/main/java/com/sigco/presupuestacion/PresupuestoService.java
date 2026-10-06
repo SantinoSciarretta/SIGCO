@@ -227,11 +227,9 @@ public class PresupuestoService {
         // son registros nuevos, que despues se pueden modificar sin tocar el
         // presupuesto del que salieron.
         for (ItemPresupuesto item : origen.getItems()) {
-            copia.agregarItem(new ItemPresupuesto(
-                    copia, item.getRubro(), item.getSubrubro(), item.getMaterial(),
-                    item.getDescripcion(), item.getUnidadMedida(),
-                    item.getCantidad(), item.getValorUnitario()));
+            copia.agregarItem(item.copiarPara(copia));
         }
+        copia.definirHonorarios(origen.getHonorariosPorcentaje());
 
         return PresupuestoRespuesta.completa(repositorio.save(copia));
     }
@@ -252,6 +250,7 @@ public class PresupuestoService {
         exigirQueLleveItems(presupuesto);
 
         Rubro rubro = buscarRubroOFallar(solicitud.idRubro());
+        exigirQueNoSeaImprevistos(rubro);
         Subrubro subrubro = resolverSubrubro(solicitud.idSubrubro(), rubro);
         Material material = resolverMaterial(solicitud.idMaterial(), rubro);
 
@@ -274,6 +273,10 @@ public class PresupuestoService {
 
         ItemPresupuesto item = buscarItemOFallar(presupuesto, idItem);
         Rubro rubro = buscarRubroOFallar(solicitud.idRubro());
+        exigirQueNoSeaImprevistos(rubro);
+        if (item.esImprevisto()) {
+            exigirQueNoSeaImprevistos(item.getRubro());
+        }
         Subrubro subrubro = resolverSubrubro(solicitud.idSubrubro(), rubro);
         Material material = resolverMaterial(solicitud.idMaterial(), rubro);
 
@@ -340,6 +343,21 @@ public class PresupuestoService {
         presupuesto.definirPlanDePago(
                 plan.anticipoPorcentaje(), plan.cantidadCuotas(),
                 normalizar(plan.plazoEstimadoObra()));
+
+        return PresupuestoRespuesta.completa(presupuesto);
+    }
+
+    /**
+     * Fija el porcentaje de honorarios. Se calcula sobre el total de la obra
+     * (materiales, mano de obra e imprevistos) y el sistema lo recalcula solo
+     * cada vez que cambia un ítem. Un porcentaje en cero quita los honorarios.
+     */
+    @Transactional
+    public PresupuestoRespuesta definirHonorarios(Long id, BigDecimal porcentaje) {
+        Presupuesto presupuesto = buscarCompletoOFallar(id);
+        exigirBorrador(presupuesto);
+
+        presupuesto.definirHonorarios(porcentaje);
 
         return PresupuestoRespuesta.completa(presupuesto);
     }
@@ -468,13 +486,18 @@ public class PresupuestoService {
             subtotal = subtotal.add(item.getSubtotal());
         }
 
-        List<FilaPlanilla> filas = rubro.esManoDeObra()
-                ? filasDeManoDeObra(rubro, yaCargado)
-                : filasDeMateriales(rubro, yaCargado);
+        List<FilaPlanilla> filas;
+        if (rubro.esManoDeObra()) {
+            filas = filasDeManoDeObra(rubro, yaCargado);
+        } else if (rubro.esImprevistos()) {
+            filas = filasDeImprevistos(presupuesto, yaCargado);
+        } else {
+            filas = filasDeMateriales(rubro, yaCargado);
+        }
 
         return new PlanillaDeRubro(
                 rubro.getIdRubro(), rubro.getNombreRubro(), rubro.esManoDeObra(),
-                filas, subtotal);
+                rubro.esImprevistos(), filas, subtotal);
     }
 
     /** Una fila por material activo del rubro. */
@@ -536,7 +559,8 @@ public class PresupuestoService {
         Map<String, ItemPresupuesto> sinUsar = new LinkedHashMap<>(yaCargado);
 
         for (Rubro otro : rubroRepositorio.buscarConSubrubros("", Rubro.ESTADO_ACTIVO)) {
-            if (otro.getIdRubro().equals(manoDeObra.getIdRubro())) {
+            // Ni la mano de obra de la mano de obra, ni la de los imprevistos.
+            if (otro.esEspecial()) {
                 continue;
             }
 
@@ -545,11 +569,10 @@ public class PresupuestoService {
                     .toList();
 
             if (subrubros.isEmpty()) {
-                filas.add(filaDeManoDeObra(otro.getNombreRubro(), null, sinUsar));
+                filas.add(filaDeManoDeObra(otro, null, sinUsar));
             }
             for (Subrubro subrubro : subrubros) {
-                filas.add(filaDeManoDeObra(otro.getNombreRubro(),
-                        subrubro.getNombreSubrubro(), sinUsar));
+                filas.add(filaDeManoDeObra(otro, subrubro.getNombreSubrubro(), sinUsar));
             }
         }
 
@@ -558,8 +581,10 @@ public class PresupuestoService {
         // después se desactivó) se agrega al final. Si no apareciera, guardar
         // la planilla lo borraría sin que nadie lo haya visto.
         for (ItemPresupuesto item : sinUsar.values()) {
+            Rubro referido = item.getRubroReferido();
             filas.add(new FilaPlanilla(null, null, item.getDescripcion(), "global",
-                    BigDecimal.ONE, item.getSubtotal(), item.getDescripcion(), null));
+                    BigDecimal.ONE, item.getSubtotal(), item.getDescripcion(), null,
+                    referido != null ? referido.getIdRubro() : null, null, null));
         }
 
         return filas;
@@ -570,16 +595,60 @@ public class PresupuestoService {
      * descripción ("Albañilería / Demolición"), que es también la descripción
      * del ítem que se guarda.
      */
-    private FilaPlanilla filaDeManoDeObra(String rubro, String subrubro,
+    private FilaPlanilla filaDeManoDeObra(Rubro rubro, String subrubro,
                                          Map<String, ItemPresupuesto> sinUsar) {
-        String descripcion = subrubro == null ? rubro : rubro + " / " + subrubro;
+        String nombre = rubro.getNombreRubro();
+        String descripcion = subrubro == null ? nombre : nombre + " / " + subrubro;
         ItemPresupuesto item = sinUsar.remove("d" + descripcion);
 
         return new FilaPlanilla(
                 null, null, descripcion, "global",
                 item != null ? BigDecimal.ONE : null,
                 item != null ? item.getSubtotal() : null,
-                rubro, subrubro);
+                nombre, subrubro, rubro.getIdRubro(), null, null);
+    }
+
+    /**
+     * La planilla del rubro de imprevistos: una fila por cada rubro activo (sin
+     * subrubros), con el total de ese rubro en este presupuesto (materiales más
+     * mano de obra) y el porcentaje de imprevistos, si ya se cargó.
+     *
+     * No se listan los rubros especiales: la mano de obra ya está sumada dentro
+     * del total de cada rubro, y los imprevistos de los imprevistos no existen.
+     */
+    private List<FilaPlanilla> filasDeImprevistos(Presupuesto presupuesto,
+                                                  Map<String, ItemPresupuesto> yaCargado) {
+        List<FilaPlanilla> filas = new ArrayList<>();
+        Map<String, ItemPresupuesto> sinUsar = new LinkedHashMap<>(yaCargado);
+
+        for (Rubro otro : rubroRepositorio.buscarConSubrubros("", Rubro.ESTADO_ACTIVO)) {
+            if (otro.esEspecial()) {
+                continue;
+            }
+            filas.add(filaDeImprevistos(presupuesto, otro,
+                    sinUsar.remove("r" + otro.getIdRubro())));
+        }
+
+        // Imprevistos de un rubro que después se desactivó: se muestran igual,
+        // para que guardar la planilla no los borre sin que nadie los vea.
+        for (ItemPresupuesto item : sinUsar.values()) {
+            if (item.getRubroReferido() != null) {
+                filas.add(filaDeImprevistos(presupuesto, item.getRubroReferido(), item));
+            }
+        }
+
+        return filas;
+    }
+
+    /** Una fila de la planilla de imprevistos. */
+    private FilaPlanilla filaDeImprevistos(Presupuesto presupuesto, Rubro rubro,
+                                          ItemPresupuesto item) {
+        return new FilaPlanilla(
+                null, null, rubro.getNombreRubro(), "%",
+                null, item != null ? item.getSubtotal() : null,
+                rubro.getNombreRubro(), null, rubro.getIdRubro(),
+                item != null ? item.getPorcentaje() : null,
+                presupuesto.getBaseDeImprevistos(rubro));
     }
 
     /**
@@ -623,6 +692,10 @@ public class PresupuestoService {
         for (FilaCompletada fila : planilla.filas()) {
             if (rubro.esManoDeObra()) {
                 agregarManoDeObra(presupuesto, rubro, fila);
+                continue;
+            }
+            if (rubro.esImprevistos()) {
+                agregarImprevisto(presupuesto, rubro, fila);
                 continue;
             }
 
@@ -672,9 +745,42 @@ public class PresupuestoService {
                     "Hay una fila de mano de obra cargada sin rubro.");
         }
 
-        presupuesto.agregarItem(new ItemPresupuesto(
-                presupuesto, manoDeObra, null, null, fila.descripcion().trim(),
-                "global", BigDecimal.ONE, total));
+        // De qué rubro es esta mano de obra: es lo que permite sumarla al
+        // total de ese rubro al calcular sus imprevistos.
+        Rubro referido = fila.idRubroReferido() != null
+                ? buscarRubroOFallar(fila.idRubroReferido())
+                : null;
+
+        presupuesto.agregarItem(ItemPresupuesto.deManoDeObra(
+                presupuesto, manoDeObra, referido, fila.descripcion().trim(), total));
+    }
+
+    /**
+     * Agrega al presupuesto una fila de la planilla de imprevistos: un
+     * porcentaje sobre el total de un rubro. El monto lo calcula el
+     * presupuesto, y se recalcula solo si después cambia el rubro. Una fila sin
+     * porcentaje o en 0 no entra al presupuesto.
+     */
+    private void agregarImprevisto(Presupuesto presupuesto, Rubro imprevistos,
+                                   FilaCompletada fila) {
+        BigDecimal porcentaje = fila.porcentaje();
+        if (porcentaje == null || porcentaje.signum() <= 0) {
+            return;
+        }
+        if (fila.idRubroReferido() == null) {
+            throw new ReglaDeNegocioException(
+                    "Hay una fila de imprevistos cargada sin rubro.");
+        }
+
+        Rubro referido = buscarRubroOFallar(fila.idRubroReferido());
+        if (referido.esEspecial()) {
+            throw new ReglaDeNegocioException(
+                    "Los imprevistos se calculan sobre los rubros de la obra, no sobre "
+                    + referido.getNombreRubro() + ".");
+        }
+
+        presupuesto.agregarItem(ItemPresupuesto.deImprevistos(
+                presupuesto, imprevistos, referido, porcentaje));
     }
 
     /**
@@ -686,6 +792,9 @@ public class PresupuestoService {
      * evita que un material con id 5 choque con una descripcion "5".
      */
     private String claveDeFila(ItemPresupuesto item) {
+        if (item.esImprevisto() && item.getRubroReferido() != null) {
+            return "r" + item.getRubroReferido().getIdRubro();
+        }
         return item.getMaterial() != null
                 ? "m" + item.getMaterial().getIdMaterial()
                 : "d" + item.getDescripcion();
@@ -932,6 +1041,17 @@ public class PresupuestoService {
      * relevamiento, donde las versiones se pisan y no queda registro de que se
      * le mostro al cliente.
      */
+    /**
+     * Los imprevistos se cargan solo desde su planilla, por porcentaje: un ítem
+     * suelto con un monto fijo no se recalcularía cuando cambia el rubro.
+     */
+    private void exigirQueNoSeaImprevistos(Rubro rubro) {
+        if (rubro.esImprevistos()) {
+            throw new ReglaDeNegocioException(
+                    "Los imprevistos se cargan desde su planilla, con un porcentaje por rubro.");
+        }
+    }
+
     private void exigirBorrador(Presupuesto presupuesto) {
         if (!presupuesto.esBorrador()) {
             throw new ReglaDeNegocioException(

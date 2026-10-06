@@ -57,6 +57,14 @@ public class Rubro {
     private boolean esManoDeObra;
 
     /**
+     * Marca al rubro especial de imprevistos (V26): su planilla lista los demás
+     * rubros y en cada uno se pone un porcentaje sobre el total de ese rubro.
+     * Lo crea la migración; por eso no hay forma de marcarlo desde la pantalla.
+     */
+    @Column(name = "es_imprevistos", nullable = false)
+    private boolean esImprevistos;
+
+    /**
      * Subrubros del rubro.
      *
      * Aca SI se declara la coleccion, a diferencia de lo que se hizo en Cliente
@@ -103,6 +111,24 @@ public class Rubro {
      */
     public boolean esManoDeObra() {
         return esManoDeObra;
+    }
+
+    /** Indica si este es el rubro especial de imprevistos. */
+    public boolean esImprevistos() {
+        return esImprevistos;
+    }
+
+    /** Solo para armar datos de prueba: en el sistema lo marca la migración V26. */
+    void marcarComoImprevistos(boolean esImprevistos) {
+        this.esImprevistos = esImprevistos;
+    }
+
+    /**
+     * Indica si es un rubro especial (mano de obra o imprevistos), es decir uno
+     * cuya planilla no lista materiales sino los demás rubros.
+     */
+    public boolean esEspecial() {
+        return esManoDeObra || esImprevistos;
     }
 
     /** Lo unico editable de un rubro es su nombre. */

@@ -106,6 +106,13 @@ public class Presupuesto {
     @Column(name = "cantidad_cuotas")
     private Integer cantidadCuotas;
 
+    /**
+     * El porcentaje de honorarios sobre el total de la obra (V26). Vacío si el
+     * presupuesto no lleva honorarios.
+     */
+    @Column(name = "honorarios_porcentaje", precision = 5, scale = 2)
+    private BigDecimal honorariosPorcentaje;
+
     @Column(name = "plazo_estimado_obra", length = 100)
     private String plazoEstimadoObra;
 
@@ -162,28 +169,87 @@ public class Presupuesto {
     public void calcularCotizacionInicial(BigDecimal metrosCuadrados, BigDecimal valorPorM2) {
         this.metrosCuadrados = metrosCuadrados;
         this.valorPorM2 = valorPorM2;
-        this.totalPresupuesto = conIva(getSubtotalSinIva());
+        recalcularTotal();
     }
 
     /**
-     * Recalcula el total: la suma de los subtotales de todos los ítems, más el
-     * IVA.
+     * Fija el porcentaje de honorarios y vuelve a calcular el total. Un
+     * porcentaje en cero (o vacío) quita los honorarios.
+     */
+    public void definirHonorarios(BigDecimal porcentaje) {
+        this.honorariosPorcentaje =
+                porcentaje == null || porcentaje.signum() == 0 ? null : porcentaje;
+        recalcularTotal();
+    }
+
+    /**
+     * Recalcula el total. Se llama cada vez que cambia un ítem o los honorarios.
      *
-     * Se llama cada vez que cambia un item. El total se guarda calculado, no se
-     * deriva al leer: asi un presupuesto aprobado conserva exactamente el numero
-     * que se le mostro al cliente.
+     * Va en este orden, porque cada paso usa el anterior:
+     *
+     *   1. Los imprevistos: cada uno es un porcentaje sobre el total de su
+     *      rubro (materiales más mano de obra), así que se recalculan primero.
+     *   2. El subtotal de la obra: todos los ítems, imprevistos incluidos.
+     *   3. Los honorarios: un porcentaje sobre ese subtotal.
+     *   4. El IVA: el 21% de todo, MENOS la mano de obra, que no lleva IVA.
+     *   5. El total: subtotal más honorarios más IVA.
+     *
+     * El total se guarda calculado, no se deriva al leer: asi un presupuesto
+     * aprobado conserva exactamente el numero que se le mostro al cliente.
      */
     public void recalcularTotal() {
-        this.totalPresupuesto = conIva(getSubtotalSinIva());
+        recalcularImprevistos();
+
+        BigDecimal subtotal = getSubtotalSinIva();
+        BigDecimal honorarios = getHonorarios();
+        BigDecimal conIva = subtotal.subtract(getManoDeObra()).add(honorarios);
+        BigDecimal iva = conIva.multiply(FACTOR_IVA.subtract(BigDecimal.ONE))
+                .setScale(DECIMALES, RoundingMode.HALF_UP);
+
+        this.totalPresupuesto = subtotal.add(honorarios).add(iva);
     }
 
     /**
-     * Lo que vale el presupuesto antes del IVA: la suma de los ítems, o en la
-     * cotización inicial los metros cuadrados por el valor de referencia.
+     * Pone al día el monto de cada imprevisto con el total actual de su rubro.
+     * Así, si después de cargar el 10% de imprevistos de Albañilería se agregan
+     * materiales a Albañilería, el imprevisto crece solo.
+     */
+    private void recalcularImprevistos() {
+        for (ItemPresupuesto item : items) {
+            if (item.esImprevisto()) {
+                item.calcularImprevisto(getBaseDeImprevistos(item.getRubroReferido()));
+            }
+        }
+    }
+
+    /**
+     * Sobre qué se calculan los imprevistos de un rubro: sus materiales (los
+     * ítems de ese rubro) más su mano de obra (los ítems del rubro de mano de
+     * obra que dicen ser de ese rubro).
+     */
+    public BigDecimal getBaseDeImprevistos(Rubro rubro) {
+        BigDecimal base = BigDecimal.ZERO;
+        for (ItemPresupuesto item : items) {
+            boolean esDelRubro = !item.getRubro().esEspecial()
+                    && mismoRubro(item.getRubro(), rubro);
+            boolean esSuManoDeObra = item.getRubro().esManoDeObra()
+                    && item.getRubroReferido() != null
+                    && mismoRubro(item.getRubroReferido(), rubro);
+            if (esDelRubro || esSuManoDeObra) {
+                base = base.add(item.getSubtotal());
+            }
+        }
+        return base.setScale(DECIMALES, RoundingMode.HALF_UP);
+    }
+
+    /**
+     * Lo que vale la obra antes de honorarios e IVA: la suma de todos los ítems
+     * (materiales, mano de obra e imprevistos), o en la cotización inicial los
+     * metros cuadrados por el valor de referencia.
      *
      * No se guarda: se calcula de los datos que ya están. Es el número contra
-     * el que Gastos compara lo gastado, porque el IVA no es un costo de la
-     * obra sino un impuesto que se cobra y se paga aparte.
+     * el que Gastos compara lo gastado, porque ni el IVA ni los honorarios son
+     * un costo de la obra.
      */
     public BigDecimal getSubtotalSinIva() {
         if (esCotizacionInicial() && metrosCuadrados != null && valorPorM2 != null) {
@@ -195,18 +261,42 @@ public class Presupuesto {
                 .setScale(DECIMALES, RoundingMode.HALF_UP);
     }
 
-    /**
-     * El IVA incluido en el total: la diferencia entre el total y el subtotal.
-     * En los presupuestos aprobados antes de que se sumara el IVA da cero,
-     * porque su total se conserva tal como se le mostró al cliente.
-     */
-    public BigDecimal getIva() {
-        return totalPresupuesto.subtract(getSubtotalSinIva()).max(BigDecimal.ZERO);
+    /** Lo que suma la mano de obra, que no lleva IVA. */
+    public BigDecimal getManoDeObra() {
+        return items.stream()
+                .filter(item -> item.getRubro().esManoDeObra())
+                .map(ItemPresupuesto::getSubtotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(DECIMALES, RoundingMode.HALF_UP);
     }
 
-    /** Le suma el 21% de IVA a un importe. */
-    private static BigDecimal conIva(BigDecimal neto) {
-        return neto.multiply(FACTOR_IVA).setScale(DECIMALES, RoundingMode.HALF_UP);
+    /** Los honorarios: el porcentaje sobre el subtotal de la obra. */
+    public BigDecimal getHonorarios() {
+        if (honorariosPorcentaje == null) {
+            return BigDecimal.ZERO.setScale(DECIMALES);
+        }
+        return getSubtotalSinIva().multiply(honorariosPorcentaje)
+                .divide(BigDecimal.valueOf(100), DECIMALES, RoundingMode.HALF_UP);
+    }
+
+    /**
+     * El IVA incluido en el total: lo que queda del total después de restar el
+     * subtotal y los honorarios. Se deriva del total guardado, y no se vuelve a
+     * calcular, para que un presupuesto aprobado antes de un cambio de reglas
+     * (por ejemplo, los aprobados antes de que se sumara el IVA, que dan cero)
+     * siga mostrando lo que se le mostró al cliente.
+     */
+    public BigDecimal getIva() {
+        return totalPresupuesto.subtract(getSubtotalSinIva()).subtract(getHonorarios())
+                .max(BigDecimal.ZERO);
+    }
+
+    /** Compara dos rubros por su id, o por identidad si todavía no tienen uno. */
+    private static boolean mismoRubro(Rubro uno, Rubro otro) {
+        if (uno == otro) {
+            return true;
+        }
+        return uno.getIdRubro() != null && uno.getIdRubro().equals(otro.getIdRubro());
     }
 
     /**
@@ -376,6 +466,10 @@ public class Presupuesto {
 
     public BigDecimal getAnticipoPorcentaje() {
         return anticipoPorcentaje;
+    }
+
+    public BigDecimal getHonorariosPorcentaje() {
+        return honorariosPorcentaje;
     }
 
     public Integer getCantidadCuotas() {

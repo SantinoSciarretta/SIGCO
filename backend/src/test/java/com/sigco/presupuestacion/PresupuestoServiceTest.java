@@ -1020,9 +1020,10 @@ class PresupuestoServiceTest {
                     .allMatch(i -> i.getRubro().getIdRubro().equals(9L))
                     .allMatch(i -> "global".equals(i.getUnidadMedida()))
                     .allMatch(i -> i.getCantidad().compareTo(BigDecimal.ONE) == 0);
-            // 1.750.000 más el 21% de IVA.
+            // La mano de obra no lleva IVA: el total es el mismo 1.750.000.
             assertThat(p.getSubtotalSinIva()).isEqualByComparingTo("1750000");
-            assertThat(p.getTotalPresupuesto()).isEqualByComparingTo("2117500");
+            assertThat(p.getIva()).isEqualByComparingTo("0");
+            assertThat(p.getTotalPresupuesto()).isEqualByComparingTo("1750000");
         }
 
         @Test
@@ -1037,6 +1038,136 @@ class PresupuestoServiceTest {
                             BigDecimal.ZERO, new BigDecimal("30000")))));
 
             assertThat(p.getItems()).isEmpty();
+        }
+
+        // ---------- Imprevistos, honorarios e IVA por rubro ----------
+
+        /**
+         * Arma un presupuesto con $100.000 de materiales de Albañilería y
+         * $50.000 de mano de obra de Albañilería.
+         */
+        private Presupuesto conAlbanileria(Rubro albanileria, Rubro manoDeObra) {
+            Presupuesto p = enBorrador();
+            p.agregarItem(new ItemPresupuesto(p, albanileria, null, null,
+                    "Ladrillos", "unidad", new BigDecimal("1000"), new BigDecimal("100")));
+            p.agregarItem(ItemPresupuesto.deManoDeObra(p, manoDeObra, albanileria,
+                    "Albañilería / Colocación", new BigDecimal("50000")));
+            return p;
+        }
+
+        private Rubro manoDeObra() {
+            Rubro r = rubro("Mano de obra", 9L);
+            r.marcarComoManoDeObra(true);
+            return r;
+        }
+
+        private Rubro imprevistos() {
+            Rubro r = rubro("Imprevistos", 8L);
+            r.marcarComoImprevistos(true);
+            return r;
+        }
+
+        @Test
+        @DisplayName("La mano de obra no lleva IVA y los demás rubros sí")
+        void manoDeObraSinIva() {
+            Presupuesto p = conAlbanileria(rubro("Albañilería", 1L), manoDeObra());
+
+            // 100.000 de materiales con IVA (121.000) + 50.000 de mano de obra.
+            assertThat(p.getSubtotalSinIva()).isEqualByComparingTo("150000");
+            assertThat(p.getIva()).isEqualByComparingTo("21000");
+            assertThat(p.getTotalPresupuesto()).isEqualByComparingTo("171000");
+        }
+
+        @Test
+        @DisplayName("Los imprevistos son un porcentaje de materiales más mano de obra del rubro")
+        void imprevistosSobreElTotalDelRubro() {
+            Rubro albanileria = rubro("Albañilería", 1L);
+            Rubro imprevistos = imprevistos();
+            Presupuesto p = conAlbanileria(albanileria, manoDeObra());
+            when(rubroRepositorio.findById(8L)).thenReturn(Optional.of(imprevistos));
+            when(rubroRepositorio.findById(1L)).thenReturn(Optional.of(albanileria));
+
+            servicio.guardarPlanilla(10L, 8L, new PlanillaCompletada(List.of(
+                    new FilaCompletada(null, null, "Albañilería", "%", null, null,
+                            1L, new BigDecimal("10")))));
+
+            ItemPresupuesto imprevisto = p.getItems().stream()
+                    .filter(ItemPresupuesto::esImprevisto).findFirst().orElseThrow();
+            // 10% de (100.000 + 50.000).
+            assertThat(imprevisto.getSubtotal()).isEqualByComparingTo("15000");
+            // (100.000 + 15.000) con IVA = 139.150, más 50.000 de mano de obra.
+            assertThat(p.getTotalPresupuesto()).isEqualByComparingTo("189150");
+        }
+
+        @Test
+        @DisplayName("Si cambia el rubro, sus imprevistos se recalculan solos")
+        void imprevistosSeRecalculan() {
+            Rubro albanileria = rubro("Albañilería", 1L);
+            Presupuesto p = conAlbanileria(albanileria, manoDeObra());
+            p.agregarItem(ItemPresupuesto.deImprevistos(p, imprevistos(), albanileria,
+                    new BigDecimal("10")));
+
+            p.agregarItem(new ItemPresupuesto(p, albanileria, null, null,
+                    "Cemento", "bolsa", new BigDecimal("10"), new BigDecimal("10000")));
+
+            ItemPresupuesto imprevisto = p.getItems().stream()
+                    .filter(ItemPresupuesto::esImprevisto).findFirst().orElseThrow();
+            // 10% de (200.000 + 50.000).
+            assertThat(imprevisto.getSubtotal()).isEqualByComparingTo("25000");
+        }
+
+        @Test
+        @DisplayName("La planilla de imprevistos lista los rubros con su total")
+        void planillaDeImprevistos() {
+            Rubro albanileria = rubro("Albañilería", 1L);
+            Rubro manoDeObra = manoDeObra();
+            Rubro imprevistos = imprevistos();
+            conAlbanileria(albanileria, manoDeObra);
+            when(rubroRepositorio.findById(8L)).thenReturn(Optional.of(imprevistos));
+            when(rubroRepositorio.buscarConSubrubros("", Rubro.ESTADO_ACTIVO))
+                    .thenReturn(List.of(albanileria, imprevistos, manoDeObra,
+                                        rubro("Pintura", 2L)));
+
+            var planilla = servicio.obtenerPlanillaDeRubro(10L, 8L);
+
+            assertThat(planilla.esImprevistos()).isTrue();
+            // Sin los rubros especiales, y cada uno con su total.
+            assertThat(planilla.filas()).extracting(f -> f.descripcion())
+                    .containsExactly("Albañilería", "Pintura");
+            assertThat(planilla.filas().get(0).base()).isEqualByComparingTo("150000");
+            assertThat(planilla.filas().get(1).base()).isEqualByComparingTo("0");
+        }
+
+        @Test
+        @DisplayName("Los imprevistos no se cargan como ítem suelto")
+        void imprevistosNoComoItemSuelto() {
+            enBorrador();
+            when(rubroRepositorio.findById(8L)).thenReturn(Optional.of(imprevistos()));
+
+            assertThatThrownBy(() -> servicio.agregarItem(10L, new ItemSolicitud(
+                    8L, null, null, "Varios", "global", BigDecimal.ONE, new BigDecimal("1000"))))
+                    .isInstanceOf(ReglaDeNegocioException.class)
+                    .hasMessageContaining("planilla");
+        }
+
+        @Test
+        @DisplayName("Los honorarios son un porcentaje del total de la obra y llevan IVA")
+        void honorarios() {
+            Presupuesto p = enBorrador();
+            p.agregarItem(new ItemPresupuesto(p, rubro("Albañilería", 1L), null, null,
+                    "Ladrillos", "unidad", new BigDecimal("1000"), new BigDecimal("100")));
+
+            var r = servicio.definirHonorarios(10L, new BigDecimal("10"));
+
+            assertThat(r.honorarios()).isEqualByComparingTo("10000");
+            // IVA sobre 100.000 + 10.000.
+            assertThat(r.iva()).isEqualByComparingTo("23100");
+            assertThat(r.totalPresupuesto()).isEqualByComparingTo("133100");
+
+            // En cero se quitan.
+            var sin = servicio.definirHonorarios(10L, BigDecimal.ZERO);
+            assertThat(sin.honorariosPorcentaje()).isNull();
+            assertThat(sin.totalPresupuesto()).isEqualByComparingTo("121000");
         }
     }
 

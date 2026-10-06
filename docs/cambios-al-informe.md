@@ -282,6 +282,26 @@ Después de "Elaboración del presupuesto definitivo, con estructura de rubro, s
 
 **Por qué:** pedido del 05/10/2026 (migración V24). El total con IVA es lo que efectivamente paga el cliente. La mano de obra se presupuesta por trabajo cerrado y no por jornales.
 
+### 4.4d [Agregar y Reemplazar] Imprevistos, honorarios y mano de obra sin IVA (cambio del 05/10/2026)
+
+**En Funcionalidades Principales, pegá estos dos puntos:**
+> * Carga de los imprevistos desde un rubro especial, cuya planilla lista los rubros de la obra con el total de cada uno, sumando materiales y mano de obra. En cada rubro se indica un porcentaje y el sistema calcula el monto, que se actualiza solo cuando cambia el rubro.
+> * Carga de los honorarios como un porcentaje sobre el total de la obra, que el sistema calcula y actualiza solo.
+
+**En el cambio 4.4c, reemplazá el segundo punto por este:**
+> * El total del presupuesto se compone del subtotal de la obra, que suma materiales, mano de obra e imprevistos, más los honorarios, más el IVA del 21%. El IVA se aplica a todos los conceptos salvo a la mano de obra. El anticipo y las cuotas del plan de pago salen de ese total. En cambio, el control de gastos compara lo gastado contra el subtotal de la obra, porque ni el IVA ni los honorarios son un costo de la obra. Los presupuestos que ya estaban enviados o aprobados al incorporarse esta regla conservan su total, que es el que vio el cliente y la base de sus cuotas.
+
+**En Vistas de Interfaz, agregá:**
+> * Panel de subtotales por rubro, visible al lado de la planilla mientras se carga un rubro, que se actualiza a medida que se escribe para ver cómo queda el presupuesto completo antes de guardar.
+
+**En el Diccionario de Datos agregá estas filas:**
+> | rubro.es_imprevistos | BOOLEAN |  | Marca el único rubro cuya planilla carga los imprevistos por porcentaje. Obligatorio. |
+> | item_presupuesto.id_rubro_referido | BIGINT | FK | Rubro al que se refiere un ítem de mano de obra o de imprevistos. Opcional. |
+> | item_presupuesto.porcentaje | NUMERIC(5,2) |  | Porcentaje de un ítem de imprevistos, entre 0 y 100. Opcional. |
+> | presupuesto.honorarios_porcentaje | NUMERIC(5,2) |  | Porcentaje de honorarios sobre el total de la obra, entre 0 y 100. Opcional. |
+
+**Por qué:** pedido del 05/10/2026 (migración V26). Los imprevistos y los honorarios se cargaban a mano y había que recalcularlos con cada cambio. La mano de obra no se factura con IVA.
+
 ### 4.5 [Reemplazar] Campos del Formulario de Presupuesto, fila Unidad_Medida
 
 **Buscá:**

@@ -37,9 +37,19 @@ import estilos from './Presupuestos.module.css';
  * de obra. Las filas que quedan vacías o en 0 no entran al presupuesto. El
  * backend arma las filas y manda `esManoDeObra`.
  *
+ * El rubro de imprevistos también: sus filas son los rubros (sin subrubros),
+ * cada uno con su total en este presupuesto (materiales más mano de obra), y en
+ * cada fila se escribe un PORCENTAJE. El monto lo calcula el sistema, y se
+ * recalcula solo si después cambia el rubro.
+ *
  * En los demás rubros, una fila con cantidad 0 tampoco entra al presupuesto.
+ *
+ * `onTotalCambia` avisa el total de la planilla mientras se escribe, para que
+ * el panel de subtotales del presupuesto lo muestre sin esperar a guardar.
  */
-export default function PlanillaDeRubro({ idPresupuesto, rubro, onCerrar, onGuardado }) {
+export default function PlanillaDeRubro({
+  idPresupuesto, rubro, onCerrar, onGuardado, onTotalCambia,
+}) {
   const [planilla, setPlanilla] = useState(null);
   const [filas, setFilas] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -61,6 +71,7 @@ export default function PlanillaDeRubro({ idPresupuesto, rubro, onCerrar, onGuar
           ...f,
           cantidad: f.cantidad ?? '',
           valorUnitario: f.valorUnitario ?? '',
+          porcentaje: f.porcentaje ?? '',
         })));
         setError(null);
       })
@@ -71,6 +82,7 @@ export default function PlanillaDeRubro({ idPresupuesto, rubro, onCerrar, onGuar
   }, [idPresupuesto, rubro.idRubro]);
 
   const esManoDeObra = planilla?.esManoDeObra;
+  const esImprevistos = planilla?.esImprevistos;
 
   /**
    * Actualiza la cantidad o el precio de una fila de la planilla a medida que
@@ -102,6 +114,10 @@ export default function PlanillaDeRubro({ idPresupuesto, rubro, onCerrar, onGuar
    * que en el presupuesto.
    */
   const subtotalDe = (fila) => {
+    if (esImprevistos) {
+      const p = Number(fila.porcentaje);
+      return fila.porcentaje !== '' && p > 0 ? (Number(fila.base) * p) / 100 : null;
+    }
     const v = Number(fila.valorUnitario);
     if (esManoDeObra) {
       return fila.valorUnitario !== '' && v > 0 ? v : null;
@@ -114,6 +130,12 @@ export default function PlanillaDeRubro({ idPresupuesto, rubro, onCerrar, onGuar
   const total = filas.reduce((suma, f) => suma + (subtotalDe(f) ?? 0), 0);
 
   const cargadas = filas.filter((f) => subtotalDe(f) !== null).length;
+
+  // El panel de subtotales del presupuesto muestra este total mientras se
+  // escribe, antes de guardar.
+  useEffect(() => {
+    if (!cargando && onTotalCambia) onTotalCambia(total);
+  }, [total, cargando, onTotalCambia]);
 
   /**
    * Guarda la planilla completa del rubro. Las filas vacías no se cargan, y lo
@@ -135,6 +157,9 @@ export default function PlanillaDeRubro({ idPresupuesto, rubro, onCerrar, onGuar
           unidadMedida: f.unidadMedida,
           cantidad: f.cantidad === '' ? null : Number(f.cantidad),
           valorUnitario: f.valorUnitario === '' ? null : Number(f.valorUnitario),
+          // En mano de obra e imprevistos: a qué rubro se refiere la fila.
+          idRubroReferido: f.idRubroReferido ?? null,
+          porcentaje: f.porcentaje === '' ? null : Number(f.porcentaje),
         }))));
     } catch (fallo) {
       setError(fallo.mensaje);
@@ -161,17 +186,19 @@ export default function PlanillaDeRubro({ idPresupuesto, rubro, onCerrar, onGuar
           {error && <p className={estilos.errorGeneral}>{error}</p>}
 
           <p className={estilos.ayuda}>
-            {esManoDeObra
-              ? 'Cada rubro con sus subrubros: escribí el total de mano de obra '
-                + 'de los trabajos que lleva la obra. '
-              : 'Todos los materiales del rubro, con su unidad. '}
+            {esManoDeObra && 'Cada rubro con sus subrubros: escribí el total de mano '
+              + 'de obra de los trabajos que lleva la obra. '}
+            {esImprevistos && 'Cada rubro con su total en este presupuesto (materiales '
+              + 'más mano de obra): escribí el porcentaje de imprevistos y el monto se '
+              + 'calcula solo. '}
+            {!esManoDeObra && !esImprevistos && 'Todos los materiales del rubro, con su unidad. '}
             Completá las filas que vayan al presupuesto. Las que dejes vacías o
             en 0 no se cargan.
           </p>
 
           {filas.length === 0 ? (
             <p className={estilos.aviso}>
-              {esManoDeObra
+              {esManoDeObra || esImprevistos
                 ? 'No hay otros rubros cargados en el catálogo.'
                 : 'Este rubro no tiene materiales en el catálogo. '
                   + 'Cargalos desde Materiales y volvé.'}
@@ -181,13 +208,22 @@ export default function PlanillaDeRubro({ idPresupuesto, rubro, onCerrar, onGuar
               <table className={`table ${estilos.planilla}`}>
                 <thead>
                   <tr>
-                    {esManoDeObra ? (
+                    {esImprevistos && (
+                      <>
+                        <th>Rubro</th>
+                        <th style={{ width: 150, textAlign: 'right' }}>Total del rubro</th>
+                        <th style={{ width: 110, textAlign: 'right' }}>%</th>
+                        <th style={{ width: 150, textAlign: 'right' }}>Imprevistos</th>
+                      </>
+                    )}
+                    {esManoDeObra && (
                       <>
                         <th>Rubro</th>
                         <th>Subrubro</th>
                         <th style={{ width: 170, textAlign: 'right' }}>Total</th>
                       </>
-                    ) : (
+                    )}
+                    {!esManoDeObra && !esImprevistos && (
                       <>
                         <th>Material</th>
                         <th style={{ width: 110, textAlign: 'right' }}>Cantidad</th>
@@ -201,6 +237,33 @@ export default function PlanillaDeRubro({ idPresupuesto, rubro, onCerrar, onGuar
                 <tbody>
                   {filas.map((fila, i) => {
                     const subtotal = subtotalDe(fila);
+
+                    if (esImprevistos) {
+                      return (
+                        <tr key={`r-${fila.idRubroReferido}-${i}`}
+                            className={subtotal !== null ? estilos.filaCargada : undefined}>
+                          <td>{fila.descripcion}</td>
+                          <td className={`cifra ${estilos.total}`}>
+                            $ {Math.round(Number(fila.base ?? 0)).toLocaleString('es-AR')}
+                          </td>
+                          <td>
+                            <input
+                              type="number" min="0" max="100" step="0.01"
+                              className={estilos.celda}
+                              value={fila.porcentaje}
+                              onChange={cambiar(i, 'porcentaje')}
+                              placeholder="—"
+                              aria-label={`Porcentaje de imprevistos de ${fila.descripcion}`}
+                            />
+                          </td>
+                          <td className={`cifra ${estilos.total}`}>
+                            {subtotal !== null
+                              ? '$ ' + Math.round(subtotal).toLocaleString('es-AR')
+                              : '—'}
+                          </td>
+                        </tr>
+                      );
+                    }
 
                     if (esManoDeObra) {
                       return (

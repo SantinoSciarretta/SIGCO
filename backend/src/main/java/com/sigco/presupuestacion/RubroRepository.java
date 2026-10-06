@@ -63,4 +63,7 @@ public interface RubroRepository extends JpaRepository<Rubro, Long> {
      * un indice unico parcial (V18).
      */
     Optional<Rubro> findByEsManoDeObraTrue();
+
+    /** El rubro de imprevistos, reconocido por su marca (V26). */
+    Optional<Rubro> findByEsImprevistosTrue();
 }

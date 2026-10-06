@@ -68,10 +68,12 @@ class CatalogoRepositoryTest {
 
     @BeforeEach
     void cargarCatalogo() {
-        // La migracion V25 deja creado el rubro "Mano de obra". Estos tests
-        // cuentan rubros, asi que parten de un catalogo vacio. El borrado se
-        // deshace solo al terminar cada test, como todo lo que hace @DataJpaTest.
-        entityManager.createNativeQuery("DELETE FROM rubro WHERE es_mano_de_obra = TRUE")
+        // Las migraciones V25 y V26 dejan creados los rubros "Mano de obra" e
+        // "Imprevistos". Estos tests cuentan rubros, asi que parten de un
+        // catalogo vacio. El borrado se deshace solo al terminar cada test, como
+        // todo lo que hace @DataJpaTest.
+        entityManager.createNativeQuery(
+                        "DELETE FROM rubro WHERE es_mano_de_obra = TRUE OR es_imprevistos = TRUE")
                 .executeUpdate();
 
         Rubro albanileria = rubroRepositorio.save(new Rubro("Albanileria"));

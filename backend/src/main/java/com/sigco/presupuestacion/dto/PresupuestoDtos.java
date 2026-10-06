@@ -73,6 +73,14 @@ public final class PresupuestoDtos {
             String plazoEstimadoObra) {
     }
 
+    /** El porcentaje de honorarios sobre el total de la obra. */
+    public record Honorarios(
+            @NotNull(message = "El porcentaje de honorarios es obligatorio")
+            @DecimalMin(value = "0", message = "Los honorarios no pueden ser negativos")
+            @DecimalMax(value = "100", message = "Los honorarios no pueden superar el 100%")
+            BigDecimal porcentaje) {
+    }
+
     /** Alta o edicion de un item del presupuesto. */
     public record ItemSolicitud(
 

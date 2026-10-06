@@ -58,6 +58,57 @@
 
 .totalCifra { font-size: 34px; }
 
+/* La planilla abierta y, a su lado, los subtotales de todos los rubros. */
+.planillaConPanel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 16px;
+  align-items: start;
+}
+
+.panelSubtotales {
+  position: sticky;
+  top: calc(env(safe-area-inset-top, 0px) + 12px);
+  padding: 12px 14px;
+  border: 1px solid var(--color-divider);
+  border-radius: 8px;
+}
+
+/* El rubro que se está cargando, resaltado en el panel. */
+.subtotalAbierto {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .planillaConPanel {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .panelSubtotales {
+    position: static;
+  }
+}
+
+/* "(sin IVA)" al lado de la mano de obra. */
+.sinIva {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* La fila de honorarios: el porcentaje se escribe ahí mismo. */
+.honorarios {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.celdaChica {
+  width: 72px;
+  padding: 4px 6px;
+  text-align: right;
+}
+
 /* Subtotal + IVA, debajo del total grande. */
 .desgloseIva {
   font-size: 13px;

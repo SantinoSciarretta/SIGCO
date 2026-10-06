@@ -1,5 +1,6 @@
 package com.sigco.presupuestacion.dto;
 
+import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -47,6 +48,8 @@ public final class PlanillaDtos {
      * @param esManoDeObra  si es true, las filas son los OTROS rubros y no
      *                      materiales: cambia lo que la pantalla escribe en el
      *                      encabezado de la primera columna
+     * @param esImprevistos si es true, las filas son los otros rubros y en
+     *                      cada una se carga un porcentaje
      * @param filas         una por material (o por rubro, en mano de obra)
      * @param subtotal      lo ya cargado para este rubro, para verlo sin sumar
      */
@@ -54,6 +57,7 @@ public final class PlanillaDtos {
             Long idRubro,
             String nombreRubro,
             boolean esManoDeObra,
+            boolean esImprevistos,
             List<FilaPlanilla> filas,
             BigDecimal subtotal) {
     }
@@ -88,7 +92,22 @@ public final class PlanillaDtos {
              * materiales van vacíos.
              */
             String rubroReferido,
-            String subrubroReferido) {
+            String subrubroReferido,
+
+            /** En mano de obra e imprevistos: el id del rubro al que se refiere la fila. */
+            Long idRubroReferido,
+            /** En imprevistos: el porcentaje ya cargado, o null. */
+            BigDecimal porcentaje,
+            /** En imprevistos: el total del rubro (materiales más mano de obra). */
+            BigDecimal base) {
+
+        /** Una fila común, de material o de mano de obra sin rubro conocido. */
+        public FilaPlanilla(Long idMaterial, Long idSubrubro, String descripcion,
+                            String unidadMedida, BigDecimal cantidad, BigDecimal valorUnitario,
+                            String rubroReferido, String subrubroReferido) {
+            this(idMaterial, idSubrubro, descripcion, unidadMedida, cantidad, valorUnitario,
+                    rubroReferido, subrubroReferido, null, null, null);
+        }
     }
 
     // ------------------------------------------------------------------
@@ -134,7 +153,22 @@ public final class PlanillaDtos {
             BigDecimal cantidad,
 
             @PositiveOrZero(message = "El valor unitario no puede ser negativo")
-            BigDecimal valorUnitario) {
+            BigDecimal valorUnitario,
+
+            /** En mano de obra e imprevistos: el rubro al que se refiere la fila. */
+            Long idRubroReferido,
+
+            /** En imprevistos: el porcentaje sobre el total del rubro. */
+            @DecimalMin(value = "0", message = "El porcentaje no puede ser negativo")
+            @DecimalMax(value = "100", message = "El porcentaje no puede superar el 100%")
+            BigDecimal porcentaje) {
+
+        /** Una fila de material o de mano de obra, sin rubro referido ni porcentaje. */
+        public FilaCompletada(Long idMaterial, Long idSubrubro, String descripcion,
+                              String unidadMedida, BigDecimal cantidad, BigDecimal valorUnitario) {
+            this(idMaterial, idSubrubro, descripcion, unidadMedida, cantidad, valorUnitario,
+                    null, null);
+        }
 
         /**
          * Si esta fila se carga al presupuesto.

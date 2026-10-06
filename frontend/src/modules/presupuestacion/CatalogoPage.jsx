@@ -151,6 +151,9 @@ export default function CatalogoPage() {
                 {rubro.esManoDeObra && (
                   <span className={estilos.conteo}>Rubro de mano de obra</span>
                 )}
+                {rubro.esImprevistos && (
+                  <span className={estilos.conteo}>Rubro de imprevistos</span>
+                )}
                 <span className={rubro.estado === 'Activo' ? estilos.activo : estilos.inactivo}>
                   {rubro.estado}
                 </span>

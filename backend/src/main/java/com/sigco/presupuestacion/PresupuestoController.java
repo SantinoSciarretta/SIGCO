@@ -2,6 +2,7 @@ package com.sigco.presupuestacion;
 
 import com.sigco.presupuestacion.dto.PresupuestoDtos.CambioEstadoPresupuesto;
 import com.sigco.presupuestacion.dto.PresupuestoDtos.Duplicacion;
+import com.sigco.presupuestacion.dto.PresupuestoDtos.Honorarios;
 import com.sigco.presupuestacion.dto.PresupuestoDtos.ItemSolicitud;
 import com.sigco.presupuestacion.dto.PresupuestoDtos.NuevoPresupuesto;
 import com.sigco.presupuestacion.dto.PresupuestoDtos.PlanDePago;
@@ -208,6 +209,19 @@ public class PresupuestoController {
     public PresupuestoRespuesta definirPlanDePago(@PathVariable Long id,
                                                   @Valid @RequestBody PlanDePago plan) {
         return servicio.definirPlanDePago(id, plan);
+    }
+
+    /**
+     * PUT /api/presupuestos/{id}/honorarios
+     *
+     * Fija el porcentaje de honorarios sobre el total de la obra. Con 0 se
+     * quitan.
+     */
+    @PreAuthorize("hasAuthority('presupuestos.editar')")
+    @PutMapping("/{id}/honorarios")
+    public PresupuestoRespuesta definirHonorarios(@PathVariable Long id,
+                                                  @Valid @RequestBody Honorarios honorarios) {
+        return servicio.definirHonorarios(id, honorarios.porcentaje());
     }
 
     /**

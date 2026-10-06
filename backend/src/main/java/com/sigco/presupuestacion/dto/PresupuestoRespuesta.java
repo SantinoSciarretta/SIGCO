@@ -2,6 +2,7 @@ package com.sigco.presupuestacion.dto;
 
 import com.sigco.presupuestacion.ItemPresupuesto;
 import com.sigco.presupuestacion.Presupuesto;
+import com.sigco.presupuestacion.Rubro;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -30,7 +31,13 @@ public record PresupuestoRespuesta(
         BigDecimal valorPorM2,
         /** La suma de los ítems, antes del IVA. */
         BigDecimal subtotalSinIva,
-        /** El 21% de IVA. */
+        /** Lo que suma la mano de obra, que no lleva IVA. */
+        BigDecimal manoDeObra,
+        /** El porcentaje de honorarios, o null si no lleva. */
+        BigDecimal honorariosPorcentaje,
+        /** Los honorarios: ese porcentaje sobre el subtotal. */
+        BigDecimal honorarios,
+        /** El 21% de IVA, sobre todo menos la mano de obra. */
         BigDecimal iva,
         /** Lo que paga el cliente: subtotal más IVA. */
         BigDecimal totalPresupuesto,
@@ -56,7 +63,11 @@ public record PresupuestoRespuesta(
             String unidadMedida,
             BigDecimal cantidad,
             BigDecimal valorUnitario,
-            BigDecimal subtotal) {
+            BigDecimal subtotal,
+            /** En mano de obra e imprevistos: el rubro al que se refiere. */
+            String nombreRubroReferido,
+            /** En imprevistos: el porcentaje sobre el total de ese rubro. */
+            BigDecimal porcentaje) {
 
         /**
          * Convierte un ítem guardado en el formato que se le envía a la
@@ -75,7 +86,10 @@ public record PresupuestoRespuesta(
                     item.getUnidadMedida(),
                     item.getCantidad(),
                     item.getValorUnitario(),
-                    item.getSubtotal());
+                    item.getSubtotal(),
+                    item.getRubroReferido() != null
+                            ? item.getRubroReferido().getNombreRubro() : null,
+                    item.getPorcentaje());
         }
     }
 
@@ -85,7 +99,10 @@ public record PresupuestoRespuesta(
      * Es lo unico que ve el cliente en el PDF, y ademas es la referencia contra
      * la que el modulo Gastos compara el gasto real de la obra.
      */
-    public record SubtotalRubro(Long idRubro, String nombreRubro, BigDecimal subtotal) {
+    public record SubtotalRubro(Long idRubro, String nombreRubro, BigDecimal subtotal,
+                                /** La mano de obra no lleva IVA: la pantalla lo aclara. */
+                                boolean esManoDeObra,
+                                boolean esImprevistos) {
     }
 
     /** Version completa, con items. Requiere que esten cargados (JOIN FETCH). */
@@ -115,6 +132,9 @@ public record PresupuestoRespuesta(
                 p.getMetrosCuadrados(),
                 p.getValorPorM2(),
                 p.getSubtotalSinIva(),
+                p.getManoDeObra(),
+                p.getHonorariosPorcentaje(),
+                p.getHonorarios(),
                 p.getIva(),
                 p.getTotalPresupuesto(),
                 p.getAnticipoPorcentaje(),
@@ -139,15 +159,22 @@ public record PresupuestoRespuesta(
                 item -> item.getRubro().getIdRubro(),
                 Collectors.reducing(BigDecimal.ZERO, ItemPresupuesto::getSubtotal, BigDecimal::add)));
 
-        Map<Long, String> nombres = items.stream().collect(Collectors.toMap(
+        Map<Long, Rubro> rubros = items.stream().collect(Collectors.toMap(
                 item -> item.getRubro().getIdRubro(),
-                item -> item.getRubro().getNombreRubro(),
+                ItemPresupuesto::getRubro,
                 (uno, otro) -> uno));
 
+        // Primero los rubros de la obra por orden alfabético, y al final la mano
+        // de obra y los imprevistos, que se calculan sobre los anteriores.
         return totales.entrySet().stream()
-                .map(entrada -> new SubtotalRubro(
-                        entrada.getKey(), nombres.get(entrada.getKey()), entrada.getValue()))
-                .sorted(Comparator.comparing(SubtotalRubro::nombreRubro))
+                .map(entrada -> {
+                    Rubro rubro = rubros.get(entrada.getKey());
+                    return new SubtotalRubro(entrada.getKey(), rubro.getNombreRubro(),
+                            entrada.getValue(), rubro.esManoDeObra(), rubro.esImprevistos());
+                })
+                .sorted(Comparator
+                        .comparing((SubtotalRubro s) -> s.esManoDeObra() ? 1 : s.esImprevistos() ? 2 : 0)
+                        .thenComparing(SubtotalRubro::nombreRubro))
                 .toList();
     }
 }

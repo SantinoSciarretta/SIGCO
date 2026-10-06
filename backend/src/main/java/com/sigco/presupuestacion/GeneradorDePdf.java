@@ -176,8 +176,8 @@ public class GeneradorDePdf {
     }
 
     /**
-     * Escribe en el PDF el subtotal, el IVA y el total general del
-     * presupuesto, este último destacado.
+     * Escribe en el PDF el subtotal, los honorarios, el IVA y el total general
+     * del presupuesto, este último destacado.
      */
     private void escribirTotal(Document documento, Presupuesto p) throws DocumentException {
         PdfPTable tabla = new PdfPTable(2);
@@ -185,11 +185,21 @@ public class GeneradorDePdf {
         tabla.setWidths(new float[]{3.2f, 1f});
         tabla.setSpacingBefore(4);
 
-        // Subtotal e IVA solo si el presupuesto tiene IVA: los aprobados antes
-        // de que se sumara conservan su total tal como se le mostró al cliente.
-        if (p.getIva().signum() > 0) {
+        // Las líneas de detalle solo si hay algo que detallar: los aprobados
+        // antes de que se sumara el IVA conservan su total tal como se le
+        // mostró al cliente, y ahí el subtotal y el total son el mismo número.
+        boolean llevaHonorarios = p.getHonorarios().signum() > 0;
+        if (p.getIva().signum() > 0 || llevaHonorarios) {
             agregarLineaDeTotal(tabla, "SUBTOTAL", p.getSubtotalSinIva());
-            agregarLineaDeTotal(tabla, "IVA 21%", p.getIva());
+        }
+        if (llevaHonorarios) {
+            agregarLineaDeTotal(tabla, "HONORARIOS", p.getHonorarios());
+        }
+        if (p.getIva().signum() > 0) {
+            // La mano de obra no lleva IVA: se aclara para que el cliente no
+            // calcule el 21% sobre el subtotal y le dé otro número.
+            agregarLineaDeTotal(tabla, p.getManoDeObra().signum() > 0
+                    ? "IVA 21% (no aplica a mano de obra)" : "IVA 21%", p.getIva());
         }
 
         PdfPCell etiqueta = new PdfPCell(new Phrase("TOTAL", TOTAL));
@@ -282,8 +292,13 @@ public class GeneradorDePdf {
     private Map<String, DatosDeRubro> agruparPorRubro(Presupuesto p) {
         Map<String, DatosDeRubro> porRubro = new LinkedHashMap<>();
 
+        // Primero los rubros de la obra, y al final la mano de obra y los
+        // imprevistos, igual que en la pantalla.
         p.getItems().stream()
-                .sorted(java.util.Comparator.comparing(i -> i.getRubro().getNombreRubro()))
+                .sorted(java.util.Comparator
+                        .comparing((ItemPresupuesto i) -> i.getRubro().esManoDeObra() ? 1
+                                : i.getRubro().esImprevistos() ? 2 : 0)
+                        .thenComparing(i -> i.getRubro().getNombreRubro()))
                 .forEach(item -> {
                     DatosDeRubro datos = porRubro.computeIfAbsent(
                             item.getRubro().getNombreRubro(), clave -> new DatosDeRubro());

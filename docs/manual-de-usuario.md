@@ -357,7 +357,13 @@ Esta es la forma principal de cargar un presupuesto.
 
 Si volvés a abrir un rubro ya cargado, la planilla aparece con lo que cargaste, para corregirlo. Al guardar, lo que había en ese rubro se reemplaza por lo que quedó en la planilla.
 
-> **El total incluye IVA.** Debajo de los subtotales por rubro se ven el subtotal, el IVA del 21% y el total con IVA, que es lo que paga el cliente. El anticipo y las cuotas se calculan sobre ese total. Los presupuestos que ya estaban enviados o aprobados antes de este cambio conservan su total original y muestran el IVA en cero.
+**Mientras cargás.** Al lado de la planilla abierta aparece un panel con los subtotales de todos los rubros. El rubro que estás cargando se actualiza a medida que escribís, así ves cómo queda el presupuesto completo sin tener que guardar.
+
+**Los imprevistos.** El sistema trae creado el rubro "Imprevistos". Al tocarlo, la planilla lista los rubros de la obra con el total de cada uno en este presupuesto, que es la suma de sus materiales y su mano de obra. En cada rubro escribís el porcentaje de imprevistos y el monto se calcula solo. Si después cambiás los materiales o la mano de obra de ese rubro, el imprevisto se actualiza solo.
+
+**Los honorarios.** En los subtotales por rubro, en la fila "Honorarios", escribí el porcentaje y tocá "Aplicar". Se calculan sobre el total de la obra (materiales, mano de obra e imprevistos) y también se actualizan solos. Para quitarlos, poné 0.
+
+> **El total incluye IVA.** Debajo de los subtotales por rubro se ven el subtotal, los honorarios, el IVA del 21% y el total con IVA, que es lo que paga el cliente. El IVA se aplica a todo menos a la mano de obra. El anticipo y las cuotas se calculan sobre ese total. Los presupuestos que ya estaban enviados o aprobados antes de este cambio conservan su total original.
 
 **[ESPACIO PARA CAPTURA 17]**
 *Figura 17. Planilla de un rubro de materiales.*

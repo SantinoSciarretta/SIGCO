@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { abrirPdf } from '../../api/documentos';
 import Blueprint from '../../components/ui/Blueprint';
@@ -6,7 +6,8 @@ import Modal from '../../components/ui/Modal';
 import { listarMaterialesDisponibles } from '../materiales/materialesApi';
 import { listarRubros } from './catalogoApi';
 import {
-  UNIDADES, agregarItem, actualizarItem, cambiarEstadoPresupuesto, definirPlanDePago,
+  UNIDADES, agregarItem, actualizarItem, cambiarEstadoPresupuesto, definirHonorarios,
+  definirPlanDePago,
   duplicarPresupuesto, estadosPosiblesDesde, obtenerPresupuesto, pesos, quitarItem,
 } from './presupuestosApi';
 import PlanillaDeRubro from './PlanillaDeRubro';
@@ -41,6 +42,19 @@ export default function PresupuestoDetalle() {
 
   /** Rubro que se está presupuestando en la planilla, o null. */
   const [rubroEnPlanilla, setRubroEnPlanilla] = useState(null);
+
+  /**
+   * El total de la planilla abierta mientras se escribe, sin guardar. Lo usa el
+   * panel de subtotales para mostrar cómo queda el presupuesto en el momento.
+   */
+  const [totalEnVivo, setTotalEnVivo] = useState(null);
+  const alCambiarTotal = useCallback((total) => setTotalEnVivo(total), []);
+
+  /** Abre (o cierra, si ya estaba abierta) la planilla de un rubro. */
+  const abrirPlanilla = (rubro) => {
+    setTotalEnVivo(null);
+    setRubroEnPlanilla(rubro);
+  };
 
   /**
    * Trae el presupuesto con sus ítems.
@@ -137,7 +151,9 @@ export default function PresupuestoDetalle() {
               más el 21% de IVA. */}
           {presupuesto.iva != null && (
             <span className={estilos.desgloseIva}>
-              Subtotal {pesos(presupuesto.subtotalSinIva)} + IVA 21% {pesos(presupuesto.iva)}
+              Subtotal {pesos(presupuesto.subtotalSinIva)}
+              {Number(presupuesto.honorarios) > 0 && <> + honorarios {pesos(presupuesto.honorarios)}</>}
+              {' '}+ IVA 21% {pesos(presupuesto.iva)}
             </span>
           )}
           <span className={claseDeEstado(presupuesto.estado)}>{presupuesto.estado}</span>
@@ -229,7 +245,7 @@ export default function PresupuestoDetalle() {
                   className={claseDeRubro(r, rubroEnPlanilla, estilos)}
                   // Volver a apretar el rubro abierto lo cierra: es el gesto
                   // que uno espera de algo que se despliega en la pagina.
-                  onClick={() => setRubroEnPlanilla(
+                  onClick={() => abrirPlanilla(
                     rubroEnPlanilla?.idRubro === r.idRubro ? null : r)}
                 >
                   {r.nombreRubro}
@@ -242,16 +258,27 @@ export default function PresupuestoDetalle() {
               emergente; Ricardo pidio que apareciera en la pagina, y tiene
               razon: el modal tapaba el presupuesto que se esta armando, que es
               justo lo que uno quiere mirar mientras carga un rubro. */}
+          {/* Al lado de la planilla, los subtotales de todos los rubros, con el
+              que se está cargando actualizado mientras se escribe: así se ve
+              cómo queda el presupuesto completo sin tener que guardar. */}
           {editable && rubroEnPlanilla && (
-            <PlanillaDeRubro
-              idPresupuesto={presupuesto.idPresupuesto}
-              rubro={rubroEnPlanilla}
-              onCerrar={() => setRubroEnPlanilla(null)}
-              onGuardado={(actualizado) => {
-                setPresupuesto(actualizado);
-                setRubroEnPlanilla(null);
-              }}
-            />
+            <div className={estilos.planillaConPanel}>
+              <PlanillaDeRubro
+                idPresupuesto={presupuesto.idPresupuesto}
+                rubro={rubroEnPlanilla}
+                onCerrar={() => abrirPlanilla(null)}
+                onGuardado={(actualizado) => {
+                  setPresupuesto(actualizado);
+                  abrirPlanilla(null);
+                }}
+                onTotalCambia={alCambiarTotal}
+              />
+              <PanelDeSubtotales
+                subtotales={presupuesto.subtotalesPorRubro}
+                rubroAbierto={rubroEnPlanilla}
+                totalEnVivo={totalEnVivo}
+              />
+            </div>
           )}
 
           {presupuesto.items.length === 0 ? (
@@ -293,18 +320,27 @@ export default function PresupuestoDetalle() {
                           </span>
                         )}
                       </td>
-                      <td className={`cifra ${estilos.numero}`}>{item.cantidad}</td>
-                      <td className={estilos.dato}>{item.unidadMedida}</td>
+                      {/* Un imprevisto es un porcentaje del rubro, no una
+                          cantidad: se muestra el porcentaje. */}
+                      <td className={`cifra ${estilos.numero}`}>
+                        {item.porcentaje != null ? `${item.porcentaje}%` : item.cantidad}
+                      </td>
+                      <td className={estilos.dato}>
+                        {item.porcentaje != null ? 'del rubro' : item.unidadMedida}
+                      </td>
                       <td className={`cifra ${estilos.numero} ${estilos.interno}`}>
                         {pesos(item.valorUnitario)}
                       </td>
                       <td className={`cifra ${estilos.numero}`}>{pesos(item.subtotal)}</td>
                       {editable && (
                         <td className={estilos.acciones}>
-                          <button type="button" className={estilos.accion}
-                                  onClick={() => { setItemEnEdicion(item); setFormularioItem(true); }}>
-                            Editar
-                          </button>
+                          {/* Los imprevistos se corrigen desde su planilla. */}
+                          {item.porcentaje == null && (
+                            <button type="button" className={estilos.accion}
+                                    onClick={() => { setItemEnEdicion(item); setFormularioItem(true); }}>
+                              Editar
+                            </button>
+                          )}
                           <button type="button" className={estilos.accion}
                                   onClick={() => eliminarItem(item.idItem)}>
                             Quitar
@@ -330,19 +366,33 @@ export default function PresupuestoDetalle() {
           <ul className={estilos.subtotales}>
             {presupuesto.subtotalesPorRubro.map((s) => (
               <li key={s.idRubro}>
-                <span>{s.nombreRubro}</span>
+                <span>
+                  {s.nombreRubro}
+                  {s.esManoDeObra && <span className={estilos.sinIva}> (sin IVA)</span>}
+                </span>
                 <span className={`cifra ${estilos.numero}`}>{pesos(s.subtotal)}</span>
               </li>
             ))}
-            {/* El total es lo que paga el cliente: la suma de los rubros más el
-                21% de IVA. Los presupuestos aprobados antes de que se sumara el
-                IVA lo muestran en cero, porque se conserva su total original. */}
+            {/* El total es lo que paga el cliente: la suma de los rubros, más los
+                honorarios, más el 21% de IVA sobre todo menos la mano de obra.
+                Los presupuestos aprobados antes de que se sumara el IVA lo
+                muestran en cero, porque se conserva su total original. */}
             <li>
               <span>Subtotal</span>
               <span className={`cifra ${estilos.numero}`}>{pesos(presupuesto.subtotalSinIva)}</span>
             </li>
+            <FilaDeHonorarios
+              presupuesto={presupuesto}
+              editable={editable}
+              onGuardado={setPresupuesto}
+            />
             <li>
-              <span>IVA 21%</span>
+              <span>
+                IVA 21%
+                {Number(presupuesto.manoDeObra) > 0 && (
+                  <span className={estilos.sinIva}> (no aplica a mano de obra)</span>
+                )}
+              </span>
               <span className={`cifra ${estilos.numero}`}>{pesos(presupuesto.iva)}</span>
             </li>
             <li className={estilos.subtotalTotal}>
@@ -410,6 +460,111 @@ export default function PresupuestoDetalle() {
 /* ========================================================================== */
 
 /** Alta y edición de un ítem. El subrubro se limita al rubro elegido. */
+/**
+ * Los subtotales de todos los rubros, al lado de la planilla abierta.
+ *
+ * Los rubros ya guardados salen del presupuesto; el que se está cargando se
+ * reemplaza por el total que la planilla va calculando mientras se escribe.
+ * Es una referencia: los imprevistos que dependen del rubro abierto se ponen al
+ * día recién al guardar.
+ */
+function PanelDeSubtotales({ subtotales, rubroAbierto, totalEnVivo }) {
+  const lista = subtotales.filter((s) => s.idRubro !== rubroAbierto.idRubro);
+  const guardado = subtotales.find((s) => s.idRubro === rubroAbierto.idRubro);
+  const actual = totalEnVivo ?? Number(guardado?.subtotal ?? 0);
+
+  if (actual > 0) {
+    lista.push({
+      idRubro: rubroAbierto.idRubro,
+      nombreRubro: rubroAbierto.nombreRubro,
+      subtotal: actual,
+      esManoDeObra: rubroAbierto.esManoDeObra,
+      esImprevistos: rubroAbierto.esImprevistos,
+      abierto: true,
+    });
+  }
+
+  // El mismo orden que el resto del presupuesto: los rubros de la obra, y al
+  // final la mano de obra y los imprevistos.
+  const orden = (s) => (s.esManoDeObra ? 1 : s.esImprevistos ? 2 : 0);
+  lista.sort((a, b) => orden(a) - orden(b) || a.nombreRubro.localeCompare(b.nombreRubro));
+
+  const subtotal = lista.reduce((suma, s) => suma + Number(s.subtotal), 0);
+
+  return (
+    <aside className={estilos.panelSubtotales}>
+      <span className="kicker">Subtotales por rubro</span>
+      <ul className={estilos.subtotales}>
+        {lista.map((s) => (
+          <li key={s.idRubro} className={s.abierto ? estilos.subtotalAbierto : undefined}>
+            <span>{s.nombreRubro}</span>
+            <span className={`cifra ${estilos.numero}`}>{pesos(s.subtotal)}</span>
+          </li>
+        ))}
+        <li className={estilos.subtotalTotal}>
+          <span>Subtotal sin IVA</span>
+          <span className={`cifra ${estilos.numero}`}>{pesos(subtotal)}</span>
+        </li>
+      </ul>
+    </aside>
+  );
+}
+
+/**
+ * La fila de honorarios en los subtotales: el porcentaje se escribe ahí mismo
+ * y el monto lo calcula el sistema sobre el total de la obra.
+ */
+function FilaDeHonorarios({ presupuesto, editable, onGuardado }) {
+  const [porcentaje, setPorcentaje] = useState(presupuesto.honorariosPorcentaje ?? '');
+  const [guardando, setGuardando] = useState(false);
+  const [error, setError] = useState(null);
+
+  const tiene = Number(presupuesto.honorarios) > 0;
+  if (!editable && !tiene) {
+    return null;
+  }
+
+  const guardar = async (evento) => {
+    evento.preventDefault();
+    setGuardando(true);
+    setError(null);
+    try {
+      onGuardado(await definirHonorarios(
+        presupuesto.idPresupuesto, porcentaje === '' ? 0 : Number(porcentaje)));
+    } catch (fallo) {
+      setError(fallo.mensaje);
+    } finally {
+      setGuardando(false);
+    }
+  };
+
+  return (
+    <li>
+      {editable ? (
+        <form className={estilos.honorarios} onSubmit={guardar}>
+          <span>Honorarios</span>
+          <input
+            type="number" min="0" max="100" step="0.01"
+            className={estilos.celdaChica}
+            value={porcentaje}
+            onChange={(e) => setPorcentaje(e.target.value)}
+            placeholder="0"
+            aria-label="Porcentaje de honorarios"
+          />
+          <span>%</span>
+          <button type="submit" className={estilos.accion} disabled={guardando}>
+            {guardando ? 'Guardando…' : 'Aplicar'}
+          </button>
+          {error && <span className={estilos.errorCampo}>{error}</span>}
+        </form>
+      ) : (
+        <span>Honorarios ({presupuesto.honorariosPorcentaje}%)</span>
+      )}
+      <span className={`cifra ${estilos.numero}`}>{pesos(presupuesto.honorarios)}</span>
+    </li>
+  );
+}
+
 function ItemModal({ idPresupuesto, item, rubros, materiales, onCerrar, onGuardado }) {
   const [datos, setDatos] = useState({
     idRubro: item ? String(item.idRubro) : '',

@@ -17,6 +17,8 @@ public record RubroRespuesta(
         String estado,
         /** Si es EL rubro de mano de obra: su planilla lista rubros, no materiales. */
         boolean esManoDeObra,
+        /** Si es EL rubro de imprevistos: su planilla lista rubros con un porcentaje. */
+        boolean esImprevistos,
         List<SubrubroRespuesta> subrubros) {
 
     /** Requiere que los subrubros esten cargados (consulta con JOIN FETCH). */
@@ -26,6 +28,7 @@ public record RubroRespuesta(
                 rubro.getNombreRubro(),
                 rubro.getEstado(),
                 rubro.esManoDeObra(),
+                rubro.esImprevistos(),
                 rubro.getSubrubros().stream().map(SubrubroRespuesta::desde).toList());
     }
 
@@ -36,6 +39,7 @@ public record RubroRespuesta(
                 rubro.getNombreRubro(),
                 rubro.getEstado(),
                 rubro.esManoDeObra(),
+                rubro.esImprevistos(),
                 List.of());
     }
 }

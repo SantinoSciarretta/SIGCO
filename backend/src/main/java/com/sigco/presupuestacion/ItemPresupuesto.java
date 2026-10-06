@@ -80,6 +80,27 @@ public class ItemPresupuesto {
     private BigDecimal subtotal;
 
     /**
+     * A qué rubro se refiere el ítem, en los rubros especiales (V26).
+     *
+     * En un ítem de mano de obra dice de qué rubro es esa mano de obra: el ítem
+     * pertenece al rubro "Mano de obra", pero el trabajo es de Albañilería. Y en
+     * un ítem de imprevistos dice sobre qué rubro se calcula el porcentaje. En
+     * los ítems comunes queda vacío.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_rubro_referido")
+    private Rubro rubroReferido;
+
+    /**
+     * El porcentaje de un ítem de imprevistos. Se guarda el porcentaje y no
+     * solo el monto para que el monto se recalcule cuando cambian los
+     * materiales o la mano de obra del rubro. En los demás ítems queda vacío.
+     */
+    @Column(name = "porcentaje", precision = 5, scale = 2)
+    private BigDecimal porcentaje;
+
+
+    /**
      * Constructor vacío que exige la base de datos (JPA) para poder armar el
      * objeto al leerlo. No se usa desde el código.
      */
@@ -131,6 +152,57 @@ public class ItemPresupuesto {
      * HALF_UP es el redondeo comercial: 0,005 sube a 0,01. Es el que espera
      * cualquiera que revise la cuenta a mano.
      */
+    /**
+     * Un ítem de mano de obra: 1 global por el total, en el rubro de mano de
+     * obra, recordando de qué rubro es el trabajo.
+     */
+    public static ItemPresupuesto deManoDeObra(Presupuesto presupuesto, Rubro manoDeObra,
+                                               Rubro rubroReferido, String descripcion,
+                                               BigDecimal total) {
+        ItemPresupuesto item = new ItemPresupuesto(presupuesto, manoDeObra, null, null,
+                descripcion, "global", BigDecimal.ONE, total);
+        item.rubroReferido = rubroReferido;
+        return item;
+    }
+
+    /**
+     * Un ítem de imprevistos: un porcentaje sobre el total de un rubro. El
+     * monto arranca en cero y lo calcula el presupuesto (ver
+     * Presupuesto.recalcularTotal), que es quien conoce el total del rubro.
+     */
+    public static ItemPresupuesto deImprevistos(Presupuesto presupuesto, Rubro imprevistos,
+                                                Rubro rubroReferido, BigDecimal porcentaje) {
+        ItemPresupuesto item = new ItemPresupuesto(presupuesto, imprevistos, null, null,
+                rubroReferido.getNombreRubro(), "%", BigDecimal.ONE, BigDecimal.ZERO);
+        item.rubroReferido = rubroReferido;
+        item.porcentaje = porcentaje;
+        return item;
+    }
+
+    /** Una copia de este ítem para otro presupuesto (al duplicar). */
+    public ItemPresupuesto copiarPara(Presupuesto destino) {
+        ItemPresupuesto copia = new ItemPresupuesto(destino, rubro, subrubro, material,
+                descripcion, unidadMedida, cantidad, valorUnitario);
+        copia.rubroReferido = rubroReferido;
+        copia.porcentaje = porcentaje;
+        return copia;
+    }
+
+    /** Indica si es un ítem de imprevistos, calculado por porcentaje. */
+    public boolean esImprevisto() {
+        return porcentaje != null && rubro.esImprevistos();
+    }
+
+    /**
+     * Fija el monto de un imprevisto: el porcentaje aplicado sobre la base
+     * (materiales más mano de obra del rubro al que se refiere).
+     */
+    void calcularImprevisto(BigDecimal base) {
+        this.valorUnitario = base.multiply(porcentaje)
+                .divide(BigDecimal.valueOf(100), DECIMALES, RoundingMode.HALF_UP);
+        this.subtotal = calcularSubtotal(cantidad, valorUnitario);
+    }
+
     private static BigDecimal calcularSubtotal(BigDecimal cantidad, BigDecimal valorUnitario) {
         return cantidad.multiply(valorUnitario).setScale(DECIMALES, RoundingMode.HALF_UP);
     }
@@ -179,5 +251,13 @@ public class ItemPresupuesto {
 
     public BigDecimal getSubtotal() {
         return subtotal;
+    }
+
+    public Rubro getRubroReferido() {
+        return rubroReferido;
+    }
+
+    public BigDecimal getPorcentaje() {
+        return porcentaje;
     }
 }

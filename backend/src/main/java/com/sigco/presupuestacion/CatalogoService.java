@@ -123,6 +123,11 @@ public class CatalogoService {
             return;
         }
 
+        if (esManoDeObra && rubro.esImprevistos()) {
+            throw new ReglaDeNegocioException(
+                    "El rubro de imprevistos no puede ser también el de mano de obra.");
+        }
+
         if (esManoDeObra) {
             rubroRepositorio.findByEsManoDeObraTrue()
                     .filter(anterior -> !anterior.getIdRubro().equals(rubro.getIdRubro()))

@@ -113,6 +113,14 @@ export async function definirPlanDePago(id, plan) {
   return respuesta.data;
 }
 
+/**
+ * Fija el porcentaje de honorarios sobre el total de la obra. Con 0 se quitan.
+ */
+export async function definirHonorarios(id, porcentaje) {
+  const respuesta = await client.put(`/presupuestos/${id}/honorarios`, { porcentaje });
+  return respuesta.data;
+}
+
 /** No existe baja: un presupuesto se marca Rechazado, nunca se elimina. */
 export async function cambiarEstadoPresupuesto(id, estado) {
   const respuesta = await client.patch(`/presupuestos/${id}/estado`, { estado });
