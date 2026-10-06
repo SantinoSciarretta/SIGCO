@@ -133,6 +133,13 @@ export default function PresupuestoDetalle() {
         <div className={estilos.totalBloque}>
           <span className="kicker">Total con IVA</span>
           <span className={`cifra ${estilos.totalCifra}`}>{pesos(presupuesto.totalPresupuesto)}</span>
+          {/* Debajo del total, de qué se compone: el subtotal de los ítems
+              más el 21% de IVA. */}
+          {presupuesto.iva != null && (
+            <span className={estilos.desgloseIva}>
+              Subtotal {pesos(presupuesto.subtotalSinIva)} + IVA 21% {pesos(presupuesto.iva)}
+            </span>
+          )}
           <span className={claseDeEstado(presupuesto.estado)}>{presupuesto.estado}</span>
         </div>
       </header>
