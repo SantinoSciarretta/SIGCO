@@ -4,7 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -24,6 +28,7 @@ import com.sigco.materiales.MaterialRepository;
 import com.sigco.obras.Obra;
 import com.sigco.obras.ObraRepository;
 import com.sigco.presupuestacion.Rubro;
+import com.sigco.proveedores.Cotizacion;
 import com.sigco.proveedores.CotizacionRepository;
 import com.sigco.proveedores.Proveedor;
 import com.sigco.proveedores.ProveedorRepository;
@@ -112,7 +117,7 @@ class PedidoServiceTest {
         when(obraRepositorio.findById(5L))
                 .thenReturn(java.util.Optional.of(obraEnPresupuestacion(5L)));
 
-        assertThatThrownBy(() -> servicio.crear(new NuevoPedido(5L,
+        assertThatThrownBy(() -> servicio.crear(new NuevoPedido(5L, 7L,
                 java.util.List.of(new LineaSolicitud(1L, new java.math.BigDecimal("10"))))))
                 .isInstanceOf(ReglaDeNegocioException.class)
                 .hasMessageContaining("presupuestación");
@@ -164,20 +169,21 @@ class PedidoServiceTest {
     class Alta {
 
         @Test
-        @DisplayName("Se crea con sus materiales y queda pendiente de aprobación, sin proveedor")
-        void creaPendienteSinProveedor() {
+        @DisplayName("Se crea con sus materiales y el corralón, pendiente de aprobación")
+        void creaPendienteConCorralon() {
             when(obraRepositorio.findById(1L)).thenReturn(Optional.of(obra(1L)));
+            when(proveedorRepositorio.findById(7L)).thenReturn(Optional.of(proveedor(7L)));
             when(materialRepositorio.findById(1L)).thenReturn(Optional.of(material("Cemento CP40", 1L)));
             when(materialRepositorio.findById(2L)).thenReturn(Optional.of(material("Arena gruesa", 2L)));
             devolverLoQueSeGuarda();
 
-            PedidoRespuesta r = servicio.crear(new NuevoPedido(1L, List.of(
+            PedidoRespuesta r = servicio.crear(new NuevoPedido(1L, 7L, List.of(
                     new LineaSolicitud(1L, new BigDecimal("20")),
                     new LineaSolicitud(2L, new BigDecimal("5")))));
 
             assertThat(r.estado()).isEqualTo(Pedido.ESTADO_PENDIENTE);
-            // El capataz no decide a quien comprarle: eso llega con la aprobacion.
-            assertThat(r.idProveedor()).isNull();
+            // El corralón se elige al cargar: es a quien se le pide cotización.
+            assertThat(r.idProveedor()).isEqualTo(7L);
             assertThat(r.materiales()).hasSize(2);
             // Sin precios todavia, asi que el total no significa nada.
             assertThat(r.tieneTodosLosPrecios()).isFalse();
@@ -190,7 +196,7 @@ class PedidoServiceTest {
             cancelada.cancelar("El cliente desistió");
             when(obraRepositorio.findById(1L)).thenReturn(Optional.of(cancelada));
 
-            assertThatThrownBy(() -> servicio.crear(new NuevoPedido(1L, List.of(
+            assertThatThrownBy(() -> servicio.crear(new NuevoPedido(1L, 7L, List.of(
                     new LineaSolicitud(1L, BigDecimal.ONE)))))
                     .isInstanceOf(ReglaDeNegocioException.class)
                     .hasMessageContaining("no admite pedidos");
@@ -202,10 +208,11 @@ class PedidoServiceTest {
             Material viejo = material("Cal hidratada", 3L);
             viejo.desactivar();
             when(obraRepositorio.findById(1L)).thenReturn(Optional.of(obra(1L)));
+            when(proveedorRepositorio.findById(7L)).thenReturn(Optional.of(proveedor(7L)));
             when(materialRepositorio.findById(3L)).thenReturn(Optional.of(viejo));
             devolverLoQueSeGuarda();
 
-            assertThatThrownBy(() -> servicio.crear(new NuevoPedido(1L, List.of(
+            assertThatThrownBy(() -> servicio.crear(new NuevoPedido(1L, 7L, List.of(
                     new LineaSolicitud(3L, BigDecimal.ONE)))))
                     .isInstanceOf(ReglaDeNegocioException.class)
                     .hasMessageContaining("inactivo");
@@ -215,14 +222,43 @@ class PedidoServiceTest {
         @DisplayName("El mismo material no puede ir dos veces en el pedido")
         void materialRepetidoSeRechaza() {
             when(obraRepositorio.findById(1L)).thenReturn(Optional.of(obra(1L)));
+            when(proveedorRepositorio.findById(7L)).thenReturn(Optional.of(proveedor(7L)));
             when(materialRepositorio.findById(1L)).thenReturn(Optional.of(material("Cemento CP40", 1L)));
             devolverLoQueSeGuarda();
 
-            assertThatThrownBy(() -> servicio.crear(new NuevoPedido(1L, List.of(
+            assertThatThrownBy(() -> servicio.crear(new NuevoPedido(1L, 7L, List.of(
                     new LineaSolicitud(1L, new BigDecimal("10")),
                     new LineaSolicitud(1L, new BigDecimal("5"))))))
                     .isInstanceOf(ReglaDeNegocioException.class)
                     .hasMessageContaining("dos veces");
+        }
+
+        @Test
+        @DisplayName("Un capataz carga el pedido sin corralón: se elige al aprobar")
+        void capatazSinCorralon() {
+            when(obraRepositorio.findById(1L)).thenReturn(Optional.of(obra(1L)));
+            when(materialRepositorio.findById(1L)).thenReturn(Optional.of(material("Cemento CP40", 1L)));
+            devolverLoQueSeGuarda();
+
+            PedidoRespuesta r = servicio.crear(new NuevoPedido(1L, null, List.of(
+                    new LineaSolicitud(1L, new BigDecimal("20")))));
+
+            assertThat(r.idProveedor()).isNull();
+            verify(proveedorRepositorio, never()).findById(anyLong());
+        }
+
+        @Test
+        @DisplayName("No se le pide a un corralón inactivo")
+        void corralonInactivo() {
+            Proveedor inactivo = proveedor(7L);
+            inactivo.desactivar();
+            when(obraRepositorio.findById(1L)).thenReturn(Optional.of(obra(1L)));
+            when(proveedorRepositorio.findById(7L)).thenReturn(Optional.of(inactivo));
+
+            assertThatThrownBy(() -> servicio.crear(new NuevoPedido(1L, 7L, List.of(
+                    new LineaSolicitud(1L, BigDecimal.ONE)))))
+                    .isInstanceOf(ReglaDeNegocioException.class)
+                    .hasMessageContaining("inactivo");
         }
     }
 
@@ -233,21 +269,63 @@ class PedidoServiceTest {
     class Aprobar {
 
         @Test
-        @DisplayName("Aprobar asigna proveedor, precios y lo envía en un solo paso")
+        @DisplayName("Aprobar pone los precios sin IVA y el total suma el 21%")
         void apruebaYEnvia() {
-            pedidoPendiente();
-            when(proveedorRepositorio.findById(7L)).thenReturn(Optional.of(proveedor(7L)));
+            pedidoPendiente().asignarProveedor(proveedor(7L));
 
-            PedidoRespuesta r = servicio.aprobar(10L, new Aprobacion(7L, List.of(
+            PedidoRespuesta r = servicio.aprobar(10L, new Aprobacion(null, List.of(
                     new PrecioLinea(1L, new BigDecimal("26000")),
                     new PrecioLinea(2L, new BigDecimal("140000")))));
 
             assertThat(r.estado()).isEqualTo(Pedido.ESTADO_ENVIADO);
+            // Sin elegir proveedor al aprobar, queda el que se eligió al cargar.
             assertThat(r.nombreProveedor()).isEqualTo("Corralón San Martín");
             assertThat(r.fechaAprobacion()).isNotNull();
             // 20 x 26.000 = 520.000 ; 5 x 140.000 = 700.000
-            assertThat(r.total()).isEqualByComparingTo("1220000.00");
+            assertThat(r.subtotal()).isEqualByComparingTo("1220000.00");
+            assertThat(r.iva()).isEqualByComparingTo("256200.00");
+            assertThat(r.total()).isEqualByComparingTo("1476200.00");
             assertThat(r.tieneTodosLosPrecios()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Los precios aprobados quedan como cotización del corralón")
+        void guardaLasCotizaciones() {
+            pedidoPendiente().asignarProveedor(proveedor(7L));
+
+            servicio.aprobar(10L, new Aprobacion(null, List.of(
+                    new PrecioLinea(1L, new BigDecimal("26000")),
+                    new PrecioLinea(2L, new BigDecimal("140000")))));
+
+            // Una por material: son el precio de referencia la próxima vez.
+            verify(cotizacionRepositorio, times(2)).save(any(Cotizacion.class));
+        }
+
+        @Test
+        @DisplayName("Al aprobar, la compra se carga como gasto de la obra")
+        void generaElGasto() {
+            pedidoPendiente().asignarProveedor(proveedor(7L));
+
+            servicio.aprobar(10L, new Aprobacion(null, List.of(
+                    new PrecioLinea(1L, new BigDecimal("26000")),
+                    new PrecioLinea(2L, new BigDecimal("140000")))));
+
+            verify(gastoService).generarDesdeRecepcion(any(Obra.class), eq(10L), anyMap(), any());
+        }
+
+        @Test
+        @DisplayName("Se puede aprobar con otro corralón que el elegido al cargar")
+        void cambiaDeCorralon() {
+            pedidoPendiente().asignarProveedor(proveedor(7L));
+            Proveedor otro = new Proveedor("Corralón Norte", "Zona Norte", null, null, null);
+            asignarId(otro, "idProveedor", 8L);
+            when(proveedorRepositorio.findById(8L)).thenReturn(Optional.of(otro));
+
+            PedidoRespuesta r = servicio.aprobar(10L, new Aprobacion(8L, List.of(
+                    new PrecioLinea(1L, BigDecimal.TEN),
+                    new PrecioLinea(2L, BigDecimal.TEN))));
+
+            assertThat(r.nombreProveedor()).isEqualTo("Corralón Norte");
         }
 
         @Test
@@ -378,6 +456,17 @@ class PedidoServiceTest {
         }
 
         @Test
+        @DisplayName("Anular un pedido aprobado anula también su gasto")
+        void anulaElGasto() {
+            Pedido p = pedidoPendiente();
+            p.aprobar(proveedor(7L));
+
+            servicio.anular(10L, new Anulacion("El corralón no entregó"));
+
+            verify(gastoService).anularDePedido(10L, "El corralón no entregó");
+        }
+
+        @Test
         @DisplayName("No se anula un pedido ya recibido: el material llegó a la obra")
         void noSeAnulaLoRecibido() {
             Pedido p = pedidoPendiente();
@@ -401,249 +490,123 @@ class PedidoServiceTest {
     }
 
     // ==================================================================
-    //  Mandarle la orden al corralon por WhatsApp
+    //  Pedirle cotización al corralón por WhatsApp
     // ==================================================================
 
     /**
-     * Pedido de Ricardo: que al enviar el pedido se le pueda mandar al corralón
-     * por WhatsApp con el PDF.
+     * Desde el 05/10/2026 el WhatsApp sirve para PEDIR COTIZACIÓN: el mensaje
+     * lleva los materiales y las cantidades, sin precios, sin links y sin PDF.
      *
      * SIGCO no manda el mensaje: arma el link y lo abre. Lo que se prueba acá
-     * es que ese link quede bien armado, que el PDF se pueda abrir sin login, y
-     * que cuando el teléfono no se entiende NO se invente uno.
+     * es que ese link quede bien armado y que cuando el teléfono no se entiende
+     * NO se invente uno.
      */
     @Nested
-    @DisplayName("Envío de la orden por WhatsApp")
-    class EnvioPorWhatsApp {
+    @DisplayName("Pedido de cotización por WhatsApp")
+    class PedidoDeCotizacion {
 
-        /**
-         * El servicio se arma a mano acá porque necesita la dirección pública,
-         * que es un String y @InjectMocks le pasa null: Mockito no puede
-         * inventar un valor para un tipo que no se puede simular.
-         */
-        private PedidoService conUrl(String url) {
-            return new PedidoService(repositorio, obraRepositorio, materialRepositorio,
-                    proveedorRepositorio, cotizacionRepositorio, gastoService, sesion,
-                    alcance, auditoria, generadorDeOrden, url);
-        }
-
-        private Pedido pedidoAprobado(String telefonoDelProveedor) {
+        private Pedido pedidoConCorralon(String telefonoDelProveedor) {
             Pedido pedido = pedidoPendiente();
             Proveedor corralon = new Proveedor("Corralón San Martín", "Zona Norte",
                                                telefonoDelProveedor, null, null);
             asignarId(corralon, "idProveedor", 3L);
-            pedido.aprobar(corralon);
-            devolverLoQueSeGuarda();
+            pedido.asignarProveedor(corralon);
             return pedido;
         }
 
         @Test
-        @DisplayName("Arma el link de WhatsApp con el número y el mensaje")
+        @DisplayName("Arma el link de WhatsApp al número del corralón")
         void armaElLink() {
-            pedidoAprobado("11 4567-8900");
+            pedidoConCorralon("11 4567-8900");
 
-            var envio = conUrl("https://sigco.app").prepararEnvioPorWhatsApp(10L);
+            var envio = servicio.prepararEnvioPorWhatsApp(10L);
 
             assertThat(envio.telefonoParaWhatsApp()).isEqualTo("5491145678900");
             assertThat(envio.urlWhatsApp()).startsWith("https://wa.me/5491145678900?text=");
-            assertThat(envio.aviso()).isNull();
         }
 
         @Test
-        @DisplayName("El mensaje dice de qué obra es y qué materiales lleva")
-        void elMensajeTieneLoQueElCorralonNecesita() {
-            pedidoAprobado("11 4567-8900");
+        @DisplayName("El mensaje pide cotización con los materiales y sus cantidades")
+        void elMensajePideCotizacion() {
+            pedidoConCorralon("11 4567-8900");
 
-            var envio = conUrl("https://sigco.app").prepararEnvioPorWhatsApp(10L);
+            String mensaje = servicio.prepararEnvioPorWhatsApp(10L).mensaje();
 
-            assertThat(envio.mensaje())
-                    .contains("Granica SRL")
-                    .contains("Pedido #10")
-                    // "Entregar en" y no "Obra": es a donde va el camión.
+            assertThat(mensaje)
+                    .contains("cotización")
                     .contains("Entregar en: Av. Cabildo 2340")
-                    .contains("Cemento CP40")
-                    .contains("Arena gruesa")
-                    .contains(envio.urlOrden());
+                    .contains("- Cemento CP40: 20 bolsa")
+                    .contains("- Arena gruesa: 5 bolsa");
+        }
+
+        @Test
+        @DisplayName("El mensaje no lleva precios, ni links, ni PDF")
+        void sinPreciosNiLinks() {
+            pedidoConCorralon("11 4567-8900");
+
+            var envio = servicio.prepararEnvioPorWhatsApp(10L);
+
+            assertThat(envio.mensaje()).doesNotContain("$").doesNotContain("http")
+                    .doesNotContain("PDF");
+            assertThat(envio.urlOrden()).isNull();
+        }
+
+        @Test
+        @DisplayName("Un pedido aprobado ya no pide cotización")
+        void aprobadoNoPideCotizacion() {
+            pedidoConCorralon("11 4567-8900").aprobar(proveedor(7L));
+
+            assertThatThrownBy(() -> servicio.prepararEnvioPorWhatsApp(10L))
+                    .isInstanceOf(ReglaDeNegocioException.class)
+                    .hasMessageContaining("antes de aprobar");
         }
 
         /**
-         * Lo que pidió Ricardo después de ver la primera versión: que el
-         * mensaje se pueda leer y entender sin abrir el PDF.
-         */
-        @Test
-        @DisplayName("El mensaje lleva el pedido entero: cantidades, precios y total")
-        void elMensajeLlevaElPedidoEntero() {
-            Pedido pedido = pedidoAprobado("11 4567-8900");
-            pedido.getMateriales().get(0).ponerPrecio(new BigDecimal("12500"));
-            pedido.getMateriales().get(1).ponerPrecio(new BigDecimal("8000"));
-
-            var envio = conUrl("https://sigco.app").prepararEnvioPorWhatsApp(10L);
-
-            // 20 bolsas a 12.500 = 250.000; 5 bolsas a 8.000 = 40.000.
-            assertThat(envio.mensaje())
-                    .contains("Cemento CP40: 20 bolsa x $ 12.500 = $ 250.000")
-                    .contains("Arena gruesa: 5 bolsa x $ 8.000 = $ 40.000")
-                    .contains("TOTAL: $ 290.000");
-        }
-
-        @Test
-        @DisplayName("Sin precios confirmados, lista los materiales sin importes")
-        void sinPreciosNoInventaTotal() {
-            pedidoAprobado("11 4567-8900");
-
-            var envio = conUrl("https://sigco.app").prepararEnvioPorWhatsApp(10L);
-
-            assertThat(envio.mensaje())
-                    .contains("Cemento CP40: 20 bolsa")
-                    .doesNotContain("TOTAL")
-                    .doesNotContain("$");
-        }
-
-        /**
-         * El texto viaja DENTRO de una URL, y una URL muy larga se corta antes
-         * de que WhatsApp la vea. Con un pedido enorme, el mensaje pasa a ser
-         * un resumen y el detalle queda en el PDF: es preferible un mensaje
-         * corto y completo en el PDF antes que uno largo que llegue partido.
-         */
-        @Test
-        @DisplayName("Un pedido enorme se resume y deja el detalle en el PDF")
-        void pedidoQueNoEntraEnElLink() {
-            Pedido pedido = pedidoAprobado("11 4567-8900");
-            for (int i = 0; i < 60; i++) {
-                PedidoMaterial linea = new PedidoMaterial(
-                        pedido, material("Material de nombre bastante largo " + i, 100L + i),
-                        new BigDecimal("10"));
-                linea.ponerPrecio(new BigDecimal("9999"));
-                pedido.agregarMaterial(linea);
-            }
-
-            var envio = conUrl("https://sigco.app").prepararEnvioPorWhatsApp(10L);
-
-            assertThat(envio.mensaje()).hasSizeLessThan(1500);
-            assertThat(envio.mensaje()).contains("materiales mas");
-            assertThat(envio.mensaje()).contains(envio.urlOrden());
-        }
-
-        @Test
-        @DisplayName("Genera un link público con token y vencimiento")
-        void generaElLinkPublico() {
-            Pedido pedido = pedidoAprobado("11 4567-8900");
-
-            var envio = conUrl("https://sigco.app").prepararEnvioPorWhatsApp(10L);
-
-            assertThat(pedido.getTokenOrden()).isNotNull().hasSizeGreaterThan(30);
-            assertThat(pedido.tieneOrdenCompartida()).isTrue();
-            assertThat(envio.urlOrden())
-                    .isEqualTo("https://sigco.app/api/ordenes-publicas/" + pedido.getTokenOrden());
-            assertThat(envio.vence()).isAfter(LocalDateTime.now().plusDays(29));
-        }
-
-        @Test
-        @DisplayName("Una barra final en la dirección no duplica la del link")
-        void noDuplicaLaBarra() {
-            pedidoAprobado("11 4567-8900");
-
-            var envio = conUrl("https://sigco.app/").prepararEnvioPorWhatsApp(10L);
-
-            assertThat(envio.urlOrden()).contains("sigco.app/api/ordenes-publicas/");
-            assertThat(envio.urlOrden()).doesNotContain("//api");
-        }
-
-        /**
-         * Volver a preparar el envío REUSA el link. Si el corralón ya lo tiene
-         * en el chat, mandárselo de nuevo no debería romperle el anterior.
-         *
-         * Y sobre todo: generar uno nuevo cada vez hacía que dos llamadas
-         * cruzadas dejaran la pantalla mostrando un token ya invalidado. Lo
-         * encontró la prueba en el navegador, donde React llama al efecto dos
-         * veces en desarrollo.
-         */
-        @Test
-        @DisplayName("Preparar de nuevo reusa el link vigente")
-        void elTokenSeReusa() {
-            Pedido pedido = pedidoAprobado("11 4567-8900");
-            PedidoService servicioConUrl = conUrl("https://sigco.app");
-
-            servicioConUrl.prepararEnvioPorWhatsApp(10L);
-            String primero = pedido.getTokenOrden();
-
-            var segundo = servicioConUrl.prepararEnvioPorWhatsApp(10L);
-
-            assertThat(pedido.getTokenOrden()).isEqualTo(primero);
-            assertThat(segundo.urlOrden()).endsWith(primero);
-        }
-
-        @Test
-        @DisplayName("Si el link venció, prepara uno nuevo")
-        void elTokenVencidoSeReemplaza() {
-            Pedido pedido = pedidoAprobado("11 4567-8900");
-            pedido.compartirOrden("vencido", LocalDateTime.now().minusDays(1));
-
-            conUrl("https://sigco.app").prepararEnvioPorWhatsApp(10L);
-
-            assertThat(pedido.getTokenOrden()).isNotEqualTo("vencido");
-            assertThat(pedido.tieneOrdenCompartida()).isTrue();
-        }
-
-        /**
-         * La regla más importante de todo esto: si el teléfono no se entiende,
-         * NO se abre una conversación con un número inventado.
+         * El caso que el normalizador viene a cubrir: si el teléfono no se
+         * puede interpretar, NO se abre una conversación con un número
+         * inventado.
          */
         @Test
         @DisplayName("Con un teléfono que no se entiende, no arma el link y avisa")
         void noInventaUnNumero() {
-            pedidoAprobado("preguntar por Jorge");
+            pedidoConCorralon("preguntar por Jorge");
 
-            var envio = conUrl("https://sigco.app").prepararEnvioPorWhatsApp(10L);
+            var envio = servicio.prepararEnvioPorWhatsApp(10L);
 
             assertThat(envio.telefonoParaWhatsApp()).isNull();
             assertThat(envio.urlWhatsApp()).isNull();
             assertThat(envio.aviso()).contains("No se pudo interpretar el teléfono");
-            // El link de la orden SÍ se genera: se puede copiar y mandar a mano.
-            assertThat(envio.urlOrden()).isNotNull();
+            // El mensaje sí se arma: se puede copiar y mandar a mano.
+            assertThat(envio.mensaje()).contains("cotización");
         }
 
         @Test
         @DisplayName("Sin teléfono cargado, dice dónde cargarlo")
         void sinTelefono() {
-            pedidoAprobado(null);
+            pedidoConCorralon(null);
 
-            var envio = conUrl("https://sigco.app").prepararEnvioPorWhatsApp(10L);
+            var envio = servicio.prepararEnvioPorWhatsApp(10L);
 
             assertThat(envio.urlWhatsApp()).isNull();
             assertThat(envio.aviso()).contains("no tiene teléfono cargado");
         }
 
         @Test
-        @DisplayName("No se prepara el envío de un pedido sin proveedor")
+        @DisplayName("Un pedido viejo sin corralón no puede pedir cotización")
         void sinProveedor() {
             pedidoPendiente();
 
-            assertThatThrownBy(() -> conUrl("https://sigco.app").prepararEnvioPorWhatsApp(10L))
+            assertThatThrownBy(() -> servicio.prepararEnvioPorWhatsApp(10L))
                     .isInstanceOf(ReglaDeNegocioException.class)
-                    .hasMessageContaining("no tiene proveedor");
+                    .hasMessageContaining("no tiene corralón");
         }
 
-        @Test
-        @DisplayName("No se prepara el envío de un pedido anulado")
-        void anulado() {
-            Pedido pedido = pedidoAprobado("11 4567-8900");
-            pedido.anular("Se consiguió en otro lado");
-
-            assertThatThrownBy(() -> conUrl("https://sigco.app").prepararEnvioPorWhatsApp(10L))
-                    .isInstanceOf(ReglaDeNegocioException.class)
-                    .hasMessageContaining("anulado");
-        }
-
-        // ---------- El link público ----------
+        // ---------- Los links públicos que ya se habían mandado ----------
 
         @Test
-        @DisplayName("El link público devuelve el PDF sin pedir sesión")
+        @DisplayName("Un link público ya mandado sigue devolviendo el PDF sin pedir sesión")
         void elLinkPublicoEntregaElPdf() {
-            Pedido pedido = pedidoAprobado("11 4567-8900");
-            // El token se pone a mano en vez de llamar a prepararEnvio: ese
-            // método sí comprueba alcance, y acá se mide justamente que
-            // ordenPorToken NO lo haga.
+            Pedido pedido = pedidoConCorralon("11 4567-8900");
             pedido.compartirOrden("token-de-prueba", LocalDateTime.now().plusDays(30));
 
             when(repositorio.buscarPorTokenDeOrden("token-de-prueba"))
@@ -651,7 +614,6 @@ class PedidoServiceTest {
             when(generadorDeOrden.generar(pedido)).thenReturn(new byte[]{1, 2, 3});
 
             assertThat(servicio.ordenPorToken("token-de-prueba")).hasSize(3);
-            // Y no se comprobó alcance: el corralón no tiene sesión.
             verify(alcance, never()).exigirAlcance(any());
         }
 
@@ -667,7 +629,7 @@ class PedidoServiceTest {
         @Test
         @DisplayName("Un link vencido deja de servir")
         void tokenVencido() {
-            Pedido pedido = pedidoAprobado("11 4567-8900");
+            Pedido pedido = pedidoConCorralon("11 4567-8900");
             pedido.compartirOrden("viejo", LocalDateTime.now().minusDays(1));
             when(repositorio.buscarPorTokenDeOrden("viejo")).thenReturn(Optional.of(pedido));
 
@@ -676,11 +638,11 @@ class PedidoServiceTest {
         }
 
         @Test
-        @DisplayName("Cortar el link lo deja inservible al instante")
+        @DisplayName("Cortar un link ya mandado lo deja inservible al instante")
         void cortarElLink() {
-            Pedido pedido = pedidoAprobado("11 4567-8900");
-            conUrl("https://sigco.app").prepararEnvioPorWhatsApp(10L);
-            assertThat(pedido.tieneOrdenCompartida()).isTrue();
+            Pedido pedido = pedidoConCorralon("11 4567-8900");
+            pedido.compartirOrden("token", LocalDateTime.now().plusDays(30));
+            devolverLoQueSeGuarda();
 
             servicio.dejarDeCompartirOrden(10L);
 

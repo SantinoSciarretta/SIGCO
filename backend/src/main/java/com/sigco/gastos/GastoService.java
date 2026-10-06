@@ -248,7 +248,7 @@ public class GastoService {
             Rubro rubro = buscarRubroOFallar(entrada.getKey());
             Gasto automatico = new Gasto(obra, rubro, null, Gasto.TIPO_MATERIAL,
                     entrada.getValue(), fechaRecepcion,
-                    "Generado por la recepción del pedido #" + idPedido,
+                    "Compra de materiales, pedido #" + idPedido,
                     null, idPedido, null);
             // Queda a nombre de quien confirmo la recepcion: el gasto lo genera
             // el sistema, pero lo dispara una persona.
@@ -257,6 +257,22 @@ public class GastoService {
             generados++;
         }
         return generados;
+    }
+
+    /**
+     * Anula los gastos que generó un pedido, cuando el pedido se anula.
+     *
+     * Desde el 05/10/2026 el gasto se genera al APROBAR el pedido, así que un
+     * pedido aprobado que después se anula dejaría un gasto de una compra que
+     * no se hizo. No se borran: se anulan con el motivo, como cualquier gasto.
+     */
+    @Transactional
+    public void anularDePedido(Long idPedido, String motivo) {
+        for (Gasto gasto : repositorio.findByIdPedido(idPedido)) {
+            if (gasto.estaConfirmado()) {
+                gasto.anular("Pedido #" + idPedido + " anulado: " + motivo);
+            }
+        }
     }
 
     /**

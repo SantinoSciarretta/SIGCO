@@ -422,16 +422,17 @@ Después de "Elaboración del presupuesto definitivo, con estructura de rubro, s
 
 ## Módulo 6 – Compras
 
-Es el módulo que más alcance nuevo ganó (orden en PDF y envío por WhatsApp).
+Es el módulo que más alcance nuevo ganó (orden en PDF y pedido de cotización por WhatsApp). Los textos de esta sección ya incluyen el cambio del 05/10/2026: el corralón se elige al cargar el pedido, se le pide cotización por WhatsApp, y al aprobar los precios quedan como cotización y la compra como gasto.
 
 ### 6.1 [Agregar] Funcionalidades Principales, después de "Envío del pedido aprobado al proveedor seleccionado..."
 
 **Pegá estos tres puntos:**
-> * Sugerencia de precios al aprobar, tomados de la última cotización registrada del proveedor elegido para cada material.
-> * Generación de la orden de pedido en PDF para mandársela al corralón, con los materiales, las cantidades, los precios acordados y la dirección de entrega, sin ningún dato interno de la empresa como el presupuesto, el gasto o el cliente.
-> * Envío de la orden al proveedor por WhatsApp desde el propio teléfono del dueño. El sistema arma el mensaje con el pedido escrito completo y un enlace a la orden en PDF, pero el mensaje lo manda el dueño.
+> * Pedido de cotización al corralón por WhatsApp desde el propio teléfono del dueño. El sistema arma el mensaje con los materiales y sus cantidades, sin precios ni enlaces, pero el mensaje lo manda el dueño.
+> * Sugerencia de precios al aprobar, tomados de la última cotización registrada del corralón para cada material. Los precios que se aprueban quedan guardados como nueva cotización de ese corralón.
+> * Cálculo del subtotal, del IVA del 21% y del total de cada pedido, con los precios cargados sin IVA.
+> * Generación de la orden de pedido en PDF, con los materiales, las cantidades, los precios acordados y la dirección de entrega, sin ningún dato interno de la empresa como el presupuesto, el gasto o el cliente.
 
-**Por qué:** alcance nuevo del 24/09 (V20). Ya está en CLAUDE.md y en `docs/desarrollo/21-whatsapp-al-corralon.md`.
+**Por qué:** alcance nuevo del 24/09 (V20), modificado el 05/10/2026: el WhatsApp pasó a usarse para pedir la cotización.
 
 ### 6.2 [Reemplazar] Circuito Descriptivo, paso 1
 
@@ -441,7 +442,7 @@ Es el módulo que más alcance nuevo ganó (orden en PDF y envío por WhatsApp).
 (es la última oración del paso 1)
 
 **Pegá:**
-> El pedido queda en estado Pendiente de Aprobación. Solo se pueden pedir materiales para una obra que ya está en ejecución.
+> El pedido se carga indicando también el corralón al que se le va a pedir la cotización, y queda en estado Pendiente de Aprobación. Solo se pueden pedir materiales para una obra que ya está en ejecución.
 
 ### 6.3 [Reemplazar] Circuito Descriptivo, paso 2
 
@@ -449,17 +450,14 @@ Es el módulo que más alcance nuevo ganó (orden en PDF y envío por WhatsApp).
 > 2. El dueño revisa el pedido, lo aprueba y selecciona el proveedor al que se lo va a enviar, tomándolo del registro de Proveedores según la zona de la obra. El pedido pasa a estado Enviado al Proveedor.
 
 **Pegá:**
-> 2. El dueño revisa el pedido, lo aprueba, selecciona el proveedor según la zona de la obra y confirma el precio acordado de cada material. El pedido pasa a estado Enviado al Proveedor. Desde ahí puede descargar la orden en PDF o mandársela al corralón por WhatsApp desde su propio teléfono.
+> 2. El dueño le pide cotización al corralón por WhatsApp desde su propio teléfono, con un mensaje que el sistema arma con los materiales y sus cantidades. Cuando el corralón contesta, el dueño carga el precio de cada material sin IVA y aprueba el pedido, que pasa a estado Enviado al Proveedor. En ese momento los precios quedan guardados como cotización del corralón y la compra se registra como gasto de la obra, agrupada por rubro y sin IVA.
 
 ### 6.4 [Reemplazar] Circuito Descriptivo, paso 5
 
-**Buscá:**
-> asociado a la obra y al rubro que corresponda, sin que el dueño tenga que cargarlo por separado.
+**Buscá el paso 5 completo y reemplazalo por:**
+> 5. Al confirmar la recepción, el pedido queda como Recibido Completo o Recibido con Diferencias. El gasto de la compra ya se había generado al aprobar, un gasto por cada rubro de los materiales, con el monto que surge de las cantidades y de los precios aprobados, sin que el dueño tenga que cargarlo por separado.
 
-**Pegá:**
-> generando un gasto por cada rubro de los materiales recibidos, con el monto que surge de las cantidades y de los precios confirmados al aprobar, sin que el dueño tenga que cargarlo por separado.
-
-**Por qué:** el gasto se agrupa por rubro (`generarGastoDeLaCompra`), así el semáforo de cada rubro recibe lo suyo.
+**Por qué:** desde el 05/10/2026 el gasto se genera al aprobar, que es cuando se conocen los precios y se compromete la compra. Se agrupa por rubro (`generarGastoDeLaCompra`), así el semáforo de cada rubro recibe lo suyo.
 
 ### 6.5 [Reemplazar] Circuito Descriptivo, paso 6
 
@@ -493,7 +491,9 @@ Es el módulo que más alcance nuevo ganó (orden en PDF y envío por WhatsApp).
 
 **Pegá estos tres puntos:**
 > * Solo se pueden generar pedidos para obras en estado "En ejecución". Mientras la obra se está presupuestando no se compra nada, porque el presupuesto todavía puede no aprobarse y ese pedido generaría un gasto contra una obra que quizás nunca arranca.
-> * Preparar el envío por WhatsApp exige el permiso de aprobar pedidos, que solo tiene el dueño, porque mandarle la orden al proveedor es parte de una decisión no delegable y además genera un enlace público a un documento de la empresa. Ese enlace vence a los treinta días y el dueño puede cortarlo en cualquier momento.
+> * Pedir la cotización por WhatsApp exige el permiso de aprobar pedidos, que solo tiene el dueño, porque escribirle al proveedor es parte de una decisión no delegable. Solo se puede pedir mientras el pedido espera la aprobación.
+> * Los precios del pedido se cargan sin IVA. El gasto que genera la compra va sin IVA, igual que el presupuesto contra el que se compara, y el total del pedido suma el 21%.
+> * Si se anula un pedido ya aprobado, el gasto que había generado también se anula.
 > * Si el teléfono del proveedor no se puede interpretar como un número de celular válido, el sistema no arma el enlace de WhatsApp en lugar de adivinar el número, para no mandarle el pedido de una obra a un desconocido.
 
 ### 6.9 [Reemplazar] Vistas de Interfaz, punto 5
@@ -509,19 +509,18 @@ Es el módulo que más alcance nuevo ganó (orden en PDF y envío por WhatsApp).
 ### 6.10 [Agregar] Campos del Formulario de Pedido, al final de la tabla
 
 **Pegá estas filas:**
-> | Precio_Unitario | Numérico | Precio acordado de cada material, confirmado por el dueño al aprobar. Es el valor con el que se genera el gasto. |
+> | Proveedor | Lista desplegable | Corralón al que se le pide la cotización. Se elige al cargar el pedido. |
+> | Precio_Unitario | Numérico | Precio sin IVA de cada material, según la cotización del corralón, cargado por el dueño al aprobar. Es el valor con el que se genera el gasto y queda guardado como cotización. |
 > | Motivo_Anulacion | Texto libre (condicional) | Obligatorio al anular el pedido. |
-> | Enlace_Orden | Automático | Enlace público a la orden en PDF, generado al preparar el envío por WhatsApp. Vence a los treinta días. |
 
 ### 6.11 [Reemplazar y Agregar] Botones y Acciones Disponibles
 
 **Buscá:**
 > | Rechazar Pedido | Devuelve el pedido a quien lo generó, sin enviarlo al proveedor. |
 
-**Pegá estas tres filas:**
-> | Descargar Orden | Genera la orden de pedido en PDF para el corralón. |
-> | Enviar por WhatsApp | Abre WhatsApp en el teléfono del dueño con el mensaje del pedido ya escrito y el enlace a la orden. Habilitado solo para el dueño. |
-> | Dejar de Compartir | Corta el enlace público de la orden antes de que venza. |
+**Pegá estas dos filas:**
+> | Pedir Cotización | Abre WhatsApp en el teléfono del dueño con el pedido de cotización ya escrito. Habilitado solo para el dueño. |
+> | Descargar Orden | Genera la orden de pedido en PDF. |
 
 **Por qué:** no existe "rechazar". Un pedido que no se aprueba se anula con motivo.
 
@@ -531,10 +530,10 @@ Es el módulo que más alcance nuevo ganó (orden en PDF y envío por WhatsApp).
 > La generación automática del gasto al confirmar la recepción se resuelve mediante un evento interno que dispara la creación del registro correspondiente en la entidad gasto, reutilizando los datos de obra, rubro y monto ya cargados en el pedido.
 
 **Pegá:**
-> La generación automática del gasto al confirmar la recepción se resuelve dentro de la misma operación que registra la recepción, reutilizando los datos de obra, rubro y precio ya cargados en el pedido. Así, si algo falla, no queda un pedido recibido sin su gasto ni un gasto sin su pedido.
+> La generación automática del gasto se resuelve dentro de la misma operación que aprueba el pedido, reutilizando los datos de obra, rubro y precio ya cargados. En esa misma operación los precios aprobados se guardan como cotización del corralón. Así, si algo falla, no queda un pedido aprobado sin su gasto ni un gasto sin su pedido.
 
 **Agregá un párrafo nuevo antes de "El frontend se construye en React":**
-> El envío por WhatsApp no utiliza la API oficial de Meta, que queda fuera del alcance de esta versión. El sistema arma un enlace de tipo wa.me, la misma tecnología que un enlace de correo, que abre WhatsApp en el teléfono del dueño con el mensaje ya escrito, y el envío lo hace él. Como un enlace de este tipo no puede adjuntar archivos, el mensaje lleva el pedido escrito entero y la orden en PDF viaja como un enlace público, identificado por un código aleatorio difícil de adivinar, que vence a los treinta días.
+> El pedido de cotización por WhatsApp no utiliza la API oficial de Meta, que queda fuera del alcance de esta versión. El sistema arma un enlace de tipo wa.me, la misma tecnología que un enlace de correo, que abre WhatsApp en el teléfono del dueño con el mensaje ya escrito, y el envío lo hace él. El mensaje lleva los materiales y sus cantidades, sin precios ni enlaces.
 
 ---
 

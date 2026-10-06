@@ -31,6 +31,14 @@ public final class PedidoDtos {
             @NotNull(message = "La obra es obligatoria")
             Long idObra,
 
+            /**
+             * El corralón al que se le pide cotización. La pantalla del dueño
+             * lo exige; queda opcional para los pedidos que carga un capataz
+             * desde el celular, que no ve los proveedores: en ese caso el
+             * corralón se elige al aprobar.
+             */
+            Long idProveedor,
+
             /** El informe: "No se puede generar un pedido sin al menos un material". */
             @NotEmpty(message = "El pedido tiene que llevar al menos un material")
             @Valid
@@ -57,7 +65,10 @@ public final class PedidoDtos {
      */
     public record Aprobacion(
 
-            @NotNull(message = "Hay que elegir el proveedor al aprobar")
+            /**
+             * El corralón. Es opcional: ya se eligió al cargar el pedido, y
+             * solo se manda si al final se le compra a otro.
+             */
             Long idProveedor,
 
             @NotEmpty(message = "Hay que confirmar el precio de cada material")
@@ -70,6 +81,7 @@ public final class PedidoDtos {
             @NotNull(message = "El material es obligatorio")
             Long idMaterial,
 
+            /** El precio que cotizó el corralón, SIN IVA. */
             @NotNull(message = "El precio unitario es obligatorio")
             @DecimalMin(value = "0.00", message = "El precio no puede ser negativo")
             BigDecimal precioUnitario) {

@@ -15,6 +15,7 @@ import com.sigco.materiales.Material;
 import com.sigco.materiales.MaterialRepository;
 import com.sigco.obras.Obra;
 import com.sigco.obras.ObraRepository;
+import com.sigco.proveedores.Cotizacion;
 import com.sigco.proveedores.CotizacionRepository;
 import com.sigco.proveedores.Proveedor;
 import com.sigco.proveedores.ProveedorRepository;
@@ -23,9 +24,6 @@ import com.sigco.seguridad.AlcanceDeObras;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
-import java.time.LocalDateTime;
-import java.util.Base64;
 import java.util.Optional;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,6 +36,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Reglas del circuito de compras.
+ *
+ * El circuito desde el 05/10/2026:
+ *
+ *   1. Se carga el pedido con los materiales, las cantidades y el corralón.
+ *   2. Se le pide cotización al corralón por WhatsApp: el mensaje lleva los
+ *      materiales y las cantidades, sin precios ni links.
+ *   3. Cuando el corralón contesta, el dueño carga los precios (sin IVA) y
+ *      aprueba. Esos precios quedan como cotización del corralón para cada
+ *      material, y la compra se carga como gasto de la obra.
+ *   4. Se confirma la recepción en obra con la foto del remito.
  *
  * El informe describe un circuito de tres pasos con responsables distintos, y
  * la separacion importa: el capataz pide, el dueño aprueba y elige proveedor,
@@ -73,14 +81,6 @@ public class PedidoService {
     private final GeneradorDeOrdenDePedido generadorDeOrden;
 
     /**
-     * La direccion publica del backend, para armar el link de la orden.
-     *
-     * Tiene que ser la que ve el corralon desde afuera, no localhost: ese link
-     * se abre en el telefono de otra persona, en otra red.
-     */
-    private final String urlPublica;
-
-    /**
      * Constructor: recibe lo necesario para leer y guardar pedidos, obras,
      * materiales, proveedores y cotizaciones, además de Gastos (para generar el
      * gasto al recibir), la auditoría y el control de qué obras puede ver cada
@@ -95,10 +95,7 @@ public class PedidoService {
                          SesionActual sesion,
                          AlcanceDeObras alcance,
                          com.sigco.accesos.ServicioAuditoria auditoria,
-                         GeneradorDeOrdenDePedido generadorDeOrden,
-                         @org.springframework.beans.factory.annotation.Value(
-                                 "${sigco.url-publica}") String urlPublica) {
-        this.urlPublica = urlPublica;
+                         GeneradorDeOrdenDePedido generadorDeOrden) {
         this.auditoria = auditoria;
         this.generadorDeOrden = generadorDeOrden;
         this.repositorio = repositorio;
@@ -195,6 +192,13 @@ public class PedidoService {
         // Quien genera el pedido queda registrado: es lo que convierte el
         // pedido informal por WhatsApp en un pedido con responsable.
         Pedido pedido = new Pedido(obra, sesion.idUsuario().orElse(null));
+
+        // El corralón se elige al cargar: es a quien se le pide la cotización.
+        // Un capataz no lo elige (no ve los proveedores): lo elige el dueño al
+        // aprobar.
+        if (solicitud.idProveedor() != null) {
+            pedido.asignarProveedor(buscarProveedorActivoOFallar(solicitud.idProveedor()));
+        }
         repositorio.save(pedido);
 
         Set<Long> yaAgregados = new HashSet<>();
@@ -217,12 +221,17 @@ public class PedidoService {
     // ------------------------------------------------------------------
 
     /**
-     * Aprueba el pedido, le asigna proveedor y confirma los precios.
+     * Aprueba el pedido con los precios que cotizó el corralón.
      *
-     * Es una sola operacion porque el circuito real lo es. Exige el precio de
-     * TODOS los materiales, no de algunos: el total del pedido es lo que
-     * despues se convierte en el gasto, y un total al que le falta una linea no
-     * sirve para comparar contra el presupuesto.
+     * Exige el precio de TODOS los materiales, no de algunos: el total del
+     * pedido es lo que se convierte en el gasto, y un total al que le falta una
+     * linea no sirve para comparar contra el presupuesto.
+     *
+     * Al aprobar pasan tres cosas:
+     *   - los precios quedan guardados como cotización del corralón para cada
+     *     material, y son el precio de referencia la próxima vez;
+     *   - la compra se carga como gasto de la obra, por rubro;
+     *   - queda auditado quién aprobó.
      */
     @Transactional
     public PedidoRespuesta aprobar(Long id, Aprobacion aprobacion) {
@@ -234,18 +243,22 @@ public class PedidoService {
                     + "Este está " + pedido.getEstado().toLowerCase() + ".");
         }
 
-        Proveedor proveedor = proveedorRepositorio.findById(aprobacion.idProveedor())
-                .orElseThrow(() -> new RecursoNoEncontradoException(
-                        "Proveedor", aprobacion.idProveedor()));
-
-        if (!proveedor.estaActivo()) {
-            throw new ReglaDeNegocioException(
-                    "El proveedor \"" + proveedor.getNombreProveedor()
-                    + "\" está inactivo y no se le pueden enviar pedidos.");
+        // El corralón ya se eligió al cargar el pedido. Solo cambia si al final
+        // se le compra a otro.
+        Proveedor proveedor;
+        if (aprobacion.idProveedor() != null) {
+            proveedor = buscarProveedorActivoOFallar(aprobacion.idProveedor());
+        } else if (pedido.getProveedor() != null) {
+            proveedor = pedido.getProveedor();
+        } else {
+            throw new ReglaDeNegocioException("Hay que elegir el corralón al aprobar.");
         }
 
         aplicarPrecios(pedido, aprobacion.precios());
         pedido.aprobar(proveedor);
+
+        guardarComoCotizaciones(pedido, proveedor);
+        generarGastoDeLaCompra(pedido);
 
         // El informe define la aprobacion del pedido como indelegable del dueño,
         // y el permiso compras.aprobar es lo que lo hace cumplir. Queda anotado
@@ -277,6 +290,21 @@ public class PedidoService {
                         + "\". Hay que confirmar el precio de todos los materiales del pedido.");
             }
             linea.ponerPrecio(precio);
+        }
+    }
+
+    /**
+     * Guarda los precios aprobados como cotización del corralón, uno por
+     * material. Así quedan como precio de referencia de ese corralón: la
+     * próxima vez que se le compre, el sistema los propone.
+     *
+     * Se agrega una cotización nueva y no se pisa la anterior: el historial de
+     * precios es lo que permite ver cuánto aumentó cada material.
+     */
+    private void guardarComoCotizaciones(Pedido pedido, Proveedor proveedor) {
+        for (PedidoMaterial linea : pedido.getMateriales()) {
+            cotizacionRepositorio.save(new Cotizacion(
+                    proveedor, linea.getMaterial(), linea.getPrecioUnitario()));
         }
     }
 
@@ -312,17 +340,21 @@ public class PedidoService {
                                ? recepcion.notaDiferencia().trim()
                                : null);
 
+        // El gasto ya se generó al aprobar. Esto solo alcanza a los pedidos
+        // aprobados antes del cambio del 05/10/2026, que lo generaban al
+        // recibir; para los demás no hace nada, porque no se duplica.
         generarGastoDeLaCompra(pedido);
 
         return PedidoRespuesta.completa(pedido);
     }
 
     /**
-     * Convierte la compra recibida en gasto de la obra.
+     * Convierte la compra aprobada en gasto de la obra, sin IVA.
      *
-     * Es lo que elimina la doble carga que hoy hace la empresa: el material que
-     * llego ya quedo pedido en el sistema, no hay razon para volver a tipearlo
-     * como gasto.
+     * Es lo que elimina la doble carga que hoy hace la empresa: el material
+     * comprado ya quedo pedido en el sistema, no hay razon para volver a
+     * tipearlo como gasto. Va sin IVA, como el presupuesto contra el que se
+     * compara.
      *
      * Se agrupa POR RUBRO porque un pedido puede mezclar cemento (Albañileria)
      * con cable (Electricidad), y el semaforo de Gastos compara rubro por rubro.
@@ -373,6 +405,10 @@ public class PedidoService {
 
         pedido.anular(anulacion.motivo().trim());
 
+        // Si ya estaba aprobado, su compra se había cargado como gasto: se anula
+        // también, porque la compra no se hizo.
+        gastoService.anularDePedido(pedido.getIdPedido(), anulacion.motivo().trim());
+
         auditoria.registrar(
                 "Anulación del pedido #" + pedido.getIdPedido()
                 + ": " + anulacion.motivo().trim(),
@@ -412,77 +448,42 @@ public class PedidoService {
     }
 
     // ------------------------------------------------------------------
-    //  Mandarle la orden al corralon por WhatsApp
+    //  Pedirle cotización al corralón por WhatsApp
     // ------------------------------------------------------------------
 
-    /** Cuanto vive el link publico de una orden. */
-    private static final int DIAS_DE_VIGENCIA = 30;
-
     /**
-     * A partir de que largo el mensaje deja de mandarse entero.
+     * Prepara el pedido de cotización por WhatsApp.
      *
-     * El texto viaja DENTRO de una URL, y una URL muy larga la cortan el
-     * navegador o el sistema operativo antes de que WhatsApp la vea. Como el
-     * texto ademas se codifica —cada acento y cada salto de linea ocupan tres
-     * caracteres— el margen real es bastante menor que el que uno diria.
+     * NO manda nada. Devuelve el link de WhatsApp con el mensaje escrito, para
+     * que la pantalla lo abra y el dueño apriete Enviar en su propio teléfono.
      *
-     * Con este limite entran alrededor de treinta materiales con su precio, que
-     * es mas de lo que tiene cualquier pedido de Granica. Cuando no entran, el
-     * mensaje pasa a ser un resumen y el detalle queda en el PDF.
+     * El mensaje lleva los materiales con sus cantidades y pide el precio. No
+     * lleva precios (todavía no los hay) ni links ni PDF: así lo pidió Santino
+     * el 05/10/2026, para que el corralón lea el pedido y conteste con la
+     * cotización en el mismo chat.
+     *
+     * Solo tiene sentido mientras el pedido espera la cotización: después de
+     * aprobado ya no se pide precio.
      */
-    private static final int LARGO_MAXIMO_DEL_MENSAJE = 1500;
-
-    /** Cuantos materiales se listan cuando el pedido no entra entero. */
-    private static final int MATERIALES_EN_EL_RESUMEN = 8;
-
-    private static final SecureRandom AZAR = new SecureRandom();
-
-    /**
-     * Prepara el envio: genera el link publico del PDF y arma el mensaje.
-     *
-     * NO manda nada. Devuelve el link de WhatsApp para que la pantalla lo abra
-     * y Ricardo apriete Enviar en su propio telefono. Ver EnvioPorWhatsApp.
-     *
-     * Si ya hay un link vigente, se REUSA. La primera version generaba uno
-     * nuevo en cada llamada, con la idea de que un link viejo no mostrara una
-     * orden desactualizada. Esa idea estaba mal: el PDF se arma en el momento
-     * en que se abre el link, con los datos de ese momento, asi que un link
-     * viejo nunca muestra algo vencido.
-     *
-     * Y generar uno nuevo cada vez tenia un problema concreto: si dos llamadas
-     * se cruzan, la pantalla queda mostrando un token que la ultima ya
-     * invalido, y el link no abre. Lo encontro la prueba en el navegador.
-     *
-     * Reusarlo ademas es lo que uno espera: si el corralon ya tiene el link en
-     * el chat, volver a mandarselo no deberia romperle el anterior. Para
-     * cortarlo a proposito esta dejarDeCompartirOrden.
-     */
-    @Transactional
+    @Transactional(readOnly = true)
     public EnvioPorWhatsApp prepararEnvioPorWhatsApp(Long id) {
         Pedido pedido = buscarCompletoOFallar(id);
         alcance.exigirAlcance(pedido.getObra().getIdObra());
 
+        if (!pedido.estaPendiente()) {
+            throw new ReglaDeNegocioException(
+                    "La cotización se pide antes de aprobar. Este pedido ya está "
+                    + pedido.getEstado().toLowerCase() + ".");
+        }
         if (pedido.getProveedor() == null) {
             throw new ReglaDeNegocioException(
-                    "El pedido todavía no tiene proveedor asignado. "
-                    + "Se elige al aprobarlo.");
-        }
-        if (pedido.estaAnulado()) {
-            throw new ReglaDeNegocioException(
-                    "El pedido está anulado: no corresponde mandárselo al proveedor.");
-        }
-
-        if (!pedido.tieneOrdenCompartida()) {
-            pedido.compartirOrden(nuevoToken(),
-                                  LocalDateTime.now().plusDays(DIAS_DE_VIGENCIA));
-            repositorio.save(pedido);
+                    "El pedido no tiene corralón asignado (lo cargó un capataz). "
+                    + "Elegí el corralón al aprobarlo.");
         }
 
         Proveedor proveedor = pedido.getProveedor();
         Optional<String> telefono = NumeroDeWhatsApp.normalizar(proveedor.getTelefonoContacto());
-        String urlOrden = sinBarraFinal(urlPublica)
-                          + "/api/ordenes-publicas/" + pedido.getTokenOrden();
-        String mensaje = armarMensaje(pedido, urlOrden);
+        String mensaje = mensajeDeCotizacion(pedido);
 
         return new EnvioPorWhatsApp(
                 pedido.getIdPedido(),
@@ -493,8 +494,8 @@ public class PedidoService {
                 telefono.map(n -> "https://wa.me/" + n + "?text="
                                   + URLEncoder.encode(mensaje, StandardCharsets.UTF_8))
                         .orElse(null),
-                urlOrden,
-                pedido.getTokenOrdenVence(),
+                null,
+                null,
                 telefono.isPresent() ? null : avisoDeTelefono(proveedor));
     }
 
@@ -531,132 +532,36 @@ public class PedidoService {
     }
 
     /**
-     * Saca la barra final de la direccion configurada, si la tiene.
+     * El texto del pedido de cotización: un saludo, dónde se entrega y cada
+     * material con su cantidad. Sin precios, sin links y sin PDF.
      *
-     * Se hace aca y no al construir el servicio porque el constructor tiene que
-     * poder recibir la propiedad tal cual venga. Sin esto, configurar
-     * "https://sigco.app/" daria un link con dos barras.
+     * La dirección de la obra va porque el precio del corralón suele depender
+     * del flete: no es lo mismo entregar en Palermo que en Pilar.
      */
-    private String sinBarraFinal(String url) {
-        return url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
-    }
-
-    /** 32 bytes de azar en Base64 sin relleno: 43 caracteres que no se adivinan. */
-    private String nuevoToken() {
-        byte[] bytes = new byte[32];
-        AZAR.nextBytes(bytes);
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
-    }
-
-    /**
-     * El texto del mensaje que recibe el corralon.
-     *
-     * ------------------------------------------------------------------
-     *  Va el pedido entero, no un resumen
-     * ------------------------------------------------------------------
-     *
-     * Ricardo lo pidio asi: que el mensaje se pueda leer y entender sin abrir
-     * nada. Lleva cada material con su cantidad, su unidad, el precio acordado
-     * y el subtotal, mas el total y donde entregar. El PDF sigue yendo como
-     * link, pero ya no hace falta abrirlo para saber que se esta pidiendo.
-     *
-     * Tiene sentido para como se usa: el del corralon lee el mensaje en el
-     * telefono, prepara el pedido, y abre el PDF solo si necesita el documento
-     * formal con membrete.
-     *
-     * ------------------------------------------------------------------
-     *  Cuando no entra
-     * ------------------------------------------------------------------
-     *
-     * El texto viaja dentro de una URL y una URL muy larga se corta. Si el
-     * pedido no entra, el mensaje pasa a ser un resumen —los primeros
-     * materiales, sin precios— y el detalle queda en el PDF. Es preferible un
-     * mensaje corto y completo en el PDF antes que uno largo que llegue
-     * cortado por la mitad.
-     */
-    private String armarMensaje(Pedido pedido, String urlOrden) {
-        String completo = mensajeDetallado(pedido, urlOrden);
-        return completo.length() <= LARGO_MAXIMO_DEL_MENSAJE
-                ? completo
-                : mensajeResumido(pedido, urlOrden);
-    }
-
-    /** El pedido escrito entero: cada material con su precio, y el total. */
-    private String mensajeDetallado(Pedido pedido, String urlOrden) {
-        StringBuilder texto = new StringBuilder(encabezadoDelMensaje(pedido));
+    private String mensajeDeCotizacion(Pedido pedido) {
+        StringBuilder texto = new StringBuilder()
+                .append("Hola! Les pido cotización por los siguientes materiales ")
+                .append("para Granica SRL.\n\n")
+                .append("Pedido #").append(pedido.getIdPedido()).append("\n")
+                .append("Entregar en: ").append(pedido.getObra().getDireccionObra())
+                .append("\n\n");
 
         for (PedidoMaterial linea : pedido.getMateriales()) {
             texto.append("- ")
                  .append(linea.getMaterial().getNombreMaterial())
                  .append(": ")
-                 .append(cantidad(linea));
-
-            // El precio puede no estar: se confirma al aprobar, y un pedido se
-            // puede mandar a pedir cotizacion antes de tenerlo.
-            if (linea.getPrecioUnitario() != null) {
-                texto.append(" x ").append(pesos(linea.getPrecioUnitario()))
-                     .append(" = ").append(pesos(linea.calcularSubtotal()));
-            }
-            texto.append("\n");
+                 .append(cantidad(linea))
+                 .append("\n");
         }
 
-        if (pedido.tieneTodosLosPrecios()) {
-            texto.append("\nTOTAL: ").append(pesos(pedido.calcularTotal())).append("\n");
-        }
-
-        texto.append("\nLa orden con membrete, en PDF:\n").append(urlOrden);
+        texto.append("\nMuchas gracias!");
         return texto.toString();
-    }
-
-    /** La version corta, para cuando el pedido no entra en el link. */
-    private String mensajeResumido(Pedido pedido, String urlOrden) {
-        StringBuilder texto = new StringBuilder(encabezadoDelMensaje(pedido));
-
-        List<PedidoMaterial> lineas = pedido.getMateriales();
-        for (PedidoMaterial linea : lineas.stream().limit(MATERIALES_EN_EL_RESUMEN).toList()) {
-            texto.append("- ")
-                 .append(linea.getMaterial().getNombreMaterial())
-                 .append(": ").append(cantidad(linea)).append("\n");
-        }
-
-        int resto = lineas.size() - MATERIALES_EN_EL_RESUMEN;
-        if (resto > 0) {
-            texto.append("- y ").append(resto)
-                 .append(resto == 1 ? " material mas" : " materiales mas").append("\n");
-        }
-
-        texto.append("\nEl detalle completo, con cantidades y precios acordados:\n")
-             .append(urlOrden);
-        return texto.toString();
-    }
-
-    /**
-     * Quien pide y donde entregar.
-     *
-     * La direccion de la obra es el dato operativo del mensaje: es a donde va
-     * el camion. Por eso dice "Entregar en" y no "Obra".
-     */
-    private String encabezadoDelMensaje(Pedido pedido) {
-        return "Hola! Les paso un pedido de materiales de Granica SRL.\n\n"
-               + "Pedido #" + pedido.getIdPedido() + "\n"
-               + "Entregar en: " + pedido.getObra().getDireccionObra() + "\n\n";
     }
 
     /** "2 bolsa 50 kg": la cantidad con la unidad del material. */
     private String cantidad(PedidoMaterial linea) {
         return linea.getCantidad().stripTrailingZeros().toPlainString()
                + " " + linea.getMaterial().getUnidadMedida();
-    }
-
-    /**
-     * Importes con separador de miles y sin centavos.
-     *
-     * Sin centavos porque son precios de materiales que se leen en el telefono:
-     * "$ 12.500" se entiende de un vistazo y "$ 12.500,00" solo agrega ruido.
-     */
-    private String pesos(BigDecimal monto) {
-        return "$ " + String.format(java.util.Locale.forLanguageTag("es-AR"), "%,d",
-                monto.setScale(0, java.math.RoundingMode.HALF_UP).toBigInteger());
     }
 
     /**
@@ -672,7 +577,7 @@ public class PedidoService {
         return "No se pudo interpretar el teléfono de " + proveedor.getNombreProveedor()
                + " (\"" + proveedor.getTelefonoContacto() + "\"). Corregilo en Proveedores "
                + "con el código de área, por ejemplo 11 4567-8900. "
-               + "Mientras tanto podés copiar el link de la orden y mandarlo a mano.";
+               + "Mientras tanto podés copiar el mensaje y mandarlo a mano.";
     }
 
     // ------------------------------------------------------------------
@@ -713,6 +618,19 @@ public class PedidoService {
                   + " y no admite pedidos de materiales";
 
         throw new ReglaDeNegocioException("La obra " + motivo + ".");
+    }
+
+    /** El corralón tiene que existir y estar activo para pedirle algo. */
+    private Proveedor buscarProveedorActivoOFallar(Long idProveedor) {
+        Proveedor proveedor = proveedorRepositorio.findById(idProveedor)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Proveedor", idProveedor));
+
+        if (!proveedor.estaActivo()) {
+            throw new ReglaDeNegocioException(
+                    "El proveedor \"" + proveedor.getNombreProveedor()
+                    + "\" está inactivo y no se le pueden enviar pedidos.");
+        }
+        return proveedor;
     }
 
     /**

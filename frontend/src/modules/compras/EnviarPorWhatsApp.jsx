@@ -4,7 +4,11 @@ import { prepararEnvioPorWhatsApp } from './pedidosApi';
 import estilos from './Compras.module.css';
 
 /**
- * Mandarle la orden al corralón por WhatsApp.
+ * Pedirle cotización al corralón por WhatsApp.
+ *
+ * El mensaje lleva los materiales con sus cantidades y pide el precio. No
+ * lleva precios, ni links, ni PDF (05/10/2026): el corralón lee el pedido y
+ * contesta la cotización en el mismo chat.
  *
  * ------------------------------------------------------------------
  *  Qué hace y qué NO hace
@@ -30,7 +34,7 @@ import estilos from './Compras.module.css';
  * mandarle el pedido de una obra a un desconocido.
  *
  * Cuando no se pudo interpretar, no hay botón de WhatsApp — hay un aviso y el
- * link de la orden para copiar y mandar a mano.
+ * mensaje para copiar y mandar a mano.
  */
 export default function EnviarPorWhatsApp({ pedido, onCerrar }) {
   const [envio, setEnvio] = useState(null);
@@ -50,21 +54,20 @@ export default function EnviarPorWhatsApp({ pedido, onCerrar }) {
   }, [pedido.idPedido]);
 
   /**
-   * Copia el enlace de la orden en PDF, por si el dueño prefiere pegarlo a mano
-   * en otro lado.
+   * Copia el mensaje, por si el dueño prefiere pegarlo a mano en otro lado.
    */
-  const copiarLink = async () => {
+  const copiarMensaje = async () => {
     try {
-      await navigator.clipboard.writeText(envio.urlOrden);
+      await navigator.clipboard.writeText(envio.mensaje);
       setCopiado(true);
     } catch {
-      // Si el navegador no deja copiar, el link está a la vista igual.
+      // Si el navegador no deja copiar, el mensaje está a la vista igual.
       setCopiado(false);
     }
   };
 
   return (
-    <Modal abierto onCerrar={onCerrar} titulo="Enviar la orden por WhatsApp">
+    <Modal abierto onCerrar={onCerrar} titulo="Pedir cotización por WhatsApp">
       {cargando && <p className={estilos.aviso}>Preparando el envío…</p>}
       {error && <p className={estilos.errorGeneral}>{error}</p>}
 
@@ -93,18 +96,8 @@ export default function EnviarPorWhatsApp({ pedido, onCerrar }) {
           <div className={estilos.campo}>
             <span className={estilos.etiqueta}>El mensaje</span>
             <pre className={estilos.mensajeWhatsApp}>{envio.mensaje}</pre>
-          </div>
-
-          <div className={estilos.campo}>
-            <span className={estilos.etiqueta}>Link de la orden</span>
-            <p className={estilos.linkOrden}>{envio.urlOrden}</p>
-            <p className={estilos.ayuda}>
-              El corralón lo abre sin cuenta ni contraseña. Vence el{' '}
-              {fecha(envio.vence)}, y la orden no muestra el presupuesto de la
-              obra, ni la ganancia, ni el nombre del cliente.
-            </p>
-            <button type="button" className={estilos.botonSecundario} onClick={copiarLink}>
-              {copiado ? 'Copiado' : 'Copiar el link'}
+            <button type="button" className={estilos.botonSecundario} onClick={copiarMensaje}>
+              {copiado ? 'Copiado' : 'Copiar el mensaje'}
             </button>
           </div>
 
@@ -125,12 +118,4 @@ export default function EnviarPorWhatsApp({ pedido, onCerrar }) {
       )}
     </Modal>
   );
-}
-
-/**
- * Escribe una fecha en formato día/mes/año.
- */
-function fecha(valor) {
-  if (!valor) return '—';
-  return new Date(valor).toLocaleDateString('es-AR');
 }

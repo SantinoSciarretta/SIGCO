@@ -124,7 +124,7 @@ Algunos datos se usan en todo el sistema y conviene cargarlos antes de empezar a
 
 1. **Rubros y subrubros** (desde la sección "Rubros" del menú). Son la clasificación con la que se arman los presupuestos y se ordenan los gastos. El rubro "Mano de obra" ya viene creado en el sistema, así que no hace falta agregarlo.
 2. **Materiales.** Cada material pertenece a un rubro, por eso van después.
-3. **Proveedores**, con su zona y su teléfono. El teléfono es el que se usa para mandarles los pedidos por WhatsApp.
+3. **Proveedores**, con su zona y su teléfono. El teléfono es el que se usa para pedirles cotización por WhatsApp.
 4. **Clientes** actuales.
 5. **Operarios**, en Personal.
 6. **Cuentas de acceso** para el capataz general y los capataces de obra, en Usuarios. Si un capataz también es operario, vinculá su cuenta con su registro de Personal.
@@ -487,7 +487,7 @@ Registra los corralones y proveedores por zona, con el historial de precios que 
 1. En "Proveedores", tocá "Nuevo proveedor".
 2. Escribí el nombre (por ejemplo "Corralón San Martín") y la zona de cobertura (por ejemplo "Zona Norte, CABA"). La zona es el criterio principal para elegir a quién pedirle.
 3. Si la conocés, escribí la "Dirección" del corralón (por ejemplo "Av. San Martín 1234, Vicente López"). Es opcional y sirve para ubicarlo o para ir a retirar material.
-4. Cargá el teléfono y el correo. El teléfono es el que se usa para mandarle los pedidos por WhatsApp, así que conviene que sea el celular del corralón.
+4. Cargá el teléfono y el correo. El teléfono es el que se usa para pedirle cotización por WhatsApp, así que conviene que sea el celular del corralón.
 5. Tocá "Guardar".
 
 **[ESPACIO PARA CAPTURA 22]**
@@ -520,69 +520,78 @@ Registra los corralones y proveedores por zona, con el historial de precios que 
 
 ### Para qué sirve {#pedidos-para-qué-sirve}
 
-Formaliza el circuito de pedido, aprobación y recepción de materiales, que antes pasaba por WhatsApp sin dejar registro. Cada pedido recorre estos estados:
+Formaliza el circuito de pedido, cotización, aprobación y recepción de materiales, que antes pasaba por WhatsApp sin dejar registro. Cada pedido recorre estos estados:
 
-1. **Pendiente de Aprobación:** el capataz lo cargó y espera al dueño.
-2. **Enviado al Proveedor:** el dueño lo aprobó, eligió el corralón y confirmó los precios.
+1. **Pendiente de Aprobación:** el pedido está cargado con su corralón y espera la cotización.
+2. **Enviado al Proveedor:** el dueño cargó los precios que cotizó el corralón y lo aprobó.
 3. **Recibido Completo** o **Recibido con Diferencias:** llegó a la obra y alguien confirmó la recepción con la foto del remito.
 4. **Anulado:** no se concretó.
 
-**Quién lo usa:** los capataces cargan pedidos y confirman recepciones (el capataz de obra, desde el celular, ver el apartado "Uso desde el celular"). Solo el dueño aprueba y envía.
+**Quién lo usa:** el dueño carga los pedidos, pide la cotización y los aprueba. Los capataces confirman recepciones (el capataz de obra, desde el celular, ver el apartado "Uso desde el celular").
 
 Este circuito es para los materiales de corralón y plomería. Los materiales de instalaciones los sigue gestionando el dueño de forma directa y no pasan por acá.
 
 ### El listado de pedidos {#pedidos-listado}
 
-En "Pedidos" se ven todos los pedidos con su obra, proveedor, cantidad de ítems, total, fecha y estado. Se pueden filtrar por obra y por estado. Los botones de cada fila cambian según el estado del pedido.
+En "Pedidos" se ven todos los pedidos con su obra, corralón, cantidad de ítems, total con IVA, fecha y estado. Se pueden filtrar por obra y por estado. Los botones de cada fila cambian según el estado del pedido.
 
 **[ESPACIO PARA CAPTURA 25]**
 *Figura 25. Listado de pedidos en distintos estados.*
 *Cómo sacarla: ingresar como Dueño con al menos un pedido en cada estado (pendiente, enviado, recibido completo, recibido con diferencias y anulado).*
 
-### Cargar un pedido desde la computadora {#pedidos-cargar}
+### Cargar un pedido {#pedidos-cargar}
 
 1. Tocá "Nuevo pedido".
 2. Elegí la obra. Solo se puede pedir para obras en ejecución.
-3. Elegí un material y escribí la cantidad. Con "Agregar material" sumás más líneas.
-4. Tocá "Enviar a aprobación".
+3. Elegí el corralón al que le vas a pedir la cotización. La zona es el criterio principal: un corralón que no llega a la obra no sirve por más barato que sea.
+4. Elegí un material y escribí la cantidad. Con "Agregar material" sumás más líneas.
+5. Tocá "Cargar pedido".
 
-No hace falta elegir proveedor ni poner precios: eso lo define el dueño al aprobar.
+Al guardar se abre directamente la ventana para pedirle cotización al corralón por WhatsApp (ver el apartado siguiente). Los precios no se cargan acá: se cargan al aprobar, con lo que conteste el corralón.
 
-### Aprobar y enviar un pedido (dueño) {#pedidos-aprobar}
+### Pedirle cotización al corralón {#pedidos-cotizacion}
 
-1. En el pedido pendiente, tocá "Aprobar".
-2. Elegí el corralón. La zona es el criterio principal: un corralón que no llega a la obra no sirve por más barato que sea.
-3. El sistema completa el precio de cada material con la última cotización de ese proveedor, marcada como "última cotización". Revisalos y corregí los que hagan falta.
-4. Controlá el total del pedido y tocá "Aprobar y enviar".
+El sistema prepara el mensaje para mandarlo desde tu propio teléfono.
 
-El pedido pasa a "Enviado al Proveedor".
+1. Si no se abrió solo al cargar el pedido, tocá "Pedir cotización" en el pedido pendiente.
+2. El sistema muestra a qué número se le va a escribir y el mensaje: un saludo, la dirección de entrega y cada material con su cantidad. No lleva precios, ni enlaces, ni PDF.
+3. Revisá que el número sea el del corralón. Si no lo es, corregilo en Proveedores antes de mandar.
+4. Tocá "Abrir WhatsApp". Se abre WhatsApp con el mensaje ya escrito y solo queda tocar Enviar.
 
-**[ESPACIO PARA CAPTURA 26]**
-*Figura 26. Aprobación de un pedido con precios sugeridos.*
-*Cómo sacarla: tocar "Aprobar" en un pedido pendiente y elegir un proveedor que tenga cotizaciones de esos materiales, de modo que se vean los precios sugeridos y el total.*
-
-### Mandarle la orden al corralón {#pedidos-orden}
-
-Una vez aprobado, hay dos formas de hacerle llegar el pedido al proveedor:
-
-* **Orden PDF:** abre la orden de pedido en PDF, con los materiales, las cantidades, los precios acordados y la dirección de entrega. No incluye ningún dato interno de la empresa (ni el presupuesto, ni la ganancia, ni el cliente).
-* **WhatsApp:** prepara el mensaje para mandarlo desde tu propio teléfono.
-  1. Tocá "WhatsApp".
-  2. El sistema muestra a qué número se le va a escribir, el mensaje con el pedido completo y el enlace a la orden en PDF.
-  3. Revisá que el número sea el del corralón. Si no lo es, corregilo en Proveedores antes de mandar.
-  4. Tocá "Abrir WhatsApp". Se abre WhatsApp con el mensaje ya escrito y solo queda tocar Enviar.
-
-El enlace de la orden lo abre el corralón sin cuenta ni contraseña, vence a los treinta días y se puede cortar antes si hace falta.
+El corralón te contesta la cotización en el mismo chat.
 
 **[ESPACIO PARA CAPTURA 27]**
-*Figura 27. Preparación del envío por WhatsApp.*
-*Cómo sacarla: tocar "WhatsApp" en un pedido enviado cuyo proveedor tenga un celular bien cargado, y capturar la ventana con el número, el mensaje y el enlace.*
+*Figura 27. Pedido de cotización por WhatsApp.*
+*Cómo sacarla: tocar "Pedir cotización" en un pedido pendiente cuyo corralón tenga un celular bien cargado, y capturar la ventana con el número y el mensaje.*
+
+> **Tené en cuenta.** Si el teléfono del corralón está mal cargado o no se puede interpretar como un celular, el sistema no arma el enlace de WhatsApp y lo avisa, en lugar de adivinar el número. Así se evita mandarle el pedido de una obra a un desconocido. En ese caso podés copiar el mensaje y mandarlo a mano.
+
+### Aprobar un pedido con la cotización (dueño) {#pedidos-aprobar}
+
+Cuando el corralón te contestó:
+
+1. En el pedido pendiente, tocá "Aprobar".
+2. El corralón ya viene elegido. Cambialo solo si al final le comprás a otro.
+3. Escribí el precio de cada material **sin IVA**, tal como lo cotizó el corralón. El sistema propone el de la última cotización de ese corralón, marcado como "última cotización", para que lo corrijas.
+4. Controlá el subtotal, el IVA del 21% y el total del pedido, y tocá "Aprobar".
+
+Al aprobar pasan tres cosas:
+
+* El pedido pasa a "Enviado al Proveedor".
+* Los precios quedan guardados como **cotización de ese corralón** para cada material, y son los que el sistema propone la próxima vez.
+* La compra **se carga sola como gasto de la obra**, sin IVA y agrupada por rubro, sin tener que cargarla de nuevo en Gastos.
+
+**[ESPACIO PARA CAPTURA 26]**
+*Figura 26. Aprobación de un pedido con la cotización.*
+*Cómo sacarla: tocar "Aprobar" en un pedido pendiente cuyo corralón tenga cotizaciones de esos materiales, de modo que se vean los precios sugeridos, el subtotal, el IVA y el total.*
+
+### La orden en PDF {#pedidos-orden}
+
+"Orden PDF" abre la orden de pedido con los materiales, las cantidades, los precios acordados, el subtotal, el IVA, el total y la dirección de entrega. No incluye ningún dato interno de la empresa (ni el presupuesto, ni la ganancia, ni el cliente). Sirve para imprimirla o guardarla.
 
 **[ESPACIO PARA CAPTURA 28]**
 *Figura 28. Orden de pedido en PDF.*
-*Cómo sacarla: tocar "Orden PDF" en el mismo pedido y capturar el documento.*
-
-> **Tené en cuenta.** Si el teléfono del proveedor está mal cargado o no se puede interpretar como un celular, el sistema no arma el enlace de WhatsApp y lo avisa, en lugar de adivinar el número. Así se evita mandarle el pedido de una obra a un desconocido.
+*Cómo sacarla: tocar "Orden PDF" en un pedido aprobado y capturar el documento.*
 
 ### Confirmar la recepción desde la computadora {#pedidos-recibir}
 
@@ -591,20 +600,20 @@ El enlace de la orden lo abre el corralón sin cuenta ni contraseña, vence a lo
 3. Si faltó algo o llegó distinto, escribilo en "¿Faltó algo o llegó distinto?". Si llegó todo, dejalo vacío.
 4. Tocá "Confirmar recepción".
 
-El pedido queda como "Recibido Completo" o "Recibido con Diferencias" según lo que hayas escrito, y **el gasto de los materiales se carga solo en la obra**, agrupado por rubro, sin tener que cargarlo de nuevo en Gastos.
+El pedido queda como "Recibido Completo" o "Recibido con Diferencias" según lo que hayas escrito.
 
 ### Anular un pedido {#pedidos-anular}
 
-Si un pedido no se concreta, tocá "Anular", escribí el motivo (por ejemplo "El proveedor no tenía stock") y confirmá. No se puede anular un pedido que ya llegó a la obra.
+Si un pedido no se concreta, tocá "Anular", escribí el motivo (por ejemplo "El proveedor no tenía stock") y confirmá. Si el pedido ya estaba aprobado, el gasto que había generado también se anula. No se puede anular un pedido que ya llegó a la obra.
 
 ### Botones y acciones disponibles {#pedidos-botones}
 
 | Botón / Acción | Qué hace |
 | :---- | :---- |
-| Nuevo pedido | Carga un pedido de materiales para una obra en ejecución. |
-| Aprobar | Solo para el dueño: elige el proveedor, confirma precios y envía el pedido. |
-| Orden PDF | Abre la orden de pedido para el corralón. |
-| WhatsApp | Prepara el mensaje con el pedido para mandarlo desde el teléfono del dueño. |
+| Nuevo pedido | Carga un pedido de materiales para una obra en ejecución, con su corralón. |
+| Pedir cotización | Solo para el dueño: prepara el mensaje de WhatsApp que le pide precio al corralón. |
+| Aprobar | Solo para el dueño: carga los precios cotizados, los guarda como cotización del corralón y carga la compra como gasto. |
+| Orden PDF | Abre la orden de pedido. |
 | Confirmar recepción | Registra la llegada del material con la foto del remito y las diferencias, si las hubo. |
 | Anular | Anula un pedido que no se concreta, con motivo. |
 
@@ -1129,8 +1138,8 @@ Solo la vidriera de obras realizadas, que no muestra nombres ni direcciones. Ade
 | 23 | Ficha de proveedor | Dueño | Cotizaciones y observaciones. |
 | 24 | Comparar precios | Dueño | Tres proveedores ordenados por precio. |
 | 25 | Pedidos, listado | Dueño | Pedidos en todos los estados. |
-| 26 | Aprobar pedido | Dueño | Precios sugeridos y total. |
-| 27 | Enviar por WhatsApp | Dueño | Número, mensaje y enlace. |
+| 26 | Aprobar pedido | Dueño | Precios sugeridos, subtotal, IVA y total. |
+| 27 | Pedir cotización | Dueño | Número y mensaje con los materiales. |
 | 28 | Orden PDF | Dueño | Orden de pedido. |
 | 29 | Gastos, panel | Dueño | Semáforo con tres colores. |
 | 30 | Nuevo gasto | Dueño | Gasto hormiga completo. |

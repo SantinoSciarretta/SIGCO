@@ -100,4 +100,7 @@ public interface GastoRepository extends JpaRepository<Gasto, Long> {
 
     /** Gastos generados por un pedido, para no duplicarlos si se reprocesa. */
     long countByIdPedido(Long idPedido);
+
+    /** Los gastos que generó un pedido, para anularlos si el pedido se anula. */
+    List<Gasto> findByIdPedido(Long idPedido);
 }

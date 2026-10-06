@@ -27,6 +27,11 @@ public record PedidoRespuesta(
         LocalDateTime fechaSolicitud,
         LocalDateTime fechaAprobacion,
         LocalDateTime fechaRecepcion,
+        /** La suma de los materiales, sin IVA. */
+        BigDecimal subtotal,
+        /** El 21% de IVA sobre el subtotal. */
+        BigDecimal iva,
+        /** Lo que se le paga al corralón: subtotal más IVA. */
         BigDecimal total,
         boolean tieneTodosLosPrecios,
         Integer cantidadMateriales,
@@ -62,6 +67,8 @@ public record PedidoRespuesta(
                 p.getFechaSolicitud(),
                 p.getFechaAprobacion(),
                 p.getFechaRecepcion(),
+                p.calcularSubtotal(),
+                p.calcularIva(),
                 p.calcularTotal(),
                 p.tieneTodosLosPrecios(),
                 p.getMateriales().size(),

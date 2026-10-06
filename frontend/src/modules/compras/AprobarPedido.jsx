@@ -3,20 +3,23 @@ import Modal from '../../components/ui/Modal';
 import { aprobarPedido, obtenerPedido, pesos, preciosSugeridos } from './pedidosApi';
 import estilos from './Compras.module.css';
 
+/** El IVA que se le suma a los precios del corralón, que se cargan sin IVA. */
+const TASA_IVA = 0.21;
+
 /**
- * Aprobación del pedido: el dueño elige proveedor y confirma los precios.
+ * Aprobación del pedido: el dueño carga los precios que cotizó el corralón.
  *
- * Es una sola pantalla porque es una sola decisión: el informe describe que el
- * dueño "lo aprueba y selecciona el proveedor al que se lo va a enviar", y ahí
- * el pedido pasa a Enviado. Separarlo en dos pasos inventaría un estado que el
- * circuito real no tiene.
+ * El corralón ya viene elegido desde que se cargó el pedido; se puede cambiar
+ * si al final se le compra a otro. Se precargan los precios de su última
+ * cotización como referencia, y el dueño los corrige con lo que le contestó.
  *
- * Al elegir proveedor se precargan los precios desde su última cotización. El
- * dueño puede corregirlos: la cotización es una referencia, no el precio final.
+ * Los precios van SIN IVA. Al aprobar quedan guardados como cotización del
+ * corralón para cada material, y la compra se carga como gasto de la obra.
  */
 export default function AprobarPedido({ pedido, proveedores, onCerrar, onAprobado }) {
   const [detalle, setDetalle] = useState(null);
-  const [idProveedor, setIdProveedor] = useState('');
+  const [idProveedor, setIdProveedor] = useState(
+    pedido.idProveedor ? String(pedido.idProveedor) : '');
   const [precios, setPrecios] = useState({});
   const [sugeridos, setSugeridos] = useState({});
   const [error, setError] = useState(null);
@@ -71,11 +74,13 @@ export default function AprobarPedido({ pedido, proveedores, onCerrar, onAprobad
 
   const lineas = detalle?.materiales ?? [];
 
-  // Total en vivo, para que el dueño vea cuánto está aprobando antes de hacerlo.
-  const total = lineas.reduce((suma, l) => {
+  // Totales en vivo, para que el dueño vea cuánto está aprobando antes de
+  // hacerlo. Los precios son sin IVA; el total suma el 21%.
+  const subtotal = lineas.reduce((suma, l) => {
     const precio = Number(precios[l.idMaterial]) || 0;
     return suma + precio * Number(l.cantidad);
   }, 0);
+  const iva = subtotal * TASA_IVA;
 
   /**
    * Aprueba el pedido con el proveedor elegido y los precios confirmados de
@@ -102,7 +107,7 @@ export default function AprobarPedido({ pedido, proveedores, onCerrar, onAprobad
   };
 
   return (
-    <Modal abierto onCerrar={onCerrar} titulo="Aprobar y enviar al proveedor">
+    <Modal abierto onCerrar={onCerrar} titulo="Aprobar con la cotización">
       <form onSubmit={enviar}>
         <p className={estilos.confirmacion}>
           Pedido de <b>{pedido.direccionObra}</b> — {pedido.nombreCliente}
@@ -112,10 +117,10 @@ export default function AprobarPedido({ pedido, proveedores, onCerrar, onAprobad
 
         <div className={estilos.campo}>
           <label className={estilos.etiqueta} htmlFor="idProveedor">
-            Proveedor <span className={estilos.obligatorio}>*</span>
+            Corralón <span className={estilos.obligatorio}>*</span>
           </label>
           <select id="idProveedor" className={estilos.control} value={idProveedor}
-                  onChange={(e) => setIdProveedor(e.target.value)} required autoFocus>
+                  onChange={(e) => setIdProveedor(e.target.value)} required>
             <option value="">Elegir corralón…</option>
             {proveedores.map((p) => (
               <option key={p.idProveedor} value={p.idProveedor}>
@@ -124,8 +129,8 @@ export default function AprobarPedido({ pedido, proveedores, onCerrar, onAprobad
             ))}
           </select>
           <p className={estilos.ayuda}>
-            La zona es el criterio principal: un corralón que no llega a la obra
-            no sirve por más barato que sea.
+            El que se eligió al cargar el pedido. Cambialo solo si al final le
+            comprás a otro.
           </p>
         </div>
 
@@ -134,7 +139,7 @@ export default function AprobarPedido({ pedido, proveedores, onCerrar, onAprobad
         {lineas.length > 0 && (
           <div className={estilos.campo}>
             <label className={estilos.etiqueta}>
-              Precios <span className={estilos.obligatorio}>*</span>
+              Precios sin IVA <span className={estilos.obligatorio}>*</span>
             </label>
             <div className="scroll-x">
               <table className="table">
@@ -142,7 +147,7 @@ export default function AprobarPedido({ pedido, proveedores, onCerrar, onAprobad
                   <tr>
                     <th>Material</th>
                     <th style={{ textAlign: 'right' }}>Cantidad</th>
-                    <th style={{ width: 150 }}>Precio unitario</th>
+                    <th style={{ width: 150 }}>Precio unit. sin IVA</th>
                     <th style={{ textAlign: 'right' }}>Subtotal</th>
                   </tr>
                 </thead>
@@ -180,13 +185,22 @@ export default function AprobarPedido({ pedido, proveedores, onCerrar, onAprobad
             </div>
 
             <div className={estilos.totalBloque}>
+              <span className={estilos.etiqueta}>Subtotal</span>
+              <span className="cifra">{pesos(subtotal)}</span>
+            </div>
+            <div className={estilos.totalBloque}>
+              <span className={estilos.etiqueta}>IVA 21%</span>
+              <span className="cifra">{pesos(iva)}</span>
+            </div>
+            <div className={estilos.totalBloque}>
               <span className={estilos.etiqueta}>Total del pedido</span>
-              <span className={`cifra ${estilos.totalCifra}`}>{pesos(total)}</span>
+              <span className={`cifra ${estilos.totalCifra}`}>{pesos(subtotal + iva)}</span>
             </div>
 
             <p className={estilos.ayuda}>
-              Al confirmarse la recepción, este total se convierte en gasto de la
-              obra automáticamente, agrupado por rubro.
+              Al aprobar, estos precios quedan guardados como cotización de este
+              corralón, y la compra se carga como gasto de la obra (sin IVA),
+              agrupada por rubro.
             </p>
           </div>
         )}
@@ -197,7 +211,7 @@ export default function AprobarPedido({ pedido, proveedores, onCerrar, onAprobad
           </button>
           <button type="submit" className={estilos.botonPrimario}
                   disabled={guardando || !detalle}>
-            {guardando ? 'Aprobando…' : 'Aprobar y enviar'}
+            {guardando ? 'Aprobando…' : 'Aprobar'}
           </button>
         </div>
       </form>

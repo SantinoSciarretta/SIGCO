@@ -19,6 +19,9 @@ import estilos from './Compras.module.css';
 /**
  * Listado de pedidos de materiales.
  *
+ * El circuito (05/10/2026): se carga el pedido con el corralón, se le pide
+ * cotización por WhatsApp, y cuando contesta se aprueba cargando los precios.
+ *
  * Reemplaza el circuito por WhatsApp entre el capataz y el dueño, que hoy no
  * deja registro ni permite saber en qué estado está un pedido.
  *
@@ -155,14 +158,15 @@ export default function PedidosPage() {
                       <div className={estilos.cliente}>{p.nombreCliente}</div>
                     </td>
                     <td className={estilos.dato}>
-                      {/* Sin proveedor mientras está pendiente: lo elige el
-                          dueño al aprobar, no quien arma el pedido. */}
+                      {/* El corralón se elige al cargar el pedido. Los pedidos
+                          viejos, de antes de ese cambio, pueden no tenerlo. */}
                       {p.nombreProveedor ?? <span className={estilos.ayuda}>A definir</span>}
                       {p.zonaCobertura && (
                         <div className={estilos.subrubroNombre}>{p.zonaCobertura}</div>
                       )}
                     </td>
                     <td className={`cifra ${estilos.numero}`}>{p.cantidadMateriales}</td>
+                    {/* Con IVA: es lo que se le paga al corralón. */}
                     <td className={`cifra ${estilos.total}`}>
                       {p.tieneTodosLosPrecios ? pesos(p.total) : '—'}
                     </td>
@@ -180,21 +184,20 @@ export default function PedidosPage() {
                                                       `pedido-${p.idPedido}.pdf`)}>
                         Orden PDF
                       </button>
+                      {/* Pedirle cotización al corralón, mientras el pedido
+                          espera los precios. El permiso lo vuelve a exigir el
+                          backend: escribirle al proveedor es del dueño. */}
+                      {p.estado === 'Pendiente de Aprobación' && p.idProveedor
+                        && puede('compras.aprobar') && (
+                        <button type="button" className={estilos.accion}
+                                onClick={() => setAEnviar(p)}>
+                          Pedir cotización
+                        </button>
+                      )}
                       {p.estado === 'Pendiente de Aprobación' && (
                         <button type="button" className={estilos.accion}
                                 onClick={() => setAAprobar(p)}>
                           Aprobar
-                        </button>
-                      )}
-                      {/* Mandarle la orden al corralón. Aparece recién cuando
-                          el pedido se aprobó, porque antes no hay proveedor
-                          elegido: lo elige el dueño al aprobar. El permiso lo
-                          vuelve a exigir el backend — enviarle el pedido al
-                          proveedor es del dueño y no se delega. */}
-                      {p.estado === 'Enviado al Proveedor' && puede('compras.aprobar') && (
-                        <button type="button" className={estilos.accion}
-                                onClick={() => setAEnviar(p)}>
-                          WhatsApp
                         </button>
                       )}
                       {p.estado === 'Enviado al Proveedor' && (
@@ -222,9 +225,16 @@ export default function PedidosPage() {
       {altaAbierta && (
         <NuevoPedidoModal
           obras={obras}
+          proveedores={proveedores}
           materiales={materiales}
           onCerrar={() => setAltaAbierta(false)}
-          onCreado={() => { setAltaAbierta(false); recargar(); }}
+          onCreado={(creado) => {
+            setAltaAbierta(false);
+            recargar();
+            // Recién cargado, lo que sigue es pedirle cotización al corralón:
+            // se abre directamente el WhatsApp.
+            if (puede('compras.aprobar')) setAEnviar(creado);
+          }}
         />
       )}
 
@@ -263,14 +273,14 @@ export default function PedidosPage() {
 /* ========================================================================== */
 
 /**
- * Alta de un pedido.
+ * Alta de un pedido: la obra, el corralón y los materiales con su cantidad.
  *
- * No pide proveedor a propósito: el informe establece que lo elige el dueño al
- * aprobar, según la zona de la obra. Quien arma el pedido en la obra solo dice
- * qué falta y cuánto.
+ * El corralón se elige acá (05/10/2026) porque lo que sigue es pedirle
+ * cotización. Los precios se cargan después, al aprobar, con lo que conteste.
  */
-function NuevoPedidoModal({ obras, materiales, onCerrar, onCreado }) {
+function NuevoPedidoModal({ obras, proveedores, materiales, onCerrar, onCreado }) {
   const [idObra, setIdObra] = useState('');
+  const [idProveedor, setIdProveedor] = useState('');
   const [lineas, setLineas] = useState([{ idMaterial: '', cantidad: '' }]);
   const [error, setError] = useState(null);
   const [guardando, setGuardando] = useState(false);
@@ -309,13 +319,14 @@ function NuevoPedidoModal({ obras, materiales, onCerrar, onCreado }) {
     setGuardando(true);
     setError(null);
     try {
-      await crearPedido({
+      const creado = await crearPedido({
         idObra: Number(idObra),
+        idProveedor: Number(idProveedor),
         materiales: lineas.map((l) => ({
           idMaterial: Number(l.idMaterial), cantidad: l.cantidad,
         })),
       });
-      onCreado();
+      onCreado(creado);
     } catch (fallo) {
       setError(fallo.mensaje);
     } finally {
@@ -341,6 +352,26 @@ function NuevoPedidoModal({ obras, materiales, onCerrar, onCreado }) {
               </option>
             ))}
           </select>
+        </div>
+
+        <div className={estilos.campo}>
+          <label className={estilos.etiqueta} htmlFor="idProveedor">
+            Corralón <span className={estilos.obligatorio}>*</span>
+          </label>
+          <select id="idProveedor" className={estilos.control} value={idProveedor}
+                  onChange={(e) => setIdProveedor(e.target.value)} required>
+            <option value="">Elegir corralón…</option>
+            {proveedores.map((p) => (
+              <option key={p.idProveedor} value={p.idProveedor}>
+                {p.nombreProveedor} — {p.zonaCobertura}
+              </option>
+            ))}
+          </select>
+          <p className={estilos.ayuda}>
+            Es a quien se le pide la cotización. La zona es el criterio
+            principal: un corralón que no llega a la obra no sirve por más
+            barato que sea.
+          </p>
         </div>
 
         <div className={estilos.campo}>
@@ -378,7 +409,8 @@ function NuevoPedidoModal({ obras, materiales, onCerrar, onCreado }) {
             Agregar material
           </button>
           <p className={estilos.ayuda}>
-            El proveedor y los precios los define el dueño al aprobar el pedido.
+            Al guardar se abre WhatsApp para pedirle cotización al corralón. Los
+            precios se cargan al aprobar, con lo que conteste.
           </p>
         </div>
 
@@ -387,7 +419,7 @@ function NuevoPedidoModal({ obras, materiales, onCerrar, onCreado }) {
             Cancelar
           </button>
           <button type="submit" className={estilos.botonPrimario} disabled={guardando}>
-            {guardando ? 'Enviando…' : 'Enviar a aprobación'}
+            {guardando ? 'Guardando…' : 'Cargar pedido'}
           </button>
         </div>
       </form>

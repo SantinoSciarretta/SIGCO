@@ -153,12 +153,20 @@ public class GeneradorDeOrdenDePedido {
 
         documento.add(tabla);
 
+        // Los precios son sin IVA: el pie muestra el subtotal, el IVA y el
+        // total que se paga.
         if (total.signum() > 0) {
+            BigDecimal iva = total.multiply(new BigDecimal("0.21"))
+                    .setScale(2, java.math.RoundingMode.HALF_UP);
             PdfPTable resumen = new PdfPTable(2);
             resumen.setWidthPercentage(46);
             resumen.setHorizontalAlignment(Element.ALIGN_RIGHT);
+            resumen.addCell(celda("SUBTOTAL", TEXTO, Element.ALIGN_LEFT));
+            resumen.addCell(importe(total, TEXTO));
+            resumen.addCell(celda("IVA 21%", TEXTO, Element.ALIGN_LEFT));
+            resumen.addCell(importe(iva, TEXTO));
             resumen.addCell(celda("TOTAL", DESTACADO, Element.ALIGN_LEFT));
-            resumen.addCell(importe(total, TOTAL));
+            resumen.addCell(importe(total.add(iva), TOTAL));
             documento.add(resumen);
         }
     }

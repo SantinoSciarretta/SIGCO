@@ -152,6 +152,14 @@ public class Pedido {
     }
 
     /**
+     * El corralón al que se le pide cotización. Se elige al cargar el pedido
+     * (05/10/2026): primero se le pregunta el precio y después se aprueba.
+     */
+    public void asignarProveedor(Proveedor proveedor) {
+        this.proveedor = proveedor;
+    }
+
+    /**
      * Aprueba el pedido y lo envia al proveedor elegido.
      *
      * Una sola operacion porque el circuito real lo es: el dueño no aprueba
@@ -227,17 +235,33 @@ public class Pedido {
         return fueRecibido() || estaAnulado();
     }
 
+    /** El 21% de IVA. Los precios de los materiales se cargan sin IVA. */
+    private static final BigDecimal TASA_IVA = new BigDecimal("0.21");
+
     /**
-     * Total del pedido: suma de cantidad x precio unitario de cada linea.
+     * Subtotal del pedido, sin IVA: suma de cantidad x precio unitario de cada
+     * linea.
      *
-     * Es lo que se convierte en el monto del gasto al confirmar la recepcion.
-     * Se calcula, no se guarda: guardarlo obligaria a recalcularlo con cada
-     * cambio de linea y abriria la posibilidad de que quede desactualizado.
+     * Es lo que se convierte en el monto del gasto: el IVA de una compra no es
+     * costo de la obra, y el presupuesto contra el que se compara tambien va
+     * sin IVA. Se calcula, no se guarda: guardarlo obligaria a recalcularlo con
+     * cada cambio de linea y abriria la posibilidad de que quede desactualizado.
      */
-    public BigDecimal calcularTotal() {
+    public BigDecimal calcularSubtotal() {
         return materiales.stream()
                 .map(PedidoMaterial::calcularSubtotal)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(2, java.math.RoundingMode.HALF_UP);
+    }
+
+    /** El IVA del pedido: el 21% del subtotal. */
+    public BigDecimal calcularIva() {
+        return calcularSubtotal().multiply(TASA_IVA).setScale(2, java.math.RoundingMode.HALF_UP);
+    }
+
+    /** Lo que se le paga al corralón: subtotal más IVA. */
+    public BigDecimal calcularTotal() {
+        return calcularSubtotal().add(calcularIva());
     }
 
     /** Si falta el precio de alguna linea, el total no representa nada. */
