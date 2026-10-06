@@ -126,7 +126,7 @@ export default function MaterialesPage() {
           <p className={estilos.avisoTitulo}>Primero hace falta el catálogo de rubros</p>
           <p className={estilos.vacioTexto}>
             Cada material pertenece a un rubro, y el rubro sale del catálogo de
-            Presupuestación. <Link to="/presupuestos/catalogo">Cargar rubros →</Link>
+            Presupuestación. <Link to="/rubros">Cargar rubros →</Link>
           </p>
         </Blueprint>
       )}

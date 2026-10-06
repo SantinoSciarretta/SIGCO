@@ -25,6 +25,10 @@ export const MODULOS = [
   { ruta: '/clientes', nombre: 'Clientes', permiso: 'clientes.ver' },
   // Materiales entra al menú porque es un módulo propio del informe y lo
   // consultan tanto Presupuestación como Compras.
+  // Rubros tiene entrada propia: antes solo se llegaba desde un enlace dentro
+  // de Presupuestos, y en la práctica nadie lo encontraba. Va antes que
+  // Materiales porque cada material pertenece a un rubro.
+  { ruta: '/rubros', nombre: 'Rubros', permiso: 'presupuestos.ver' },
   { ruta: '/materiales', nombre: 'Materiales', permiso: 'materiales.ver' },
   { ruta: '/proveedores', nombre: 'Proveedores', permiso: 'proveedores.ver' },
   { ruta: '/pedidos', nombre: 'Pedidos', permiso: 'compras.ver' },

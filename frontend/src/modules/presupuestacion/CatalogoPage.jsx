@@ -90,8 +90,8 @@ export default function CatalogoPage() {
     <>
       <div className={estilos.cabecera}>
         <div>
-          <span className="kicker kicker-acento">Presupuestación</span>
-          <h2 className={estilos.titulo}>Catálogo de rubros</h2>
+          <span className="kicker kicker-acento">Catálogo</span>
+          <h2 className={estilos.titulo}>Rubros y subrubros</h2>
           <p className={estilos.bajada}>
             Clasificación con la que se arman los presupuestos y se ordenan los gastos.
           </p>

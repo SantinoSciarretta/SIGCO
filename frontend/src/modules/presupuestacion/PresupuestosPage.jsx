@@ -72,7 +72,7 @@ export default function PresupuestosPage() {
           <h2 className={estilos.titulo}>Presupuestos</h2>
           <p className={estilos.bajada}>
             Una fila por obra; adentro, sus instancias.{' '}
-            <Link to="/presupuestos/catalogo">Ver catálogo de rubros</Link>
+            <Link to="/rubros">Ver catálogo de rubros</Link>
           </p>
         </div>
 

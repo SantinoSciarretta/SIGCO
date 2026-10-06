@@ -122,7 +122,7 @@ Nadie puede ver tu contraseña, ni siquiera el dueño, porque se guarda cifrada.
 
 Algunos datos se usan en todo el sistema y conviene cargarlos antes de empezar a trabajar con obras. Este es el orden recomendado:
 
-1. **Rubros y subrubros** (desde Presupuestos, "Ver catálogo de rubros"). Son la clasificación con la que se arman los presupuestos y se ordenan los gastos. El rubro "Mano de obra" ya viene creado en el sistema, así que no hace falta agregarlo.
+1. **Rubros y subrubros** (desde la sección "Rubros" del menú). Son la clasificación con la que se arman los presupuestos y se ordenan los gastos. El rubro "Mano de obra" ya viene creado en el sistema, así que no hace falta agregarlo.
 2. **Materiales.** Cada material pertenece a un rubro, por eso van después.
 3. **Proveedores**, con su zona y su teléfono. El teléfono es el que se usa para mandarles los pedidos por WhatsApp.
 4. **Clientes** actuales.
@@ -304,7 +304,7 @@ Reemplaza el armado de presupuestos desde cero en Excel o Word. Cubre las tres i
 
 Antes de presupuestar hace falta el catálogo de rubros y subrubros, que es la clasificación con la que se arman los presupuestos y se ordenan los gastos. Se carga una sola vez y se completa cuando hace falta.
 
-1. En "Presupuestos", tocá "Ver catálogo de rubros".
+1. En el menú, entrá a "Rubros". También se llega desde "Presupuestos", con el enlace "Ver catálogo de rubros".
 2. Tocá "Nuevo rubro", escribí el nombre (por ejemplo "Albañilería") y tocá "Crear".
 3. Para sumar un subrubro, tocá "Agregar subrubro" en el rubro correspondiente (por ejemplo "Demolición" dentro de "Albañilería").
 4. "Editar" permite cambiarle el nombre a un rubro, y "Desactivar" lo saca de la lista para presupuestos nuevos sin afectar a los que ya lo usan.
@@ -313,7 +313,7 @@ Antes de presupuestar hace falta el catálogo de rubros y subrubros, que es la c
 
 **[ESPACIO PARA CAPTURA 14]**
 *Figura 14. Catálogo de rubros y subrubros.*
-*Cómo sacarla: entrar a Presupuestos, "Ver catálogo de rubros", con al menos cuatro rubros con subrubros, uno de ellos marcado como rubro de mano de obra.*
+*Cómo sacarla: entrar a "Rubros" desde el menú, con al menos cuatro rubros con subrubros, uno de ellos marcado como rubro de mano de obra.*
 
 ### El listado de presupuestos {#presupuestos-listado}
 

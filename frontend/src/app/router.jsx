@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
 import Layout from './Layout';
 import RutaProtegida from './RutaProtegida';
@@ -116,8 +116,10 @@ export default function Router() {
 
         <Route path="/presupuestos" element={
           <RutaProtegida permiso="presupuestos.ver"><PresupuestosPage /></RutaProtegida>} />
-        <Route path="/presupuestos/catalogo" element={
+        <Route path="/rubros" element={
           <RutaProtegida permiso="presupuestos.ver"><CatalogoPage /></RutaProtegida>} />
+        {/* La dirección vieja sigue andando, por si alguien la tiene guardada. */}
+        <Route path="/presupuestos/catalogo" element={<Navigate to="/rubros" replace />} />
         {/* Tres segmentos, asi que no compite con /presupuestos/:id. */}
         <Route path="/presupuestos/obra/:idObra" element={
           <RutaProtegida permiso="presupuestos.ver"><ObraPresupuestosPage /></RutaProtegida>} />
