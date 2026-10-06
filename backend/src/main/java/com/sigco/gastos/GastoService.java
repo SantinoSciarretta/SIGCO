@@ -68,6 +68,11 @@ public class GastoService {
 
     private final com.sigco.accesos.ServicioAuditoria auditoria;
 
+    /**
+     * Constructor: recibe lo necesario para leer y guardar gastos, obras,
+     * rubros, subrubros y presupuestos, además del dato de quién está usando el
+     * sistema y la auditoría.
+     */
     public GastoService(GastoRepository repositorio,
                         ObraRepository obraRepositorio,
                         RubroRepository rubroRepositorio,
@@ -88,6 +93,10 @@ public class GastoService {
     //  Consulta
     // ------------------------------------------------------------------
 
+    /**
+     * Devuelve los gastos que cumplen los filtros indicados. Cualquier filtro
+     * que no se indique se ignora.
+     */
     @Transactional(readOnly = true)
     public List<GastoRespuesta> listar(Long idObra, Long idRubro, String tipoGasto,
                                        String estado, LocalDate desde, LocalDate hasta) {
@@ -103,6 +112,10 @@ public class GastoService {
                 .toList();
     }
 
+    /**
+     * Devuelve un gasto con todos sus datos. Si no existe, responde con un
+     * error de "no encontrado".
+     */
     @Transactional(readOnly = true)
     public GastoRespuesta obtener(Long id) {
         return GastoRespuesta.desde(buscarOFallar(id));
@@ -112,6 +125,11 @@ public class GastoService {
     //  Alta, edicion y anulacion
     // ------------------------------------------------------------------
 
+    /**
+     * Registra un gasto nuevo: comprueba que la obra esté en ejecución con su
+     * presupuesto aprobado, que el rubro y el subrubro existan y correspondan
+     * entre sí, y anota quién lo cargó.
+     */
     @Transactional
     public GastoRespuesta crear(GastoSolicitud solicitud) {
         Obra obra = obraRepositorio.findById(solicitud.idObra())
@@ -133,6 +151,10 @@ public class GastoService {
         return GastoRespuesta.desde(repositorio.save(gasto));
     }
 
+    /**
+     * Corrige los datos de un gasto ya cargado. Un gasto anulado no se puede
+     * editar: si el dato era otro, se carga uno nuevo.
+     */
     @Transactional
     public GastoRespuesta actualizar(Long id, GastoSolicitud solicitud) {
         Gasto gasto = buscarOFallar(id);
@@ -237,6 +259,10 @@ public class GastoService {
         return generados;
     }
 
+    /**
+     * Indica si la obra tiene un presupuesto definitivo aprobado, que es contra
+     * lo que se comparan los gastos.
+     */
     private boolean tieneDefinitivoAprobado(Obra obra) {
         return !presupuestoRepositorio.findByObraIdObraAndTipoPresupuestoAndEstado(
                 obra.getIdObra(), Presupuesto.TIPO_DEFINITIVO, Presupuesto.ESTADO_APROBADO)
@@ -259,7 +285,7 @@ public class GastoService {
         Obra obra = obraRepositorio.findById(idObra)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Obra", idObra));
 
-        return armar(obra, buscarDefinitivoAprobado(obra));
+        return armarEstadoFinanciero(obra, buscarDefinitivoAprobado(obra));
     }
 
     /**
@@ -288,16 +314,16 @@ public class GastoService {
                         idObra, Presupuesto.TIPO_DEFINITIVO, Presupuesto.ESTADO_APROBADO);
 
         if (aprobados.isEmpty()) {
-            return armar(obra, null);
+            return armarEstadoFinanciero(obra, null);
         }
-        return armar(obra, recargarConItems(aprobados.get(0)));
+        return armarEstadoFinanciero(obra, recargarConItems(aprobados.get(0)));
     }
 
     /**
      * Arma la comparacion. El presupuesto puede faltar: en ese caso todo lo
      * presupuestado vale cero y quedan a la vista los gastos solos.
      */
-    private EstadoFinanciero armar(Obra obra, Presupuesto definitivo) {
+    private EstadoFinanciero armarEstadoFinanciero(Obra obra, Presupuesto definitivo) {
         Long idObra = obra.getIdObra();
 
         Map<Long, BigDecimal> presupuestadoPorRubro = new LinkedHashMap<>();
@@ -447,6 +473,10 @@ public class GastoService {
         return SEMAFORO_VERDE;
     }
 
+    /**
+     * Calcula qué porcentaje de lo presupuestado ya se gastó. Si no hay
+     * presupuesto, devuelve cero en lugar de fallar.
+     */
     private BigDecimal calcularPorcentaje(BigDecimal gastado, BigDecimal presupuestado) {
         if (presupuestado == null || presupuestado.signum() == 0) {
             return BigDecimal.ZERO;
@@ -459,6 +489,10 @@ public class GastoService {
     //  Auxiliares
     // ------------------------------------------------------------------
 
+    /**
+     * Busca un gasto por su número. Si no existe, corta la operación con un
+     * error de "no encontrado".
+     */
     private Gasto buscarOFallar(Long id) {
         return repositorio.buscarCompleto(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Gasto", id));
@@ -482,6 +516,10 @@ public class GastoService {
         buscarDefinitivoAprobado(obra);
     }
 
+    /**
+     * Busca el presupuesto definitivo aprobado de la obra, con sus ítems. Si no
+     * tiene, frena la operación con un mensaje que lo explica.
+     */
     private Presupuesto buscarDefinitivoAprobado(Obra obra) {
         List<Presupuesto> aprobados = presupuestoRepositorio
                 .findByObraIdObraAndTipoPresupuestoAndEstado(
@@ -508,6 +546,10 @@ public class GastoService {
                         "Presupuesto", presupuesto.getIdPresupuesto()));
     }
 
+    /**
+     * Busca un rubro por su número. Si no existe, corta la operación con un
+     * error de "no encontrado".
+     */
     private Rubro buscarRubroOFallar(Long idRubro) {
         return rubroRepositorio.findById(idRubro)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Rubro", idRubro));
@@ -536,6 +578,10 @@ public class GastoService {
         return subrubro;
     }
 
+    /**
+     * Quita los espacios sobrantes de un texto, y si quedó vacío lo guarda como
+     * "sin dato".
+     */
     private String limpiar(String texto) {
         return (texto == null || texto.isBlank()) ? null : texto.trim();
     }

@@ -37,6 +37,11 @@ public class AlmacenLocal implements AlmacenDeArchivos {
     private final Path raiz;
     private final ValidadorDeArchivos validador;
 
+    /**
+     * Constructor: prepara la carpeta de la computadora donde se guardan los
+     * archivos mientras se desarrolla el sistema. Si la carpeta no existe, la
+     * crea.
+     */
     public AlmacenLocal(@Value("${sigco.almacenamiento.carpeta:archivos}") String carpeta,
                         ValidadorDeArchivos validador) {
         this.raiz = Path.of(carpeta).toAbsolutePath().normalize();
@@ -49,6 +54,11 @@ public class AlmacenLocal implements AlmacenDeArchivos {
         }
     }
 
+    /**
+     * Guarda un archivo subido (una foto o un PDF) en la carpeta local, con un
+     * nombre al azar, y devuelve la referencia que se anota en la base de
+     * datos.
+     */
     @Override
     public String guardar(MultipartFile archivo, String carpeta, Ambito ambito) {
         String extension = validador.validar(archivo);
@@ -75,6 +85,10 @@ public class AlmacenLocal implements AlmacenDeArchivos {
         return referencia;
     }
 
+    /**
+     * Busca en la carpeta local el archivo que corresponde a esa referencia y
+     * lo devuelve para mostrarlo o descargarlo.
+     */
     @Override
     public Resource leer(String referencia) {
         Path archivo = raiz.resolve(referencia).normalize();
@@ -88,6 +102,9 @@ public class AlmacenLocal implements AlmacenDeArchivos {
         return new FileSystemResource(archivo);
     }
 
+    /**
+     * Elimina de la carpeta local el archivo que corresponde a esa referencia.
+     */
     @Override
     public void borrar(String referencia) {
         Path archivo = raiz.resolve(referencia).normalize();

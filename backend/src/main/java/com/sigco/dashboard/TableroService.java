@@ -106,6 +106,10 @@ public class TableroService {
      */
     private final com.sigco.seguridad.SesionActual sesion;
 
+    /**
+     * Constructor: recibe los servicios y consultas de los otros módulos,
+     * porque el tablero no tiene datos propios y solo junta los de los demás.
+     */
     public TableroService(ObraRepository obraRepositorio,
                           PresupuestoRepository presupuestoRepositorio,
                           PedidoRepository pedidoRepositorio,
@@ -126,14 +130,20 @@ public class TableroService {
     //  El tablero completo
     // ------------------------------------------------------------------
 
+    /**
+     * Arma el tablero completo: los totales de las obras en ejecución, una fila
+     * por obra con su gasto, avance y cobros, y la lista de pendientes que
+     * esperan una decisión del dueño. Si quien consulta no es el dueño, le
+     * quita los datos financieros antes de enviarlo.
+     */
     @Transactional(readOnly = true)
-    public Tablero armar() {
+    public Tablero armarTablero() {
         List<Obra> enEjecucion = obraRepositorio.porEstado(Obra.ESTADO_EN_EJECUCION);
 
         // El consolidado de cobros llega de una sola vez y se indexa por obra,
         // en lugar de consultar el plan de cada obra por separado.
         Map<Long, ResumenCobro> cobrosPorObra = new HashMap<>();
-        for (ResumenCobro r : cobrosService.consolidado()) {
+        for (ResumenCobro r : cobrosService.resumenDeCobrosPorObra()) {
             cobrosPorObra.put(r.idObra(), r);
         }
 
@@ -225,6 +235,10 @@ public class TableroService {
                 pendientes);
     }
 
+    /**
+     * Devuelve la fila de una obra con los datos de plata vaciados, para
+     * mostrarle el tablero a quien no tiene permiso de ver finanzas.
+     */
     private ObraEnTablero sinDatosFinancieros(ObraEnTablero o) {
         return new ObraEnTablero(
                 o.idObra(), o.direccionObra(), o.nombreCliente(), o.estado(),
@@ -240,6 +254,10 @@ public class TableroService {
                 null);                   // proximoVencimiento
     }
 
+    /**
+     * Devuelve los totales del tablero con los datos de plata vaciados, para
+     * quien no tiene permiso de ver finanzas.
+     */
     private Resumen sinDatosFinancieros(Resumen r,
                                         List<ObraEnTablero> obras,
                                         List<Pendiente> pendientes) {
@@ -264,11 +282,15 @@ public class TableroService {
     //  Una obra
     // ------------------------------------------------------------------
 
+    /**
+     * Arma la fila de una obra en el tablero: presupuesto, gasto, semáforo,
+     * avance físico y financiero, atraso, hitos y cobros.
+     */
     private ObraEnTablero armarFila(Obra obra, ResumenCobro cobro) {
         // resumenOVacio y no estadoFinanciero: una obra sin definitivo aprobado
         // no puede hacer fallar el tablero entero.
         ResumenFinanciero finanzas = gastoService.resumenOVacio(obra.getIdObra());
-        AvanceObra avance = seguimientoService.avance(obra.getIdObra());
+        AvanceObra avance = seguimientoService.calcularAvanceDeObra(obra.getIdObra());
 
         return new ObraEnTablero(
                 obra.getIdObra(),
@@ -296,6 +318,11 @@ public class TableroService {
     //  Resumen
     // ------------------------------------------------------------------
 
+    /**
+     * Calcula los números de arriba del tablero sumando todas las obras:
+     * presupuestado, gastado, ganancia, saldo por cobrar, lo que vence esta
+     * semana y cuántas obras tienen problemas.
+     */
     private Resumen armarResumen(List<ObraEnTablero> obras, List<Pendiente> pendientes) {
         BigDecimal presupuestado = sumar(obras, ObraEnTablero::totalPresupuestado);
         BigDecimal gastado = sumar(obras, ObraEnTablero::totalGastado);
@@ -325,6 +352,10 @@ public class TableroService {
                         .filter(p -> URGENCIA_ALTA.equals(p.urgencia())).count());
     }
 
+    /**
+     * Suma un mismo dato (por ejemplo el total gastado) de todas las obras del
+     * tablero.
+     */
     private BigDecimal sumar(List<ObraEnTablero> obras,
                              java.util.function.Function<ObraEnTablero, BigDecimal> campo) {
         return obras.stream().map(campo).reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -429,7 +460,7 @@ public class TableroService {
         // ---- Cobros vencidos y por vencer ----
         // Salen del consolidado de Cobros, que ya resolvio que cuota esta
         // vencida a partir del calendario.
-        for (ResumenCobro cobro : cobrosService.consolidado()) {
+        for (ResumenCobro cobro : cobrosService.resumenDeCobrosPorObra()) {
             if (cobro.cuotasVencidas() != null && cobro.cuotasVencidas() > 0) {
                 pendientes.add(new Pendiente(
                         TIPO_COBRO,

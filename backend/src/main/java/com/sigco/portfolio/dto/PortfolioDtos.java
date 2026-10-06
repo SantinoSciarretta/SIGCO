@@ -12,6 +12,10 @@ import java.util.List;
 /** Datos que entran y salen del modulo Portfolio Web. */
 public final class PortfolioDtos {
 
+    /**
+     * Constructor privado: esta clase solo agrupa los formatos de datos del
+     * Portfolio, no se crean objetos de ella.
+     */
     private PortfolioDtos() {
     }
 
@@ -52,6 +56,10 @@ public final class PortfolioDtos {
             Integer cantidadImagenes,
             List<ImagenRespuesta> imagenes) {
 
+        /**
+         * Convierte una publicación en el formato que ve el dueño en el panel
+         * de administración, con los datos de la obra y del cliente.
+         */
         public static PublicacionRespuesta desde(PublicacionPortfolio p) {
             return new PublicacionRespuesta(
                     p.getIdPublicacion(),
@@ -68,6 +76,9 @@ public final class PortfolioDtos {
 
     public record ImagenRespuesta(Long idImagen, String urlImagen, Integer orden) {
 
+        /**
+         * Convierte una imagen en el formato que se le envía a la pantalla.
+         */
         static ImagenRespuesta desde(ImagenPortfolio i) {
             return new ImagenRespuesta(i.getIdImagen(), i.getUrlImagen(), i.getOrden());
         }
@@ -94,6 +105,11 @@ public final class PortfolioDtos {
             LocalDateTime fechaPublicacion,
             List<String> imagenes) {
 
+        /**
+         * Convierte una publicación en el formato de la vidriera pública: solo
+         * el tipo de trabajo, la fecha y las fotos en orden. No incluye datos
+         * del cliente ni la dirección.
+         */
         public static VidrieraRespuesta desde(PublicacionPortfolio p) {
             return new VidrieraRespuesta(
                     p.getIdPublicacion(), p.getTipoTrabajo(), p.getFechaPublicacion(),

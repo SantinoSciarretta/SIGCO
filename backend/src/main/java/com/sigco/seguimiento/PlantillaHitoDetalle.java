@@ -34,9 +34,17 @@ public class PlantillaHitoDetalle {
     @Column(name = "orden", nullable = false)
     private Integer orden;
 
+    /**
+     * Constructor vacío que exige la base de datos (JPA) para poder armar el
+     * objeto al leerlo. No se usa desde el código.
+     */
     protected PlantillaHitoDetalle() {
     }
 
+    /**
+     * Crea una etapa de la plantilla con su nombre, su ponderación sugerida y
+     * su orden.
+     */
     public PlantillaHitoDetalle(PlantillaHito plantilla, String nombreHito,
                                 BigDecimal ponderacion, Integer orden) {
         this.plantilla = plantilla;
@@ -45,6 +53,10 @@ public class PlantillaHitoDetalle {
         this.orden = orden;
     }
 
+    /**
+     * Métodos de lectura: devuelven los datos guardados de la etapa de la
+     * plantilla. Solo leen, no modifican nada.
+     */
     public Long getIdDetalle() {
         return idDetalle;
     }

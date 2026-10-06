@@ -27,14 +27,25 @@ public class PedidoMaterialId implements Serializable {
     @Column(name = "id_material")
     private Long idMaterial;
 
+    /**
+     * Constructor vacío que exige la base de datos (JPA). No se usa desde el
+     * código.
+     */
     protected PedidoMaterialId() {
     }
 
+    /**
+     * Arma el identificador de una línea de pedido, que es la combinación del
+     * número de pedido y el número de material.
+     */
     public PedidoMaterialId(Long idPedido, Long idMaterial) {
         this.idPedido = idPedido;
         this.idMaterial = idMaterial;
     }
 
+    /**
+     * Métodos de lectura: devuelven las dos partes del identificador.
+     */
     public Long getIdPedido() {
         return idPedido;
     }
@@ -43,6 +54,10 @@ public class PedidoMaterialId implements Serializable {
         return idMaterial;
     }
 
+    /**
+     * Dos identificadores son iguales si coinciden el pedido y el material.
+     * Java lo necesita para comparar líneas de pedido correctamente.
+     */
     @Override
     public boolean equals(Object otro) {
         if (this == otro) {
@@ -55,6 +70,10 @@ public class PedidoMaterialId implements Serializable {
                 && Objects.equals(idMaterial, id.idMaterial);
     }
 
+    /**
+     * Calcula un número que resume el identificador. Java lo usa junto con
+     * equals para guardar las líneas en colecciones.
+     */
     @Override
     public int hashCode() {
         return Objects.hash(idPedido, idMaterial);

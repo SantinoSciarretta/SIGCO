@@ -18,6 +18,10 @@ import java.util.List;
  */
 public final class UsuarioDtos {
 
+    /**
+     * Constructor privado: esta clase solo agrupa los formatos de datos del
+     * módulo Usuarios, no se crean objetos de ella.
+     */
     private UsuarioDtos() {
     }
 
@@ -113,6 +117,10 @@ public final class UsuarioDtos {
             LocalDateTime ultimaFechaAcceso,
             LocalDateTime fechaAlta) {
 
+        /**
+         * Convierte una cuenta en el formato que se le envía a la pantalla.
+         * Nunca incluye la contraseña.
+         */
         public static UsuarioRespuesta desde(Usuario u) {
             return new UsuarioRespuesta(
                     u.getIdUsuario(),

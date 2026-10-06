@@ -16,6 +16,11 @@ package com.sigco.common.exception;
  */
 public class ReglaDeNegocioException extends RuntimeException {
 
+    /**
+     * Crea el error que se usa cuando una acción viola una regla del negocio
+     * (por ejemplo, aprobar un pedido ya anulado). El mensaje es el que ve el
+     * usuario en pantalla.
+     */
     public ReglaDeNegocioException(String mensaje) {
         super(mensaje);
     }

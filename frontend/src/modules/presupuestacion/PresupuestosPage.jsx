@@ -187,6 +187,10 @@ export function ConfirmarEliminacion({ presupuesto, onCerrar, onEliminado }) {
   const esDefinitivoAprobado = presupuesto.tipoPresupuesto === 'Definitivo'
     && presupuesto.estado === 'Aprobado';
 
+  /**
+   * Elimina el presupuesto después de que el usuario confirmó en la ventana de
+   * aviso.
+   */
   const confirmar = async () => {
     setEliminando(true);
     setError(null);
@@ -264,11 +268,17 @@ function NuevoPresupuestoModal({ onCerrar, onCreado }) {
   const esCotizacion = datos.tipoPresupuesto === 'Cotización inicial';
   const obraElegida = obras.find((o) => String(o.idObra) === datos.idObra);
 
+  /**
+   * Actualiza un campo del formulario y borra el error que ese campo tuviera.
+   */
   const cambiar = (campo) => (e) => {
     setDatos((previo) => ({ ...previo, [campo]: e.target.value }));
     setCamposInvalidos((previo) => ({ ...previo, [campo]: undefined }));
   };
 
+  /**
+   * Crea el presupuesto nuevo para la obra elegida.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);
@@ -404,6 +414,9 @@ function resumirInstancias(presupuestos) {
   return conteo;
 }
 
+/**
+ * Elige el estilo con que se muestra el estado de un presupuesto.
+ */
 export function claseDeEstado(estado) {
   if (estado === 'Aprobado') return estilos.estadoAprobado;
   if (estado === 'Enviado') return estilos.estadoEnviado;

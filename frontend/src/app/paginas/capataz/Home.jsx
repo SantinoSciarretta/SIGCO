@@ -209,6 +209,11 @@ export default function Home() {
    "Pendiente de Aprobación" y "Enviado al Proveedor" no.
    -------------------------------------------------------------------------- */
 
+/**
+ * Elige el color con que se muestra el estado de un pedido: naranja si espera
+ * aprobación, azul si está en camino, gris si se anuló y verde si ya se
+ * recibió.
+ */
 function colorDeEstado(estado) {
   if (estado === 'Pendiente de Aprobación') return 'var(--color-alerta)';
   if (estado === 'Enviado al Proveedor') return 'var(--color-accent)';
@@ -216,6 +221,10 @@ function colorDeEstado(estado) {
   return 'var(--color-ok)';
 }
 
+/**
+ * Arma la frase que describe en qué anda un pedido, por ejemplo "Pedido en
+ * camino, falta confirmar la recepción".
+ */
 function textoDeEstado(pedido) {
   const cuantos = `${pedido.materiales?.length ?? 0} materiales`;
   switch (pedido.estado) {

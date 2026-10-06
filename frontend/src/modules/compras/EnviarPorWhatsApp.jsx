@@ -49,6 +49,10 @@ export default function EnviarPorWhatsApp({ pedido, onCerrar }) {
     return () => { vigente = false; };
   }, [pedido.idPedido]);
 
+  /**
+   * Copia el enlace de la orden en PDF, por si el dueño prefiere pegarlo a mano
+   * en otro lado.
+   */
   const copiarLink = async () => {
     try {
       await navigator.clipboard.writeText(envio.urlOrden);
@@ -123,6 +127,9 @@ export default function EnviarPorWhatsApp({ pedido, onCerrar }) {
   );
 }
 
+/**
+ * Escribe una fecha en formato día/mes/año.
+ */
 function fecha(valor) {
   if (!valor) return '—';
   return new Date(valor).toLocaleDateString('es-AR');

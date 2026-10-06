@@ -45,6 +45,10 @@ public class ProveedorController {
 
     private final ProveedorService servicio;
 
+    /**
+     * Constructor: Spring le entrega automáticamente el servicio que contiene
+     * la lógica de Proveedores.
+     */
     public ProveedorController(ProveedorService servicio) {
         this.servicio = servicio;
     }

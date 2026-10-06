@@ -30,6 +30,10 @@ public class ComparadorController {
 
     private final ProveedorService servicio;
 
+    /**
+     * Constructor: Spring le entrega automáticamente el servicio de
+     * Proveedores, que arma la comparación.
+     */
     public ComparadorController(ProveedorService servicio) {
         this.servicio = servicio;
     }

@@ -19,14 +19,19 @@ export async function listarRubros({ busqueda, estado } = {}) {
 }
 
 /** POST /api/rubros */
-export async function crearRubro(nombreRubro) {
-  const respuesta = await client.post('/rubros', { nombreRubro });
+export async function crearRubro(nombreRubro, esManoDeObra = false) {
+  const respuesta = await client.post('/rubros', { nombreRubro, esManoDeObra });
   return respuesta.data;
 }
 
-/** PUT /api/rubros/{id} — lo único editable es el nombre. */
-export async function renombrarRubro(id, nombreRubro) {
-  const respuesta = await client.put(`/rubros/${id}`, { nombreRubro });
+/**
+ * PUT /api/rubros/{id}: cambia el nombre y la marca de mano de obra.
+ *
+ * La marca viaja siempre: el servidor toma su ausencia como "no", así que
+ * renombrar el rubro de mano de obra sin mandarla le sacaba la marca.
+ */
+export async function renombrarRubro(id, nombreRubro, esManoDeObra = false) {
+  const respuesta = await client.put(`/rubros/${id}`, { nombreRubro, esManoDeObra });
   return respuesta.data;
 }
 

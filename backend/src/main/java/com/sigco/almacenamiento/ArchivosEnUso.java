@@ -67,6 +67,10 @@ public class ArchivosEnUso {
         }
     }
 
+    /**
+     * Ejecuta una consulta que cuenta cuántos registros usan ese archivo y
+     * responde si hay al menos uno.
+     */
     private boolean contar(String consulta, String referencia) {
         Long cantidad = em.createQuery(consulta, Long.class)
                 .setParameter("ref", referencia)

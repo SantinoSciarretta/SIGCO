@@ -10,6 +10,10 @@ import java.util.List;
 /** Entradas y salidas del modulo Accesos. */
 public final class AccesosDtos {
 
+    /**
+     * Constructor privado: esta clase solo agrupa los formatos de datos que
+     * entran y salen del módulo Accesos, no se crean objetos de ella.
+     */
     private AccesosDtos() {
     }
 
@@ -23,6 +27,10 @@ public final class AccesosDtos {
             String modulo,
             String descripcion) {
 
+        /**
+         * Convierte un permiso guardado en la base en el formato que se le
+         * envía a la pantalla.
+         */
         public static PermisoRespuesta desde(Permiso p) {
             return new PermisoRespuesta(p.getIdPermiso(), p.getNombrePermiso(),
                     p.getModulo(), p.getDescripcion());
@@ -44,6 +52,10 @@ public final class AccesosDtos {
             /** Cuantas cuentas tienen este rol. Se muestra antes de quitar un permiso. */
             long cuentasActivas) {
 
+        /**
+         * Convierte un rol guardado en la base en el formato que se le envía a
+         * la pantalla, sumándole la cantidad de cuentas activas.
+         */
         public static RolRespuesta desde(Rol r, long cuentasActivas) {
             return new RolRespuesta(
                     r.getIdRol(), r.getNombreRol(), r.getDescripcion(),
@@ -60,6 +72,10 @@ public final class AccesosDtos {
             String moduloAfectado,
             LocalDateTime fechaHora) {
 
+        /**
+         * Convierte un registro de auditoría en el formato que se muestra en la
+         * pantalla, con el nombre del usuario que hizo la acción.
+         */
         public static AuditoriaRespuesta desde(RegistroAuditoria a) {
             return new AuditoriaRespuesta(
                     a.getIdAuditoria(),

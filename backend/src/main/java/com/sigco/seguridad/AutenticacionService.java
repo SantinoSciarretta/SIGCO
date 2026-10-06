@@ -36,6 +36,11 @@ public class AutenticacionService {
     private final ServicioAuditoria auditoria;
     private final RegistroDeIntentos intentos;
 
+    /**
+     * Constructor: recibe lo necesario para buscar cuentas, comparar
+     * contraseñas, emitir el pase de sesión, registrar la auditoría y contar
+     * los intentos fallidos.
+     */
     public AutenticacionService(UsuarioRepository repositorio,
                                 PasswordEncoder codificador,
                                 ServicioJwt servicioJwt,
@@ -48,6 +53,13 @@ public class AutenticacionService {
         this.intentos = intentos;
     }
 
+    /**
+     * Valida el ingreso al sistema con usuario y contraseña. Primero revisa si
+     * la cuenta está bloqueada por intentos fallidos, después compara la
+     * contraseña, y si todo está bien entrega el pase de sesión. El mensaje de
+     * error es el mismo si el usuario no existe o si la contraseña es
+     * incorrecta, para no revelar qué cuentas existen.
+     */
     @Transactional
     public Sesion ingresar(Credenciales credenciales) {
         Optional<Usuario> encontrado = repositorio.porNombre(credenciales.nombreUsuario().trim());
@@ -138,6 +150,11 @@ public class AutenticacionService {
                 usuario.debeCambiarContrasena());
     }
 
+    /**
+     * Arma lo que recibe el navegador al ingresar: el pase de sesión firmado
+     * (token), el nombre, el rol, los permisos y si tiene que cambiar la
+     * contraseña.
+     */
     private Sesion armarSesion(Usuario usuario) {
         // emitir() y no renovar(): esto es un ingreso, asi que la sesion
         // empieza ahora y el tope absoluto se cuenta desde este momento.

@@ -113,9 +113,19 @@ public class Gasto {
     @Column(name = "motivo_anulacion", length = 200)
     private String motivoAnulacion;
 
+    /**
+     * Constructor vacío que exige la base de datos (JPA) para poder armar el
+     * objeto al leerlo. No se usa desde el código.
+     */
     protected Gasto() {
     }
 
+    /**
+     * Crea un gasto con todos sus datos: obra, rubro, subrubro (opcional),
+     * tipo, monto, fecha en que ocurrió, descripción, comprobante, y si
+     * corresponde el pedido o el operario que lo originó. Todo gasto nace
+     * Confirmado y con la fecha de carga de hoy.
+     */
     public Gasto(Obra obra, Rubro rubro, Subrubro subrubro, String tipoGasto,
                  BigDecimal monto, LocalDate fechaGasto, String descripcion,
                  String comprobanteAdjunto, Long idPedido, Long idOperario) {
@@ -166,20 +176,35 @@ public class Gasto {
         this.motivoAnulacion = motivo;
     }
 
+    /**
+     * Indica si el gasto está vigente, es decir que suma al total de la obra.
+     */
     public boolean estaConfirmado() {
         return ESTADO_CONFIRMADO.equals(this.estado);
     }
 
+    /**
+     * Indica si el gasto fue anulado. Un gasto anulado se conserva pero no
+     * suma.
+     */
     public boolean estaAnulado() {
         return ESTADO_ANULADO.equals(this.estado);
     }
 
+    /**
+     * Indica si es un gasto hormiga, uno de los gastos chicos que antes no
+     * quedaban registrados.
+     */
     public boolean esHormiga() {
         return TIPO_HORMIGA.equals(this.tipoGasto);
     }
 
     // ---------- Metodos de acceso ----------
 
+    /**
+     * Métodos de lectura: devuelven los datos guardados del gasto. Solo leen,
+     * no modifican nada.
+     */
     public Long getIdGasto() {
         return idGasto;
     }

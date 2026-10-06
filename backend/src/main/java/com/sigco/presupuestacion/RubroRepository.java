@@ -12,6 +12,9 @@ import org.springframework.data.repository.query.Param;
 public interface RubroRepository extends JpaRepository<Rubro, Long> {
 
     /**
+     * Busca rubros por parte del nombre y opcionalmente por estado, trayendo de
+     * una vez sus subrubros. Los resultados salen en orden alfabético.
+     *
      * Catalogo completo, con los subrubros de cada rubro ya cargados.
      *
      * LEFT JOIN FETCH: el LEFT es necesario porque un rubro recien creado

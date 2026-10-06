@@ -38,6 +38,10 @@ public class SeguimientoController {
 
     private final SeguimientoService servicio;
 
+    /**
+     * Constructor: Spring le entrega automáticamente el servicio que contiene
+     * la lógica de Seguimiento.
+     */
     public SeguimientoController(SeguimientoService servicio) {
         this.servicio = servicio;
     }
@@ -46,8 +50,8 @@ public class SeguimientoController {
 
     /** GET /api/obras/{id}/avance — panel principal del modulo. */
     @GetMapping("/api/obras/{id}/avance")
-    public AvanceObra avance(@PathVariable Long id) {
-        return servicio.avance(id);
+    public AvanceObra calcularAvanceDeObra(@PathVariable Long id) {
+        return servicio.calcularAvanceDeObra(id);
     }
 
     /**
@@ -106,12 +110,19 @@ public class SeguimientoController {
         return servicio.completar(id, cumplimiento);
     }
 
+    /**
+     * PATCH /api/hitos/{id}/reapertura: deshace el cumplimiento de un hito
+     * marcado por error.
+     */
     @PreAuthorize("hasAuthority('seguimiento.editar')")
     @PatchMapping("/api/hitos/{id}/reapertura")
     public AvanceObra reabrir(@PathVariable Long id) {
         return servicio.reabrir(id);
     }
 
+    /**
+     * PATCH /api/hitos/{id}/observacion: guarda un comentario sobre un hito.
+     */
     @PreAuthorize("hasAuthority('seguimiento.editar')")
     @PatchMapping("/api/hitos/{id}/observacion")
     public AvanceObra registrarObservacion(@PathVariable Long id,
@@ -121,11 +132,19 @@ public class SeguimientoController {
 
     // ---------- Plantillas ----------
 
+    /**
+     * GET /api/plantillas-hito: devuelve las plantillas de hitos guardadas,
+     * para reutilizarlas en obras parecidas.
+     */
     @GetMapping("/api/plantillas-hito")
     public List<PlantillaRespuesta> listarPlantillas() {
         return servicio.listarPlantillas();
     }
 
+    /**
+     * POST /api/plantillas-hito: guarda una plantilla de hitos nueva. Las
+     * ponderaciones tienen que sumar 100.
+     */
     @PreAuthorize("hasAuthority('seguimiento.editar')")
     @PostMapping("/api/plantillas-hito")
     public PlantillaRespuesta crearPlantilla(@Valid @RequestBody NuevaPlantilla solicitud) {

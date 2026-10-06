@@ -69,6 +69,11 @@ public class ConfiguracionSeguridad {
      */
     private final ObjectMapper mapeador;
 
+    /**
+     * Constructor: recibe los dos controles que se aplican a cada pedido al
+     * servidor: el que verifica el pase de sesión y el que obliga a cambiar la
+     * contraseña.
+     */
     public ConfiguracionSeguridad(FiltroJwt filtroJwt,
                                   FiltroCambioDeContrasena filtroCambioDeContrasena,
                                   ObjectMapper mapeador) {
@@ -89,6 +94,12 @@ public class ConfiguracionSeguridad {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Define las reglas de seguridad de todo el sistema: qué direcciones son
+     * públicas (el ingreso y la vidriera), que todas las demás exigen haber
+     * ingresado, y qué mensaje se devuelve cuando falta el ingreso o el
+     * permiso.
+     */
     @Bean
     public SecurityFilterChain cadenaDeFiltros(HttpSecurity http) throws Exception {
         http
@@ -178,6 +189,10 @@ public class ConfiguracionSeguridad {
                 peticion.getRequestURI());
     }
 
+    /**
+     * Arma la respuesta de error en el mismo formato que usa el resto del
+     * sistema, para que la pantalla pueda mostrar el mensaje.
+     */
     private void responder(HttpServletResponse respuesta, int estado, String error,
                            String mensaje, String ruta) {
         respuesta.setStatus(estado);

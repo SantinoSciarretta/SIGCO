@@ -87,6 +87,10 @@ public class GeneradorDePlanillaDePagos {
 
     // ------------------------------------------------------------------
 
+    /**
+     * Escribe en el PDF el encabezado del plan de pago: la obra, el cliente y
+     * cuántas cuotas tiene.
+     */
     private void escribirDatos(Document documento, Obra obra, List<Cuota> cuotas)
             throws DocumentException {
 
@@ -107,6 +111,10 @@ public class GeneradorDePlanillaDePagos {
         documento.add(datos);
     }
 
+    /**
+     * Escribe en el PDF la tabla con cada cuota: número, vencimiento, monto y
+     * estado.
+     */
     private void escribirCuotas(Document documento, List<Cuota> cuotas)
             throws DocumentException {
 
@@ -162,10 +170,18 @@ public class GeneradorDePlanillaDePagos {
         return cuota.estaVencida() ? "Vencida" : "Pendiente";
     }
 
+    /**
+     * Elige la letra con que se escribe el estado de una cuota: en rojo si está
+     * vencida, normal en los demás casos.
+     */
     private Font fuenteDeEstado(Cuota cuota) {
         return cuota.estaVencida() ? ROJO_CHICO : TEXTO_CHICO;
     }
 
+    /**
+     * Escribe en el PDF los totales: cuánto suma el plan, cuánto se cobró y
+     * cuánto falta cobrar.
+     */
     private void escribirSaldo(Document documento, List<Cuota> cuotas)
             throws DocumentException {
 
@@ -192,6 +208,10 @@ public class GeneradorDePlanillaDePagos {
         documento.add(resumen);
     }
 
+    /**
+     * Escribe al pie del PDF la aclaración sobre la actualización de las cuotas
+     * por el índice CAC.
+     */
     private void escribirPie(Document documento) throws DocumentException {
         Paragraph pie = new Paragraph(
                 "Los montos de las cuotas pendientes pueden actualizarse por el índice "
@@ -203,12 +223,18 @@ public class GeneradorDePlanillaDePagos {
 
     // ------------------------------------------------------------------
 
+    /**
+     * Arma el texto que describe el plan, por ejemplo "Anticipo + 4 cuotas".
+     */
     private String cantidadDeCuotas(List<Cuota> cuotas) {
         long sinContarElAnticipo = cuotas.stream().filter(c -> !c.esAnticipo()).count();
         boolean hayAnticipo = cuotas.stream().anyMatch(Cuota::esAnticipo);
         return (hayAnticipo ? "Anticipo + " : "") + sinContarElAnticipo + " cuotas";
     }
 
+    /**
+     * Suma el monto de las cuotas que cumplen la condición indicada.
+     */
     private BigDecimal sumar(List<Cuota> cuotas, java.util.function.Predicate<Cuota> filtro) {
         return cuotas.stream()
                 .filter(filtro)

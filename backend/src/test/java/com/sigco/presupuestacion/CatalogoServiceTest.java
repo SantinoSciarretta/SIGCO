@@ -117,6 +117,38 @@ class CatalogoServiceTest {
         }
 
         @Test
+        @DisplayName("Un rubro creado sin indicar la marca no es el de mano de obra")
+        void altaSinMarcaNoEsManoDeObra() {
+            when(rubroRepositorio.findByNombreRubroIgnoreCase(anyString()))
+                    .thenReturn(Optional.empty());
+            when(rubroRepositorio.save(any(Rubro.class)))
+                    .thenAnswer(i -> i.getArgument(0));
+
+            RubroRespuesta respuesta = servicio.crearRubro(new RubroSolicitud("Electricidad", null));
+
+            assertThat(respuesta.esManoDeObra()).isFalse();
+        }
+
+        /**
+         * Antes, renombrar desde una pantalla que no mandaba la marca se la
+         * sacaba al rubro de mano de obra sin avisar.
+         */
+        @Test
+        @DisplayName("Renombrar sin indicar la marca conserva la de mano de obra")
+        void renombrarSinMarcaLaConserva() {
+            Rubro manoDeObra = rubroConId("Mano de obra", 5L);
+            manoDeObra.marcarComoManoDeObra(true);
+            when(rubroRepositorio.findById(5L)).thenReturn(Optional.of(manoDeObra));
+            when(rubroRepositorio.findByNombreRubroIgnoreCase("Mano de obra general"))
+                    .thenReturn(Optional.empty());
+
+            RubroRespuesta respuesta = servicio.renombrarRubro(5L,
+                    new RubroSolicitud("Mano de obra general", null));
+
+            assertThat(respuesta.esManoDeObra()).isTrue();
+        }
+
+        @Test
         @DisplayName("Renombrar con el nombre de otro rubro se rechaza")
         void renombrarPisandoOtroSeRechaza() {
             when(rubroRepositorio.findById(5L)).thenReturn(Optional.of(rubroConId("Plomeria", 5L)));

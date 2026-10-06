@@ -19,6 +19,11 @@ import { ingresar as ingresarApi, sesionActual } from './sesionApi';
  * en el backend, que revalida el permiso en cada petición.
  */
 
+/**
+ * Guarda los datos de la sesión (quién ingresó, su rol y sus permisos) y los
+ * comparte con todas las pantallas del sistema. También ofrece las acciones de
+ * ingresar y salir.
+ */
 export function ProveedorSesion({ children }) {
   const [sesion, setSesion] = useState(null);
   // "cargando" arranca en true cuando hay un token guardado: hasta saber si

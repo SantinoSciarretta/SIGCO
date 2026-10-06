@@ -79,9 +79,18 @@ public class ItemPresupuesto {
     @Column(name = "subtotal", nullable = false, precision = 14, scale = 2)
     private BigDecimal subtotal;
 
+    /**
+     * Constructor vacío que exige la base de datos (JPA) para poder armar el
+     * objeto al leerlo. No se usa desde el código.
+     */
     protected ItemPresupuesto() {
     }
 
+    /**
+     * Crea un ítem del presupuesto con su rubro, subrubro, material (si
+     * corresponde), descripción, unidad, cantidad y precio unitario. El
+     * subtotal se calcula solo.
+     */
     public ItemPresupuesto(Presupuesto presupuesto, Rubro rubro, Subrubro subrubro,
                            Material material, String descripcion, String unidadMedida,
                            BigDecimal cantidad, BigDecimal valorUnitario) {
@@ -128,6 +137,10 @@ public class ItemPresupuesto {
 
     // ---------- Metodos de acceso ----------
 
+    /**
+     * Métodos de lectura: devuelven los datos guardados del ítem. Solo leen, no
+     * modifican nada.
+     */
     public Long getIdItem() {
         return idItem;
     }

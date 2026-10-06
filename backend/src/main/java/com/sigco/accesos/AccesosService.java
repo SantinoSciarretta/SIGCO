@@ -54,6 +54,10 @@ public class AccesosService {
     private final UsuarioRepository usuarioRepositorio;
     private final ServicioAuditoria auditoria;
 
+    /**
+     * Constructor: Spring le entrega las piezas que necesita para leer y
+     * guardar roles, permisos, cuentas y registros de auditoría.
+     */
     public AccesosService(RolRepository rolRepositorio,
                           PermisoRepository permisoRepositorio,
                           RegistroAuditoriaRepository auditoriaRepositorio,
@@ -70,6 +74,10 @@ public class AccesosService {
     //  Roles y permisos
     // ------------------------------------------------------------------
 
+    /**
+     * Devuelve todos los permisos del sistema, ordenados por módulo y por
+     * nombre.
+     */
     @Transactional(readOnly = true)
     public List<PermisoRespuesta> permisos() {
         return permisoRepositorio.findAllByOrderByModuloAscNombrePermisoAsc().stream()
@@ -77,6 +85,10 @@ public class AccesosService {
                 .toList();
     }
 
+    /**
+     * Devuelve todos los roles con sus permisos y la cantidad de cuentas
+     * activas que tiene cada uno.
+     */
     @Transactional(readOnly = true)
     public List<RolRespuesta> roles() {
         return rolRepositorio.todosConPermisos().stream()
@@ -180,10 +192,18 @@ public class AccesosService {
     //  Auxiliares
     // ------------------------------------------------------------------
 
+    /**
+     * Indica si dentro de un conjunto de permisos está el permiso con ese
+     * nombre.
+     */
     private boolean contiene(Set<Permiso> permisos, String nombre) {
         return permisos.stream().anyMatch(p -> nombre.equals(p.getNombrePermiso()));
     }
 
+    /**
+     * Frena el cambio si al rol Dueño se le está quitando un permiso
+     * imprescindible. Muestra un mensaje que explica por qué no se puede.
+     */
     private void exigirQueConserve(Set<Permiso> nuevos, String permiso, String queHace) {
         if (!contiene(nuevos, permiso)) {
             throw new ReglaDeNegocioException(

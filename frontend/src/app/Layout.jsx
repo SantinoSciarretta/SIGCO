@@ -29,12 +29,19 @@ export default function Layout() {
   const visibles = modulosVisibles(MODULOS, puede);
   const administracion = modulosVisibles(MODULOS_ADMINISTRACION, puede);
 
+  /**
+   * Cierra la sesión del usuario y lo lleva a la pantalla de ingreso.
+   */
   const cerrarSesion = () => {
     salir();
     navegar('/');
   };
 
-  const clase = ({ isActive }) =>
+  /**
+   * Elige el estilo de cada enlace del menú: el de la pantalla abierta se ve
+   * resaltado.
+   */
+  const claseDelEnlace = ({ isActive }) =>
     (isActive ? `${estilos.enlace} ${estilos.enlaceActivo}` : estilos.enlace);
 
   return (
@@ -49,7 +56,7 @@ export default function Layout() {
 
         <nav className={estilos.navegacion}>
           {visibles.map((modulo) => (
-            <NavLink key={modulo.ruta} to={modulo.ruta} className={clase}>
+            <NavLink key={modulo.ruta} to={modulo.ruta} className={claseDelEnlace}>
               {modulo.nombre}
             </NavLink>
           ))}

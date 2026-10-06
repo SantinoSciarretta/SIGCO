@@ -40,14 +40,25 @@ public class PlantillaHito {
                cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlantillaHitoDetalle> detalles = new ArrayList<>();
 
+    /**
+     * Constructor vacío que exige la base de datos (JPA) para poder armar el
+     * objeto al leerlo. No se usa desde el código.
+     */
     protected PlantillaHito() {
     }
 
+    /**
+     * Crea una plantilla de hitos reutilizable con su nombre (por ejemplo
+     * "Reforma estándar").
+     */
     public PlantillaHito(String nombrePlantilla) {
         this.nombrePlantilla = nombrePlantilla;
         this.fechaCreacion = LocalDateTime.now();
     }
 
+    /**
+     * Suma una etapa a la plantilla.
+     */
     public void agregarDetalle(PlantillaHitoDetalle detalle) {
         this.detalles.add(detalle);
     }
@@ -65,6 +76,10 @@ public class PlantillaHito {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    /**
+     * Métodos de lectura: devuelven los datos guardados de la plantilla. Solo
+     * leen, no modifican nada.
+     */
     public Long getIdPlantilla() {
         return idPlantilla;
     }

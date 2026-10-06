@@ -251,6 +251,9 @@ export default function SeguimientoPage() {
 
 /* ========================================================================== */
 
+/**
+ * Muestra una de las barras de avance (física o financiera) con su porcentaje.
+ */
 function Medidor({ etiqueta, valor, tipo, detalle }) {
   return (
     <div className={estilos.medidor}>
@@ -269,6 +272,11 @@ function Medidor({ etiqueta, valor, tipo, detalle }) {
 
 /* ========================================================================== */
 
+/**
+ * Ventana para marcar un hito como completado, con la fecha y una observación
+ * opcional. Si hay hitos anteriores sin completar, pide confirmar que se
+ * adelantó.
+ */
 function CompletarHitoModal({ hito, onCerrar, onCompletado }) {
   const hoy = new Date().toISOString().slice(0, 10);
   const [fechaCumplimiento, setFechaCumplimiento] = useState(hoy);
@@ -277,6 +285,9 @@ function CompletarHitoModal({ hito, onCerrar, onCompletado }) {
   const [error, setError] = useState(null);
   const [guardando, setGuardando] = useState(false);
 
+  /**
+   * Envía el cumplimiento del hito al servidor.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);

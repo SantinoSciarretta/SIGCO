@@ -12,6 +12,10 @@ import java.util.List;
 /** Datos que entran al modulo Compras. */
 public final class PedidoDtos {
 
+    /**
+     * Constructor privado: esta clase solo agrupa los formatos de datos que
+     * entran al módulo Compras, no se crean objetos de ella.
+     */
     private PedidoDtos() {
     }
 

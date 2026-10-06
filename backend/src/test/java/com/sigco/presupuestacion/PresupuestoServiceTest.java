@@ -793,7 +793,7 @@ class PresupuestoServiceTest {
                     material("Arena", albanileria, 101L),
                     material("Cal", albanileria, 102L)));
 
-            var planilla = servicio.planilla(10L, 1L);
+            var planilla = servicio.obtenerPlanillaDeRubro(10L, 1L);
 
             // Las tres filas aparecen aunque no se haya cargado ninguna: de eso
             // se trata la planilla, de ver la lista entera y completarla.
@@ -819,7 +819,7 @@ class PresupuestoServiceTest {
             when(materialRepositorio.buscarDisponibles(1L)).thenReturn(List.of(
                     cemento, material("Arena", albanileria, 101L)));
 
-            var planilla = servicio.planilla(10L, 1L);
+            var planilla = servicio.obtenerPlanillaDeRubro(10L, 1L);
 
             var fila = planilla.filas().get(0);
             assertThat(fila.cantidad()).isEqualByComparingTo("40");
@@ -932,7 +932,7 @@ class PresupuestoServiceTest {
                     .thenReturn(List.of(rubro("Albañilería", 1L), rubro("Pintura", 2L),
                                         manoDeObra));
 
-            var planilla = servicio.planilla(10L, 9L);
+            var planilla = servicio.obtenerPlanillaDeRubro(10L, 9L);
 
             assertThat(planilla.esManoDeObra()).isTrue();
             // Los otros dos rubros, y NO se incluye a sí mismo: sería "mano de

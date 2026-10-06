@@ -17,6 +17,10 @@ import java.time.LocalDateTime;
  */
 public final class ProveedorDtos {
 
+    /**
+     * Constructor privado: esta clase solo agrupa los formatos de datos del
+     * módulo Proveedores, no se crean objetos de ella.
+     */
     private ProveedorDtos() {
     }
 
@@ -40,7 +44,11 @@ public final class ProveedorDtos {
 
             @Email(message = "El correo electronico no tiene un formato valido")
             @Size(max = 100, message = "El correo no puede superar los 100 caracteres")
-            String emailContacto) {
+            String emailContacto,
+
+            // Opcional: calle y numero del corralon, para ubicarlo.
+            @Size(max = 200, message = "La direccion no puede superar los 200 caracteres")
+            String direccion) {
     }
 
     /** Registro de una cotizacion. La fecha la pone el sistema. */
@@ -83,15 +91,21 @@ public final class ProveedorDtos {
             String zonaCobertura,
             String telefonoContacto,
             String emailContacto,
+            String direccion,
             String estado,
             LocalDateTime fechaAlta,
             long cantidadCotizaciones,
             long cantidadObservaciones) {
 
+        /**
+         * Convierte un proveedor en el formato que se le envía a la pantalla,
+         * con la cantidad de cotizaciones y observaciones que tiene.
+         */
         public static ProveedorRespuesta desde(Proveedor p, long cotizaciones, long observaciones) {
             return new ProveedorRespuesta(
                     p.getIdProveedor(), p.getNombreProveedor(), p.getZonaCobertura(),
-                    p.getTelefonoContacto(), p.getEmailContacto(), p.getEstado(),
+                    p.getTelefonoContacto(), p.getEmailContacto(), p.getDireccion(),
+                    p.getEstado(),
                     p.getFechaAlta(), cotizaciones, observaciones);
         }
     }
@@ -108,6 +122,10 @@ public final class ProveedorDtos {
             BigDecimal precioCotizado,
             LocalDateTime fechaCotizacion) {
 
+        /**
+         * Convierte una cotización en el formato que se le envía a la pantalla,
+         * con el proveedor, el material y el precio.
+         */
         public static CotizacionRespuesta desde(Cotizacion c) {
             return new CotizacionRespuesta(
                     c.getIdCotizacion(),
@@ -130,6 +148,10 @@ public final class ProveedorDtos {
             String descripcion,
             LocalDateTime fecha) {
 
+        /**
+         * Convierte una observación en el formato que se le envía a la
+         * pantalla.
+         */
         public static ObservacionRespuesta desde(ObservacionProveedor o) {
             return new ObservacionRespuesta(
                     o.getIdObservacion(),

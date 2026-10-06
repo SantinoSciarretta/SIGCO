@@ -44,6 +44,10 @@ public class ProveedorService {
      */
     private final com.sigco.compras.PedidoRepository pedidoRepositorio;
 
+    /**
+     * Constructor: recibe lo necesario para leer y guardar proveedores,
+     * cotizaciones y observaciones, y para consultar materiales y pedidos.
+     */
     public ProveedorService(ProveedorRepository repositorio,
                             CotizacionRepository cotizacionRepositorio,
                             ObservacionRepository observacionRepositorio,
@@ -60,6 +64,10 @@ public class ProveedorService {
     //  Proveedores
     // ------------------------------------------------------------------
 
+    /**
+     * Devuelve los proveedores que cumplen los filtros, cada uno con su
+     * cantidad de cotizaciones y observaciones.
+     */
     @Transactional(readOnly = true)
     public List<ProveedorRespuesta> listar(String busqueda, String zona, String estado) {
         return repositorio.buscar(sinFiltro(busqueda), sinFiltro(zona), sinFiltro(estado))
@@ -68,16 +76,28 @@ public class ProveedorService {
                 .toList();
     }
 
+    /**
+     * Devuelve las zonas ya cargadas en los proveedores, para ofrecerlas como
+     * filtro.
+     */
     @Transactional(readOnly = true)
     public List<String> zonas() {
         return repositorio.zonas();
     }
 
+    /**
+     * Devuelve un proveedor con sus datos y sus conteos. Si no existe, responde
+     * con un error de "no encontrado".
+     */
     @Transactional(readOnly = true)
     public ProveedorRespuesta obtener(Long id) {
         return conConteos(buscarOFallar(id));
     }
 
+    /**
+     * Da de alta un proveedor. Frena si ya existe otro con el mismo nombre en
+     * la misma zona.
+     */
     @Transactional
     public ProveedorRespuesta crear(ProveedorSolicitud solicitud) {
         String nombre = solicitud.nombreProveedor().trim();
@@ -87,11 +107,16 @@ public class ProveedorService {
 
         Proveedor proveedor = new Proveedor(nombre, zona,
                 normalizar(solicitud.telefonoContacto()),
-                normalizar(solicitud.emailContacto()));
+                normalizar(solicitud.emailContacto()),
+                normalizar(solicitud.direccion()));
 
         return conConteos(repositorio.save(proveedor));
     }
 
+    /**
+     * Corrige los datos de un proveedor, cuidando que no quede repetido con
+     * otro de la misma zona.
+     */
     @Transactional
     public ProveedorRespuesta actualizar(Long id, ProveedorSolicitud solicitud) {
         Proveedor proveedor = buscarOFallar(id);
@@ -102,7 +127,8 @@ public class ProveedorService {
 
         proveedor.actualizarDatos(nombre, zona,
                 normalizar(solicitud.telefonoContacto()),
-                normalizar(solicitud.emailContacto()));
+                normalizar(solicitud.emailContacto()),
+                normalizar(solicitud.direccion()));
 
         return conConteos(proveedor);
     }
@@ -229,6 +255,10 @@ public class ProveedorService {
         return ObservacionRespuesta.desde(observacionRepositorio.save(observacion));
     }
 
+    /**
+     * Devuelve las observaciones cargadas sobre un proveedor, de la más nueva a
+     * la más vieja.
+     */
     @Transactional(readOnly = true)
     public List<ObservacionRespuesta> observacionesDe(Long idProveedor) {
         buscarOFallar(idProveedor);
@@ -276,11 +306,19 @@ public class ProveedorService {
                 id != null ? observacionRepositorio.countByProveedorIdProveedor(id) : 0);
     }
 
+    /**
+     * Busca un proveedor por su número. Si no existe, corta la operación con un
+     * error de "no encontrado".
+     */
     private Proveedor buscarOFallar(Long id) {
         return repositorio.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Proveedor", id));
     }
 
+    /**
+     * Quita los espacios sobrantes de un texto, y si quedó vacío lo guarda como
+     * "sin dato".
+     */
     private String normalizar(String texto) {
         if (texto == null || texto.isBlank()) {
             return null;
@@ -288,6 +326,10 @@ public class ProveedorService {
         return texto.trim();
     }
 
+    /**
+     * Prepara un filtro de búsqueda: si viene vacío lo convierte en "sin
+     * filtro", y si no le quita los espacios sobrantes.
+     */
     private String sinFiltro(String texto) {
         if (texto == null || texto.isBlank()) {
             return "";

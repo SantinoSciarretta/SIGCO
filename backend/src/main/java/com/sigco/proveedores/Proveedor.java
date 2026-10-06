@@ -45,33 +45,59 @@ public class Proveedor {
     @Column(name = "email_contacto", length = 100)
     private String emailContacto;
 
+    /**
+     * Dónde está el corralón (calle y número, localidad). Es opcional: sirve
+     * para ubicarlo y para ir a retirar material, pero el criterio para elegir
+     * proveedor sigue siendo la zona de cobertura.
+     */
+    @Column(name = "direccion", length = 200)
+    private String direccion;
+
     @Column(name = "estado", nullable = false, length = 10)
     private String estado;
 
     @Column(name = "fecha_alta", nullable = false)
     private LocalDateTime fechaAlta;
 
+    /**
+     * Constructor vacío que exige la base de datos (JPA) para poder armar el
+     * objeto al leerlo. No se usa desde el código.
+     */
     protected Proveedor() {
     }
 
+    /**
+     * Da de alta un proveedor con su nombre, zona y datos de contacto. Todo
+     * proveedor nace Activo y con la fecha de alta de hoy.
+     */
     public Proveedor(String nombreProveedor, String zonaCobertura,
-                     String telefonoContacto, String emailContacto) {
+                     String telefonoContacto, String emailContacto, String direccion) {
         this.nombreProveedor = nombreProveedor;
         this.zonaCobertura = zonaCobertura;
         this.telefonoContacto = telefonoContacto;
         this.emailContacto = emailContacto;
+        this.direccion = direccion;
         this.estado = ESTADO_ACTIVO;
         this.fechaAlta = LocalDateTime.now();
     }
 
+    /**
+     * Corrige el nombre, la zona, la dirección o los datos de contacto del
+     * proveedor.
+     */
     public void actualizarDatos(String nombreProveedor, String zonaCobertura,
-                                String telefonoContacto, String emailContacto) {
+                                String telefonoContacto, String emailContacto,
+                                String direccion) {
         this.nombreProveedor = nombreProveedor;
         this.zonaCobertura = zonaCobertura;
         this.telefonoContacto = telefonoContacto;
         this.emailContacto = emailContacto;
+        this.direccion = direccion;
     }
 
+    /**
+     * Vuelve a poner al proveedor disponible para elegirlo en los pedidos.
+     */
     public void activar() {
         this.estado = ESTADO_ACTIVO;
     }
@@ -81,12 +107,19 @@ public class Proveedor {
         this.estado = ESTADO_INACTIVO;
     }
 
+    /**
+     * Indica si el proveedor está activo.
+     */
     public boolean estaActivo() {
         return ESTADO_ACTIVO.equals(this.estado);
     }
 
     // ---------- Metodos de acceso ----------
 
+    /**
+     * Métodos de lectura: devuelven los datos guardados del proveedor. Solo
+     * leen, no modifican nada.
+     */
     public Long getIdProveedor() {
         return idProveedor;
     }
@@ -105,6 +138,10 @@ public class Proveedor {
 
     public String getEmailContacto() {
         return emailContacto;
+    }
+
+    public String getDireccion() {
+        return direccion;
     }
 
     public String getEstado() {

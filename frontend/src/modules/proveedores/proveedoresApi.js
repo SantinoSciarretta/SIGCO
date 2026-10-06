@@ -7,6 +7,10 @@ import client from '../../api/client';
  * cuánto cotizó cada uno, y cómo se comportó en los pedidos anteriores.
  */
 
+/**
+ * Pide al servidor los proveedores, filtrando opcionalmente por nombre, zona y
+ * estado.
+ */
 export async function listarProveedores({ busqueda, zona, estado } = {}) {
   const respuesta = await client.get('/proveedores', {
     params: {
@@ -24,11 +28,17 @@ export async function listarZonas() {
   return respuesta.data;
 }
 
+/**
+ * Da de alta un proveedor nuevo.
+ */
 export async function crearProveedor(datos) {
   const respuesta = await client.post('/proveedores', datos);
   return respuesta.data;
 }
 
+/**
+ * Corrige los datos de un proveedor.
+ */
 export async function actualizarProveedor(id, datos) {
   const respuesta = await client.put(`/proveedores/${id}`, datos);
   return respuesta.data;
@@ -69,11 +79,17 @@ export async function compararCotizaciones(idMaterial) {
   return respuesta.data;
 }
 
+/**
+ * Registra una observación sobre el comportamiento de un proveedor.
+ */
 export async function registrarObservacion(idProveedor, datos) {
   const respuesta = await client.post(`/proveedores/${idProveedor}/observaciones`, datos);
   return respuesta.data;
 }
 
+/**
+ * Pide al servidor las observaciones cargadas sobre un proveedor.
+ */
 export async function observacionesDe(idProveedor) {
   const respuesta = await client.get(`/proveedores/${idProveedor}/observaciones`);
   return respuesta.data;

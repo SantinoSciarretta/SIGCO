@@ -57,9 +57,17 @@ public class PedidoMaterial {
     @Column(name = "precio_unitario", precision = 12, scale = 2)
     private BigDecimal precioUnitario;
 
+    /**
+     * Constructor vacío que exige la base de datos (JPA) para poder armar el
+     * objeto al leerlo. No se usa desde el código.
+     */
     protected PedidoMaterial() {
     }
 
+    /**
+     * Crea una línea del pedido: qué material y cuánto se pide. El precio se
+     * carga después, cuando el dueño aprueba.
+     */
     public PedidoMaterial(Pedido pedido, Material material, BigDecimal cantidad) {
         this.id = new PedidoMaterialId(pedido.getIdPedido(), material.getIdMaterial());
         this.pedido = pedido;
@@ -67,10 +75,16 @@ public class PedidoMaterial {
         this.cantidad = cantidad;
     }
 
+    /**
+     * Cambia la cantidad pedida de este material.
+     */
     public void cambiarCantidad(BigDecimal cantidad) {
         this.cantidad = cantidad;
     }
 
+    /**
+     * Anota el precio unitario acordado con el proveedor para este material.
+     */
     public void ponerPrecio(BigDecimal precioUnitario) {
         this.precioUnitario = precioUnitario;
     }
@@ -86,6 +100,10 @@ public class PedidoMaterial {
         return cantidad.multiply(precioUnitario).setScale(DECIMALES, RoundingMode.HALF_UP);
     }
 
+    /**
+     * Métodos de lectura: devuelven los datos guardados de la línea del pedido.
+     * Solo leen, no modifican nada.
+     */
     public PedidoMaterialId getId() {
         return id;
     }

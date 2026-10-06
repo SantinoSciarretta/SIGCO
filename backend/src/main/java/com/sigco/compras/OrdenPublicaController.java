@@ -47,13 +47,17 @@ public class OrdenPublicaController {
 
     private final PedidoService servicio;
 
+    /**
+     * Constructor: Spring le entrega automáticamente el servicio de Compras,
+     * que es el que arma la orden.
+     */
     public OrdenPublicaController(PedidoService servicio) {
         this.servicio = servicio;
     }
 
     /** GET /api/ordenes-publicas/{token} — el PDF de la orden. */
     @GetMapping("/{token}")
-    public ResponseEntity<byte[]> orden(@PathVariable String token) {
+    public ResponseEntity<byte[]> descargarOrdenPublica(@PathVariable String token) {
         byte[] pdf = servicio.ordenPorToken(token);
 
         return ResponseEntity.ok()

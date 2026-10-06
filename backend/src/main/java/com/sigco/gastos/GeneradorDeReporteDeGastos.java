@@ -61,10 +61,19 @@ public class GeneradorDeReporteDeGastos {
 
     private final GastoService gastoService;
 
+    /**
+     * Constructor: recibe el servicio de Gastos, del que toma los números del
+     * reporte.
+     */
     public GeneradorDeReporteDeGastos(GastoService gastoService) {
         this.gastoService = gastoService;
     }
 
+    /**
+     * Genera el PDF interno con el estado financiero de una obra: datos de la
+     * obra, resumen, detalle por rubro con su semáforo y la lista de gastos
+     * confirmados.
+     */
     public byte[] generar(Long idObra) {
         // El estado financiero lo calcula Gastos, no este generador: el
         // semaforo y los totales tienen que ser los MISMOS que muestra la
@@ -97,6 +106,9 @@ public class GeneradorDeReporteDeGastos {
 
     // ------------------------------------------------------------------
 
+    /**
+     * Escribe en el PDF el título del reporte y los datos de la obra.
+     */
     private void escribirDatos(Document documento, EstadoFinanciero estado)
             throws DocumentException {
 
@@ -123,6 +135,10 @@ public class GeneradorDeReporteDeGastos {
         documento.add(datos);
     }
 
+    /**
+     * Escribe en el PDF el resumen general: presupuestado, gastado, ganancia
+     * estimada y gasto hormiga.
+     */
     private void escribirResumen(Document documento, EstadoFinanciero estado)
             throws DocumentException {
 
@@ -151,6 +167,10 @@ public class GeneradorDeReporteDeGastos {
         documento.add(resumen);
     }
 
+    /**
+     * Escribe en el PDF la tabla por rubro: presupuestado, gastado, porcentaje
+     * consumido y semáforo.
+     */
     private void escribirRubros(Document documento, EstadoFinanciero estado)
             throws DocumentException {
 
@@ -231,6 +251,10 @@ public class GeneradorDeReporteDeGastos {
         documento.add(tabla);
     }
 
+    /**
+     * Escribe al pie del reporte la aclaración de que solo se incluyen los
+     * gastos confirmados.
+     */
     private void escribirPie(Document documento) throws DocumentException {
         Paragraph pie = new Paragraph(
                 "Solo se incluyen los gastos confirmados. Los anulados quedan registrados "
@@ -241,6 +265,10 @@ public class GeneradorDeReporteDeGastos {
 
     // ------------------------------------------------------------------
 
+    /**
+     * Devuelve el color con que se pinta el semáforo de un rubro: verde,
+     * amarillo o rojo.
+     */
     private Color colorDeSemaforo(String semaforo) {
         return switch (semaforo) {
             case GastoService.SEMAFORO_ROJO -> ROJO;
@@ -256,6 +284,10 @@ public class GeneradorDeReporteDeGastos {
             String descripcion, BigDecimal monto) {
     }
 
+    /**
+     * Trae los gastos confirmados de la obra para listarlos en el detalle del
+     * reporte.
+     */
     private List<GastoRespuestaLigera> listarGastos(Long idObra) {
         // Solo los confirmados: los anulados no suman al total y mezclarlos en
         // el detalle haria que las lineas no cierren con el resumen de arriba.

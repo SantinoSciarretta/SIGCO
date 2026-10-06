@@ -9,6 +9,10 @@ import org.springframework.data.repository.query.Param;
 public interface OperarioRepository extends JpaRepository<Operario, Long> {
 
     /**
+     * Busca operarios por parte del nombre, y opcionalmente por estado y por
+     * obra en la que trabajan actualmente. Los resultados salen en orden
+     * alfabético.
+     *
      * Listado con buscador, filtro por estado y por obra asignada.
      *
      * NINGUN PARAMETRO PUEDE LLEGAR NULO: el patron "(:param IS NULL OR ...)"

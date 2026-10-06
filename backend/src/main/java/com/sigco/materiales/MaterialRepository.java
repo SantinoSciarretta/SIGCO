@@ -12,6 +12,10 @@ import org.springframework.data.repository.query.Param;
 public interface MaterialRepository extends JpaRepository<Material, Long> {
 
     /**
+     * Busca materiales por parte del nombre, sin importar mayúsculas, y
+     * opcionalmente por rubro y por estado. Los resultados salen ordenados por
+     * rubro y por nombre.
+     *
      * Listado con buscador por nombre y filtros por rubro y estado.
      *
      * JOIN FETCH sobre rubro para que el listado muestre el nombre del rubro

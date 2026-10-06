@@ -46,6 +46,10 @@ public class Cotizacion {
     @Column(name = "fecha_cotizacion", nullable = false)
     private LocalDateTime fechaCotizacion;
 
+    /**
+     * Constructor vacío que exige la base de datos (JPA) para poder armar el
+     * objeto al leerlo. No se usa desde el código.
+     */
     protected Cotizacion() {
     }
 
@@ -59,6 +63,10 @@ public class Cotizacion {
 
     // ---------- Metodos de acceso ----------
 
+    /**
+     * Métodos de lectura: devuelven los datos guardados de la cotización. Solo
+     * leen, no modifican nada.
+     */
     public Long getIdCotizacion() {
         return idCotizacion;
     }

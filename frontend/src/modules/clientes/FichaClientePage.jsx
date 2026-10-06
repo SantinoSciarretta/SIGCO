@@ -147,6 +147,10 @@ export default function FichaClientePage() {
 
 /* ========================================================================== */
 
+/**
+ * Muestra un dato de la ficha con su título arriba. Si el dato no está cargado,
+ * muestra un guion.
+ */
 function Dato({ etiqueta, valor }) {
   return (
     <div className={estilos.dato}>

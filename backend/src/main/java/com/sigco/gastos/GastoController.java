@@ -39,6 +39,10 @@ public class GastoController {
 
     private final GastoService servicio;
 
+    /**
+     * Constructor: Spring le entrega automáticamente el servicio que contiene
+     * la lógica de Gastos.
+     */
     public GastoController(GastoService servicio) {
         this.servicio = servicio;
     }
@@ -57,11 +61,18 @@ public class GastoController {
         return servicio.listar(obra, rubro, tipo, estado, desde, hasta);
     }
 
+    /**
+     * GET /api/gastos/{id}: devuelve un gasto con todos sus datos.
+     */
     @GetMapping("/{id}")
     public GastoRespuesta obtener(@PathVariable Long id) {
         return servicio.obtener(id);
     }
 
+    /**
+     * POST /api/gastos: registra un gasto nuevo en una obra. Solo el dueño
+     * puede hacerlo.
+     */
     @PreAuthorize("hasAuthority('gastos.editar')")
     @PostMapping
     public ResponseEntity<GastoRespuesta> crear(@Valid @RequestBody GastoSolicitud solicitud) {
@@ -71,6 +82,10 @@ public class GastoController {
                 .body(creado);
     }
 
+    /**
+     * PUT /api/gastos/{id}: corrige los datos de un gasto ya cargado, salvo que
+     * esté anulado.
+     */
     @PreAuthorize("hasAuthority('gastos.editar')")
     @PutMapping("/{id}")
     public GastoRespuesta actualizar(@PathVariable Long id,
@@ -78,6 +93,10 @@ public class GastoController {
         return servicio.actualizar(id, solicitud);
     }
 
+    /**
+     * PATCH /api/gastos/{id}/anulacion: anula un gasto indicando el motivo. El
+     * gasto no se borra.
+     */
     @PreAuthorize("hasAuthority('gastos.editar')")
     @PatchMapping("/{id}/anulacion")
     public GastoRespuesta anular(@PathVariable Long id,

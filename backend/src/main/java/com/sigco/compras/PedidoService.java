@@ -80,6 +80,12 @@ public class PedidoService {
      */
     private final String urlPublica;
 
+    /**
+     * Constructor: recibe lo necesario para leer y guardar pedidos, obras,
+     * materiales, proveedores y cotizaciones, además de Gastos (para generar el
+     * gasto al recibir), la auditoría y el control de qué obras puede ver cada
+     * usuario.
+     */
     public PedidoService(PedidoRepository repositorio,
                          ObraRepository obraRepositorio,
                          MaterialRepository materialRepositorio,
@@ -109,6 +115,10 @@ public class PedidoService {
     //  Consulta
     // ------------------------------------------------------------------
 
+    /**
+     * Devuelve los pedidos que cumplen los filtros indicados. Un capataz de
+     * obra solo ve los de su obra.
+     */
     @Transactional(readOnly = true)
     public List<PedidoRespuesta> listar(Long idObra, Long idProveedor, String estado) {
         // Ningun parametro viaja nulo: ver el comentario en PedidoRepository.
@@ -124,6 +134,10 @@ public class PedidoService {
                 .toList();
     }
 
+    /**
+     * Devuelve un pedido con todo su detalle, siempre que el usuario tenga
+     * permitido ver esa obra.
+     */
     @Transactional(readOnly = true)
     public PedidoRespuesta obtener(Long id) {
         Pedido pedido = buscarCompletoOFallar(id);
@@ -165,6 +179,11 @@ public class PedidoService {
     //  Paso 1 — alguien en la obra arma el pedido
     // ------------------------------------------------------------------
 
+    /**
+     * Crea un pedido nuevo: comprueba que la obra esté en ejecución, que el
+     * usuario pueda trabajar en ella y que cada material exista y esté activo.
+     * Anota quién lo pidió.
+     */
     @Transactional
     public PedidoRespuesta crear(NuevoPedido solicitud) {
         Obra obra = obraRepositorio.findById(solicitud.idObra())
@@ -240,6 +259,10 @@ public class PedidoService {
         return PedidoRespuesta.completa(pedido);
     }
 
+    /**
+     * Le pone a cada material del pedido el precio que confirmó el dueño al
+     * aprobar. Si falta el precio de algún material, frena la aprobación.
+     */
     private void aplicarPrecios(Pedido pedido, List<PrecioLinea> precios) {
         Map<Long, BigDecimal> porMaterial = new HashMap<>();
         for (PrecioLinea p : precios) {
@@ -380,6 +403,9 @@ public class PedidoService {
         return generadorDeOrden.generar(pedido);
     }
 
+    /**
+     * Devuelve el nombre de archivo para el PDF de la orden de un pedido.
+     */
     @Transactional(readOnly = true)
     public String nombreDeOrden(Long id) {
         return generadorDeOrden.nombreDeArchivo(buscarCompletoOFallar(id));
@@ -633,6 +659,10 @@ public class PedidoService {
                 monto.setScale(0, java.math.RoundingMode.HALF_UP).toBigInteger());
     }
 
+    /**
+     * Arma el mensaje que se le muestra al dueño cuando el teléfono del
+     * proveedor falta o no se puede usar para WhatsApp.
+     */
     private String avisoDeTelefono(Proveedor proveedor) {
         if (proveedor.getTelefonoContacto() == null
                 || proveedor.getTelefonoContacto().isBlank()) {
@@ -649,6 +679,10 @@ public class PedidoService {
     //  Auxiliares
     // ------------------------------------------------------------------
 
+    /**
+     * Busca un pedido con todo su detalle. Si no existe, corta la operación con
+     * un error de "no encontrado".
+     */
     private Pedido buscarCompletoOFallar(Long id) {
         return repositorio.buscarCompleto(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Pedido", id));

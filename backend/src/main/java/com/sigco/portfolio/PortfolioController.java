@@ -45,6 +45,10 @@ public class PortfolioController {
 
     private final PortfolioService servicio;
 
+    /**
+     * Constructor: Spring le entrega automáticamente el servicio que contiene
+     * la lógica del Portfolio.
+     */
     public PortfolioController(PortfolioService servicio) {
         this.servicio = servicio;
     }
@@ -53,8 +57,8 @@ public class PortfolioController {
 
     /** GET /api/vidriera?tipo= — obras publicadas, sin datos del cliente. */
     @GetMapping("/api/vidriera")
-    public List<VidrieraRespuesta> vidriera(@RequestParam(required = false) String tipo) {
-        return servicio.vidriera(tipo);
+    public List<VidrieraRespuesta> listarObrasDeLaVidriera(@RequestParam(required = false) String tipo) {
+        return servicio.listarObrasDeLaVidriera(tipo);
     }
 
     /** GET /api/vidriera/tipos — para el filtro de la galería. */
@@ -65,12 +69,19 @@ public class PortfolioController {
 
     // ---------- Administración ----------
 
+    /**
+     * GET /api/portfolio: devuelve todas las publicaciones, publicadas o no,
+     * para el panel de administración del dueño.
+     */
     @PreAuthorize("hasAuthority('portfolio.ver')")
     @GetMapping("/api/portfolio")
     public List<PublicacionRespuesta> listar() {
         return servicio.listar();
     }
 
+    /**
+     * GET /api/portfolio/{id}: devuelve una publicación con sus imágenes.
+     */
     @PreAuthorize("hasAuthority('portfolio.ver')")
     @GetMapping("/api/portfolio/{id}")
     public PublicacionRespuesta obtener(@PathVariable Long id) {
@@ -88,6 +99,10 @@ public class PortfolioController {
                 .body(creada);
     }
 
+    /**
+     * PUT /api/portfolio/{id}: cambia el tipo de trabajo con que se clasifica
+     * la obra en la vidriera.
+     */
     @PreAuthorize("hasAuthority('portfolio.editar')")
     @PutMapping("/api/portfolio/{id}")
     public PublicacionRespuesta cambiarTipo(@PathVariable Long id,
@@ -95,6 +110,10 @@ public class PortfolioController {
         return servicio.cambiarTipo(id, solicitud);
     }
 
+    /**
+     * PATCH /api/portfolio/{id}/publicacion: muestra la obra en la vidriera
+     * pública. Necesita al menos una imagen.
+     */
     @PreAuthorize("hasAuthority('portfolio.editar')")
     @PatchMapping("/api/portfolio/{id}/publicacion")
     public PublicacionRespuesta publicar(@PathVariable Long id) {
@@ -108,6 +127,10 @@ public class PortfolioController {
         return servicio.despublicar(id);
     }
 
+    /**
+     * POST /api/portfolio/{id}/imagenes: suma una foto ya subida a la galería
+     * de la obra.
+     */
     @PreAuthorize("hasAuthority('portfolio.editar')")
     @PostMapping("/api/portfolio/{id}/imagenes")
     public PublicacionRespuesta agregarImagen(@PathVariable Long id,

@@ -457,6 +457,10 @@ function Acceso({ permiso, puede, a, titulo, detalle }) {
    ya calculados desde el backend. Acá solo se traducen a anchos y ángulos.
    -------------------------------------------------------------------------- */
 
+/**
+ * Prepara los rubros de la obra para el gráfico de la ficha: convierte los
+ * montos a números y los ordena para mostrar primero los más importantes.
+ */
 function prepararRubros(finanzas) {
   if (!finanzas) return [];
 
@@ -502,12 +506,19 @@ function armarSegmentos(rubros) {
     });
 }
 
+/**
+ * Devuelve el nombre del próximo hito sin completar, o nada si ya están todos.
+ */
 function proximoHito(avance) {
   return avance.hitos.find((h) => h.estado !== 'Completado')?.nombreHito ?? null;
 }
 
 /* ---------- Presentación ---------- */
 
+/**
+ * Elige el color del semáforo de gastos: rojo si se excedió, amarillo si está
+ * al límite, verde si está dentro de lo presupuestado.
+ */
 function colorDeSemaforo(semaforo) {
   if (semaforo === 'Rojo') return 'var(--color-excedido)';
   if (semaforo === 'Amarillo') return 'var(--color-alerta)';
@@ -515,6 +526,10 @@ function colorDeSemaforo(semaforo) {
   return 'var(--color-ok)';
 }
 
+/**
+ * Traduce el semáforo de gastos a una frase: "Excedido", "Al límite" o "En
+ * presupuesto".
+ */
 function textoDeSemaforo(semaforo) {
   if (semaforo === 'Rojo') return 'Excedido';
   if (semaforo === 'Amarillo') return 'Al límite';
@@ -522,6 +537,9 @@ function textoDeSemaforo(semaforo) {
   return 'En presupuesto';
 }
 
+/**
+ * Escribe un monto en pesos redondeado, sin decimales.
+ */
 function pesos(monto) {
   return '$ ' + Math.round(Number(monto ?? 0)).toLocaleString('es-AR');
 }

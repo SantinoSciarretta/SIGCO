@@ -67,6 +67,9 @@ export default function AccesosPage() {
     return [...grupos.entries()];
   }, [permisos]);
 
+  /**
+   * Marca o desmarca la casilla de un permiso para un rol, sin guardar todavía.
+   */
   const alternar = (idRol, idPermiso) => {
     setEdicion((actual) => {
       const copia = { ...actual };
@@ -79,6 +82,11 @@ export default function AccesosPage() {
     setAviso(null);
   };
 
+  /**
+   * Guarda los permisos marcados para el rol. Si el servidor rechaza el cambio
+   * (por ejemplo, darle a un capataz un permiso reservado al dueño), muestra el
+   * motivo.
+   */
   const guardar = async (rol) => {
     setGuardando(rol.idRol);
     setError(null);
@@ -93,6 +101,10 @@ export default function AccesosPage() {
     }
   };
 
+  /**
+   * Indica si las casillas de un rol cambiaron respecto de lo guardado, para
+   * habilitar el botón de guardar.
+   */
   const hayCambios = (rol) => {
     const actual = edicion[rol.idRol] ?? new Set();
     return actual.size !== rol.idsPermisos.length
@@ -193,11 +205,12 @@ export default function AccesosPage() {
           </div>
 
           <p className={estilos.ayuda}>
-            Hay dos cosas que el sistema no deja hacer, y las rechaza el backend
+            Hay cosas que el sistema no deja hacer, y las rechaza el backend
             aunque marques la casilla: quitarle al rol Dueño la administración de
             accesos o de usuarios —nadie podría volver a entrar a corregirlo— y
-            darle a un capataz el permiso de aprobar pedidos, que el informe
-            define como indelegable.
+            darle a un capataz el permiso de aprobar pedidos o cualquier permiso
+            de Presupuestos o de Cobranzas, que el informe define como
+            indelegables.
           </p>
         </Blueprint>
       )}

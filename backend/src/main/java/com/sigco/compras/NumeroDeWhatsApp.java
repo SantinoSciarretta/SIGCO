@@ -57,9 +57,19 @@ public final class NumeroDeWhatsApp {
     /** Largos de codigo de area que existen en Argentina. */
     private static final int[] LARGOS_DE_AREA = {2, 3, 4};
 
+    /**
+     * Constructor privado: esta clase solo ofrece la herramienta para
+     * normalizar números, no se crean objetos de ella.
+     */
     private NumeroDeWhatsApp() {
     }
 
+    /**
+     * Convierte un teléfono escrito de cualquier forma (con espacios, guiones,
+     * con o sin 15, con o sin +54) al formato internacional que usa WhatsApp.
+     * Si el número no se puede interpretar con seguridad, no devuelve nada, en
+     * lugar de adivinar.
+     */
     public static Optional<String> normalizar(String crudo) {
         if (crudo == null || crudo.isBlank()) {
             return Optional.empty();

@@ -27,6 +27,10 @@ export default function RecibirPedido({ pedido, onCerrar, onRecibido }) {
 
   const hayDiferencias = notaDiferencia.trim().length > 0;
 
+  /**
+   * Confirma la recepción del pedido con la foto del remito y, si algo vino
+   * distinto, la nota con las diferencias.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);

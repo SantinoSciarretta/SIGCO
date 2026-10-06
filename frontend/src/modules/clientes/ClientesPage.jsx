@@ -48,21 +48,33 @@ export default function ClientesPage() {
     return () => clearTimeout(temporizador);
   }, [busqueda, origen, estado, cargar]);
 
+  /**
+   * Abre el formulario vacío para cargar un cliente nuevo.
+   */
   const abrirAlta = () => {
     setClienteEnEdicion(null);
     setFormularioAbierto(true);
   };
 
+  /**
+   * Abre el formulario con los datos del cliente elegido para corregirlos.
+   */
   const abrirEdicion = (cliente) => {
     setClienteEnEdicion(cliente);
     setFormularioAbierto(true);
   };
 
+  /**
+   * Cierra el formulario después de guardar y vuelve a cargar el listado.
+   */
   const alGuardar = () => {
     setFormularioAbierto(false);
     cargar({ busqueda, origen, estado });
   };
 
+  /**
+   * Activa o desactiva un cliente y vuelve a cargar el listado.
+   */
   const alternarEstado = async (cliente) => {
     const nuevoEstado = cliente.estado === 'Activo' ? 'Inactivo' : 'Activo';
     try {

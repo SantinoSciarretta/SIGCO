@@ -33,11 +33,17 @@ export async function listarMaterialesDisponibles(rubro) {
   return respuesta.data;
 }
 
+/**
+ * Da de alta un material en el catálogo.
+ */
 export async function crearMaterial(datos) {
   const respuesta = await client.post('/materiales', datos);
   return respuesta.data;
 }
 
+/**
+ * Corrige los datos de un material del catálogo.
+ */
 export async function actualizarMaterial(id, datos) {
   const respuesta = await client.put(`/materiales/${id}`, datos);
   return respuesta.data;

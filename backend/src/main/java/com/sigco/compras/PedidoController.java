@@ -47,6 +47,10 @@ public class PedidoController {
 
     private final PedidoService servicio;
 
+    /**
+     * Constructor: Spring le entrega automáticamente el servicio que contiene
+     * la lógica de Compras.
+     */
     public PedidoController(PedidoService servicio) {
         this.servicio = servicio;
     }
@@ -66,6 +70,10 @@ public class PedidoController {
         return servicio.pendientesDeAprobacion();
     }
 
+    /**
+     * GET /api/pedidos/{id}: devuelve un pedido con todo su detalle
+     * (materiales, precios, proveedor y estado).
+     */
     @GetMapping("/{id}")
     public PedidoRespuesta obtener(@PathVariable Long id) {
         return servicio.obtener(id);
@@ -84,6 +92,10 @@ public class PedidoController {
         return servicio.sugerirPrecios(id, proveedor);
     }
 
+    /**
+     * POST /api/pedidos: crea un pedido de materiales para una obra. Queda
+     * pendiente de la aprobación del dueño.
+     */
     @PreAuthorize("hasAuthority('compras.editar')")
     @PostMapping
     public ResponseEntity<PedidoRespuesta> crear(@Valid @RequestBody NuevoPedido solicitud) {
@@ -177,6 +189,10 @@ public class PedidoController {
         return servicio.dejarDeCompartirOrden(id);
     }
 
+    /**
+     * PATCH /api/pedidos/{id}/anulacion: anula un pedido que finalmente no se
+     * concreta, indicando el motivo.
+     */
     @PreAuthorize("hasAuthority('compras.editar')")
     @PatchMapping("/{id}/anulacion")
     public PedidoRespuesta anular(@PathVariable Long id,

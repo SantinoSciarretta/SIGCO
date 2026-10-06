@@ -57,8 +57,14 @@ export default function MaterialesPage() {
     return () => { vigente = false; };
   }, []);
 
+  /**
+   * Vuelve a pedir el listado de materiales al servidor.
+   */
   const recargar = () => { setCargando(true); setRecarga((n) => n + 1); };
 
+  /**
+   * Activa o desactiva un material y vuelve a cargar el listado.
+   */
   const alternarEstado = async (material) => {
     try {
       await cambiarEstadoMaterial(
@@ -216,11 +222,18 @@ function MaterialFormulario({ material, rubros, onCerrar, onGuardado }) {
   const [error, setError] = useState(null);
   const [guardando, setGuardando] = useState(false);
 
+  /**
+   * Actualiza un campo del formulario y borra el error que ese campo tuviera.
+   */
   const cambiar = (campo) => (e) => {
     setDatos((previo) => ({ ...previo, [campo]: e.target.value }));
     setCamposInvalidos((previo) => ({ ...previo, [campo]: undefined }));
   };
 
+  /**
+   * Guarda el material (nuevo o editado). Si algún dato es rechazado, marca el
+   * campo con el problema.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);

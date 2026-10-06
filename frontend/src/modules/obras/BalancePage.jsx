@@ -189,6 +189,10 @@ export default function BalancePage() {
 
 /* ========================================================================== */
 
+/**
+ * Muestra uno de los tres números del balance en una tarjeta destacada, con su
+ * explicación.
+ */
 function Tarjeta({ titulo, valor, tono, pie, explicacion }) {
   return (
     <Blueprint className={`${estilos.tarjeta} ${estilos[tono]}`}>
@@ -200,6 +204,10 @@ function Tarjeta({ titulo, valor, tono, pie, explicacion }) {
   );
 }
 
+/**
+ * Muestra una fila del detalle del balance: el concepto, su aclaración y el
+ * monto.
+ */
 function Fila({ concepto, detalle, monto }) {
   return (
     <tr>
@@ -214,11 +222,17 @@ function Fila({ concepto, detalle, monto }) {
   );
 }
 
+/**
+ * Escribe un monto en pesos redondeado, sin decimales.
+ */
 function pesos(monto) {
   if (monto === null || monto === undefined) return '—';
   return '$ ' + Math.round(Number(monto)).toLocaleString('es-AR');
 }
 
+/**
+ * Escribe una fecha en formato día/mes/año.
+ */
 function fecha(valor) {
   if (!valor) return '—';
   return new Date(valor + 'T00:00:00').toLocaleDateString('es-AR');

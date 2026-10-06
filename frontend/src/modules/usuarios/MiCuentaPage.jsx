@@ -31,6 +31,10 @@ export default function MiCuentaPage() {
   const [listo, setListo] = useState(false);
   const [guardando, setGuardando] = useState(false);
 
+  /**
+   * Cambia la contraseña de la propia cuenta. Antes de enviarla, controla que
+   * las dos copias de la contraseña nueva coincidan.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setError(null);
@@ -113,17 +117,17 @@ export default function MiCuentaPage() {
             <label className={estilos.etiqueta} htmlFor="nueva">
               Contraseña nueva <span className={estilos.obligatorio}>*</span>
             </label>
-            <input id="nueva" type="password" className={estilos.control} minLength={8}
+            <input id="nueva" type="password" className={estilos.control} minLength={10}
                    autoComplete="new-password"
                    value={nueva} onChange={(e) => setNueva(e.target.value)} required />
-            <p className={estilos.ayuda}>Mínimo 8 caracteres.</p>
+            <p className={estilos.ayuda}>Mínimo 10 caracteres.</p>
           </div>
 
           <div className={estilos.campo}>
             <label className={estilos.etiqueta} htmlFor="repetida">
               Repetir la nueva <span className={estilos.obligatorio}>*</span>
             </label>
-            <input id="repetida" type="password" className={estilos.control} minLength={8}
+            <input id="repetida" type="password" className={estilos.control} minLength={10}
                    autoComplete="new-password"
                    value={repetida} onChange={(e) => setRepetida(e.target.value)} required />
           </div>

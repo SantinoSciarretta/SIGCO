@@ -32,6 +32,9 @@ export async function configurarEtapas(idObra, etapas) {
   return respuesta.data;
 }
 
+/**
+ * Carga los hitos de una obra copiándolos de una plantilla.
+ */
 export async function aplicarPlantilla(idObra, idPlantilla) {
   const respuesta = await client.post(
     `/obras/${idObra}/hitos/desde-plantilla/${idPlantilla}`);
@@ -44,21 +47,33 @@ export async function completarHito(idHito, datos) {
   return respuesta.data;
 }
 
+/**
+ * Deshace el cumplimiento de un hito marcado por error.
+ */
 export async function reabrirHito(idHito) {
   const respuesta = await client.patch(`/hitos/${idHito}/reapertura`);
   return respuesta.data;
 }
 
+/**
+ * Pide al servidor las plantillas de hitos guardadas.
+ */
 export async function listarPlantillas() {
   const respuesta = await client.get('/plantillas-hito');
   return respuesta.data;
 }
 
+/**
+ * Guarda una plantilla de hitos nueva.
+ */
 export async function crearPlantilla(datos) {
   const respuesta = await client.post('/plantillas-hito', datos);
   return respuesta.data;
 }
 
+/**
+ * Escribe una fecha en formato día/mes/año.
+ */
 export function fecha(valor) {
   if (!valor) return '—';
   const [anio, mes, dia] = String(valor).slice(0, 10).split('-');

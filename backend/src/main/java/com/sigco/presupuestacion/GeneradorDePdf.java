@@ -175,6 +175,9 @@ public class GeneradorDePdf {
         documento.add(aclaracion);
     }
 
+    /**
+     * Escribe en el PDF el total general del presupuesto, destacado.
+     */
     private void escribirTotal(Document documento, Presupuesto p) throws DocumentException {
         PdfPTable tabla = new PdfPTable(2);
         tabla.setWidthPercentage(100);
@@ -194,6 +197,11 @@ public class GeneradorDePdf {
         documento.add(tabla);
     }
 
+    /**
+     * Escribe en el PDF la forma de pago: el anticipo y la cantidad de cuotas
+     * con su monto. Si el presupuesto todavía no tiene plan de pago, no escribe
+     * nada.
+     */
     private void escribirPlanDePago(Document documento, Presupuesto p) throws DocumentException {
         if (p.getAnticipoPorcentaje() == null) {
             return;
@@ -218,6 +226,10 @@ public class GeneradorDePdf {
         }
     }
 
+    /**
+     * Escribe al pie del PDF el número, la versión y la fecha del presupuesto,
+     * junto con la aclaración sobre la variación de costos.
+     */
     private void escribirPie(Document documento, Presupuesto p) throws DocumentException {
         Paragraph pie = new Paragraph(
                 "Presupuesto " + p.getTipoPresupuesto().toLowerCase()
@@ -258,6 +270,10 @@ public class GeneradorDePdf {
         return porRubro;
     }
 
+    /**
+     * Arma una celda del PDF con un título chico arriba y su valor debajo (por
+     * ejemplo "CLIENTE" y el nombre).
+     */
     private PdfPCell dato(String etiqueta, String valor) {
         PdfPCell celda = new PdfPCell();
         celda.setBorder(com.lowagie.text.Rectangle.NO_BORDER);
@@ -267,6 +283,9 @@ public class GeneradorDePdf {
         return celda;
     }
 
+    /**
+     * Arma una celda de título de columna de una tabla del PDF.
+     */
     private PdfPCell encabezado(String texto, int alineacion) {
         PdfPCell celda = new PdfPCell(new Phrase(texto, ETIQUETA));
         celda.setBorder(com.lowagie.text.Rectangle.BOTTOM);
@@ -276,6 +295,9 @@ public class GeneradorDePdf {
         return celda;
     }
 
+    /**
+     * Arma una celda del PDF con un importe en pesos, alineado a la derecha.
+     */
     private PdfPCell importe(BigDecimal monto, Font fuente) {
         PdfPCell celda = new PdfPCell(new Phrase(pesos(monto), fuente));
         celda.setBorder(com.lowagie.text.Rectangle.BOTTOM);
@@ -286,6 +308,9 @@ public class GeneradorDePdf {
         return celda;
     }
 
+    /**
+     * Arma la línea horizontal fina que separa las secciones del PDF.
+     */
     private Paragraph linea() {
         Paragraph p = new Paragraph(new Chunk(
                 new com.lowagie.text.pdf.draw.LineSeparator(0.6f, 100, GRIS_LINEA, Element.ALIGN_CENTER, 0)));

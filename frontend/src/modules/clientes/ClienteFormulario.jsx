@@ -36,6 +36,10 @@ export default function ClienteFormulario({ abierto, cliente, onCerrar, onGuarda
   const [errorGeneral, setErrorGeneral] = useState(null);
   const [guardando, setGuardando] = useState(false);
 
+  /**
+   * Actualiza un campo del formulario a medida que el usuario escribe, y borra
+   * el error que ese campo tuviera.
+   */
   const cambiar = (campo) => (evento) => {
     setDatos((previo) => ({ ...previo, [campo]: evento.target.value }));
     // Al corregir un campo se limpia su error, para que el usuario vea que
@@ -43,6 +47,10 @@ export default function ClienteFormulario({ abierto, cliente, onCerrar, onGuarda
     setCamposInvalidos((previo) => ({ ...previo, [campo]: undefined }));
   };
 
+  /**
+   * Guarda el cliente (nuevo o editado). Si el servidor rechaza algún dato,
+   * marca el campo con el problema.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);

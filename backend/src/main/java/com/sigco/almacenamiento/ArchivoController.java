@@ -62,6 +62,10 @@ public class ArchivoController {
     /** Para no borrar un archivo que algun registro este usando. */
     private final ArchivosEnUso enUso;
 
+    /**
+     * Constructor: recibe dónde se guardan los archivos, el control de tipos
+     * permitidos y la consulta que dice si un archivo está en uso.
+     */
     public ArchivoController(AlmacenDeArchivos almacen, ValidadorDeArchivos validador,
                              ArchivosEnUso enUso) {
         this.almacen = almacen;
@@ -138,6 +142,10 @@ public class ArchivoController {
         return servir(Ambito.PRIVADO.getPrefijo() + ruta);
     }
 
+    /**
+     * Arma la respuesta que le entrega un archivo al navegador, indicando qué
+     * tipo de archivo es para que lo muestre correctamente.
+     */
     private ResponseEntity<Resource> servir(String referencia) {
         Resource recurso = almacen.leer(referencia);
 

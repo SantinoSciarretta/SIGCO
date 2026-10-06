@@ -12,6 +12,10 @@ import java.time.LocalDateTime;
  */
 public final class MaterialDtos {
 
+    /**
+     * Constructor privado: esta clase solo agrupa los formatos de datos del
+     * módulo Materiales, no se crean objetos de ella.
+     */
     private MaterialDtos() {
     }
 

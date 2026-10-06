@@ -84,6 +84,10 @@ public class GeneradorDeOrdenDePedido {
 
     // ------------------------------------------------------------------
 
+    /**
+     * Escribe en el PDF el título de la orden con su número y los datos de
+     * entrega: obra, dirección, proveedor y fecha.
+     */
     private void escribirDatos(Document documento, Pedido pedido) throws DocumentException {
         Paragraph titulo = new Paragraph("ORDEN DE PEDIDO N° " + pedido.getIdPedido(), ETIQUETA);
         titulo.setSpacingBefore(14);
@@ -106,6 +110,10 @@ public class GeneradorDeOrdenDePedido {
         documento.add(datos);
     }
 
+    /**
+     * Escribe en el PDF la tabla de materiales pedidos, con cantidad, precio
+     * unitario y subtotal, y al final el total del pedido.
+     */
     private void escribirMateriales(Document documento, Pedido pedido) throws DocumentException {
         PdfPTable tabla = new PdfPTable(new float[] { 44, 14, 20, 22 });
         tabla.setWidthPercentage(100);
@@ -155,6 +163,10 @@ public class GeneradorDeOrdenDePedido {
         }
     }
 
+    /**
+     * Escribe al pie de la orden las indicaciones para el corralón sobre cómo
+     * coordinar la entrega.
+     */
     private void escribirPie(Document documento) throws DocumentException {
         Paragraph pie = new Paragraph(
                 "Coordinar la entrega con el encargado de obra antes de despachar. "
@@ -172,6 +184,10 @@ public class GeneradorDeOrdenDePedido {
         return "pedido-" + pedido.getIdPedido() + "-" + limpiar(proveedor) + ".pdf";
     }
 
+    /**
+     * Convierte un texto (por ejemplo una dirección) en una versión sin
+     * espacios ni símbolos, apta para usar en el nombre de un archivo.
+     */
     private String limpiar(String texto) {
         return texto.replaceAll("[^a-zA-Z0-9]+", "-")
                 .replaceAll("(^-|-$)", "")

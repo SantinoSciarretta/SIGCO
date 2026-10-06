@@ -39,6 +39,10 @@ public class MaterialController {
 
     private final MaterialService servicio;
 
+    /**
+     * Constructor: Spring le entrega automáticamente el servicio que contiene
+     * la lógica de Materiales.
+     */
     public MaterialController(MaterialService servicio) {
         this.servicio = servicio;
     }

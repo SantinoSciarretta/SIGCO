@@ -58,19 +58,35 @@ public class RegistroCac {
     @Column(name = "fecha_carga", nullable = false)
     private LocalDateTime fechaCarga;
 
+    /**
+     * Constructor vacío que exige la base de datos (JPA) para poder armar el
+     * objeto al leerlo. No se usa desde el código.
+     */
     protected RegistroCac() {
     }
 
+    /**
+     * Crea el registro del coeficiente CAC de un mes. El mes se guarda siempre
+     * como el día 1 y la fecha de carga se completa sola.
+     */
     public RegistroCac(LocalDate mesCorrespondiente, BigDecimal coeficiente) {
         this.mesCorrespondiente = mesCorrespondiente.withDayOfMonth(1);
         this.coeficiente = coeficiente;
         this.fechaCarga = LocalDateTime.now();
     }
 
+    /**
+     * Corrige el coeficiente de un mes ya cargado, por ejemplo si se escribió
+     * mal.
+     */
     public void corregirValor(BigDecimal coeficiente) {
         this.coeficiente = coeficiente;
     }
 
+    /**
+     * Métodos de lectura: devuelven los datos guardados del coeficiente. Solo
+     * leen, no modifican nada.
+     */
     public Long getIdCac() {
         return idCac;
     }

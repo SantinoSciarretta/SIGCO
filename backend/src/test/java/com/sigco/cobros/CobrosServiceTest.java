@@ -282,7 +282,7 @@ class CobrosServiceTest {
             planDe(obra, "300000", "175000", "175000");
             conCac("1.1");
 
-            PreviaCac previa = servicio.previaCac(5L);
+            PreviaCac previa = servicio.calcularVistaPreviaCac(5L);
 
             // 1100 / 1000 = 1,10: los costos subieron 10%.
             assertThat(previa.coeficiente()).isEqualByComparingTo("1.100000");
@@ -314,7 +314,7 @@ class CobrosServiceTest {
             obra();
             when(cacRepositorio.ultimo()).thenReturn(Optional.empty());
 
-            assertThatThrownBy(() -> servicio.previaCac(5L))
+            assertThatThrownBy(() -> servicio.calcularVistaPreviaCac(5L))
                     .isInstanceOf(ReglaDeNegocioException.class)
                     .hasMessageContaining("Todavía no hay ninguna actualización");
         }
@@ -333,7 +333,7 @@ class CobrosServiceTest {
             conCac("1.4");
             devolverLoQueSeGuarda();
 
-            var previa = servicio.previaCac(5L);
+            var previa = servicio.calcularVistaPreviaCac(5L);
             assertThat(previa.coeficiente()).isEqualByComparingTo("1.4");
             // Tres cuotas de 1.000 pendientes: 3.000 pasan a 4.200.
             assertThat(previa.saldoActual()).isEqualByComparingTo("3000");
@@ -429,7 +429,7 @@ class CobrosServiceTest {
         asignarId(vieja, "idCuota", 200L);
         when(repositorio.delPlan(5L)).thenReturn(List.of(vieja));
 
-        PlanDeCobro plan = servicio.plan(5L);
+        PlanDeCobro plan = servicio.obtenerPlanDeCobro(5L);
 
         // El estado sale del calendario: si dependiera de que alguien lo marque,
         // volvería a depender de la memoria del dueño.

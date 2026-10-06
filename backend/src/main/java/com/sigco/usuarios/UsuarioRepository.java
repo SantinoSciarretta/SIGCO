@@ -41,6 +41,10 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
             """)
     Optional<Usuario> completo(@Param("id") Long id);
 
+    /**
+     * Devuelve todas las cuentas con su rol, primero las activas y en orden
+     * alfabético.
+     */
     @Query("""
             SELECT u FROM Usuario u
             JOIN FETCH u.rol

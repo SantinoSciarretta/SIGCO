@@ -11,6 +11,10 @@ import org.springframework.data.repository.query.Param;
 public interface GastoRepository extends JpaRepository<Gasto, Long> {
 
     /**
+     * Busca gastos, del más reciente al más viejo, filtrando opcionalmente por
+     * obra, rubro, tipo, estado y rango de fechas. Un filtro en 0 o vacío
+     * significa "todos".
+     *
      * Listado con filtros combinables.
      *
      * NINGUN PARAMETRO PUEDE LLEGAR NULO: el patron "(:param IS NULL OR ...)"

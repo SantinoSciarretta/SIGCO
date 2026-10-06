@@ -31,6 +31,10 @@ export default function Login() {
   const [error, setError] = useState(null);
   const [entrando, setEntrando] = useState(false);
 
+  /**
+   * Envía el usuario y la contraseña al servidor. Si el ingreso es correcto,
+   * abre el sistema, y si no, muestra el mensaje de error.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setEntrando(true);

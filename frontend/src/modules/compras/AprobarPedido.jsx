@@ -56,6 +56,9 @@ export default function AprobarPedido({ pedido, proveedores, onCerrar, onAprobad
     return () => { vigente = false; };
   }, [idProveedor, pedido.idPedido]);
 
+  /**
+   * Guarda el precio que el dueño escribe para un material del pedido.
+   */
   const cambiarPrecio = (idMaterial) => (e) => {
     const valor = e.target.value;
     setPrecios((previos) => ({ ...previos, [idMaterial]: valor }));
@@ -74,6 +77,10 @@ export default function AprobarPedido({ pedido, proveedores, onCerrar, onAprobad
     return suma + precio * Number(l.cantidad);
   }, 0);
 
+  /**
+   * Aprueba el pedido con el proveedor elegido y los precios confirmados de
+   * cada material.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);

@@ -15,6 +15,10 @@ import java.util.List;
 /** Datos que entran y salen del modulo Cobros. */
 public final class CobrosDtos {
 
+    /**
+     * Constructor privado: esta clase solo agrupa los formatos de datos que
+     * entran y salen del módulo Cobros, no se crean objetos de ella.
+     */
     private CobrosDtos() {
     }
 
@@ -114,6 +118,10 @@ public final class CobrosDtos {
             /** El detalle, para que el cliente pueda verificar cada entrega. */
             List<PagoRespuesta> pagos) {
 
+        /**
+         * Convierte una cuota guardada en el formato que se le envía a la
+         * pantalla, con lo pagado, el saldo y el detalle de los pagos vigentes.
+         */
         public static CuotaRespuesta desde(Cuota c) {
             return new CuotaRespuesta(
                     c.getIdCuota(), c.getNumeroCuota(), c.esAnticipo(), c.getMontoCuota(),
@@ -137,6 +145,10 @@ public final class CobrosDtos {
             String medioPago,
             String comprobanteEmitido) {
 
+        /**
+         * Convierte un pago guardado en el formato que se le envía a la
+         * pantalla.
+         */
         public static PagoRespuesta desde(com.sigco.cobros.Pago p) {
             return new PagoRespuesta(p.getIdPago(), p.getMonto(), p.getFechaPago(),
                     p.getMedioPago(), p.getComprobanteEmitido());
@@ -190,6 +202,10 @@ public final class CobrosDtos {
             LocalDate mesCorrespondiente,
             BigDecimal coeficiente) {
 
+        /**
+         * Convierte un coeficiente CAC guardado en el formato que se le envía a
+         * la pantalla.
+         */
         public static IndiceCacRespuesta desde(RegistroCac r) {
             return new IndiceCacRespuesta(
                     r.getIdCac(), r.getMesCorrespondiente(), r.getCoeficiente());

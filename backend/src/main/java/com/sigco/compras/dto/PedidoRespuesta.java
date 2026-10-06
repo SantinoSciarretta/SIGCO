@@ -42,6 +42,10 @@ public record PedidoRespuesta(
         return construir(p, p.getMateriales().stream().map(LineaRespuesta::desde).toList());
     }
 
+    /**
+     * Arma la respuesta de un pedido con sus datos y las líneas indicadas. La
+     * usan las versiones completa y resumida.
+     */
     private static PedidoRespuesta construir(Pedido p, List<LineaRespuesta> lineas) {
         return new PedidoRespuesta(
                 p.getIdPedido(),
@@ -74,6 +78,10 @@ public record PedidoRespuesta(
             BigDecimal precioUnitario,
             BigDecimal subtotal) {
 
+        /**
+         * Convierte una línea del pedido en el formato que se le envía a la
+         * pantalla: material, unidad, rubro, cantidad, precio y subtotal.
+         */
         static LineaRespuesta desde(PedidoMaterial linea) {
             return new LineaRespuesta(
                     linea.getMaterial().getIdMaterial(),

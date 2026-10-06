@@ -30,16 +30,30 @@ public class AccesosController {
 
     private final AccesosService servicio;
 
+    /**
+     * Constructor: Spring le entrega automáticamente el servicio que contiene
+     * la lógica de Accesos.
+     */
     public AccesosController(AccesosService servicio) {
         this.servicio = servicio;
     }
 
+    /**
+     * GET /api/permisos: devuelve la lista completa de permisos que existen en
+     * el sistema, agrupados por módulo. Es lo que se muestra como casillas en
+     * la pantalla de Accesos.
+     */
     @GetMapping("/api/permisos")
     @PreAuthorize("hasAuthority('accesos.ver')")
     public List<PermisoRespuesta> permisos() {
         return servicio.permisos();
     }
 
+    /**
+     * GET /api/roles: devuelve los roles (Dueño, Capataz General, Capataz de
+     * Obra) con los permisos que tiene cada uno y cuántas cuentas activas lo
+     * usan.
+     */
     @GetMapping("/api/roles")
     @PreAuthorize("hasAuthority('accesos.ver')")
     public List<RolRespuesta> roles() {

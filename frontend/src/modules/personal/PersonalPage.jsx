@@ -59,6 +59,9 @@ export default function PersonalPage() {
     return () => { vigente = false; };
   }, []);
 
+  /**
+   * Activa o desactiva un operario y vuelve a cargar el listado.
+   */
   const alternarEstado = async (operario) => {
     try {
       await cambiarEstadoOperario(
@@ -197,17 +200,26 @@ export default function PersonalPage() {
 
 /* ========================================================================== */
 
+/**
+ * Ventana para dar de alta un operario con su nombre y teléfono.
+ */
 function NuevoOperarioModal({ onCerrar, onCreado }) {
   const [datos, setDatos] = useState({ nombreApellido: '', telefonoContacto: '' });
   const [camposInvalidos, setCamposInvalidos] = useState({});
   const [error, setError] = useState(null);
   const [guardando, setGuardando] = useState(false);
 
+  /**
+   * Actualiza un campo del formulario y borra el error que ese campo tuviera.
+   */
   const cambiar = (campo) => (e) => {
     setDatos((previo) => ({ ...previo, [campo]: e.target.value }));
     setCamposInvalidos((previo) => ({ ...previo, [campo]: undefined }));
   };
 
+  /**
+   * Guarda el operario nuevo en el servidor.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);

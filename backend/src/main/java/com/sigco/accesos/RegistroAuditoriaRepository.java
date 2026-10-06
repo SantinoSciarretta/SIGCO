@@ -11,6 +11,11 @@ import org.springframework.data.repository.query.Param;
 public interface RegistroAuditoriaRepository extends JpaRepository<RegistroAuditoria, Long> {
 
     /**
+     * Busca registros de auditoría, del más nuevo al más viejo. Se puede
+     * filtrar por usuario (0 significa "todos"), por módulo (vacío significa
+     * "todos") y por rango de fechas. La cantidad máxima de resultados la
+     * decide quien llama.
+     *
      * Ultimas acciones registradas, con filtros opcionales.
      *
      * Ningun parametro puede llegar en null: PostgreSQL no puede inferir el tipo

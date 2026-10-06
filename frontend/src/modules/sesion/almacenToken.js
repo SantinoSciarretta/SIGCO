@@ -23,6 +23,9 @@
 
 const CLAVE = 'sigco.token';
 
+/**
+ * Lee del navegador el pase de sesión guardado, si hay uno.
+ */
 export function leerToken() {
   try {
     return localStorage.getItem(CLAVE);
@@ -33,6 +36,10 @@ export function leerToken() {
   }
 }
 
+/**
+ * Guarda en el navegador el pase de sesión, para no tener que ingresar de nuevo
+ * al recargar la página.
+ */
 export function guardarToken(token) {
   try {
     localStorage.setItem(CLAVE, token);
@@ -41,6 +48,9 @@ export function guardarToken(token) {
   }
 }
 
+/**
+ * Borra del navegador el pase de sesión, por ejemplo al cerrar la sesión.
+ */
 export function borrarToken() {
   try {
     localStorage.removeItem(CLAVE);

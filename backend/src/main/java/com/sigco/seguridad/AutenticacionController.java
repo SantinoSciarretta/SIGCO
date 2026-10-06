@@ -31,6 +31,10 @@ public class AutenticacionController {
     private final SesionActual sesion;
     private final UsuarioRepository usuarioRepositorio;
 
+    /**
+     * Constructor: recibe el servicio que valida el ingreso, el dato de quién
+     * está usando el sistema y la consulta de cuentas.
+     */
     public AutenticacionController(AutenticacionService servicio,
                                    SesionActual sesion,
                                    UsuarioRepository usuarioRepositorio) {

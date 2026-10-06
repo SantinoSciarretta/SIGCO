@@ -40,10 +40,18 @@ public class InasistenciaController {
 
     private final PersonalService servicio;
 
+    /**
+     * Constructor: Spring le entrega automáticamente el servicio que contiene
+     * la lógica de Personal.
+     */
     public InasistenciaController(PersonalService servicio) {
         this.servicio = servicio;
     }
 
+    /**
+     * GET /api/inasistencias: devuelve las faltas registradas, filtrando
+     * opcionalmente por operario, por obra y por rango de fechas.
+     */
     @GetMapping
     public List<InasistenciaRespuesta> listar(
             @RequestParam(required = false) Long operario,
@@ -55,6 +63,10 @@ public class InasistenciaController {
         return servicio.listarInasistencias(operario, obra, desde, hasta);
     }
 
+    /**
+     * POST /api/inasistencias: registra la falta de un operario en una obra en
+     * una fecha determinada.
+     */
     @PreAuthorize("hasAuthority('personal.editar')")
     @PostMapping
     public ResponseEntity<InasistenciaRespuesta> registrar(

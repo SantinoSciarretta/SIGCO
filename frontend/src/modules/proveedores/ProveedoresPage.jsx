@@ -62,8 +62,14 @@ export default function ProveedoresPage() {
     return () => { vigente = false; };
   }, [recarga]);
 
+  /**
+   * Vuelve a pedir el listado de proveedores al servidor.
+   */
   const recargar = () => { setCargando(true); setRecarga((n) => n + 1); };
 
+  /**
+   * Activa o desactiva un proveedor y vuelve a cargar el listado.
+   */
   const alternarEstado = async (proveedor) => {
     try {
       await cambiarEstadoProveedor(
@@ -149,7 +155,10 @@ export default function ProveedoresPage() {
                 {proveedores.map((p) => (
                   <tr key={p.idProveedor}>
                     <td className={estilos.nombre}>{p.nombreProveedor}</td>
-                    <td className={estilos.zona}>{p.zonaCobertura}</td>
+                    <td className={estilos.zona}>
+                      {p.zonaCobertura}
+                      {p.direccion && <span className={estilos.email}>{p.direccion}</span>}
+                    </td>
                     <td className={estilos.dato}>
                       {p.telefonoContacto || '—'}
                       {p.emailContacto && (
@@ -226,16 +235,24 @@ function ProveedorFormulario({ proveedor, onCerrar, onGuardado }) {
     zonaCobertura: proveedor?.zonaCobertura ?? '',
     telefonoContacto: proveedor?.telefonoContacto ?? '',
     emailContacto: proveedor?.emailContacto ?? '',
+    direccion: proveedor?.direccion ?? '',
   });
   const [camposInvalidos, setCamposInvalidos] = useState({});
   const [error, setError] = useState(null);
   const [guardando, setGuardando] = useState(false);
 
+  /**
+   * Actualiza un campo del formulario y borra el error que ese campo tuviera.
+   */
   const cambiar = (campo) => (e) => {
     setDatos((previo) => ({ ...previo, [campo]: e.target.value }));
     setCamposInvalidos((previo) => ({ ...previo, [campo]: undefined }));
   };
 
+  /**
+   * Guarda el proveedor (nuevo o editado). Si algún dato es rechazado, marca el
+   * campo con el problema.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);
@@ -284,6 +301,17 @@ function ProveedorFormulario({ proveedor, onCerrar, onGuardado }) {
           </p>
           {camposInvalidos.zonaCobertura && (
             <p className={estilos.errorCampo}>{camposInvalidos.zonaCobertura}</p>
+          )}
+        </div>
+
+        <div className={estilos.campo}>
+          <label className={estilos.etiqueta} htmlFor="direccion">Dirección</label>
+          <input id="direccion" className={estilos.control} maxLength={200}
+                 placeholder="Av. San Martín 1234, Vicente López" value={datos.direccion}
+                 onChange={cambiar('direccion')} />
+          <p className={estilos.ayuda}>Opcional. Sirve para ubicar el corralón o ir a retirar material.</p>
+          {camposInvalidos.direccion && (
+            <p className={estilos.errorCampo}>{camposInvalidos.direccion}</p>
           )}
         </div>
 

@@ -61,6 +61,10 @@ public class PublicacionPortfolio {
                cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ImagenPortfolio> imagenes = new ArrayList<>();
 
+    /**
+     * Constructor vacío que exige la base de datos (JPA) para poder armar el
+     * objeto al leerlo. No se usa desde el código.
+     */
     protected PublicacionPortfolio() {
     }
 
@@ -78,10 +82,16 @@ public class PublicacionPortfolio {
         this.fechaPublicacion = LocalDateTime.now();
     }
 
+    /**
+     * Cambia el tipo de trabajo con que se clasifica la obra.
+     */
     public void cambiarTipoTrabajo(String tipoTrabajo) {
         this.tipoTrabajo = tipoTrabajo;
     }
 
+    /**
+     * Muestra la obra en la vidriera y anota la fecha de publicación.
+     */
     public void publicar() {
         this.estado = ESTADO_PUBLICADA;
         this.fechaPublicacion = LocalDateTime.now();
@@ -97,14 +107,23 @@ public class PublicacionPortfolio {
         this.estado = ESTADO_DESPUBLICADA;
     }
 
+    /**
+     * Suma una imagen a la galería.
+     */
     public void agregarImagen(ImagenPortfolio imagen) {
         this.imagenes.add(imagen);
     }
 
+    /**
+     * Saca una imagen de la galería.
+     */
     public void quitarImagen(ImagenPortfolio imagen) {
         this.imagenes.remove(imagen);
     }
 
+    /**
+     * Indica si la obra se está mostrando en la vidriera.
+     */
     public boolean estaPublicada() {
         return ESTADO_PUBLICADA.equals(this.estado);
     }
@@ -117,6 +136,10 @@ public class PublicacionPortfolio {
                 .orElse(-1) + 1;
     }
 
+    /**
+     * Métodos de lectura: devuelven los datos guardados de la publicación. Solo
+     * leen, no modifican nada.
+     */
     public Long getIdPublicacion() {
         return idPublicacion;
     }

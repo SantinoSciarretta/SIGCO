@@ -53,6 +53,10 @@ public record PresupuestoRespuesta(
             BigDecimal valorUnitario,
             BigDecimal subtotal) {
 
+        /**
+         * Convierte un ítem guardado en el formato que se le envía a la
+         * pantalla, con los nombres del rubro, subrubro y material.
+         */
         static ItemRespuesta desde(ItemPresupuesto item) {
             return new ItemRespuesta(
                     item.getIdItem(),
@@ -89,6 +93,10 @@ public record PresupuestoRespuesta(
         return construir(p, List.of());
     }
 
+    /**
+     * Arma la respuesta de un presupuesto con sus datos y los ítems indicados.
+     * La usan las versiones completa y resumida.
+     */
     private static PresupuestoRespuesta construir(Presupuesto p, List<ItemPresupuesto> items) {
         return new PresupuestoRespuesta(
                 p.getIdPresupuesto(),

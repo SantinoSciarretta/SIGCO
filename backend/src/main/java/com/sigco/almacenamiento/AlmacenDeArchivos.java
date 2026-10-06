@@ -88,10 +88,17 @@ public interface AlmacenDeArchivos {
 
         private final String prefijo;
 
+        /**
+         * Cada ámbito (público o privado) se identifica con el prefijo que
+         * llevan sus archivos.
+         */
         Ambito(String prefijo) {
             this.prefijo = prefijo;
         }
 
+        /**
+         * Devuelve el prefijo del ámbito, por ejemplo "publico" o "privado".
+         */
         public String getPrefijo() {
             return prefijo;
         }

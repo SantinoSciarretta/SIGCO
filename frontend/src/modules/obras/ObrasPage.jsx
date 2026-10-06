@@ -48,13 +48,22 @@ export default function ObrasPage() {
     return () => clearTimeout(temporizador);
   }, [busqueda, estado, tipoObra, cargar]);
 
+  /**
+   * Vuelve a pedir el listado de obras con los filtros actuales.
+   */
   const recargar = () => cargar({ busqueda, estado, tipoObra });
 
+  /**
+   * Abre el formulario vacío para cargar una obra nueva.
+   */
   const abrirAlta = () => {
     setObraEnEdicion(null);
     setFormularioAbierto(true);
   };
 
+  /**
+   * Abre el formulario con los datos de la obra elegida para corregirlos.
+   */
   const abrirEdicion = (obra) => {
     setObraEnEdicion(obra);
     setFormularioAbierto(true);
@@ -203,6 +212,9 @@ export default function ObrasPage() {
   );
 }
 
+/**
+ * Elige el estilo con que se muestra el estado de cada obra en el listado.
+ */
 function claseDeEstado(estado) {
   if (estado === 'En ejecución') return estilos.estadoEjecucion;
   if (estado === 'Finalizada') return estilos.estadoFinalizada;

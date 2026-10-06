@@ -137,7 +137,7 @@ class PedidoServiceTest {
     }
 
     private Proveedor proveedor(Long id) {
-        Proveedor p = new Proveedor("Corralón San Martín", "Zona Norte", null, null);
+        Proveedor p = new Proveedor("Corralón San Martín", "Zona Norte", null, null, null);
         asignarId(p, "idProveedor", id);
         return p;
     }
@@ -430,7 +430,7 @@ class PedidoServiceTest {
         private Pedido pedidoAprobado(String telefonoDelProveedor) {
             Pedido pedido = pedidoPendiente();
             Proveedor corralon = new Proveedor("Corralón San Martín", "Zona Norte",
-                                               telefonoDelProveedor, null);
+                                               telefonoDelProveedor, null, null);
             asignarId(corralon, "idProveedor", 3L);
             pedido.aprobar(corralon);
             devolverLoQueSeGuarda();

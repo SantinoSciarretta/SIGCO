@@ -35,6 +35,10 @@ public class EstadoFinancieroController {
     /** Arma el reporte en PDF. Es un pendiente que el informe pide. */
     private final GeneradorDeReporteDeGastos generador;
 
+    /**
+     * Constructor: recibe el servicio de Gastos, que calcula el estado
+     * financiero, y el generador del reporte en PDF.
+     */
     public EstadoFinancieroController(GastoService servicio,
                                       GeneradorDeReporteDeGastos generador) {
         this.servicio = servicio;
@@ -50,7 +54,7 @@ public class EstadoFinancieroController {
      * en su encabezado.
      */
     @GetMapping("/api/obras/{id}/gastos/reporte")
-    public ResponseEntity<byte[]> reporte(@PathVariable Long id) {
+    public ResponseEntity<byte[]> descargarReporteDeGastos(@PathVariable Long id) {
         byte[] pdf = generador.generar(id);
 
         return ResponseEntity.ok()

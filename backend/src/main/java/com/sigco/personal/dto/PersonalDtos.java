@@ -14,6 +14,10 @@ import java.util.List;
 /** Datos que entran y salen del modulo Personal. */
 public final class PersonalDtos {
 
+    /**
+     * Constructor privado: esta clase solo agrupa los formatos de datos del
+     * módulo Personal, no se crean objetos de ella.
+     */
     private PersonalDtos() {
     }
 
@@ -116,6 +120,10 @@ public final class PersonalDtos {
             LocalDate fechaDesasignacion,
             boolean vigente) {
 
+        /**
+         * Convierte una asignación en el formato que se le envía a la pantalla:
+         * la obra, su estado, las fechas y si sigue vigente.
+         */
         static AsignacionRespuesta desde(OperarioObra a) {
             return new AsignacionRespuesta(
                     a.getObra().getIdObra(), a.getObra().getDireccionObra(),
@@ -133,6 +141,10 @@ public final class PersonalDtos {
             LocalDate fechaFalta,
             String motivo) {
 
+        /**
+         * Convierte una inasistencia en el formato que se le envía a la
+         * pantalla, con el nombre del operario y la dirección de la obra.
+         */
         public static InasistenciaRespuesta desde(Inasistencia i) {
             return new InasistenciaRespuesta(
                     i.getIdInasistencia(),

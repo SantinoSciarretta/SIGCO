@@ -46,6 +46,11 @@ public class EstadoController {
             LocalDateTime momento) {
     }
 
+    /**
+     * GET /api/estado: responde si el sistema y la base de datos están
+     * funcionando. Sirve para comprobar rápido que todo está en marcha después
+     * de publicarlo.
+     */
     @GetMapping
     public Estado consultarEstado() {
         String baseDatos;

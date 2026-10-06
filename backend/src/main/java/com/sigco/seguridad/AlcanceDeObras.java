@@ -43,6 +43,10 @@ public class AlcanceDeObras {
     private final SesionActual sesion;
     private final OperarioObraRepository asignaciones;
 
+    /**
+     * Constructor: recibe cómo saber quién está usando el sistema y en qué
+     * obras trabaja cada operario.
+     */
     public AlcanceDeObras(SesionActual sesion, OperarioObraRepository asignaciones) {
         this.sesion = sesion;
         this.asignaciones = asignaciones;
@@ -89,6 +93,10 @@ public class AlcanceDeObras {
         }
     }
 
+    /**
+     * Indica si quien está usando el sistema tiene el rol de Capataz de Obra,
+     * el único que ve solo su obra.
+     */
     private boolean esCapatazDeObra() {
         return sesion.autenticado()
                 .map(u -> Rol.CAPATAZ_DE_OBRA.equals(u.getNombreRol()))

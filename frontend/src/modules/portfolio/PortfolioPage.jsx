@@ -73,6 +73,11 @@ export default function PortfolioPage() {
   const disponibles = obras.filter(
     (o) => o.estado === 'Finalizada' && !yaPublicadas.has(o.idObra));
 
+  /**
+   * Ejecuta una acción sobre una publicación (publicar, despublicar, quitar una
+   * foto) y después vuelve a cargar la lista. Si falla, muestra el mensaje de
+   * error.
+   */
   const accion = async (fn) => {
     try { await fn(); recargar(); } catch (fallo) { setError(fallo.mensaje); }
   };
@@ -238,6 +243,10 @@ function GaleriaOrdenable({ publicacion, onQuitar, onReordenar }) {
   // lista tiene que volver a salir de la que llegó del backend.
   useEffect(() => { setOrden(publicacion.imagenes); }, [publicacion.imagenes]);
 
+  /**
+   * Cambia de lugar una foto dentro de la galería, para elegir en qué orden se
+   * muestran.
+   */
   const mover = (desde, hasta) => {
     if (hasta < 0 || hasta >= orden.length || desde === hasta) return;
 
@@ -313,9 +322,15 @@ function GaleriaOrdenable({ publicacion, onQuitar, onReordenar }) {
   );
 }
 
+/**
+ * Botón para subir una foto nueva a la galería de la obra.
+ */
 function AgregarImagen({ idPublicacion, onAgregada, onError }) {
   const [guardando, setGuardando] = useState(false);
 
+  /**
+   * Suma la foto recién subida a la galería de la publicación.
+   */
   const agregar = async (referencia) => {
     if (!referencia) return;
     setGuardando(true);
@@ -343,12 +358,20 @@ function AgregarImagen({ idPublicacion, onAgregada, onError }) {
 
 /* ========================================================================== */
 
+/**
+ * Ventana para crear la publicación de una obra finalizada, eligiendo la obra y
+ * el tipo de trabajo.
+ */
 function NuevaPublicacionModal({ obras, onCerrar, onCreada }) {
   const [idObra, setIdObra] = useState('');
   const [tipoTrabajo, setTipoTrabajo] = useState('');
   const [error, setError] = useState(null);
   const [guardando, setGuardando] = useState(false);
 
+  /**
+   * Crea la publicación en el servidor. Nace sin publicar, para cargar primero
+   * las fotos.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);

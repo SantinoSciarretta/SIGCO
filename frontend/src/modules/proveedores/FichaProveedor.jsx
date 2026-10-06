@@ -36,12 +36,16 @@ export default function FichaProveedor({ proveedor, materiales, onCerrar, onCamb
     return () => { vigente = false; };
   }, [proveedor.idProveedor, recarga]);
 
+  /**
+   * Vuelve a cargar la ficha y avisa al listado que algo cambió.
+   */
   const recargar = () => { setRecarga((n) => n + 1); onCambio(); };
 
   return (
     <Modal abierto onCerrar={onCerrar} titulo={proveedor.nombreProveedor}>
       <p className={estilos.fichaEncabezado}>
         {proveedor.zonaCobertura}
+        {proveedor.direccion && ` · ${proveedor.direccion}`}
         {proveedor.telefonoContacto && ` · ${proveedor.telefonoContacto}`}
         {proveedor.emailContacto && ` · ${proveedor.emailContacto}`}
       </p>
@@ -89,6 +93,10 @@ export default function FichaProveedor({ proveedor, materiales, onCerrar, onCamb
 
 /* ========================================================================== */
 
+/**
+ * Sección de la ficha con el historial de precios del proveedor y el formulario
+ * para cargar una cotización nueva.
+ */
 function Cotizaciones({ proveedor, materiales, cotizaciones, onRegistrada }) {
   const [idMaterial, setIdMaterial] = useState('');
   const [precio, setPrecio] = useState('');
@@ -97,6 +105,10 @@ function Cotizaciones({ proveedor, materiales, cotizaciones, onRegistrada }) {
 
   const activo = proveedor.estado === 'Activo';
 
+  /**
+   * Registra la cotización nueva: el precio que dio el proveedor para un
+   * material.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);
@@ -162,11 +174,18 @@ function Cotizaciones({ proveedor, materiales, cotizaciones, onRegistrada }) {
 
 /* ========================================================================== */
 
+/**
+ * Sección de la ficha con las observaciones sobre el proveedor y el formulario
+ * para cargar una nueva.
+ */
 function Observaciones({ proveedor, observaciones, onRegistrada }) {
   const [descripcion, setDescripcion] = useState('');
   const [error, setError] = useState(null);
   const [guardando, setGuardando] = useState(false);
 
+  /**
+   * Registra una observación nueva sobre el proveedor.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);

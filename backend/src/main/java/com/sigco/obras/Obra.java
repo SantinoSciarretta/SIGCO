@@ -112,6 +112,10 @@ public class Obra {
     @Column(name = "fecha_creacion", nullable = false)
     private LocalDateTime fechaCreacion;
 
+    /**
+     * Constructor vacío que exige la base de datos (JPA) para poder armar el
+     * objeto al leerlo. No se usa desde el código.
+     */
     protected Obra() {
     }
 
@@ -221,6 +225,10 @@ public class Obra {
         recalcularFinEstimado();
     }
 
+    /**
+     * Pasa la obra al estado "En ejecución". Ocurre al aprobarse su presupuesto
+     * definitivo.
+     */
     public void pasarAEjecucion() {
         this.estado = ESTADO_EN_EJECUCION;
     }
@@ -242,6 +250,9 @@ public class Obra {
         this.fechaInicioReal = null;
     }
 
+    /**
+     * Pasa la obra al estado "Finalizada".
+     */
     public void finalizar() {
         this.estado = ESTADO_FINALIZADA;
     }
@@ -252,24 +263,40 @@ public class Obra {
         this.motivoCancelacion = motivo;
     }
 
+    /**
+     * Indica si la obra fue cancelada.
+     */
     public boolean estaCancelada() {
         return ESTADO_CANCELADA.equals(this.estado);
     }
 
+    /**
+     * Indica si la obra está finalizada.
+     */
     public boolean estaFinalizada() {
         return ESTADO_FINALIZADA.equals(this.estado);
     }
 
+    /**
+     * Indica si la obra todavía se está presupuestando.
+     */
     public boolean estaEnPresupuestacion() {
         return ESTADO_EN_PRESUPUESTACION.equals(this.estado);
     }
 
+    /**
+     * Indica si la obra está en ejecución.
+     */
     public boolean estaEnEjecucion() {
         return ESTADO_EN_EJECUCION.equals(this.estado);
     }
 
     // ---------- Metodos de acceso ----------
 
+    /**
+     * Métodos de lectura: devuelven los datos guardados de la obra. Solo leen,
+     * no modifican nada.
+     */
     public Long getIdObra() {
         return idObra;
     }
@@ -326,6 +353,10 @@ public class Obra {
         return idUltimoCacAplicado;
     }
 
+    /**
+     * Anota cuál fue el último coeficiente CAC aplicado a las cuotas de la
+     * obra, para que no se pueda aplicar el mismo dos veces.
+     */
     public void registrarCacAplicado(Long idCac) {
         this.idUltimoCacAplicado = idCac;
     }

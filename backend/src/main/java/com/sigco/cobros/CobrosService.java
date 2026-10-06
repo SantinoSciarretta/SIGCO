@@ -58,6 +58,11 @@ public class CobrosService {
     /** Quien registra cada pago: queda guardado en pago.id_usuario_registro. */
     private final com.sigco.seguridad.SesionActual sesion;
 
+    /**
+     * Constructor: recibe lo necesario para leer y guardar cuotas, coeficientes
+     * CAC, obras y presupuestos, además de la auditoría y el dato de quién está
+     * usando el sistema.
+     */
     public CobrosService(CuotaRepository repositorio,
                          RegistroCacRepository cacRepositorio,
                          ObraRepository obraRepositorio,
@@ -141,8 +146,13 @@ public class CobrosService {
     //  Consulta
     // ------------------------------------------------------------------
 
+    /**
+     * Devuelve el plan de cobro completo de una obra: todas sus cuotas, lo
+     * cobrado, lo que falta cobrar y el próximo vencimiento. Si la obra todavía
+     * no tiene plan, avisa con un mensaje.
+     */
     @Transactional(readOnly = true)
-    public PlanDeCobro plan(Long idObra) {
+    public PlanDeCobro obtenerPlanDeCobro(Long idObra) {
         Obra obra = buscarObraOFallar(idObra);
         List<Cuota> cuotas = repositorio.delPlan(idObra);
 
@@ -184,8 +194,14 @@ public class CobrosService {
         return generador.nombreDeArchivo(buscarObraOFallar(idObra));
     }
 
+    /**
+     * Arma la vista consolidada de cobros: una fila por obra con su total, lo
+     * cobrado, lo pendiente, las cuotas vencidas y el próximo vencimiento.
+     * Primero aparecen las obras con cuotas vencidas, que son las que hay que
+     * reclamar.
+     */
     @Transactional(readOnly = true)
-    public List<ResumenCobro> consolidado() {
+    public List<ResumenCobro> resumenDeCobrosPorObra() {
         Map<Long, List<Cuota>> porObra = new LinkedHashMap<>();
         for (Cuota c : repositorio.deObrasConCobros()) {
             c.revisarVencimiento(LocalDate.now());
@@ -239,7 +255,7 @@ public class CobrosService {
 
     /** Cuotas que vencen en los proximos dias o que ya vencieron. */
     @Transactional(readOnly = true)
-    public List<CuotaRespuesta> alertas() {
+    public List<CuotaRespuesta> cuotasPorVencerOVencidas() {
         List<Cuota> cuotas = repositorio.porVencerHasta(
                 LocalDate.now().plusDays(DIAS_DE_AVISO));
         cuotas.forEach(c -> c.revisarVencimiento(LocalDate.now()));
@@ -299,7 +315,7 @@ public class CobrosService {
                 + " (" + pago.medioPago() + "). Saldo: " + cuota.saldo(),
                 "Cobros");
 
-        return plan(cuota.getObra().getIdObra());
+        return obtenerPlanDeCobro(cuota.getObra().getIdObra());
     }
 
     /**
@@ -327,15 +343,19 @@ public class CobrosService {
                 + " por " + anulado + ": " + anulacion.motivo().trim(),
                 "Cobros");
 
-        return plan(cuota.getObra().getIdObra());
+        return obtenerPlanDeCobro(cuota.getObra().getIdObra());
     }
 
     // ------------------------------------------------------------------
     //  Indice CAC
     // ------------------------------------------------------------------
 
+    /**
+     * Devuelve todos los coeficientes CAC cargados, del mes más reciente al más
+     * viejo.
+     */
     @Transactional(readOnly = true)
-    public List<IndiceCacRespuesta> indices() {
+    public List<IndiceCacRespuesta> listarCoeficientesCac() {
         return cacRepositorio.findAllByOrderByMesCorrespondienteDesc().stream()
                 .map(IndiceCacRespuesta::desde)
                 .toList();
@@ -378,7 +398,7 @@ public class CobrosService {
      * misma formula, termino a termino.
      */
     @Transactional(readOnly = true)
-    public PreviaCac previaCac(Long idObra) {
+    public PreviaCac calcularVistaPreviaCac(Long idObra) {
         RegistroCac ultimo = cacRepositorio.ultimo()
                 .orElseThrow(() -> new ReglaDeNegocioException(
                         "Todavía no hay ninguna actualización cargada. "
@@ -448,7 +468,7 @@ public class CobrosService {
                     + "volver a actualizar el saldo.");
         }
 
-        PreviaCac previa = previaCac(idObra);
+        PreviaCac previa = calcularVistaPreviaCac(idObra);
         if (previa.cuotasAfectadas() == 0) {
             throw new ReglaDeNegocioException(
                     "No quedan cuotas pendientes: no hay saldo que actualizar.");
@@ -474,6 +494,12 @@ public class CobrosService {
     //  Auxiliares
     // ------------------------------------------------------------------
 
+    /**
+     * Junta todas las cuotas de una obra en el resumen que se muestra en
+     * pantalla: totales, cuotas abonadas y vencidas, próximo vencimiento y el
+     * detalle ordenado por número de cuota. Antes revisa qué cuotas vencieron
+     * según la fecha de hoy.
+     */
     private PlanDeCobro armarPlan(Obra obra, List<Cuota> cuotas) {
         LocalDate hoy = LocalDate.now();
         cuotas.forEach(c -> c.revisarVencimiento(hoy));
@@ -517,6 +543,9 @@ public class CobrosService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    /**
+     * Suma el monto de las cuotas que cumplen la condición indicada.
+     */
     private BigDecimal sumar(List<Cuota> cuotas, java.util.function.Predicate<Cuota> filtro) {
         return cuotas.stream()
                 .filter(filtro)
@@ -524,6 +553,10 @@ public class CobrosService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    /**
+     * Devuelve la fecha de vencimiento más cercana entre las cuotas que todavía
+     * se deben, o nada si no queda ninguna pendiente.
+     */
     private LocalDate proximoVencimiento(List<Cuota> cuotas) {
         return cuotas.stream()
                 .filter(Cuota::estaPendiente)
@@ -532,11 +565,19 @@ public class CobrosService {
                 .orElse(null);
     }
 
+    /**
+     * Busca una obra por su número. Si no existe, corta la operación con un
+     * error de "no encontrado".
+     */
     private Obra buscarObraOFallar(Long idObra) {
         return obraRepositorio.findById(idObra)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Obra", idObra));
     }
 
+    /**
+     * Busca una cuota, con sus pagos, por su número. Si no existe, corta la
+     * operación con un error de "no encontrado".
+     */
     private Cuota buscarCuotaOFallar(Long idCuota) {
         return repositorio.buscarCompleta(idCuota)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Cuota", idCuota));

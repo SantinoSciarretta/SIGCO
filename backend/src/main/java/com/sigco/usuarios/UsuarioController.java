@@ -51,6 +51,10 @@ public class UsuarioController {
      */
     private final com.sigco.seguridad.ServicioJwt servicioJwt;
 
+    /**
+     * Constructor: recibe el servicio de Usuarios, el dato de quién está usando
+     * el sistema y el servicio que emite pases de sesión.
+     */
     public UsuarioController(UsuarioService servicio, SesionActual sesion,
                              com.sigco.seguridad.ServicioJwt servicioJwt) {
         this.servicio = servicio;
@@ -58,18 +62,29 @@ public class UsuarioController {
         this.servicioJwt = servicioJwt;
     }
 
+    /**
+     * GET /api/usuarios: devuelve todas las cuentas de acceso con su rol,
+     * estado y último ingreso.
+     */
     @GetMapping
     @PreAuthorize("hasAuthority('usuarios.ver')")
     public List<UsuarioRespuesta> listar() {
         return servicio.listar();
     }
 
+    /**
+     * GET /api/usuarios/{id}: devuelve los datos de una cuenta.
+     */
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('usuarios.ver')")
     public UsuarioRespuesta obtener(@PathVariable Long id) {
         return servicio.obtener(id);
     }
 
+    /**
+     * POST /api/usuarios: crea una cuenta de acceso nueva. La persona va a
+     * tener que cambiar la contraseña en su primer ingreso.
+     */
     @PostMapping
     @PreAuthorize("hasAuthority('usuarios.editar')")
     public ResponseEntity<UsuarioRespuesta> crear(@Valid @RequestBody NuevoUsuario solicitud) {
@@ -122,6 +137,10 @@ public class UsuarioController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * PATCH /api/usuarios/{id}/rol: le cambia el rol a una cuenta, siempre que
+     * no deje al sistema sin un dueño activo.
+     */
     @PatchMapping("/{id}/rol")
     @PreAuthorize("hasAuthority('usuarios.editar')")
     public UsuarioRespuesta cambiarRol(@PathVariable Long id,
@@ -129,6 +148,10 @@ public class UsuarioController {
         return servicio.cambiarRol(id, cambio);
     }
 
+    /**
+     * PATCH /api/usuarios/{id}/operario: vincula la cuenta con un operario de
+     * Personal.
+     */
     @PatchMapping("/{id}/operario")
     @PreAuthorize("hasAuthority('usuarios.editar')")
     public UsuarioRespuesta vincularOperario(@PathVariable Long id,
@@ -146,6 +169,10 @@ public class UsuarioController {
         return servicio.desactivar(id, baja, quienPide);
     }
 
+    /**
+     * PATCH /api/usuarios/{id}/reactivacion: vuelve a habilitar una cuenta dada
+     * de baja.
+     */
     @PatchMapping("/{id}/reactivacion")
     @PreAuthorize("hasAuthority('usuarios.editar')")
     public UsuarioRespuesta reactivar(@PathVariable Long id) {

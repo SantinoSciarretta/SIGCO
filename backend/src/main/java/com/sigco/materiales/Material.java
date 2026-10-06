@@ -56,6 +56,10 @@ public class Material {
     @Column(name = "fecha_alta", nullable = false)
     private LocalDateTime fechaAlta;
 
+    /**
+     * Constructor vacío que exige la base de datos (JPA) para poder armar el
+     * objeto al leerlo. No se usa desde el código.
+     */
     protected Material() {
     }
 
@@ -75,6 +79,9 @@ public class Material {
         this.unidadMedida = unidadMedida;
     }
 
+    /**
+     * Vuelve a poner el material disponible para nuevos presupuestos y pedidos.
+     */
     public void activar() {
         this.estado = ESTADO_ACTIVO;
     }
@@ -87,12 +94,19 @@ public class Material {
         this.estado = ESTADO_INACTIVO;
     }
 
+    /**
+     * Indica si el material está disponible para usarse.
+     */
     public boolean estaActivo() {
         return ESTADO_ACTIVO.equals(this.estado);
     }
 
     // ---------- Metodos de acceso ----------
 
+    /**
+     * Métodos de lectura: devuelven los datos guardados del material. Solo
+     * leen, no modifican nada.
+     */
     public Long getIdMaterial() {
         return idMaterial;
     }

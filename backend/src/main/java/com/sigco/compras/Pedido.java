@@ -115,9 +115,17 @@ public class Pedido {
                cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PedidoMaterial> materiales = new ArrayList<>();
 
+    /**
+     * Constructor vacío que exige la base de datos (JPA) para poder armar el
+     * objeto al leerlo. No se usa desde el código.
+     */
     protected Pedido() {
     }
 
+    /**
+     * Crea un pedido nuevo para una obra, anotando quién lo pidió. Todo pedido
+     * nace "Pendiente de Aprobación" y con la fecha de hoy.
+     */
     public Pedido(Obra obra, Long idUsuarioSolicita) {
         this.obra = obra;
         this.idUsuarioSolicita = idUsuarioSolicita;
@@ -129,10 +137,16 @@ public class Pedido {
     //  Circuito
     // ------------------------------------------------------------------
 
+    /**
+     * Suma una línea al pedido: un material con su cantidad.
+     */
     public void agregarMaterial(PedidoMaterial linea) {
         this.materiales.add(linea);
     }
 
+    /**
+     * Saca una línea del pedido.
+     */
     public void quitarMaterial(PedidoMaterial linea) {
         this.materiales.remove(linea);
     }
@@ -166,6 +180,9 @@ public class Pedido {
                 : ESTADO_RECIBIDO_CON_DIFERENCIAS;
     }
 
+    /**
+     * Marca el pedido como anulado y guarda el motivo. El pedido no se borra.
+     */
     public void anular(String motivo) {
         this.estado = ESTADO_ANULADO;
         this.motivoAnulacion = motivo;
@@ -175,19 +192,32 @@ public class Pedido {
     //  Consultas de estado
     // ------------------------------------------------------------------
 
+    /**
+     * Indica si el pedido todavía espera la aprobación del dueño.
+     */
     public boolean estaPendiente() {
         return ESTADO_PENDIENTE.equals(this.estado);
     }
 
+    /**
+     * Indica si el pedido ya se aprobó y se envió al proveedor, y todavía no
+     * llegó a la obra.
+     */
     public boolean fueEnviado() {
         return ESTADO_ENVIADO.equals(this.estado);
     }
 
+    /**
+     * Indica si el material ya llegó a la obra, completo o con diferencias.
+     */
     public boolean fueRecibido() {
         return ESTADO_RECIBIDO_COMPLETO.equals(this.estado)
                 || ESTADO_RECIBIDO_CON_DIFERENCIAS.equals(this.estado);
     }
 
+    /**
+     * Indica si el pedido fue anulado.
+     */
     public boolean estaAnulado() {
         return ESTADO_ANULADO.equals(this.estado);
     }
@@ -220,6 +250,10 @@ public class Pedido {
     //  Metodos de acceso
     // ------------------------------------------------------------------
 
+    /**
+     * Métodos de lectura: devuelven los datos guardados del pedido. Solo leen,
+     * no modifican nada.
+     */
     public Long getIdPedido() {
         return idPedido;
     }

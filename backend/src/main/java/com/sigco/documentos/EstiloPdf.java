@@ -35,6 +35,10 @@ import java.time.format.DateTimeFormatter;
  */
 public final class EstiloPdf {
 
+    /**
+     * Constructor privado: esta clase solo reúne los colores, letras y logo
+     * comunes a todos los PDF del sistema.
+     */
     private EstiloPdf() {
     }
 
@@ -85,6 +89,10 @@ public final class EstiloPdf {
      */
     private static final byte[] LOGO = cargarLogo();
 
+    /**
+     * Lee el logo de Granica que se imprime en el membrete de los PDF. Si no lo
+     * encuentra, el PDF se genera igual con el nombre en texto.
+     */
     private static byte[] cargarLogo() {
         try (InputStream entrada = EstiloPdf.class.getResourceAsStream(RUTA_LOGO)) {
             return entrada == null ? null : entrada.readAllBytes();

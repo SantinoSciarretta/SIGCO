@@ -74,6 +74,10 @@ public class Rubro {
     @OrderBy("nombreSubrubro ASC")
     private List<Subrubro> subrubros = new ArrayList<>();
 
+    /**
+     * Constructor vacío que exige la base de datos (JPA) para poder armar el
+     * objeto al leerlo. No se usa desde el código.
+     */
     protected Rubro() {
     }
 
@@ -94,6 +98,9 @@ public class Rubro {
         this.esManoDeObra = esManoDeObra;
     }
 
+    /**
+     * Indica si este es el rubro especial de mano de obra.
+     */
     public boolean esManoDeObra() {
         return esManoDeObra;
     }
@@ -103,6 +110,9 @@ public class Rubro {
         this.nombreRubro = nombreRubro;
     }
 
+    /**
+     * Vuelve a poner el rubro disponible para presupuestos nuevos.
+     */
     public void activar() {
         this.estado = ESTADO_ACTIVO;
     }
@@ -119,16 +129,26 @@ public class Rubro {
         this.estado = ESTADO_INACTIVO;
     }
 
+    /**
+     * Indica si el rubro está disponible.
+     */
     public boolean estaActivo() {
         return ESTADO_ACTIVO.equals(this.estado);
     }
 
+    /**
+     * Suma un subrubro a la lista de este rubro.
+     */
     void agregarSubrubro(Subrubro subrubro) {
         this.subrubros.add(subrubro);
     }
 
     // ---------- Metodos de acceso ----------
 
+    /**
+     * Métodos de lectura: devuelven los datos guardados del rubro. Solo leen,
+     * no modifican nada.
+     */
     public Long getIdRubro() {
         return idRubro;
     }

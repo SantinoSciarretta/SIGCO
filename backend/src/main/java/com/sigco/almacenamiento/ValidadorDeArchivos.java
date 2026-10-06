@@ -77,6 +77,11 @@ public class ValidadorDeArchivos {
         return extensionDe(tipo);
     }
 
+    /**
+     * Revisa los primeros bytes del archivo para confirmar que es de verdad lo
+     * que dice ser (una foto JPG, PNG o un PDF). Evita que alguien suba otra
+     * cosa con un nombre engañoso.
+     */
     private boolean coincideLaFirma(MultipartFile archivo, String tipo) {
         byte[] esperada = FIRMAS.get(tipo);
         if (esperada == null) {
@@ -100,6 +105,10 @@ public class ValidadorDeArchivos {
         }
     }
 
+    /**
+     * Devuelve la extensión de archivo (.jpg, .png, .webp o .pdf) que
+     * corresponde a cada tipo permitido.
+     */
     private String extensionDe(String tipo) {
         return switch (tipo) {
             case "image/png" -> ".png";

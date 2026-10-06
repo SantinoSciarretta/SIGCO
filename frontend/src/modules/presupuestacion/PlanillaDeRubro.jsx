@@ -75,6 +75,10 @@ export default function PlanillaDeRubro({ idPresupuesto, rubro, onCerrar, onGuar
 
   const esManoDeObra = planilla?.esManoDeObra;
 
+  /**
+   * Actualiza la cantidad o el precio de una fila de la planilla a medida que
+   * el dueño escribe.
+   */
   const cambiar = (indice, campo) => (evento) => {
     const valor = evento.target.value;
     setFilas((previas) => previas.map(
@@ -102,6 +106,10 @@ export default function PlanillaDeRubro({ idPresupuesto, rubro, onCerrar, onGuar
     } : f)));
   };
 
+  /**
+   * Calcula el subtotal de una fila (cantidad por precio). Si la fila está
+   * incompleta, no muestra nada.
+   */
   const subtotalDe = (fila) => {
     const c = Number(fila.cantidad);
     const v = Number(fila.valorUnitario);
@@ -114,6 +122,10 @@ export default function PlanillaDeRubro({ idPresupuesto, rubro, onCerrar, onGuar
 
   const cargadas = filas.filter((f) => subtotalDe(f) !== null).length;
 
+  /**
+   * Guarda la planilla completa del rubro. Las filas vacías no se cargan, y lo
+   * que había antes de ese rubro se reemplaza por lo que se envía.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);

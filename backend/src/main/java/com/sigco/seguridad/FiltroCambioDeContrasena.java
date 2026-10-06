@@ -59,6 +59,10 @@ public class FiltroCambioDeContrasena extends OncePerRequestFilter {
 
     private final ObjectMapper json;
 
+    /**
+     * Constructor: recibe la herramienta que arma las respuestas en formato
+     * JSON.
+     */
     public FiltroCambioDeContrasena(ObjectMapper json) {
         this.json = json;
     }
@@ -82,6 +86,11 @@ public class FiltroCambioDeContrasena extends OncePerRequestFilter {
         return null;
     }
 
+    /**
+     * Se ejecuta en cada pedido al servidor. Si el usuario todavía tiene que
+     * cambiar su contraseña, solo le deja hacer eso (y consultar su sesión).
+     * Cualquier otro pedido se rechaza hasta que la cambie.
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest peticion,
                                     HttpServletResponse respuesta,
@@ -98,6 +107,10 @@ public class FiltroCambioDeContrasena extends OncePerRequestFilter {
         cadena.doFilter(peticion, respuesta);
     }
 
+    /**
+     * Indica si el pedido es uno de los pocos permitidos mientras la contraseña
+     * no se cambió: cambiar la propia contraseña o consultar la sesión.
+     */
     private boolean esRutaPermitida(HttpServletRequest peticion, UsuarioAutenticado usuario) {
         String metodo = peticion.getMethod();
         String ruta = peticion.getRequestURI();

@@ -278,18 +278,32 @@ function NuevoPedidoModal({ obras, materiales, onCerrar, onCreado }) {
   const obrasDisponibles = obras.filter(
     (o) => o.estado !== 'Cancelada' && o.estado !== 'Finalizada');
 
+  /**
+   * Actualiza el material o la cantidad de una línea del pedido que se está
+   * armando.
+   */
   const cambiarLinea = (indice, campo) => (e) => {
     const valor = e.target.value;
     setLineas((previas) => previas.map((l, i) => (i === indice ? { ...l, [campo]: valor } : l)));
   };
 
+  /**
+   * Agrega una línea vacía al pedido para sumar otro material.
+   */
   const agregarLinea = () => setLineas((p) => [...p, { idMaterial: '', cantidad: '' }]);
+  /**
+   * Saca una línea del pedido.
+   */
   const quitarLinea = (i) => setLineas((p) => p.filter((_, j) => j !== i));
 
   // Un material no puede ir dos veces: la clave primaria compuesta de
   // pedido_material lo impide, así que se filtra de los desplegables.
   const yaElegidos = new Set(lineas.map((l) => l.idMaterial).filter(Boolean));
 
+  /**
+   * Envía el pedido nuevo al servidor. Queda pendiente de la aprobación del
+   * dueño.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);
@@ -383,11 +397,17 @@ function NuevoPedidoModal({ obras, materiales, onCerrar, onCreado }) {
 
 /* ========================================================================== */
 
+/**
+ * Ventana para anular un pedido, pidiendo el motivo.
+ */
 function AnularPedidoModal({ pedido, onCerrar, onAnulado }) {
   const [motivo, setMotivo] = useState('');
   const [error, setError] = useState(null);
   const [guardando, setGuardando] = useState(false);
 
+  /**
+   * Envía la anulación al servidor y, si sale bien, cierra la ventana.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);

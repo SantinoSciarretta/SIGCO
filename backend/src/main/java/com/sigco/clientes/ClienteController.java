@@ -42,6 +42,10 @@ public class ClienteController {
 
     private final ClienteService servicio;
 
+    /**
+     * Constructor: Spring le entrega automáticamente el servicio que contiene
+     * la lógica de Clientes.
+     */
     public ClienteController(ClienteService servicio) {
         this.servicio = servicio;
     }

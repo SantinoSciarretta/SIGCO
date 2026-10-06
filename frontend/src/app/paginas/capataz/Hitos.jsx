@@ -50,6 +50,11 @@ export default function Hitos() {
 
   useEffect(() => { recargar(); }, [recargar]);
 
+  /**
+   * Marca un hito como completado con la fecha de hoy, desde el celular del
+   * capataz. Si el hito ya estaba completado o el usuario no tiene permiso, no
+   * hace nada.
+   */
   const marcar = async (hito) => {
     if (!puedeMarcar || hito.estado === 'Completado') return;
     setMarcando(hito.idHito);

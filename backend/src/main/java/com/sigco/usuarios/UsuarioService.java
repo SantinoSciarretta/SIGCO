@@ -41,6 +41,11 @@ public class UsuarioService {
     /** Rechaza las contrasenas previsibles, que el largo minimo no filtra. */
     private final PoliticaDeContrasenas politica;
 
+    /**
+     * Constructor: recibe lo necesario para leer y guardar cuentas, roles y
+     * operarios, cifrar contraseñas, controlar que sean seguras y registrar la
+     * auditoría.
+     */
     public UsuarioService(UsuarioRepository repositorio,
                           RolRepository rolRepositorio,
                           OperarioRepository operarioRepositorio,
@@ -59,6 +64,9 @@ public class UsuarioService {
     //  Consultas
     // ------------------------------------------------------------------
 
+    /**
+     * Devuelve todas las cuentas de acceso con su rol.
+     */
     @Transactional(readOnly = true)
     public List<UsuarioRespuesta> listar() {
         return repositorio.todosConRol().stream()
@@ -66,6 +74,10 @@ public class UsuarioService {
                 .toList();
     }
 
+    /**
+     * Devuelve los datos de una cuenta. Si no existe, responde con un error de
+     * "no encontrado".
+     */
     @Transactional(readOnly = true)
     public UsuarioRespuesta obtener(Long id) {
         return UsuarioRespuesta.desde(buscarOFallar(id));
@@ -75,6 +87,11 @@ public class UsuarioService {
     //  Alta
     // ------------------------------------------------------------------
 
+    /**
+     * Crea una cuenta nueva: controla que el nombre no esté repetido (sin
+     * importar mayúsculas), que la contraseña cumpla la política y que el rol
+     * exista. La guarda cifrada y obligada a cambiarse en el primer ingreso.
+     */
     @Transactional
     public UsuarioRespuesta crear(NuevoUsuario solicitud) {
         // Sin distinguir mayusculas: "Ricardo" y "ricardo" serian dos cuentas
@@ -174,6 +191,10 @@ public class UsuarioService {
     //  Rol y vínculo con Personal
     // ------------------------------------------------------------------
 
+    /**
+     * Le cambia el rol a una cuenta. Frena si con el cambio el sistema se
+     * quedaría sin ningún dueño activo.
+     */
     @Transactional
     public UsuarioRespuesta cambiarRol(Long id, CambioRol cambio) {
         Usuario usuario = buscarOFallar(id);
@@ -194,6 +215,9 @@ public class UsuarioService {
         return UsuarioRespuesta.desde(usuario);
     }
 
+    /**
+     * Vincula una cuenta con un operario de Personal, o la desvincula.
+     */
     @Transactional
     public UsuarioRespuesta vincularOperario(Long id, VinculoOperario vinculo) {
         Usuario usuario = buscarOFallar(id);
@@ -235,6 +259,9 @@ public class UsuarioService {
         return UsuarioRespuesta.desde(usuario);
     }
 
+    /**
+     * Vuelve a habilitar una cuenta dada de baja y lo registra en la auditoría.
+     */
     @Transactional
     public UsuarioRespuesta reactivar(Long id) {
         Usuario usuario = buscarOFallar(id);
@@ -248,11 +275,19 @@ public class UsuarioService {
     //  Auxiliares
     // ------------------------------------------------------------------
 
+    /**
+     * Busca una cuenta con su rol y su operario. Si no existe, corta la
+     * operación con un error de "no encontrado".
+     */
     private Usuario buscarOFallar(Long id) {
         return repositorio.completo(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Usuario", id));
     }
 
+    /**
+     * Busca un rol por su número. Si no existe, corta la operación con un error
+     * de "no encontrado".
+     */
     private Rol buscarRolOFallar(Long idRol) {
         return rolRepositorio.findById(idRol)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Rol", idRol));
@@ -276,6 +311,10 @@ public class UsuarioService {
                 .orElseThrow(() -> new RecursoNoEncontradoException("Operario", idOperario));
     }
 
+    /**
+     * Frena la operación si la cuenta es el único dueño activo, porque sin él
+     * nadie podría volver a administrar el sistema.
+     */
     private void exigirQueQuedeOtroDueno(Usuario usuario) {
         long duenosActivos = repositorio.countByRolNombreRolAndEstado(
                 Rol.DUENO, Usuario.ESTADO_ACTIVO);

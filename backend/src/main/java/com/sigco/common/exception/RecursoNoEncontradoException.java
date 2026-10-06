@@ -13,6 +13,10 @@ package com.sigco.common.exception;
  */
 public class RecursoNoEncontradoException extends RuntimeException {
 
+    /**
+     * Crea el error de "no encontrado" con un mensaje propio. El sistema lo
+     * convierte en una respuesta 404.
+     */
     public RecursoNoEncontradoException(String mensaje) {
         super(mensaje);
     }

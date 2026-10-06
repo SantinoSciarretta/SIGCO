@@ -30,6 +30,10 @@ public class SesionActual {
 
     private final UsuarioRepository usuarioRepositorio;
 
+    /**
+     * Constructor: recibe la consulta de cuentas, para buscar al usuario
+     * completo cuando hace falta.
+     */
     public SesionActual(UsuarioRepository usuarioRepositorio) {
         this.usuarioRepositorio = usuarioRepositorio;
     }
@@ -45,6 +49,10 @@ public class SesionActual {
         return Optional.of(usuario);
     }
 
+    /**
+     * Devuelve el número de cuenta de quien está usando el sistema, si hay
+     * alguien identificado.
+     */
     public Optional<Long> idUsuario() {
         return autenticado().map(UsuarioAutenticado::getIdUsuario);
     }
@@ -86,6 +94,9 @@ public class SesionActual {
                 .orElse(false);
     }
 
+    /**
+     * Indica si quien está usando el sistema tiene el rol de Dueño.
+     */
     public boolean esDueno() {
         return autenticado()
                 .map(u -> com.sigco.accesos.Rol.DUENO.equals(u.getNombreRol()))

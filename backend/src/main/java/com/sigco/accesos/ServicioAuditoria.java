@@ -36,6 +36,10 @@ public class ServicioAuditoria {
     private final RegistroAuditoriaRepository repositorio;
     private final SesionActual sesion;
 
+    /**
+     * Constructor: recibe dónde guardar los registros y cómo saber quién es el
+     * usuario que está haciendo la acción.
+     */
     public ServicioAuditoria(RegistroAuditoriaRepository repositorio, SesionActual sesion) {
         this.repositorio = repositorio;
         this.sesion = sesion;

@@ -32,6 +32,9 @@ export async function misObras() {
   return data;
 }
 
+/**
+ * Pide al servidor los datos completos de una obra.
+ */
 export async function obtenerObra(id) {
   const respuesta = await client.get(`/obras/${id}`);
   return respuesta.data;

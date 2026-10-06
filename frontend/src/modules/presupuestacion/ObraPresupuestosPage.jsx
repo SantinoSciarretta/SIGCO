@@ -203,6 +203,9 @@ function descripcionDe(tipo) {
   return 'Trabajos que se suman después de aprobado el definitivo.';
 }
 
+/**
+ * Escribe una fecha en formato día/mes/año.
+ */
 function fecha(valor) {
   if (!valor) return '—';
   return new Date(valor).toLocaleDateString('es-AR');

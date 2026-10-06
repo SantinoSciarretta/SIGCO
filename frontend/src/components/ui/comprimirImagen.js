@@ -62,6 +62,10 @@ const CALIDAD = 0.82;
 /** Por debajo de esto no vale la pena tocar nada. */
 const MINIMO_PARA_COMPRIMIR = 400 * 1024;
 
+/**
+ * Achica una foto antes de subirla, para que cargue rápido aunque se saque con
+ * el celular en la obra. Los PDF y las imágenes ya chicas se dejan como están.
+ */
 export async function comprimirImagen(archivo) {
   // Los PDF salen intactos: no son imágenes y el lienzo no sabe dibujarlos.
   if (!archivo.type.startsWith('image/')) {
@@ -114,6 +118,10 @@ export async function comprimirImagen(archivo) {
   }
 }
 
+/**
+ * Cambia la extensión del nombre del archivo a .jpg, que es el formato en que
+ * queda la foto comprimida.
+ */
 function nombreJpeg(nombre) {
   const sinExtension = nombre.replace(/\.[^.]+$/, '');
   return `${sinExtension || 'imagen'}.jpg`;

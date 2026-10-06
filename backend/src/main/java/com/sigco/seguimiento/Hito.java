@@ -91,9 +91,17 @@ public class Hito {
     @Column(name = "id_usuario_completa")
     private Long idUsuarioCompleta;
 
+    /**
+     * Constructor vacío que exige la base de datos (JPA) para poder armar el
+     * objeto al leerlo. No se usa desde el código.
+     */
     protected Hito() {
     }
 
+    /**
+     * Crea un hito de la obra con su nombre, su peso en el avance total y su
+     * lugar en la secuencia. Todo hito nace Pendiente.
+     */
     public Hito(Obra obra, String nombreHito, BigDecimal ponderacion, Integer orden) {
         this(obra, nombreHito, ponderacion, orden, null, null);
     }
@@ -134,14 +142,25 @@ public class Hito {
         this.idUsuarioCompleta = null;
     }
 
+    /**
+     * Anota un comentario sobre el hito, por ejemplo una demora o un cambio de
+     * orden.
+     */
     public void registrarObservacion(String observacion) {
         this.observacion = observacion;
     }
 
+    /**
+     * Indica si el hito ya se completó.
+     */
     public boolean estaCompletado() {
         return ESTADO_COMPLETADO.equals(this.estado);
     }
 
+    /**
+     * Métodos de lectura: devuelven los datos guardados del hito. Solo leen, no
+     * modifican nada.
+     */
     public Long getIdHito() {
         return idHito;
     }

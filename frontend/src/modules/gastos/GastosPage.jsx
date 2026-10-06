@@ -253,6 +253,10 @@ export default function GastosPage() {
 
 /* ========================================================================== */
 
+/**
+ * Ventana para cargar un gasto nuevo de la obra: rubro, subrubro, tipo, monto,
+ * fecha, descripción y comprobante.
+ */
 function NuevoGastoModal({ idObra, rubros, onCerrar, onCreado }) {
   const hoy = new Date().toISOString().slice(0, 10);
   const [datos, setDatos] = useState({
@@ -268,6 +272,10 @@ function NuevoGastoModal({ idObra, rubros, onCerrar, onCreado }) {
     ? rubroElegido.subrubros.filter((s) => s.estado === 'Activo')
     : [];
 
+  /**
+   * Actualiza un campo del formulario. Si se cambia el rubro, se borra el
+   * subrubro elegido, porque pertenecía al rubro anterior.
+   */
   const cambiar = (campo) => (e) => {
     const valor = e.target.value;
     setDatos((previo) => ({
@@ -279,6 +287,10 @@ function NuevoGastoModal({ idObra, rubros, onCerrar, onCreado }) {
     setCamposInvalidos((previo) => ({ ...previo, [campo]: undefined }));
   };
 
+  /**
+   * Envía el gasto nuevo al servidor. Si algún dato es rechazado, marca el
+   * campo con el problema.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);
@@ -411,11 +423,17 @@ function NuevoGastoModal({ idObra, rubros, onCerrar, onCreado }) {
 
 /* ========================================================================== */
 
+/**
+ * Ventana para anular un gasto, pidiendo el motivo. El gasto no se borra.
+ */
 function AnularGastoModal({ gasto, onCerrar, onAnulado }) {
   const [motivo, setMotivo] = useState('');
   const [error, setError] = useState(null);
   const [guardando, setGuardando] = useState(false);
 
+  /**
+   * Envía la anulación al servidor y, si sale bien, cierra la ventana.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);

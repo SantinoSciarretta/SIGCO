@@ -76,6 +76,11 @@ public class ObraService {
      */
     private final com.sigco.seguimiento.HitoRepository hitoRepositorio;
 
+    /**
+     * Constructor: recibe lo necesario para leer y guardar obras y clientes,
+     * consultar presupuestos e hitos, controlar qué obras ve cada usuario y
+     * registrar la auditoría.
+     */
     public ObraService(ObraRepository repositorio, ClienteRepository clienteRepositorio,
                        AlcanceDeObras alcance,
                        com.sigco.presupuestacion.PresupuestoRepository presupuestoRepositorio,
@@ -131,13 +136,17 @@ public class ObraService {
      * todas.
      */
     @Transactional(readOnly = true)
-    public List<ObraRespuesta> mias() {
+    public List<ObraRespuesta> obrasAsignadasAlUsuario() {
         return repositorio.porEstado(Obra.ESTADO_EN_EJECUCION).stream()
                 .filter(o -> alcance.alcanza(o.getIdObra()))
                 .map(ObraRespuesta::desde)
                 .toList();
     }
 
+    /**
+     * Devuelve una obra con todos sus datos, siempre que el usuario tenga
+     * permitido verla.
+     */
     @Transactional(readOnly = true)
     public ObraRespuesta obtener(Long id) {
         alcance.exigirAlcance(id);
@@ -392,6 +401,10 @@ public class ObraService {
 
     // ------------------------------------------------------------------
 
+    /**
+     * Busca una obra, con su cliente, por su número. Si no existe, corta la
+     * operación con un error de "no encontrado".
+     */
     private Obra buscarOFallar(Long id) {
         return repositorio.buscarConCliente(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Obra", id));
@@ -405,6 +418,10 @@ public class ObraService {
         }
     }
 
+    /**
+     * Quita los espacios sobrantes de un texto, y si quedó vacío lo guarda como
+     * "sin dato".
+     */
     private String normalizar(String texto) {
         if (texto == null || texto.isBlank()) {
             return null;

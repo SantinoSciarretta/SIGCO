@@ -115,6 +115,10 @@ public class Usuario {
     @Column(name = "fecha_alta", nullable = false)
     private LocalDateTime fechaAlta;
 
+    /**
+     * Constructor vacío que exige la base de datos (JPA) para poder armar el
+     * objeto al leerlo. No se usa desde el código.
+     */
     protected Usuario() {
     }
 
@@ -215,6 +219,11 @@ public class Usuario {
         this.versionSesion++;
     }
 
+    /**
+     * Métodos de lectura: devuelven los datos guardados de la cuenta. Solo
+     * leen, no modifican nada. Para no exponerla, no hay ningún método que
+     * devuelva la contraseña.
+     */
     public int getVersionSesion() {
         return versionSesion;
     }
@@ -268,18 +277,32 @@ public class Usuario {
         return intentosFallidos;
     }
 
+    /**
+     * Indica si la cuenta tiene que cambiar su contraseña antes de poder usar
+     * el sistema.
+     */
     public boolean debeCambiarContrasena() {
         return debeCambiarContrasena;
     }
 
+    /**
+     * Le asigna otro rol a la cuenta.
+     */
     public void cambiarRol(Rol nuevoRol) {
         this.rol = nuevoRol;
     }
 
+    /**
+     * Vincula la cuenta con un operario registrado en Personal (o la
+     * desvincula, si se pasa vacío).
+     */
     public void vincularOperario(Operario nuevoOperario) {
         this.operario = nuevoOperario;
     }
 
+    /**
+     * Anota la fecha y hora del último ingreso al sistema.
+     */
     public void registrarIngreso() {
         this.ultimaFechaAcceso = LocalDateTime.now();
     }
@@ -296,11 +319,17 @@ public class Usuario {
         this.motivoBaja = motivo;
     }
 
+    /**
+     * Vuelve a habilitar una cuenta dada de baja y borra el motivo de la baja.
+     */
     public void reactivar() {
         this.estado = ESTADO_ACTIVO;
         this.motivoBaja = null;
     }
 
+    /**
+     * Indica si la cuenta está habilitada para ingresar.
+     */
     public boolean estaActivo() {
         return ESTADO_ACTIVO.equals(estado);
     }

@@ -39,6 +39,11 @@ public class UsuarioAutenticado implements org.springframework.security.core.use
      */
     private final boolean debeCambiarContrasena;
 
+    /**
+     * Arma el resumen del usuario que queda identificado durante un pedido: su
+     * número, nombre, rol, operario vinculado, permisos y si debe cambiar la
+     * contraseña.
+     */
     public UsuarioAutenticado(Usuario usuario) {
         this.idUsuario = usuario.getIdUsuario();
         this.debeCambiarContrasena = usuario.debeCambiarContrasena();
@@ -53,10 +58,17 @@ public class UsuarioAutenticado implements org.springframework.security.core.use
                 .toList();
     }
 
+    /**
+     * Indica si el usuario tiene pendiente cambiar su contraseña.
+     */
     public boolean debeCambiarContrasena() {
         return debeCambiarContrasena;
     }
 
+    /**
+     * Métodos de lectura: devuelven los datos del usuario identificado. Los
+     * últimos los pide Spring Security con esos nombres exactos.
+     */
     public Long getIdUsuario() {
         return idUsuario;
     }

@@ -87,9 +87,17 @@ public class Cuota {
     @jakarta.persistence.OrderBy("fechaPago ASC, idPago ASC")
     private java.util.List<Pago> pagos = new java.util.ArrayList<>();
 
+    /**
+     * Constructor vacío que exige la base de datos (JPA) para poder armar el
+     * objeto al leerlo. No se usa desde el código.
+     */
     protected Cuota() {
     }
 
+    /**
+     * Crea una cuota del plan de cobro con su número, su monto y su fecha de
+     * vencimiento. Toda cuota nace Pendiente.
+     */
     public Cuota(Obra obra, Integer numeroCuota, BigDecimal montoCuota,
                  LocalDate fechaVencimiento) {
         this.obra = obra;
@@ -189,6 +197,10 @@ public class Cuota {
         return restante.signum() < 0 ? BigDecimal.ZERO : restante;
     }
 
+    /**
+     * Devuelve todos los pagos de la cuota, incluidos los anulados, en una
+     * lista que no se puede modificar desde afuera.
+     */
     public java.util.List<Pago> getPagos() {
         return java.util.Collections.unmodifiableList(pagos);
     }
@@ -256,10 +268,16 @@ public class Cuota {
         }
     }
 
+    /**
+     * Indica si esta cuota es el anticipo, que siempre lleva el número cero.
+     */
     public boolean esAnticipo() {
         return numeroCuota != null && numeroCuota == 0;
     }
 
+    /**
+     * Indica si la cuota ya se cobró entera.
+     */
     public boolean estaAbonada() {
         return ESTADO_ABONADA.equals(this.estado);
     }
@@ -280,12 +298,19 @@ public class Cuota {
                 || (tienePagos() && saldo().signum() > 0);
     }
 
+    /**
+     * Indica si la cuota pasó su fecha de vencimiento y todavía se debe algo.
+     */
     public boolean estaVencida() {
         return ESTADO_VENCIDA.equals(this.estado);
     }
 
     // ---------- Metodos de acceso ----------
 
+    /**
+     * Métodos de lectura: devuelven los datos guardados de la cuota. Solo leen,
+     * no modifican nada.
+     */
     public Long getIdCuota() {
         return idCuota;
     }

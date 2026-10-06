@@ -83,6 +83,10 @@ export default function PresupuestoDetalle() {
     return () => { vigente = false; };
   }, []);
 
+  /**
+   * Cambia el estado del presupuesto (enviado, aprobado o rechazado) y muestra
+   * el resultado.
+   */
   const cambiarEstado = async (nuevoEstado) => {
     try {
       setPresupuesto(await cambiarEstadoPresupuesto(id, nuevoEstado));
@@ -92,6 +96,9 @@ export default function PresupuestoDetalle() {
     }
   };
 
+  /**
+   * Saca un ítem del presupuesto. Solo se puede mientras está en borrador.
+   */
   const eliminarItem = async (idItem) => {
     try {
       setPresupuesto(await quitarItem(id, idItem));
@@ -431,6 +438,11 @@ function ItemModal({ idPresupuesto, item, rubros, materiales, onCerrar, onGuarda
     setError(null);
   };
 
+  /**
+   * Actualiza un campo del formulario del ítem. Si se cambia el rubro, se
+   * borran el subrubro y el material elegidos, porque pertenecían al rubro
+   * anterior.
+   */
   const cambiar = (campo) => (e) => {
     const valor = e.target.value;
     setDatos((previo) => ({
@@ -447,6 +459,10 @@ function ItemModal({ idPresupuesto, item, rubros, materiales, onCerrar, onGuarda
   // servidor a partir de cantidad por valor unitario.
   const subtotal = (Number(datos.cantidad) || 0) * (Number(datos.valorUnitario) || 0);
 
+  /**
+   * Guarda el ítem (nuevo o editado). Si algún dato es rechazado, marca el
+   * campo con el problema.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);
@@ -601,6 +617,10 @@ function PlanModal({ idPresupuesto, presupuesto, onCerrar, onGuardado }) {
   const montoAnticipo = total * (Number(anticipo) || 0) / 100;
   const montoCuota = Number(cuotas) > 0 ? (total - montoAnticipo) / Number(cuotas) : 0;
 
+  /**
+   * Guarda la forma de pago del presupuesto: el porcentaje de anticipo, la
+   * cantidad de cuotas y el plazo.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);
@@ -679,6 +699,10 @@ function DuplicarModal({ idPresupuesto, onCerrar }) {
   const [guardando, setGuardando] = useState(false);
   const [creado, setCreado] = useState(null);
 
+  /**
+   * Crea un presupuesto nuevo que copia los ítems de este, por ejemplo para
+   * usarlo como base de otra obra.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);
@@ -748,6 +772,9 @@ function claseDeRubro(rubro, abierto, estilos) {
   return rubro.esManoDeObra ? estilos.rubroManoDeObra : estilos.rubroBoton;
 }
 
+/**
+ * Elige el estilo con que se muestra el estado del presupuesto.
+ */
 function claseDeEstado(estado) {
   if (estado === 'Aprobado') return estilos.estadoAprobado;
   if (estado === 'Enviado') return estilos.estadoEnviado;

@@ -49,9 +49,17 @@ public class Inasistencia {
     @Column(name = "id_usuario_registro")
     private Long idUsuarioRegistro;
 
+    /**
+     * Constructor vacío que exige la base de datos (JPA) para poder armar el
+     * objeto al leerlo. No se usa desde el código.
+     */
     protected Inasistencia() {
     }
 
+    /**
+     * Crea el registro de una falta: qué operario faltó, en qué obra, qué día
+     * y, si se conoce, por qué.
+     */
     public Inasistencia(Operario operario, Obra obra, LocalDate fechaFalta, String motivo) {
         this.operario = operario;
         this.obra = obra;
@@ -64,6 +72,10 @@ public class Inasistencia {
         this.motivo = motivo;
     }
 
+    /**
+     * Métodos de lectura: devuelven los datos guardados de la inasistencia.
+     * Solo leen, no modifican nada.
+     */
     public Long getIdInasistencia() {
         return idInasistencia;
     }

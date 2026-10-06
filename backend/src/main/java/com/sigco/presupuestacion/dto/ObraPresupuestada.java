@@ -58,6 +58,11 @@ public record ObraPresupuestada(
             Presupuesto.TIPO_DEFINITIVO,
             Presupuesto.TIPO_ADICIONAL);
 
+    /**
+     * Arma la fila de una obra en el listado de presupuestos: ordena sus
+     * instancias según el circuito (cotización, anteproyecto, definitivo,
+     * adicionales) y elige cuál de ellas representa a la obra.
+     */
     public static ObraPresupuestada de(Obra obra, List<Presupuesto> presupuestos) {
         List<Presupuesto> ordenados = presupuestos.stream()
                 .sorted(Comparator

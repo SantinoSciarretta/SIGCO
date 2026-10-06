@@ -30,6 +30,10 @@ public class TableroController {
 
     private final TableroService servicio;
 
+    /**
+     * Constructor: Spring le entrega automáticamente el servicio que arma el
+     * tablero.
+     */
     public TableroController(TableroService servicio) {
         this.servicio = servicio;
     }
@@ -41,7 +45,7 @@ public class TableroController {
      * asi todos los numeros corresponden al mismo instante.
      */
     @GetMapping
-    public Tablero tablero() {
-        return servicio.armar();
+    public Tablero obtenerTablero() {
+        return servicio.armarTablero();
     }
 }

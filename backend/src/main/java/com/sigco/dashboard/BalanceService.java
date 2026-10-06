@@ -51,6 +51,10 @@ public class BalanceService {
     private final CobrosService cobrosService;
     private final SeguimientoService seguimientoService;
 
+    /**
+     * Constructor: recibe los servicios de Gastos, Cobros y Seguimiento, de los
+     * que saca los números del balance.
+     */
     public BalanceService(ObraRepository obraRepositorio,
                           GastoService gastoService,
                           CobrosService cobrosService,
@@ -61,8 +65,14 @@ public class BalanceService {
         this.seguimientoService = seguimientoService;
     }
 
+    /**
+     * Calcula el balance de una obra con tres números separados: la ganancia
+     * estimada (presupuestado menos gastado), el resultado de caja (cobrado
+     * menos gastado) y el saldo por cobrar. Agrega además el avance físico y lo
+     * que queda pendiente para cerrar la obra.
+     */
     @Transactional(readOnly = true)
-    public BalanceDeObra de(Long idObra) {
+    public BalanceDeObra calcularBalanceDeObra(Long idObra) {
         Obra obra = obraRepositorio.findById(idObra)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Obra", idObra));
 
@@ -71,7 +81,7 @@ public class BalanceService {
         // presupuestado es cero y los gastos quedan igual a la vista.
         EstadoFinanciero economia = gastoService.estadoFinancieroOVacio(idObra);
         ResumenCobro cobros = cobrosService.resumenOVacio(idObra);
-        AvanceObra avance = seguimientoService.avance(idObra);
+        AvanceObra avance = seguimientoService.calcularAvanceDeObra(idObra);
 
         BigDecimal presupuestado = economia.totalPresupuestado();
         BigDecimal gastado = economia.totalGastado();

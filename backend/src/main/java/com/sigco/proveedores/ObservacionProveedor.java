@@ -55,9 +55,18 @@ public class ObservacionProveedor {
     @Column(name = "fecha", nullable = false)
     private LocalDateTime fecha;
 
+    /**
+     * Constructor vacío que exige la base de datos (JPA) para poder armar el
+     * objeto al leerlo. No se usa desde el código.
+     */
     protected ObservacionProveedor() {
     }
 
+    /**
+     * Crea una observación sobre el comportamiento de un proveedor (una demora,
+     * una diferencia en la entrega), opcionalmente vinculada al pedido que la
+     * originó. La fecha se completa sola.
+     */
     public ObservacionProveedor(Proveedor proveedor, Long idPedido, String descripcion) {
         this.proveedor = proveedor;
         this.idPedido = idPedido;
@@ -67,6 +76,10 @@ public class ObservacionProveedor {
 
     // ---------- Metodos de acceso ----------
 
+    /**
+     * Métodos de lectura: devuelven los datos guardados de la observación. Solo
+     * leen, no modifican nada.
+     */
     public Long getIdObservacion() {
         return idObservacion;
     }

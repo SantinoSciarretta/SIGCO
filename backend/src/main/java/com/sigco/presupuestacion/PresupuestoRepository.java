@@ -12,6 +12,10 @@ import org.springframework.data.repository.query.Param;
 public interface PresupuestoRepository extends JpaRepository<Presupuesto, Long> {
 
     /**
+     * Busca presupuestos, del más nuevo al más viejo, filtrando opcionalmente
+     * por obra, por tipo y por estado. Un filtro en 0 o vacío significa
+     * "todos".
+     *
      * Listado de presupuestos, con la obra y su cliente ya cargados.
      *
      * Como en el resto del sistema, ningun parametro puede llegar en null: la

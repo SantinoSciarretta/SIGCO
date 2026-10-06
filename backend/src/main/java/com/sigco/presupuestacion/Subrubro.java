@@ -43,6 +43,10 @@ public class Subrubro {
     @Column(name = "estado", nullable = false, length = 10)
     private String estado;
 
+    /**
+     * Constructor vacío que exige la base de datos (JPA) para poder armar el
+     * objeto al leerlo. No se usa desde el código.
+     */
     protected Subrubro() {
     }
 
@@ -64,20 +68,34 @@ public class Subrubro {
         this.nombreSubrubro = nombreSubrubro;
     }
 
+    /**
+     * Vuelve a poner el subrubro disponible.
+     */
     public void activar() {
         this.estado = ESTADO_ACTIVO;
     }
 
+    /**
+     * Saca el subrubro de la lista disponible, sin afectar los presupuestos y
+     * gastos que ya lo usan.
+     */
     public void desactivar() {
         this.estado = ESTADO_INACTIVO;
     }
 
+    /**
+     * Indica si el subrubro está disponible.
+     */
     public boolean estaActivo() {
         return ESTADO_ACTIVO.equals(this.estado);
     }
 
     // ---------- Metodos de acceso ----------
 
+    /**
+     * Métodos de lectura: devuelven los datos guardados del subrubro. Solo
+     * leen, no modifican nada.
+     */
     public Long getIdSubrubro() {
         return idSubrubro;
     }

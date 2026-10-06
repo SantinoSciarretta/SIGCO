@@ -48,10 +48,18 @@ public class PersonalController {
 
     private final PersonalService servicio;
 
+    /**
+     * Constructor: Spring le entrega automáticamente el servicio que contiene
+     * la lógica de Personal.
+     */
     public PersonalController(PersonalService servicio) {
         this.servicio = servicio;
     }
 
+    /**
+     * GET /api/operarios: devuelve los operarios, filtrando opcionalmente por
+     * nombre, estado y obra, con la cantidad de faltas de cada uno.
+     */
     @GetMapping
     public List<OperarioRespuesta> listar(
             @RequestParam(required = false) String busqueda,
@@ -60,11 +68,18 @@ public class PersonalController {
         return servicio.listar(busqueda, estado, obra);
     }
 
+    /**
+     * GET /api/operarios/{id}: devuelve la ficha de un operario con las obras
+     * en las que trabajó y sus faltas.
+     */
     @GetMapping("/{id}")
     public OperarioRespuesta obtener(@PathVariable Long id) {
         return servicio.obtener(id);
     }
 
+    /**
+     * POST /api/operarios: da de alta un operario nuevo.
+     */
     @PreAuthorize("hasAuthority('personal.editar')")
     @PostMapping
     public ResponseEntity<OperarioRespuesta> crear(
@@ -75,6 +90,9 @@ public class PersonalController {
                 .body(creado);
     }
 
+    /**
+     * PUT /api/operarios/{id}: corrige el nombre o el teléfono de un operario.
+     */
     @PreAuthorize("hasAuthority('personal.editar')")
     @PutMapping("/{id}")
     public OperarioRespuesta actualizar(@PathVariable Long id,
@@ -82,6 +100,10 @@ public class PersonalController {
         return servicio.actualizar(id, solicitud);
     }
 
+    /**
+     * PATCH /api/operarios/{id}/estado: activa o desactiva un operario. Al
+     * desactivarlo se cierran sus asignaciones vigentes.
+     */
     @PreAuthorize("hasAuthority('personal.editar')")
     @PatchMapping("/{id}/estado")
     public OperarioRespuesta cambiarEstado(@PathVariable Long id,
@@ -89,6 +111,9 @@ public class PersonalController {
         return servicio.cambiarEstado(id, cambio);
     }
 
+    /**
+     * POST /api/operarios/{id}/asignaciones: asigna el operario a una obra.
+     */
     @PreAuthorize("hasAuthority('personal.editar')")
     @PostMapping("/{id}/asignaciones")
     public OperarioRespuesta asignar(@PathVariable Long id,
@@ -96,6 +121,10 @@ public class PersonalController {
         return servicio.asignar(id, asignacion);
     }
 
+    /**
+     * DELETE /api/operarios/{id}/asignaciones/{idObra}: saca al operario de esa
+     * obra. La asignación queda cerrada en el historial, no se borra.
+     */
     @PreAuthorize("hasAuthority('personal.editar')")
     @DeleteMapping("/{id}/asignaciones/{idObra}")
     public OperarioRespuesta desasignar(@PathVariable Long id, @PathVariable Long idObra) {

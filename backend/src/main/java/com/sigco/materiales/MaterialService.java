@@ -30,6 +30,9 @@ public class MaterialService {
     private final MaterialRepository repositorio;
     private final RubroRepository rubroRepositorio;
 
+    /**
+     * Constructor: recibe lo necesario para leer y guardar materiales y rubros.
+     */
     public MaterialService(MaterialRepository repositorio, RubroRepository rubroRepositorio) {
         this.repositorio = repositorio;
         this.rubroRepositorio = rubroRepositorio;
@@ -39,6 +42,9 @@ public class MaterialService {
     //  Consulta
     // ------------------------------------------------------------------
 
+    /**
+     * Devuelve los materiales del catálogo que cumplen los filtros indicados.
+     */
     @Transactional(readOnly = true)
     public List<MaterialRespuesta> listar(String busqueda, Long idRubro, String estado) {
         return repositorio.buscar(
@@ -63,6 +69,10 @@ public class MaterialService {
                 .toList();
     }
 
+    /**
+     * Devuelve un material con todos sus datos. Si no existe, responde con un
+     * error de "no encontrado".
+     */
     @Transactional(readOnly = true)
     public MaterialRespuesta obtener(Long id) {
         return MaterialRespuesta.desde(buscarOFallar(id));
@@ -72,6 +82,11 @@ public class MaterialService {
     //  Alta y edicion
     // ------------------------------------------------------------------
 
+    /**
+     * Da de alta un material en el catálogo. Comprueba que el rubro exista y
+     * esté activo, y que no haya otro material con el mismo nombre en ese
+     * rubro.
+     */
     @Transactional
     public MaterialRespuesta crear(MaterialSolicitud solicitud) {
         Rubro rubro = buscarRubroOFallar(solicitud.idRubro());
@@ -116,6 +131,10 @@ public class MaterialService {
         return MaterialRespuesta.desde(material);
     }
 
+    /**
+     * Activa o desactiva un material. No se puede activar un material de un
+     * rubro que está inactivo.
+     */
     @Transactional
     public MaterialRespuesta cambiarEstado(Long id, String nuevoEstado) {
         Material material = buscarOFallar(id);
@@ -163,6 +182,9 @@ public class MaterialService {
         }
     }
 
+    /**
+     * Frena la operación si el rubro está inactivo, explicando por qué.
+     */
     private void exigirRubroActivo(Rubro rubro) {
         if (!rubro.estaActivo()) {
             throw new ReglaDeNegocioException(
@@ -171,16 +193,28 @@ public class MaterialService {
         }
     }
 
+    /**
+     * Busca un material por su número. Si no existe, corta la operación con un
+     * error de "no encontrado".
+     */
     private Material buscarOFallar(Long id) {
         return repositorio.buscarConRubro(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Material", id));
     }
 
+    /**
+     * Busca un rubro por su número. Si no existe, corta la operación con un
+     * error de "no encontrado".
+     */
     private Rubro buscarRubroOFallar(Long id) {
         return rubroRepositorio.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Rubro", id));
     }
 
+    /**
+     * Prepara un filtro de búsqueda: si viene vacío lo convierte en "sin
+     * filtro", y si no le quita los espacios sobrantes.
+     */
     private String sinFiltro(String texto) {
         if (texto == null || texto.isBlank()) {
             return "";

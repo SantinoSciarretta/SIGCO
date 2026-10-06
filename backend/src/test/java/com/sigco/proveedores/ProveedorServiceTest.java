@@ -59,7 +59,7 @@ class ProveedorServiceTest {
     }
 
     private Proveedor proveedor(String nombre, String zona, Long id) {
-        Proveedor p = new Proveedor(nombre, zona, null, null);
+        Proveedor p = new Proveedor(nombre, zona, null, null, null);
         asignarId(p, "idProveedor", id);
         return p;
     }
@@ -84,9 +84,11 @@ class ProveedorServiceTest {
             when(repositorio.save(any(Proveedor.class))).thenAnswer(i -> i.getArgument(0));
 
             ProveedorRespuesta r = servicio.crear(new ProveedorSolicitud(
-                    "  Corralón San Martín  ", "  Zona Norte  ", "11 4444-5555", null));
+                    "  Corralón San Martín  ", "  Zona Norte  ", "11 4444-5555", null,
+                    "  Av. San Martín 1234, Vicente López  "));
 
             assertThat(r.estado()).isEqualTo(Proveedor.ESTADO_ACTIVO);
+            assertThat(r.direccion()).isEqualTo("Av. San Martín 1234, Vicente López");
             assertThat(r.nombreProveedor()).isEqualTo("Corralón San Martín");
             assertThat(r.zonaCobertura()).isEqualTo("Zona Norte");
             assertThat(r.cantidadCotizaciones()).isZero();
@@ -99,7 +101,7 @@ class ProveedorServiceTest {
                     .thenReturn(Optional.of(proveedor("Corralón San Martín", "Zona Norte", 1L)));
 
             assertThatThrownBy(() -> servicio.crear(new ProveedorSolicitud(
-                    "Corralón San Martín", "Zona Norte", null, null)))
+                    "Corralón San Martín", "Zona Norte", null, null, null)))
                     .isInstanceOf(ReglaDeNegocioException.class)
                     .hasMessageContaining("Ya existe un proveedor");
 
@@ -116,7 +118,7 @@ class ProveedorServiceTest {
             when(repositorio.save(any(Proveedor.class))).thenAnswer(i -> i.getArgument(0));
 
             assertThat(servicio.crear(new ProveedorSolicitud(
-                    "Corralón San Martín", "Zona Sur", null, null)).zonaCobertura())
+                    "Corralón San Martín", "Zona Sur", null, null, null)).zonaCobertura())
                     .isEqualTo("Zona Sur");
         }
 
@@ -129,7 +131,7 @@ class ProveedorServiceTest {
                     .thenReturn(Optional.of(existente));
 
             assertThat(servicio.actualizar(1L, new ProveedorSolicitud(
-                    "Corralón San Martín", "Zona Norte", "11 9999-0000", null))
+                    "Corralón San Martín", "Zona Norte", "11 9999-0000", null, null))
                     .telefonoContacto())
                     .isEqualTo("11 9999-0000");
         }

@@ -27,6 +27,10 @@ public class ClienteService {
     private final ClienteRepository repositorio;
     private final ObraRepository obraRepositorio;
 
+    /**
+     * Constructor: recibe lo necesario para leer y guardar clientes y para
+     * contar cuántas obras tiene cada uno.
+     */
     public ClienteService(ClienteRepository repositorio, ObraRepository obraRepositorio) {
         this.repositorio = repositorio;
         this.obraRepositorio = obraRepositorio;
@@ -57,6 +61,10 @@ public class ClienteService {
                 .toList();
     }
 
+    /**
+     * Devuelve los datos de un cliente junto con la cantidad de obras que
+     * tiene. Si el cliente no existe, responde con un error de "no encontrado".
+     */
     @Transactional(readOnly = true)
     public ClienteRespuesta obtener(Long id) {
         Cliente cliente = buscarOFallar(id);

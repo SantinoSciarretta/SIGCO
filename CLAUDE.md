@@ -303,7 +303,7 @@ Nombres, tipos PostgreSQL, PK/FK exactos del Diccionario de Datos. **Respetar es
 - **material**: `id_material` (PK), `nombre_material` (VARCHAR 150), `id_rubro` (FK→rubro), `unidad_medida` (VARCHAR 20), `estado` (VARCHAR 10), `fecha_alta` (TIMESTAMP)
 
 ### Módulo Proveedores
-- **proveedor**: `id_proveedor` (PK), `nombre_proveedor` (VARCHAR 150), `zona_cobertura` (VARCHAR 100), `telefono_contacto` (VARCHAR 30), `email_contacto` (VARCHAR 100), `estado` (VARCHAR 10), `fecha_alta` (TIMESTAMP)
+- **proveedor**: `id_proveedor` (PK), `nombre_proveedor` (VARCHAR 150), `zona_cobertura` (VARCHAR 100), `direccion` (VARCHAR 200, opcional, `V23`), `telefono_contacto` (VARCHAR 30), `email_contacto` (VARCHAR 100), `estado` (VARCHAR 10), `fecha_alta` (TIMESTAMP)
 - **cotizacion**: `id_cotizacion` (PK), `id_proveedor` (FK→proveedor), `id_material` (FK→material), `precio_cotizado` (NUMERIC 12,2), `fecha_cotizacion` (TIMESTAMP)
 - **observacion_proveedor**: `id_observacion` (PK), `id_proveedor` (FK→proveedor), `id_pedido` (FK→pedido), `descripcion` (VARCHAR 300), `fecha` (TIMESTAMP)
 

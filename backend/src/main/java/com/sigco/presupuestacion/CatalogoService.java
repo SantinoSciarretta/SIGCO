@@ -32,6 +32,9 @@ public class CatalogoService {
     private final RubroRepository rubroRepositorio;
     private final SubrubroRepository subrubroRepositorio;
 
+    /**
+     * Constructor: recibe lo necesario para leer y guardar rubros y subrubros.
+     */
     public CatalogoService(RubroRepository rubroRepositorio,
                            SubrubroRepository subrubroRepositorio) {
         this.rubroRepositorio = rubroRepositorio;
@@ -69,17 +72,27 @@ public class CatalogoService {
     //  Rubros
     // ------------------------------------------------------------------
 
+    /**
+     * Da de alta un rubro nuevo en el catálogo. Frena si ya existe otro con el
+     * mismo nombre, y si se lo marca como rubro de mano de obra controla que no
+     * haya otro marcado.
+     */
     @Transactional
     public RubroRespuesta crearRubro(RubroSolicitud solicitud) {
         String nombre = solicitud.nombreRubro().trim();
         verificarNombreDeRubroLibre(nombre, null);
 
         Rubro rubro = new Rubro(nombre);
-        aplicarManoDeObra(rubro, solicitud.esManoDeObra());
+        // Si el pedido no dice nada, el rubro nuevo no es el de mano de obra.
+        aplicarManoDeObra(rubro, Boolean.TRUE.equals(solicitud.esManoDeObra()));
 
         return RubroRespuesta.soloRubro(rubroRepositorio.save(rubro));
     }
 
+    /**
+     * Cambia el nombre de un rubro, y opcionalmente su marca de mano de obra,
+     * cuidando que no quede repetido.
+     */
     @Transactional
     public RubroRespuesta renombrarRubro(Long id, RubroSolicitud solicitud) {
         Rubro rubro = buscarRubroOFallar(id);
@@ -87,7 +100,11 @@ public class CatalogoService {
 
         verificarNombreDeRubroLibre(nombre, id);
         rubro.renombrar(nombre);
-        aplicarManoDeObra(rubro, solicitud.esManoDeObra());
+        // Si el pedido no dice nada, la marca queda como estaba: cambiarle el
+        // nombre al rubro de mano de obra no tiene que sacarle la marca.
+        if (solicitud.esManoDeObra() != null) {
+            aplicarManoDeObra(rubro, solicitud.esManoDeObra());
+        }
 
         return RubroRespuesta.soloRubro(rubro);
     }
@@ -121,6 +138,10 @@ public class CatalogoService {
         rubro.marcarComoManoDeObra(esManoDeObra);
     }
 
+    /**
+     * Activa o desactiva un rubro. Un rubro desactivado deja de ofrecerse en
+     * presupuestos nuevos, pero no afecta a los que ya lo usan.
+     */
     @Transactional
     public RubroRespuesta cambiarEstadoRubro(Long id, String nuevoEstado) {
         Rubro rubro = buscarRubroOFallar(id);
@@ -138,6 +159,10 @@ public class CatalogoService {
     //  Subrubros
     // ------------------------------------------------------------------
 
+    /**
+     * Da de alta un subrubro dentro de un rubro. Frena si ese rubro ya tiene un
+     * subrubro con el mismo nombre.
+     */
     @Transactional
     public SubrubroRespuesta crearSubrubro(Long idRubro, SubrubroSolicitud solicitud) {
         Rubro rubro = buscarRubroOFallar(idRubro);
@@ -149,6 +174,10 @@ public class CatalogoService {
                 subrubroRepositorio.save(new Subrubro(rubro, nombre)));
     }
 
+    /**
+     * Cambia el nombre de un subrubro, cuidando que no quede repetido dentro de
+     * su rubro.
+     */
     @Transactional
     public SubrubroRespuesta renombrarSubrubro(Long id, SubrubroSolicitud solicitud) {
         Subrubro subrubro = buscarSubrubroOFallar(id);
@@ -160,6 +189,10 @@ public class CatalogoService {
         return SubrubroRespuesta.desde(subrubro);
     }
 
+    /**
+     * Activa o desactiva un subrubro. No se puede activar un subrubro cuyo
+     * rubro está inactivo.
+     */
     @Transactional
     public SubrubroRespuesta cambiarEstadoSubrubro(Long id, String nuevoEstado) {
         Subrubro subrubro = buscarSubrubroOFallar(id);
@@ -224,11 +257,19 @@ public class CatalogoService {
         }
     }
 
+    /**
+     * Busca un rubro por su número. Si no existe, corta la operación con un
+     * error de "no encontrado".
+     */
     private Rubro buscarRubroOFallar(Long id) {
         return rubroRepositorio.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Rubro", id));
     }
 
+    /**
+     * Busca un subrubro por su número. Si no existe, corta la operación con un
+     * error de "no encontrado".
+     */
     private Subrubro buscarSubrubroOFallar(Long id) {
         return subrubroRepositorio.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Subrubro", id));

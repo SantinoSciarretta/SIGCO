@@ -118,6 +118,10 @@ public class Presupuesto {
                cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItemPresupuesto> items = new ArrayList<>();
 
+    /**
+     * Constructor vacío que exige la base de datos (JPA) para poder armar el
+     * objeto al leerlo. No se usa desde el código.
+     */
     protected Presupuesto() {
     }
 
@@ -169,11 +173,17 @@ public class Presupuesto {
                 .setScale(DECIMALES, RoundingMode.HALF_UP);
     }
 
+    /**
+     * Suma un ítem al presupuesto y vuelve a calcular el total.
+     */
     public void agregarItem(ItemPresupuesto item) {
         this.items.add(item);
         recalcularTotal();
     }
 
+    /**
+     * Saca un ítem del presupuesto y vuelve a calcular el total.
+     */
     public void quitarItem(ItemPresupuesto item) {
         this.items.remove(item);
         recalcularTotal();
@@ -222,34 +232,61 @@ public class Presupuesto {
     //  Estados
     // ------------------------------------------------------------------
 
+    /**
+     * Marca el presupuesto como enviado al cliente.
+     */
     public void enviar() {
         this.estado = ESTADO_ENVIADO;
     }
 
+    /**
+     * Marca el presupuesto como aprobado por el cliente.
+     */
     public void aprobar() {
         this.estado = ESTADO_APROBADO;
     }
 
+    /**
+     * Marca el presupuesto como rechazado por el cliente.
+     */
     public void rechazar() {
         this.estado = ESTADO_RECHAZADO;
     }
 
+    /**
+     * Indica si el presupuesto todavía está en borrador, es decir que el
+     * cliente no lo vio y se puede seguir editando.
+     */
     public boolean esBorrador() {
         return ESTADO_BORRADOR.equals(this.estado);
     }
 
+    /**
+     * Indica si el cliente aprobó el presupuesto.
+     */
     public boolean estaAprobado() {
         return ESTADO_APROBADO.equals(this.estado);
     }
 
+    /**
+     * Indica si el presupuesto ya tuvo respuesta del cliente (aprobado o
+     * rechazado) y no admite más cambios de estado.
+     */
     public boolean estaCerrado() {
         return ESTADO_APROBADO.equals(this.estado) || ESTADO_RECHAZADO.equals(this.estado);
     }
 
+    /**
+     * Indica si es una cotización inicial, la que se calcula con metros
+     * cuadrados por valor de referencia.
+     */
     public boolean esCotizacionInicial() {
         return TIPO_COTIZACION_INICIAL.equals(this.tipoPresupuesto);
     }
 
+    /**
+     * Indica si es el presupuesto definitivo.
+     */
     public boolean esDefinitivo() {
         return TIPO_DEFINITIVO.equals(this.tipoPresupuesto);
     }
@@ -261,6 +298,10 @@ public class Presupuesto {
 
     // ---------- Metodos de acceso ----------
 
+    /**
+     * Métodos de lectura: devuelven los datos guardados del presupuesto. Solo
+     * leen, no modifican nada.
+     */
     public Long getIdPresupuesto() {
         return idPresupuesto;
     }

@@ -28,6 +28,10 @@ import java.util.List;
  */
 public final class PlanillaDtos {
 
+    /**
+     * Constructor privado: esta clase solo agrupa los formatos de datos de la
+     * planilla de carga, no se crean objetos de ella.
+     */
     private PlanillaDtos() {
     }
 

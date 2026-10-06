@@ -311,7 +311,7 @@ class SeguimientoServiceTest {
             tresHitos(obra);
             sinAvanceFinanciero();
 
-            AvanceObra a = servicio.avance(5L);
+            AvanceObra a = servicio.calcularAvanceDeObra(5L);
 
             // El avance físico vale por sí solo: no se rompe el panel porque
             // falte el otro lado de la comparación.

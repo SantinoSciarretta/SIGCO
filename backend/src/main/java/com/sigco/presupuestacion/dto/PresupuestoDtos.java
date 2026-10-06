@@ -20,6 +20,10 @@ import java.math.BigDecimal;
  */
 public final class PresupuestoDtos {
 
+    /**
+     * Constructor privado: esta clase solo agrupa los formatos de datos que
+     * entran al módulo Presupuestación, no se crean objetos de ella.
+     */
     private PresupuestoDtos() {
     }
 

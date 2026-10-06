@@ -18,6 +18,10 @@ import estilos from './Tablero.module.css';
  */
 const RUTAS_SIN_FILTRO_DE_OBRA = new Set(['/pedidos', '/cobranzas']);
 
+/**
+ * Arma el enlace de un pendiente del tablero, agregándole la obra para que la
+ * pantalla de destino ya la muestre seleccionada.
+ */
 function rutaConObra(pendiente) {
   if (!pendiente.idObra || !RUTAS_SIN_FILTRO_DE_OBRA.has(pendiente.ruta)) {
     return pendiente.ruta;

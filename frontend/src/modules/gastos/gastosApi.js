@@ -2,6 +2,10 @@ import client from '../../api/client';
 
 /** Cliente del módulo Gastos. */
 
+/**
+ * Pide al servidor los gastos, filtrando opcionalmente por obra, rubro, tipo,
+ * estado y rango de fechas.
+ */
 export async function listarGastos({ obra, rubro, tipo, estado, desde, hasta } = {}) {
   const respuesta = await client.get('/gastos', {
     params: {
@@ -16,11 +20,17 @@ export async function listarGastos({ obra, rubro, tipo, estado, desde, hasta } =
   return respuesta.data;
 }
 
+/**
+ * Registra un gasto nuevo.
+ */
 export async function crearGasto(datos) {
   const respuesta = await client.post('/gastos', datos);
   return respuesta.data;
 }
 
+/**
+ * Corrige los datos de un gasto ya cargado.
+ */
 export async function actualizarGasto(id, datos) {
   const respuesta = await client.put(`/gastos/${id}`, datos);
   return respuesta.data;
@@ -61,6 +71,10 @@ export function claseDeSemaforo(semaforo, estilos) {
   }
 }
 
+/**
+ * Escribe un monto en pesos con dos decimales, al estilo argentino. Si no hay
+ * monto, muestra un guion.
+ */
 export function pesos(monto) {
   if (monto === null || monto === undefined) return '—';
   return `$ ${Number(monto).toLocaleString('es-AR', {
@@ -74,6 +88,9 @@ export function pesosCorto(monto) {
   return `$ ${Number(monto).toLocaleString('es-AR', { maximumFractionDigits: 0 })}`;
 }
 
+/**
+ * Escribe una fecha en formato día/mes/año.
+ */
 export function fecha(valor) {
   if (!valor) return '—';
   const [anio, mes, dia] = String(valor).slice(0, 10).split('-');

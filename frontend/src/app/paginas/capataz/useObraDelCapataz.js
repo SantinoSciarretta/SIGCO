@@ -21,6 +21,10 @@ import { misObras } from '../../../modules/obras/obrasApi';
 
 const CLAVE = 'sigco.obraElegida';
 
+/**
+ * Lee del navegador cuál fue la última obra que eligió el capataz, para volver
+ * a mostrarle esa.
+ */
 function leerElegida() {
   try {
     const valor = localStorage.getItem(CLAVE);
@@ -30,6 +34,10 @@ function leerElegida() {
   }
 }
 
+/**
+ * Guarda en el navegador la obra que eligió el capataz, para recordarla la
+ * próxima vez.
+ */
 function guardarElegida(idObra) {
   try {
     localStorage.setItem(CLAVE, String(idObra));
@@ -38,6 +46,10 @@ function guardarElegida(idObra) {
   }
 }
 
+/**
+ * Trae las obras en las que trabaja el capataz y recuerda cuál eligió. Si tiene
+ * una sola, la elige sola.
+ */
 export function useObraDelCapataz() {
   const [obras, setObras] = useState([]);
   const [idElegida, setIdElegida] = useState(leerElegida);
@@ -62,6 +74,9 @@ export function useObraDelCapataz() {
     return () => { vigente = false; };
   }, []);
 
+  /**
+   * Cambia la obra elegida y la recuerda para la próxima vez.
+   */
   const elegir = (idObra) => {
     setIdElegida(idObra);
     guardarElegida(idObra);

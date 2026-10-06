@@ -58,6 +58,10 @@ public class Rol {
             inverseJoinColumns = @JoinColumn(name = "id_permiso"))
     private Set<Permiso> permisos = new LinkedHashSet<>();
 
+    /**
+     * Constructor vacío que exige la base de datos (JPA) para poder armar el
+     * objeto al leerlo. Los roles los crea la migración V13.
+     */
     protected Rol() {
     }
 
@@ -78,11 +82,19 @@ public class Rol {
         this.permisos.addAll(nuevos);
     }
 
+    /**
+     * Indica si el rol tiene el permiso con ese nombre (por ejemplo
+     * "gastos.ver").
+     */
     public boolean tienePermiso(String nombrePermiso) {
         return permisos.stream()
                 .anyMatch(p -> p.getNombrePermiso().equals(nombrePermiso));
     }
 
+    /**
+     * Indica si este rol es el de Dueño, el que tiene las protecciones
+     * especiales.
+     */
     public boolean esDueno() {
         return DUENO.equals(nombreRol);
     }
@@ -91,6 +103,10 @@ public class Rol {
     //  Acceso
     // ------------------------------------------------------------------
 
+    /**
+     * Métodos de lectura: devuelven los datos guardados del rol. Solo leen, no
+     * modifican nada.
+     */
     public Long getIdRol() {
         return idRol;
     }

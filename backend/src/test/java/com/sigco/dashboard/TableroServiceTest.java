@@ -115,7 +115,7 @@ class TableroServiceTest {
     }
 
     private void conAvance(Long idObra, String fisico, String financiero, boolean alerta) {
-        when(seguimientoService.avance(idObra)).thenReturn(new AvanceObra(
+        when(seguimientoService.calcularAvanceDeObra(idObra)).thenReturn(new AvanceObra(
                 idObra, "dir", Obra.ESTADO_EN_EJECUCION,
                 new BigDecimal(fisico), new BigDecimal(financiero),
                 new BigDecimal(financiero).subtract(new BigDecimal(fisico)),
@@ -150,14 +150,14 @@ class TableroServiceTest {
         conAvance(1L, "40", "40", false);
         conAvance(2L, "25", "25", false);
 
-        when(cobrosService.consolidado()).thenReturn(List.of(
+        when(cobrosService.resumenDeCobrosPorObra()).thenReturn(List.of(
                 new ResumenCobro(1L, "Av. Cabildo 2340", "Marcela Ferrari",
                         Obra.ESTADO_EN_EJECUCION, new BigDecimal("10000000"),
                         new BigDecimal("3000000"), new BigDecimal("7000000"), 0, null)));
         sinPedidos();
         sinPresupuestosEnviados();
 
-        Tablero tablero = servicio.armar();
+        Tablero tablero = servicio.armarTablero();
 
         assertThat(tablero.resumen().obrasEnEjecucion()).isEqualTo(2);
         assertThat(tablero.resumen().totalPresupuestado()).isEqualByComparingTo("30000000");
@@ -183,11 +183,11 @@ class TableroServiceTest {
         conAvance(1L, "40", "40", false);
         conAvance(2L, "0", "0", false);
 
-        when(cobrosService.consolidado()).thenReturn(List.of());
+        when(cobrosService.resumenDeCobrosPorObra()).thenReturn(List.of());
         sinPedidos();
         sinPresupuestosEnviados();
 
-        Tablero tablero = servicio.armar();
+        Tablero tablero = servicio.armarTablero();
 
         assertThat(tablero.obras()).hasSize(2);
         assertThat(tablero.resumen().totalPresupuestado()).isEqualByComparingTo("10000000");
@@ -211,11 +211,11 @@ class TableroServiceTest {
         conAvance(1L, "30", "30", false);
         conAvance(2L, "50", "120", true);
 
-        when(cobrosService.consolidado()).thenReturn(List.of());
+        when(cobrosService.resumenDeCobrosPorObra()).thenReturn(List.of());
         sinPedidos();
         sinPresupuestosEnviados();
 
-        assertThat(servicio.armar().obras())
+        assertThat(servicio.armarTablero().obras())
                 .extracting(ObraEnTablero::direccionObra)
                 .containsExactly("Obra excedida", "Obra sana");
     }
@@ -229,7 +229,7 @@ class TableroServiceTest {
     void cuotaVencidaEsUrgente() {
         when(obraRepositorio.porEstado(Obra.ESTADO_EN_EJECUCION)).thenReturn(List.of());
 
-        when(cobrosService.consolidado()).thenReturn(List.of(
+        when(cobrosService.resumenDeCobrosPorObra()).thenReturn(List.of(
                 new ResumenCobro(1L, "Obra con deuda", "Cliente A", Obra.ESTADO_EN_EJECUCION,
                         new BigDecimal("10000000"), BigDecimal.ZERO,
                         new BigDecimal("10000000"), 2, LocalDate.now().minusDays(5)),
@@ -239,7 +239,7 @@ class TableroServiceTest {
         sinPedidos();
         sinPresupuestosEnviados();
 
-        List<Pendiente> pendientes = servicio.armar().pendientes();
+        List<Pendiente> pendientes = servicio.armarTablero().pendientes();
 
         assertThat(pendientes).hasSize(2);
         assertThat(pendientes.get(0).urgencia()).isEqualTo("alta");
@@ -255,21 +255,21 @@ class TableroServiceTest {
     @DisplayName("Una cuota que vence dentro de un mes no aparece como pendiente")
     void cuotaLejanaNoEsPendiente() {
         when(obraRepositorio.porEstado(Obra.ESTADO_EN_EJECUCION)).thenReturn(List.of());
-        when(cobrosService.consolidado()).thenReturn(List.of(
+        when(cobrosService.resumenDeCobrosPorObra()).thenReturn(List.of(
                 new ResumenCobro(1L, "Obra al día", "Cliente B", Obra.ESTADO_EN_EJECUCION,
                         new BigDecimal("8000000"), new BigDecimal("4000000"),
                         new BigDecimal("4000000"), 0, LocalDate.now().plusDays(30))));
         sinPedidos();
         sinPresupuestosEnviados();
 
-        assertThat(servicio.armar().pendientes()).isEmpty();
+        assertThat(servicio.armarTablero().pendientes()).isEmpty();
     }
 
     @Test
     @DisplayName("Cuenta como urgentes solo los pendientes de urgencia alta")
     void cuentaUrgentes() {
         when(obraRepositorio.porEstado(Obra.ESTADO_EN_EJECUCION)).thenReturn(List.of());
-        when(cobrosService.consolidado()).thenReturn(List.of(
+        when(cobrosService.resumenDeCobrosPorObra()).thenReturn(List.of(
                 new ResumenCobro(1L, "A", "Cliente A", Obra.ESTADO_EN_EJECUCION,
                         BigDecimal.TEN, BigDecimal.ZERO, BigDecimal.TEN, 1, null),
                 new ResumenCobro(2L, "B", "Cliente B", Obra.ESTADO_EN_EJECUCION,
@@ -278,7 +278,7 @@ class TableroServiceTest {
         sinPedidos();
         sinPresupuestosEnviados();
 
-        assertThat(servicio.armar().resumen().pendientesUrgentes()).isEqualTo(1);
+        assertThat(servicio.armarTablero().resumen().pendientesUrgentes()).isEqualTo(1);
     }
 
     /**
@@ -295,11 +295,11 @@ class TableroServiceTest {
         conFinanzas(1L, "10000000", "4000000", GastoService.SEMAFORO_VERDE);
         conAvance(1L, "40", "40", false);
         // Sin plan: la obra no figura en el consolidado de cobros.
-        when(cobrosService.consolidado()).thenReturn(List.of());
+        when(cobrosService.resumenDeCobrosPorObra()).thenReturn(List.of());
         sinPedidos();
         sinPresupuestosEnviados();
 
-        Tablero tablero = servicio.armar();
+        Tablero tablero = servicio.armarTablero();
 
         assertThat(tablero.pendientes())
                 .anyMatch(p -> p.titulo().contains("Sin plan de cobro")
@@ -313,14 +313,14 @@ class TableroServiceTest {
         when(obraRepositorio.porEstado(Obra.ESTADO_EN_EJECUCION)).thenReturn(List.of(a));
         conFinanzas(1L, "10000000", "4000000", GastoService.SEMAFORO_VERDE);
         conAvance(1L, "40", "40", false);
-        when(cobrosService.consolidado()).thenReturn(List.of(
+        when(cobrosService.resumenDeCobrosPorObra()).thenReturn(List.of(
                 new ResumenCobro(1L, "Av. Cabildo 2340", "Marcela Ferrari",
                         Obra.ESTADO_EN_EJECUCION, new BigDecimal("10000000"),
                         new BigDecimal("3000000"), new BigDecimal("7000000"), 0, null)));
         sinPedidos();
         sinPresupuestosEnviados();
 
-        assertThat(servicio.armar().pendientes())
+        assertThat(servicio.armarTablero().pendientes())
                 .noneMatch(p -> p.titulo().contains("Sin plan de cobro"));
     }
 
@@ -346,14 +346,14 @@ class TableroServiceTest {
             when(obraRepositorio.porEstado(Obra.ESTADO_EN_EJECUCION)).thenReturn(List.of(a));
             conFinanzas(1L, "10000000", "4000000", GastoService.SEMAFORO_VERDE);
             conAvance(1L, "40", "40", false);
-            when(cobrosService.consolidado()).thenReturn(List.of(
+            when(cobrosService.resumenDeCobrosPorObra()).thenReturn(List.of(
                     new ResumenCobro(1L, "Av. Cabildo 2340", "Marcela Ferrari",
                             Obra.ESTADO_EN_EJECUCION, new BigDecimal("10000000"),
                             new BigDecimal("3000000"), new BigDecimal("7000000"), 0, null)));
             sinPedidos();
             sinPresupuestosEnviados();
 
-            Tablero tablero = servicio.armar();
+            Tablero tablero = servicio.armarTablero();
 
             // Van en null y no en cero: cero afirmaría que no hay nada por
             // cobrar, y sería mentira.
@@ -378,11 +378,11 @@ class TableroServiceTest {
             when(obraRepositorio.porEstado(Obra.ESTADO_EN_EJECUCION)).thenReturn(List.of(a));
             conFinanzas(1L, "10000000", "4000000", GastoService.SEMAFORO_ROJO);
             conAvance(1L, "40", "60", true);
-            when(cobrosService.consolidado()).thenReturn(List.of());
+            when(cobrosService.resumenDeCobrosPorObra()).thenReturn(List.of());
             sinPedidos();
             sinPresupuestosEnviados();
 
-            ObraEnTablero fila = servicio.armar().obras().get(0);
+            ObraEnTablero fila = servicio.armarTablero().obras().get(0);
 
             assertThat(fila.direccionObra()).isEqualTo("Av. Cabildo 2340");
             assertThat(fila.totalGastado()).isEqualByComparingTo("4000000");
@@ -399,13 +399,13 @@ class TableroServiceTest {
             when(obraRepositorio.porEstado(Obra.ESTADO_EN_EJECUCION)).thenReturn(List.of());
             // Una cuota vencida y un presupuesto sin respuesta: los dos son de
             // módulos a los que este rol no accede.
-            when(cobrosService.consolidado()).thenReturn(List.of(
+            when(cobrosService.resumenDeCobrosPorObra()).thenReturn(List.of(
                     new ResumenCobro(1L, "A", "Cliente A", Obra.ESTADO_EN_EJECUCION,
                             BigDecimal.TEN, BigDecimal.ZERO, BigDecimal.TEN, 1, null)));
             sinPedidos();
             sinPresupuestosEnviados();
 
-            Tablero tablero = servicio.armar();
+            Tablero tablero = servicio.armarTablero();
 
             assertThat(tablero.pendientes()).isEmpty();
             // Y el contador se recalcula sobre lo que queda: si no, diría
@@ -419,13 +419,13 @@ class TableroServiceTest {
             comoDueno();
 
             when(obraRepositorio.porEstado(Obra.ESTADO_EN_EJECUCION)).thenReturn(List.of());
-            when(cobrosService.consolidado()).thenReturn(List.of(
+            when(cobrosService.resumenDeCobrosPorObra()).thenReturn(List.of(
                     new ResumenCobro(1L, "A", "Cliente A", Obra.ESTADO_EN_EJECUCION,
                             BigDecimal.TEN, BigDecimal.ZERO, BigDecimal.TEN, 1, null)));
             sinPedidos();
             sinPresupuestosEnviados();
 
-            Tablero tablero = servicio.armar();
+            Tablero tablero = servicio.armarTablero();
 
             assertThat(tablero.resumen().saldoPorCobrar()).isNotNull();
             assertThat(tablero.pendientes()).isNotEmpty();

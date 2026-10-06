@@ -45,6 +45,10 @@ public class CobrosController {
 
     private final CobrosService servicio;
 
+    /**
+     * Constructor: Spring le entrega automáticamente el servicio que contiene
+     * la lógica de Cobros.
+     */
     public CobrosController(CobrosService servicio) {
         this.servicio = servicio;
     }
@@ -53,8 +57,8 @@ public class CobrosController {
 
     /** GET /api/obras/{id}/cobros — plan completo con su saldo. */
     @GetMapping("/api/obras/{id}/cobros")
-    public PlanDeCobro plan(@PathVariable Long id) {
-        return servicio.plan(id);
+    public PlanDeCobro obtenerPlanDeCobro(@PathVariable Long id) {
+        return servicio.obtenerPlanDeCobro(id);
     }
 
     /**
@@ -73,8 +77,8 @@ public class CobrosController {
 
     /** GET /api/obras/{id}/cobros/previa-cac — efecto del ajuste antes de aplicarlo. */
     @GetMapping("/api/obras/{id}/cobros/previa-cac")
-    public PreviaCac previaCac(@PathVariable Long id) {
-        return servicio.previaCac(id);
+    public PreviaCac calcularVistaPreviaCac(@PathVariable Long id) {
+        return servicio.calcularVistaPreviaCac(id);
     }
 
     /** POST /api/obras/{id}/cobros/actualizacion-cac */
@@ -94,7 +98,7 @@ public class CobrosController {
      */
     @PreAuthorize("hasAuthority('cobros.ver')")
     @GetMapping("/api/obras/{id}/cobros/planilla")
-    public ResponseEntity<byte[]> planilla(@PathVariable Long id) {
+    public ResponseEntity<byte[]> descargarPlanillaDePagos(@PathVariable Long id) {
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)
                 .header(HttpHeaders.CONTENT_DISPOSITION,
@@ -104,18 +108,22 @@ public class CobrosController {
 
     /** GET /api/cobros — cuánto resta cobrar de cada obra. */
     @GetMapping("/api/cobros")
-    public List<ResumenCobro> consolidado() {
-        return servicio.consolidado();
+    public List<ResumenCobro> resumenDeCobrosPorObra() {
+        return servicio.resumenDeCobrosPorObra();
     }
 
     /** GET /api/cobros/alertas — cuotas por vencer o vencidas. */
     @GetMapping("/api/cobros/alertas")
-    public List<CuotaRespuesta> alertas() {
-        return servicio.alertas();
+    public List<CuotaRespuesta> cuotasPorVencerOVencidas() {
+        return servicio.cuotasPorVencerOVencidas();
     }
 
     // ---------- Pagos, por cuota ----------
 
+    /**
+     * PATCH /api/cuotas/{id}/pago: registra un pago recibido para una cuota,
+     * por el total o por una parte. Devuelve el plan de cobro actualizado.
+     */
     @PreAuthorize("hasAuthority('cobros.editar')")
     @PatchMapping("/api/cuotas/{id}/pago")
     public PlanDeCobro registrarPago(@PathVariable Long id,
@@ -123,6 +131,11 @@ public class CobrosController {
         return servicio.registrarPago(id, pago);
     }
 
+    /**
+     * PATCH /api/cuotas/{id}/anulacion: anula los pagos de una cuota indicando
+     * el motivo. Los pagos no se borran, quedan marcados como anulados.
+     * Devuelve el plan actualizado.
+     */
     @PreAuthorize("hasAuthority('cobros.editar')")
     @PatchMapping("/api/cuotas/{id}/anulacion")
     public PlanDeCobro anularPago(@PathVariable Long id,
@@ -132,9 +145,13 @@ public class CobrosController {
 
     // ---------- Índice CAC ----------
 
+    /**
+     * GET /api/cac: devuelve los coeficientes CAC cargados, del mes más
+     * reciente al más viejo.
+     */
     @GetMapping("/api/cac")
-    public List<IndiceCacRespuesta> indices() {
-        return servicio.indices();
+    public List<IndiceCacRespuesta> listarCoeficientesCac() {
+        return servicio.listarCoeficientesCac();
     }
 
     /** El valor se carga a mano: la importación automática está fuera del alcance. */

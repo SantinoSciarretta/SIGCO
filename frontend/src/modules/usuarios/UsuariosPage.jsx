@@ -52,6 +52,10 @@ export default function UsuariosPage() {
     return () => { vigente = false; };
   }, []);
 
+  /**
+   * Ejecuta una acción sobre una cuenta (cambiar el rol, reactivarla) y vuelve
+   * a cargar la lista. Si falla, muestra el mensaje de error.
+   */
   const accion = async (fn) => {
     try { await fn(); recargar(); setError(null); } catch (fallo) { setError(fallo.mensaje); }
   };
@@ -194,6 +198,10 @@ export default function UsuariosPage() {
 
 /* ========================================================================== */
 
+/**
+ * Ventana para crear una cuenta de acceso: usuario, contraseña inicial, rol y
+ * operario vinculado.
+ */
 function NuevaCuentaModal({ roles, operarios, onCerrar, onCreada }) {
   const [datos, setDatos] = useState({
     nombreUsuario: '', contrasena: '', idRol: '', idOperario: '',
@@ -201,8 +209,14 @@ function NuevaCuentaModal({ roles, operarios, onCerrar, onCreada }) {
   const [error, setError] = useState(null);
   const [guardando, setGuardando] = useState(false);
 
+  /**
+   * Actualiza un campo del formulario a medida que el usuario escribe.
+   */
   const cambiar = (campo) => (e) => setDatos({ ...datos, [campo]: e.target.value });
 
+  /**
+   * Crea la cuenta en el servidor.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);
@@ -246,10 +260,10 @@ function NuevaCuentaModal({ roles, operarios, onCerrar, onCreada }) {
             Contraseña inicial <span className={estilos.obligatorio}>*</span>
           </label>
           <input id="contrasena" type="password" className={estilos.control}
-                 minLength={8} value={datos.contrasena} onChange={cambiar('contrasena')}
+                 minLength={10} value={datos.contrasena} onChange={cambiar('contrasena')}
                  required />
           <p className={estilos.ayuda}>
-            Mínimo 8 caracteres. Se guarda cifrada: ni vos ni nadie con acceso a
+            Mínimo 10 caracteres. Se guarda cifrada: ni vos ni nadie con acceso a
             la base puede volver a leerla, solo restablecerla.
           </p>
         </div>
@@ -317,6 +331,11 @@ function ContrasenaModal({ usuario, esLaPropia, onCerrar, onListo }) {
   const [error, setError] = useState(null);
   const [guardando, setGuardando] = useState(false);
 
+  /**
+   * Cambia la contraseña de la cuenta. Si es la propia, pide además la actual.
+   * Si es la de otra persona, la nueva queda como provisoria y esa persona la
+   * va a tener que cambiar al ingresar.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);
@@ -363,10 +382,10 @@ function ContrasenaModal({ usuario, esLaPropia, onCerrar, onListo }) {
           <label className={estilos.etiqueta} htmlFor="nueva">
             Contraseña nueva <span className={estilos.obligatorio}>*</span>
           </label>
-          <input id="nueva" type="password" className={estilos.control} minLength={8}
+          <input id="nueva" type="password" className={estilos.control} minLength={10}
                  value={nueva} onChange={(e) => setNueva(e.target.value)}
                  required autoFocus={!esLaPropia} />
-          <p className={estilos.ayuda}>Mínimo 8 caracteres.</p>
+          <p className={estilos.ayuda}>Mínimo 10 caracteres.</p>
         </div>
 
         <div className={estilos.accionesFormulario}>
@@ -384,11 +403,18 @@ function ContrasenaModal({ usuario, esLaPropia, onCerrar, onListo }) {
 
 /* ========================================================================== */
 
+/**
+ * Ventana para dar de baja una cuenta, pidiendo el motivo. La cuenta no se
+ * borra y se puede reactivar.
+ */
 function BajaModal({ usuario, onCerrar, onListo }) {
   const [motivo, setMotivo] = useState('');
   const [error, setError] = useState(null);
   const [guardando, setGuardando] = useState(false);
 
+  /**
+   * Envía la baja al servidor.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);

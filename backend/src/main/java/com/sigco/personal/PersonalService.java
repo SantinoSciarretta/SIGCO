@@ -40,6 +40,10 @@ public class PersonalService {
     /** Quien esta usando el sistema, para la columna "quien lo registro". */
     private final SesionActual sesion;
 
+    /**
+     * Constructor: recibe lo necesario para leer y guardar operarios,
+     * inasistencias y obras, y el dato de quién está usando el sistema.
+     */
     public PersonalService(OperarioRepository repositorio,
                            InasistenciaRepository inasistenciaRepositorio,
                            ObraRepository obraRepositorio,
@@ -54,6 +58,10 @@ public class PersonalService {
     //  Operarios
     // ------------------------------------------------------------------
 
+    /**
+     * Devuelve los operarios que cumplen los filtros, cada uno con su cantidad
+     * de inasistencias.
+     */
     @Transactional(readOnly = true)
     public List<OperarioRespuesta> listar(String busqueda, String estado, Long idObra) {
         return repositorio.buscar(
@@ -66,6 +74,10 @@ public class PersonalService {
                 .toList();
     }
 
+    /**
+     * Devuelve la ficha completa de un operario: sus datos, sus obras y la
+     * cantidad de faltas.
+     */
     @Transactional(readOnly = true)
     public OperarioRespuesta obtener(Long id) {
         Operario operario = buscarCompletoOFallar(id);
@@ -73,6 +85,9 @@ public class PersonalService {
                 operario, inasistenciaRepositorio.countByOperarioIdOperario(id));
     }
 
+    /**
+     * Da de alta un operario nuevo.
+     */
     @Transactional
     public OperarioRespuesta crear(OperarioSolicitud solicitud) {
         Operario operario = new Operario(
@@ -80,6 +95,9 @@ public class PersonalService {
         return OperarioRespuesta.resumen(repositorio.save(operario), 0);
     }
 
+    /**
+     * Corrige el nombre y el teléfono de un operario.
+     */
     @Transactional
     public OperarioRespuesta actualizar(Long id, OperarioSolicitud solicitud) {
         Operario operario = buscarCompletoOFallar(id);
@@ -179,6 +197,9 @@ public class PersonalService {
     //  Inasistencias
     // ------------------------------------------------------------------
 
+    /**
+     * Devuelve las faltas registradas que cumplen los filtros indicados.
+     */
     @Transactional(readOnly = true)
     public List<InasistenciaRespuesta> listarInasistencias(Long idOperario, Long idObra,
                                                            LocalDate desde, LocalDate hasta) {
@@ -247,11 +268,19 @@ public class PersonalService {
 
     // ------------------------------------------------------------------
 
+    /**
+     * Busca un operario con sus asignaciones. Si no existe, corta la operación
+     * con un error de "no encontrado".
+     */
     private Operario buscarCompletoOFallar(Long id) {
         return repositorio.buscarCompleto(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Operario", id));
     }
 
+    /**
+     * Quita los espacios sobrantes de un texto, y si quedó vacío lo guarda como
+     * "sin dato".
+     */
     private String limpiar(String texto) {
         return (texto == null || texto.isBlank()) ? null : texto.trim();
     }

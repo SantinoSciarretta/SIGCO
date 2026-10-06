@@ -31,6 +31,10 @@ export default function SubirImagen({ carpeta, valor, onSubida, etiqueta = 'Subi
   const [subiendo, setSubiendo] = useState(false);
   const [error, setError] = useState(null);
 
+  /**
+   * Se ejecuta al elegir un archivo: lo comprime si es una foto, lo sube al
+   * servidor y avisa la referencia con que quedó guardado.
+   */
   const elegir = async (evento) => {
     const archivo = evento.target.files?.[0];
     if (!archivo) return;

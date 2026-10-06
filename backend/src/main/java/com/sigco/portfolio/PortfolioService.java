@@ -29,6 +29,10 @@ public class PortfolioService {
     private final PublicacionPortfolioRepository repositorio;
     private final ObraRepository obraRepositorio;
 
+    /**
+     * Constructor: recibe lo necesario para leer y guardar publicaciones y
+     * consultar obras.
+     */
     public PortfolioService(PublicacionPortfolioRepository repositorio,
                             ObraRepository obraRepositorio) {
         this.repositorio = repositorio;
@@ -52,7 +56,7 @@ public class PortfolioService {
      * el DTO publico no los tiene.
      */
     @Transactional(readOnly = true)
-    public List<VidrieraRespuesta> vidriera(String tipoTrabajo) {
+    public List<VidrieraRespuesta> listarObrasDeLaVidriera(String tipoTrabajo) {
         List<PublicacionPortfolio> publicadas = (tipoTrabajo == null || tipoTrabajo.isBlank())
                 ? repositorio.publicadas()
                 : repositorio.publicadasDeTipo(tipoTrabajo);
@@ -70,6 +74,10 @@ public class PortfolioService {
     //  Administracion
     // ------------------------------------------------------------------
 
+    /**
+     * Devuelve todas las publicaciones con sus imágenes, para el panel del
+     * dueño.
+     */
     @Transactional(readOnly = true)
     public List<PublicacionRespuesta> listar() {
         return repositorio.todasConImagenes().stream()
@@ -77,6 +85,10 @@ public class PortfolioService {
                 .toList();
     }
 
+    /**
+     * Devuelve una publicación con sus imágenes. Si no existe, responde con un
+     * error de "no encontrado".
+     */
     @Transactional(readOnly = true)
     public PublicacionRespuesta obtener(Long id) {
         return PublicacionRespuesta.desde(buscarOFallar(id));
@@ -110,6 +122,10 @@ public class PortfolioService {
         return PublicacionRespuesta.desde(repositorio.save(publicacion));
     }
 
+    /**
+     * Cambia el tipo de trabajo de una publicación (construcción, refacción,
+     * decoración de local, etc.).
+     */
     @Transactional
     public PublicacionRespuesta cambiarTipo(Long id, NuevaPublicacion solicitud) {
         PublicacionPortfolio publicacion = buscarOFallar(id);
@@ -149,6 +165,9 @@ public class PortfolioService {
     //  Imagenes
     // ------------------------------------------------------------------
 
+    /**
+     * Agrega una imagen al final de la galería de la publicación.
+     */
     @Transactional
     public PublicacionRespuesta agregarImagen(Long id, NuevaImagen imagen) {
         PublicacionPortfolio publicacion = buscarOFallar(id);
@@ -232,6 +251,10 @@ public class PortfolioService {
         return PublicacionRespuesta.desde(publicacion);
     }
 
+    /**
+     * Busca una publicación con sus imágenes. Si no existe, corta la operación
+     * con un error de "no encontrado".
+     */
     private PublicacionPortfolio buscarOFallar(Long id) {
         return repositorio.buscarCompleta(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Publicación", id));

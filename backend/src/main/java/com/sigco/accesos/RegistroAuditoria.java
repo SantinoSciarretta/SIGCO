@@ -46,9 +46,17 @@ public class RegistroAuditoria {
     @Column(name = "fecha_hora", nullable = false)
     private LocalDateTime fechaHora;
 
+    /**
+     * Constructor vacío que exige la base de datos (JPA) para poder armar el
+     * objeto al leerlo. No se usa desde el código.
+     */
     protected RegistroAuditoria() {
     }
 
+    /**
+     * Crea un registro de auditoría: quién hizo la acción, qué hizo y en qué
+     * módulo. La fecha y hora se completan solas con el momento actual.
+     */
     public RegistroAuditoria(Usuario usuario, String accionRealizada, String moduloAfectado) {
         this.usuario = usuario;
         this.accionRealizada = accionRealizada;
@@ -56,6 +64,10 @@ public class RegistroAuditoria {
         this.fechaHora = LocalDateTime.now();
     }
 
+    /**
+     * Métodos de lectura: devuelven los datos del registro. No hay métodos para
+     * modificarlo, porque la auditoría no se puede alterar.
+     */
     public Long getIdAuditoria() {
         return idAuditoria;
     }

@@ -50,8 +50,14 @@ export default function CatalogoPage() {
     return () => clearTimeout(temporizador);
   }, [busqueda, estado, cargar]);
 
+  /**
+   * Vuelve a pedir el catálogo de rubros con los filtros actuales.
+   */
   const recargar = () => cargar({ busqueda, estado });
 
+  /**
+   * Activa o desactiva un rubro y vuelve a cargar el catálogo.
+   */
   const alternarRubro = async (rubro) => {
     try {
       await cambiarEstadoRubro(rubro.idRubro, rubro.estado === 'Activo' ? 'Inactivo' : 'Activo');
@@ -61,6 +67,9 @@ export default function CatalogoPage() {
     }
   };
 
+  /**
+   * Activa o desactiva un subrubro y vuelve a cargar el catálogo.
+   */
   const alternarSubrubro = async (subrubro) => {
     try {
       await cambiarEstadoSubrubro(
@@ -139,6 +148,9 @@ export default function CatalogoPage() {
             <div className={estilos.rubroCabecera}>
               <div className={estilos.rubroTitulo}>
                 <h3 className={estilos.rubroNombre}>{rubro.nombreRubro}</h3>
+                {rubro.esManoDeObra && (
+                  <span className={estilos.conteo}>Rubro de mano de obra</span>
+                )}
                 <span className={rubro.estado === 'Activo' ? estilos.activo : estilos.inactivo}>
                   {rubro.estado}
                 </span>
@@ -166,9 +178,10 @@ export default function CatalogoPage() {
                   onClick={() => setFormulario({
                     tipo: 'rubro', modo: 'edicion',
                     id: rubro.idRubro, valor: rubro.nombreRubro,
+                    esManoDeObra: rubro.esManoDeObra,
                   })}
                 >
-                  Renombrar
+                  Editar
                 </button>
                 <button type="button" className={estilos.accion} onClick={() => alternarRubro(rubro)}>
                   {rubro.estado === 'Activo' ? 'Desactivar' : 'Activar'}
@@ -234,21 +247,25 @@ function FormularioCatalogo({ formulario, onCerrar, onGuardado }) {
   const editando = modo === 'edicion';
 
   const [nombre, setNombre] = useState(formulario.valor ?? '');
+  const [manoDeObra, setManoDeObra] = useState(formulario.esManoDeObra ?? false);
   const [error, setError] = useState(null);
   const [guardando, setGuardando] = useState(false);
 
   const titulo = editando
-    ? `Renombrar ${esRubro ? 'rubro' : 'subrubro'}`
+    ? (esRubro ? 'Editar rubro' : 'Renombrar subrubro')
     : (esRubro ? 'Nuevo rubro' : `Nuevo subrubro en ${formulario.nombreRubro}`);
 
+  /**
+   * Guarda el rubro o el subrubro, ya sea uno nuevo o un cambio de nombre.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);
     setError(null);
 
     try {
-      if (esRubro && editando) await renombrarRubro(formulario.id, nombre);
-      else if (esRubro) await crearRubro(nombre);
+      if (esRubro && editando) await renombrarRubro(formulario.id, nombre, manoDeObra);
+      else if (esRubro) await crearRubro(nombre, manoDeObra);
       else if (editando) await renombrarSubrubro(formulario.id, nombre);
       else await crearSubrubro(formulario.idRubro, nombre);
       onGuardado();
@@ -283,6 +300,30 @@ function FormularioCatalogo({ formulario, onCerrar, onGuardado }) {
             placeholder={esRubro ? 'Albañilería' : 'Demolición'}
           />
         </div>
+
+        {/* Sin esta casilla, en una instalación nueva no había forma de tener
+            el rubro de mano de obra: la marca solo se ponía sola si el rubro
+            ya existía cuando corrió la migración V18. */}
+        {esRubro && (
+          <div className={estilos.campo}>
+            <label className={estilos.etiqueta} htmlFor="manoDeObra"
+                   style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+              <input
+                id="manoDeObra"
+                type="checkbox"
+                checked={manoDeObra}
+                onChange={(e) => setManoDeObra(e.target.checked)}
+                style={{ marginTop: 3 }}
+              />
+              <span>
+                Es el rubro de mano de obra. Su planilla no lista materiales sino
+                los demás rubros, para cargar cuánto sale la mano de obra de cada
+                especialidad. Solo puede haber uno: si otro rubro tenía la marca,
+                se la saca.
+              </span>
+            </label>
+          </div>
+        )}
 
         <div className={estilos.accionesFormulario}>
           <button type="button" className={estilos.botonSecundario} onClick={onCerrar}>

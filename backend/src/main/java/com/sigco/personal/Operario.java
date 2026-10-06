@@ -56,9 +56,17 @@ public class Operario {
                cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OperarioObra> asignaciones = new ArrayList<>();
 
+    /**
+     * Constructor vacío que exige la base de datos (JPA) para poder armar el
+     * objeto al leerlo. No se usa desde el código.
+     */
     protected Operario() {
     }
 
+    /**
+     * Da de alta un operario con su nombre y teléfono. Todo operario nace
+     * Activo y con la fecha de alta de hoy.
+     */
     public Operario(String nombreApellido, String telefonoContacto) {
         this.nombreApellido = nombreApellido;
         this.telefonoContacto = telefonoContacto;
@@ -66,11 +74,18 @@ public class Operario {
         this.fechaAlta = LocalDateTime.now();
     }
 
+    /**
+     * Corrige el nombre y el teléfono del operario.
+     */
     public void actualizarDatos(String nombreApellido, String telefonoContacto) {
         this.nombreApellido = nombreApellido;
         this.telefonoContacto = telefonoContacto;
     }
 
+    /**
+     * Vuelve a marcar al operario como activo, para poder asignarlo otra vez a
+     * obras.
+     */
     public void activar() {
         this.estado = ESTADO_ACTIVO;
     }
@@ -90,10 +105,16 @@ public class Operario {
                 .forEach(a -> a.desasignar(hoy));
     }
 
+    /**
+     * Agrega una asignación del operario a una obra.
+     */
     public void asignar(OperarioObra asignacion) {
         this.asignaciones.add(asignacion);
     }
 
+    /**
+     * Indica si el operario está activo.
+     */
     public boolean estaActivo() {
         return ESTADO_ACTIVO.equals(this.estado);
     }
@@ -111,6 +132,10 @@ public class Operario {
                 .anyMatch(a -> a.getObra().getIdObra().equals(idObra));
     }
 
+    /**
+     * Indica si el operario está trabajando actualmente en esa obra (una
+     * asignación cerrada no cuenta).
+     */
     public boolean estaAsignadoHoyA(Long idObra) {
         return asignaciones.stream()
                 .anyMatch(a -> a.estaVigente() && a.getObra().getIdObra().equals(idObra));
@@ -118,6 +143,10 @@ public class Operario {
 
     // ---------- Metodos de acceso ----------
 
+    /**
+     * Métodos de lectura: devuelven los datos guardados del operario. Solo
+     * leen, no modifican nada.
+     */
     public Long getIdOperario() {
         return idOperario;
     }

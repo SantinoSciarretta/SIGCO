@@ -55,6 +55,11 @@ public class PresupuestoService {
     private final SubrubroRepository subrubroRepositorio;
     private final com.sigco.accesos.ServicioAuditoria auditoria;
 
+    /**
+     * Constructor: recibe lo necesario para leer y guardar presupuestos e
+     * ítems, y para consultar obras, materiales, rubros y subrubros, además del
+     * generador del PDF y la auditoría.
+     */
     public PresupuestoService(PresupuestoRepository repositorio,
                               ItemPresupuestoRepository itemRepositorio,
                               ObraRepository obraRepositorio,
@@ -77,6 +82,10 @@ public class PresupuestoService {
     //  Consulta
     // ------------------------------------------------------------------
 
+    /**
+     * Devuelve los presupuestos que cumplen los filtros, en versión resumida
+     * (sin el detalle de ítems).
+     */
     @Transactional(readOnly = true)
     public List<PresupuestoRespuesta> listar(Long idObra, String tipo, String estado) {
         return repositorio.buscar(
@@ -116,6 +125,10 @@ public class PresupuestoService {
                 .toList();
     }
 
+    /**
+     * Devuelve un presupuesto completo con todos sus ítems. Si no existe,
+     * responde con un error de "no encontrado".
+     */
     @Transactional(readOnly = true)
     public PresupuestoRespuesta obtener(Long id) {
         return PresupuestoRespuesta.completa(buscarCompletoOFallar(id));
@@ -227,6 +240,11 @@ public class PresupuestoService {
     //  Items
     // ------------------------------------------------------------------
 
+    /**
+     * Agrega un ítem suelto al presupuesto, por fuera de la planilla. Solo se
+     * puede mientras el presupuesto está en borrador y no es una cotización
+     * inicial.
+     */
     @Transactional
     public PresupuestoRespuesta agregarItem(Long idPresupuesto, ItemSolicitud solicitud) {
         Presupuesto presupuesto = buscarCompletoOFallar(idPresupuesto);
@@ -244,6 +262,10 @@ public class PresupuestoService {
         return PresupuestoRespuesta.completa(presupuesto);
     }
 
+    /**
+     * Corrige un ítem ya cargado. Solo se puede mientras el presupuesto está en
+     * borrador.
+     */
     @Transactional
     public PresupuestoRespuesta actualizarItem(Long idPresupuesto, Long idItem,
                                                ItemSolicitud solicitud) {
@@ -356,6 +378,10 @@ public class PresupuestoService {
         return PresupuestoRespuesta.completa(presupuesto);
     }
 
+    /**
+     * Pasa el presupuesto a "Enviado". Frena si no está en borrador o si
+     * todavía no tiene ningún ítem cargado.
+     */
     private void enviar(Presupuesto presupuesto) {
         if (!presupuesto.esBorrador()) {
             throw new ReglaDeNegocioException("Solo un presupuesto en borrador se puede enviar.");
@@ -425,7 +451,7 @@ public class PresupuestoService {
      * pintura, en lugar de repartir esos importes entre los rubros de material.
      */
     @Transactional(readOnly = true)
-    public PlanillaDeRubro planilla(Long idPresupuesto, Long idRubro) {
+    public PlanillaDeRubro obtenerPlanillaDeRubro(Long idPresupuesto, Long idRubro) {
         Presupuesto presupuesto = buscarCompletoOFallar(idPresupuesto);
         Rubro rubro = buscarRubroOFallar(idRubro);
 
@@ -695,6 +721,11 @@ public class PresupuestoService {
     //  Reglas del circuito
     // ------------------------------------------------------------------
 
+    /**
+     * Controla que el tipo de presupuesto que se quiere crear respete el
+     * circuito: el anteproyecto solo existe en reformas, y el definitivo de una
+     * reforma necesita antes un anteproyecto.
+     */
     private void validarCircuito(Obra obra, String tipo) {
         if (Presupuesto.TIPO_ANTEPROYECTO.equals(tipo)) {
             // El tipo de obra determina el circuito: en construccion nueva no
@@ -798,6 +829,10 @@ public class PresupuestoService {
         return material;
     }
 
+    /**
+     * Busca el subrubro indicado (si se indicó alguno) y controla que
+     * pertenezca al rubro del ítem.
+     */
     private Subrubro resolverSubrubro(Long idSubrubro, Rubro rubro) {
         if (idSubrubro == null) {
             return null;
@@ -833,6 +868,10 @@ public class PresupuestoService {
         }
     }
 
+    /**
+     * Frena la operación si el presupuesto es una cotización inicial, que no
+     * lleva ítems.
+     */
     private void exigirQueLleveItems(Presupuesto presupuesto) {
         if (!presupuesto.llevaItems()) {
             throw new ReglaDeNegocioException(
@@ -841,6 +880,10 @@ public class PresupuestoService {
         }
     }
 
+    /**
+     * Frena la creación de una cotización inicial si faltan los metros
+     * cuadrados o el valor por metro.
+     */
     private void exigirDatosDeCotizacion(NuevoPresupuesto solicitud) {
         if (solicitud.metrosCuadrados() == null || solicitud.valorPorM2() == null) {
             throw new ReglaDeNegocioException(
@@ -848,6 +891,10 @@ public class PresupuestoService {
         }
     }
 
+    /**
+     * Busca un ítem y controla que pertenezca a ese presupuesto. Si no existe o
+     * es de otro, corta la operación.
+     */
     private ItemPresupuesto buscarItemOFallar(Presupuesto presupuesto, Long idItem) {
         ItemPresupuesto item = itemRepositorio.findById(idItem)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Ítem", idItem));
@@ -861,21 +908,37 @@ public class PresupuestoService {
         return item;
     }
 
+    /**
+     * Busca un presupuesto por su número. Si no existe, corta la operación con
+     * un error de "no encontrado".
+     */
     private Presupuesto buscarOFallar(Long id) {
         return repositorio.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Presupuesto", id));
     }
 
+    /**
+     * Busca un presupuesto con su obra y todos sus ítems. Si no existe, corta
+     * la operación con un error de "no encontrado".
+     */
     private Presupuesto buscarCompletoOFallar(Long id) {
         return repositorio.buscarCompleto(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Presupuesto", id));
     }
 
+    /**
+     * Busca un rubro por su número. Si no existe, corta la operación con un
+     * error de "no encontrado".
+     */
     private Rubro buscarRubroOFallar(Long id) {
         return rubroRepositorio.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Rubro", id));
     }
 
+    /**
+     * Quita los espacios sobrantes de un texto, y si quedó vacío lo guarda como
+     * "sin dato".
+     */
     private String normalizar(String texto) {
         if (texto == null || texto.isBlank()) {
             return null;
@@ -883,6 +946,10 @@ public class PresupuestoService {
         return texto.trim();
     }
 
+    /**
+     * Prepara un filtro de búsqueda: si viene vacío lo convierte en "sin
+     * filtro", y si no le quita los espacios sobrantes.
+     */
     private String sinFiltro(String texto) {
         if (texto == null || texto.isBlank()) {
             return "";

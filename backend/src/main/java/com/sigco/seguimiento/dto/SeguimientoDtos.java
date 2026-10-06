@@ -19,6 +19,10 @@ import java.util.List;
 /** Datos que entran y salen del modulo Seguimiento de Obras. */
 public final class SeguimientoDtos {
 
+    /**
+     * Constructor privado: esta clase solo agrupa los formatos de datos del
+     * módulo Seguimiento, no se crean objetos de ella.
+     */
     private SeguimientoDtos() {
     }
 
@@ -113,6 +117,11 @@ public final class SeguimientoDtos {
              */
             Boolean forzar) {
 
+        /**
+         * Indica si el dueño confirmó que quiere completar el hito aunque haya
+         * otros anteriores sin completar. Si no se indicó nada, se toma como
+         * "no".
+         */
         public boolean forzarOFalso() {
             return Boolean.TRUE.equals(forzar);
         }
@@ -154,6 +163,9 @@ public final class SeguimientoDtos {
             String nombreRubro,
             Integer duracionDias) {
 
+        /**
+         * Convierte un hito en el formato que se le envía a la pantalla.
+         */
         public static HitoRespuesta desde(Hito h) {
             return new HitoRespuesta(h.getIdHito(), h.getNombreHito(), h.getPonderacion(),
                     h.getOrden(), h.getEstado(), h.getFechaCumplimiento(), h.getObservacion(),
@@ -196,6 +208,10 @@ public final class SeguimientoDtos {
             BigDecimal sumaPonderaciones,
             List<EtapaRespuesta> etapas) {
 
+        /**
+         * Convierte una plantilla en el formato que se le envía a la pantalla,
+         * con sus etapas en orden y la suma de ponderaciones.
+         */
         public static PlantillaRespuesta desde(PlantillaHito p) {
             return new PlantillaRespuesta(
                     p.getIdPlantilla(), p.getNombrePlantilla(), p.getFechaCreacion(),
@@ -212,6 +228,10 @@ public final class SeguimientoDtos {
             BigDecimal ponderacion,
             Integer orden) {
 
+        /**
+         * Convierte una etapa de plantilla en el formato que se le envía a la
+         * pantalla.
+         */
         static EtapaRespuesta desde(PlantillaHitoDetalle d) {
             return new EtapaRespuesta(d.getIdDetalle(), d.getNombreHito(),
                     d.getPonderacion(), d.getOrden());

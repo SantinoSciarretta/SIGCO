@@ -25,6 +25,10 @@ public record GastoRespuesta(
         String estado,
         String motivoAnulacion) {
 
+    /**
+     * Convierte un gasto guardado en el formato que se le envía a la pantalla,
+     * con los nombres de la obra, el rubro y el subrubro.
+     */
     public static GastoRespuesta desde(Gasto g) {
         return new GastoRespuesta(
                 g.getIdGasto(),

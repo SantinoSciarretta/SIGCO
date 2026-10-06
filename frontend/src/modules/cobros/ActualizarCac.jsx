@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Modal from '../../components/ui/Modal';
 import {
-  aplicarCac, listarIndices, mes, pesos, previaCac, registrarIndice,
+  aplicarCac, listarCoeficientesCac, mes, pesos, calcularVistaPreviaCac, registrarCoeficienteCac,
 } from './cobrosApi';
 import estilos from './Cobros.module.css';
 
@@ -29,12 +29,12 @@ export default function ActualizarCac({ idObra, onCerrar, onAplicado }) {
     let vigente = true;
     (async () => {
       try {
-        const lista = await listarIndices();
+        const lista = await listarCoeficientesCac();
         if (vigente) setIndices(lista);
       } catch { /* el listado es informativo */ }
 
       try {
-        const p = await previaCac(idObra);
+        const p = await calcularVistaPreviaCac(idObra);
         if (vigente) { setPrevia(p); setAviso(null); }
       } catch (fallo) {
         if (vigente) { setPrevia(null); setAviso(fallo.mensaje); }
@@ -43,6 +43,10 @@ export default function ActualizarCac({ idObra, onCerrar, onAplicado }) {
     return () => { vigente = false; };
   }, [idObra, recarga]);
 
+  /**
+   * Aplica el coeficiente CAC a las cuotas pendientes de la obra, después de
+   * que el dueño vio la vista previa.
+   */
   const confirmar = async () => {
     setAplicando(true);
     setError(null);
@@ -147,13 +151,16 @@ function CargarIndice({ onCargado, onError }) {
   const [coeficiente, setValor] = useState('');
   const [guardando, setGuardando] = useState(false);
 
+  /**
+   * Guarda el coeficiente CAC del mes elegido.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);
     try {
       // El input type=month da "2026-09"; la API espera una fecha completa y
       // el backend la normaliza al día 1 igual.
-      await registrarIndice({
+      await registrarCoeficienteCac({
         mesCorrespondiente: `${mesCorrespondiente}-01`,
         coeficiente,
       });

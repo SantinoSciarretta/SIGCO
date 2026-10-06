@@ -68,6 +68,11 @@ public class SeguimientoService {
     /** Un capataz de obra solo ve y marca los hitos de su obra. */
     private final AlcanceDeObras alcance;
 
+    /**
+     * Constructor: recibe lo necesario para leer y guardar hitos y plantillas,
+     * consultar obras y rubros, pedirle a Gastos el avance financiero, y saber
+     * quién está usando el sistema.
+     */
     public SeguimientoService(HitoRepository repositorio,
                               PlantillaHitoRepository plantillaRepositorio,
                               ObraRepository obraRepositorio,
@@ -207,6 +212,10 @@ public class SeguimientoService {
         return ponderaciones;
     }
 
+    /**
+     * Devuelve la posición de la etapa que más días dura. A esa etapa se le
+     * suma el centavo que sobra del redondeo.
+     */
     private int indiceDeLaMasLarga(List<EtapaDeObra> etapas) {
         int elegido = 0;
         for (int i = 1; i < etapas.size(); i++) {
@@ -237,6 +246,10 @@ public class SeguimientoService {
         return rubro;
     }
 
+    /**
+     * Frena la operación si la obra no está en ejecución: solo se definen hitos
+     * de obras en marcha.
+     */
     private void exigirObraEnEjecucion(Obra obra) {
         if (!obra.estaEnEjecucion()) {
             throw new ReglaDeNegocioException(
@@ -245,6 +258,10 @@ public class SeguimientoService {
         }
     }
 
+    /**
+     * Frena el cambio del plan de hitos si la obra ya tiene alguno completado,
+     * porque se perdería ese registro.
+     */
     private void exigirQueNoHayaCompletados(Long idObra) {
         List<Hito> existentes = repositorio.deLaObra(idObra);
         if (existentes.stream().anyMatch(Hito::estaCompletado)) {
@@ -254,6 +271,10 @@ public class SeguimientoService {
         }
     }
 
+    /**
+     * Frena la carga si hay dos etapas con el mismo nombre o con el mismo
+     * número de orden.
+     */
     private void exigirNombresYOrdenesUnicosDeEtapas(List<EtapaDeObra> etapas) {
         long nombres = etapas.stream()
                 .map(e -> e.nombreHito().trim().toLowerCase()).distinct().count();
@@ -286,6 +307,10 @@ public class SeguimientoService {
         }
     }
 
+    /**
+     * Frena la carga si hay dos hitos con el mismo nombre o con el mismo número
+     * de orden.
+     */
     private void exigirNombresYOrdenesUnicos(List<HitoSolicitud> hitos) {
         long nombres = hitos.stream()
                 .map(h -> h.nombreHito().trim().toLowerCase()).distinct().count();
@@ -373,6 +398,10 @@ public class SeguimientoService {
         return armarAvance(hito.getObra(), repositorio.deLaObra(hito.getObra().getIdObra()));
     }
 
+    /**
+     * Guarda un comentario sobre un hito y devuelve el avance de la obra
+     * actualizado.
+     */
     @Transactional
     public AvanceObra registrarObservacion(Long idHito, ObservacionHito observacion) {
         Hito hito = repositorio.findById(idHito)
@@ -386,8 +415,13 @@ public class SeguimientoService {
     //  Avance
     // ------------------------------------------------------------------
 
+    /**
+     * Calcula el avance de una obra: sus hitos, el porcentaje de avance físico,
+     * el avance financiero y la diferencia entre ambos. Solo si el usuario
+     * tiene permitido ver esa obra.
+     */
     @Transactional(readOnly = true)
-    public AvanceObra avance(Long idObra) {
+    public AvanceObra calcularAvanceDeObra(Long idObra) {
         alcance.exigirAlcance(idObra);
         Obra obra = buscarObraOFallar(idObra);
         return armarAvance(obra, repositorio.deLaObra(idObra));
@@ -441,6 +475,9 @@ public class SeguimientoService {
     //  Plantillas
     // ------------------------------------------------------------------
 
+    /**
+     * Devuelve todas las plantillas de hitos con sus etapas.
+     */
     @Transactional(readOnly = true)
     public List<PlantillaRespuesta> listarPlantillas() {
         return plantillaRepositorio.todasConDetalles().stream()
@@ -448,6 +485,10 @@ public class SeguimientoService {
                 .toList();
     }
 
+    /**
+     * Guarda una plantilla de hitos nueva, controlando que las ponderaciones
+     * sumen 100 y que no haya nombres ni órdenes repetidos.
+     */
     @Transactional
     public PlantillaRespuesta crearPlantilla(NuevaPlantilla solicitud) {
         exigirQueSumeCien(solicitud.etapas());
@@ -482,11 +523,19 @@ public class SeguimientoService {
 
     // ------------------------------------------------------------------
 
+    /**
+     * Busca una obra por su número. Si no existe, corta la operación con un
+     * error de "no encontrado".
+     */
     private Obra buscarObraOFallar(Long idObra) {
         return obraRepositorio.findById(idObra)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Obra", idObra));
     }
 
+    /**
+     * Quita los espacios sobrantes de un texto, y si quedó vacío lo guarda como
+     * "sin dato".
+     */
     private String limpiar(String texto) {
         return (texto == null || texto.isBlank()) ? null : texto.trim();
     }

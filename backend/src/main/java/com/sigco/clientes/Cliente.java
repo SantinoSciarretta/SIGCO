@@ -106,20 +106,35 @@ public class Cliente {
         this.recomendadoPor = recomendadoPor;
     }
 
+    /**
+     * Marca al cliente como activo, para que vuelva a aparecer al elegir el
+     * cliente de una obra nueva.
+     */
     public void activar() {
         this.estado = ESTADO_ACTIVO;
     }
 
+    /**
+     * Marca al cliente como inactivo. No se borra: se conserva con todo su
+     * historial de obras.
+     */
     public void desactivar() {
         this.estado = ESTADO_INACTIVO;
     }
 
+    /**
+     * Indica si el cliente está activo.
+     */
     public boolean estaActivo() {
         return ESTADO_ACTIVO.equals(this.estado);
     }
 
     // ---------- Metodos de acceso ----------
 
+    /**
+     * Métodos de lectura: devuelven los datos guardados del cliente. Solo leen,
+     * no modifican nada.
+     */
     public Long getIdCliente() {
         return idCliente;
     }

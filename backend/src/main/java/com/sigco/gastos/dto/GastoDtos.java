@@ -11,6 +11,10 @@ import java.time.LocalDate;
 /** Datos que entran al modulo Gastos. */
 public final class GastoDtos {
 
+    /**
+     * Constructor privado: esta clase solo agrupa los formatos de datos que
+     * entran al módulo Gastos, no se crean objetos de ella.
+     */
     private GastoDtos() {
     }
 

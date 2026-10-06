@@ -45,10 +45,20 @@ public class CorsConfig {
 
     private final List<String> origenesPermitidos;
 
+    /**
+     * Constructor: recibe la lista de direcciones web desde las que se permite
+     * usar la API (por ejemplo, la dirección del frontend en Vercel).
+     */
     public CorsConfig(@Value("${sigco.cors.origenes-permitidos}") String[] origenesPermitidos) {
         this.origenesPermitidos = Arrays.asList(origenesPermitidos);
     }
 
+    /**
+     * Configura qué sitios web pueden comunicarse con el backend. El navegador
+     * bloquea por seguridad los pedidos entre sitios distintos salvo que el
+     * servidor los autorice explícitamente, y acá se autoriza solo al frontend
+     * de SIGCO.
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuracion = new CorsConfiguration();

@@ -15,6 +15,10 @@ import org.springframework.data.repository.query.Param;
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {
 
     /**
+     * Busca clientes por parte del nombre, sin importar mayúsculas, y
+     * opcionalmente por origen de la recomendación y por estado. Un filtro
+     * vacío significa "todos". Los resultados salen ordenados alfabéticamente.
+     *
      * Busqueda del listado, con los tres filtros del informe combinables entre
      * si: texto del nombre, origen de la recomendacion y estado.
      *

@@ -8,6 +8,10 @@ import client from '../../api/client';
  * distintos, no una edición genérica.
  */
 
+/**
+ * Pide al servidor los pedidos de materiales, filtrando opcionalmente por obra,
+ * proveedor y estado.
+ */
 export async function listarPedidos({ obra, proveedor, estado } = {}) {
   const respuesta = await client.get('/pedidos', {
     params: {
@@ -25,11 +29,17 @@ export async function listarPendientes() {
   return respuesta.data;
 }
 
+/**
+ * Pide al servidor un pedido con todo su detalle.
+ */
 export async function obtenerPedido(id) {
   const respuesta = await client.get(`/pedidos/${id}`);
   return respuesta.data;
 }
 
+/**
+ * Crea un pedido de materiales nuevo para una obra.
+ */
 export async function crearPedido(datos) {
   const respuesta = await client.post('/pedidos', datos);
   return respuesta.data;
@@ -61,6 +71,9 @@ export async function recibirPedido(id, datos) {
   return respuesta.data;
 }
 
+/**
+ * Anula un pedido que finalmente no se concreta, indicando el motivo.
+ */
 export async function anularPedido(id, motivo) {
   const respuesta = await client.patch(`/pedidos/${id}/anulacion`, { motivo });
   return respuesta.data;
@@ -85,6 +98,10 @@ export function claseDeEstadoPedido(estado, estilos) {
   }
 }
 
+/**
+ * Escribe un monto en pesos con dos decimales, al estilo argentino. Si no hay
+ * monto, muestra un guion.
+ */
 export function pesos(monto) {
   if (monto === null || monto === undefined) return '—';
   return `$ ${Number(monto).toLocaleString('es-AR', {
@@ -92,6 +109,10 @@ export function pesos(monto) {
   })}`;
 }
 
+/**
+ * Escribe la fecha de un momento registrado (por ejemplo cuándo se pidió) en
+ * formato día/mes/año.
+ */
 export function fechaHora(valor) {
   if (!valor) return '—';
   return new Date(valor).toLocaleDateString('es-AR', {

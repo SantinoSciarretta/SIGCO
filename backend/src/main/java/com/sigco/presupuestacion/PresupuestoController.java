@@ -52,6 +52,10 @@ public class PresupuestoController {
 
     private final PresupuestoService servicio;
 
+    /**
+     * Constructor: Spring le entrega automáticamente el servicio que contiene
+     * la lógica de Presupuestación.
+     */
     public PresupuestoController(PresupuestoService servicio) {
         this.servicio = servicio;
     }
@@ -150,9 +154,9 @@ public class PresupuestoController {
      * con lo que ya esté cargado. Reemplaza al "agregar ítem de a uno".
      */
     @GetMapping("/{id}/planilla/{idRubro}")
-    public com.sigco.presupuestacion.dto.PlanillaDtos.PlanillaDeRubro planilla(
+    public com.sigco.presupuestacion.dto.PlanillaDtos.PlanillaDeRubro obtenerPlanillaDeRubro(
             @PathVariable Long id, @PathVariable Long idRubro) {
-        return servicio.planilla(id, idRubro);
+        return servicio.obtenerPlanillaDeRubro(id, idRubro);
     }
 
     /**

@@ -50,6 +50,9 @@ export default function ConfigurarEtapas({ idObra, onCerrar, onGuardado }) {
     return () => { vigente = false; };
   }, []);
 
+  /**
+   * Pasa la duración de una etapa a días, por si se cargó en semanas.
+   */
   const enDias = (linea) => {
     const n = Number(linea.cantidad);
     if (!(n > 0)) return 0;
@@ -58,11 +61,17 @@ export default function ConfigurarEtapas({ idObra, onCerrar, onGuardado }) {
 
   const totalDias = lineas.reduce((s, l) => s + enDias(l), 0);
 
+  /**
+   * Actualiza un dato de una etapa a medida que el dueño escribe.
+   */
   const cambiar = (indice, campo) => (e) => {
     const valor = e.target.value;
     setLineas((previas) => previas.map((l, i) => (i === indice ? { ...l, [campo]: valor } : l)));
   };
 
+  /**
+   * Agrega una etapa vacía al final de la lista.
+   */
   const agregar = () => setLineas((p) => [
     ...p, { nombreHito: '', idRubro: '', cantidad: '', unidad: 'días', orden: p.length + 1 }]);
 
@@ -72,6 +81,10 @@ export default function ConfigurarEtapas({ idObra, onCerrar, onGuardado }) {
     .filter((_, j) => j !== i)
     .map((l, j) => ({ ...l, orden: j + 1 })));
 
+  /**
+   * Guarda el plan de etapas. El sistema calcula la ponderación de cada una
+   * según los días que dura.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);

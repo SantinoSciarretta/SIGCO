@@ -62,7 +62,7 @@ class BalanceServiceTest {
                 cobros("1000000", "400000", "600000", 0),
                 avance("50", 1, 2));
 
-        var balance = servicio.de(1L);
+        var balance = servicio.calcularBalanceDeObra(1L);
 
         assertThat(balance.gananciaEstimada()).isEqualByComparingTo("400000");
         assertThat(balance.margenPorcentaje()).isEqualByComparingTo("40.00");
@@ -81,7 +81,7 @@ class BalanceServiceTest {
                 cobros("1000000", "400000", "600000", 0),
                 avance("50", 1, 2));
 
-        var balance = servicio.de(1L);
+        var balance = servicio.calcularBalanceDeObra(1L);
 
         // Entraron 400.000 y salieron 600.000, aunque la obra proyecte ganancia.
         assertThat(balance.resultadoDeCaja()).isEqualByComparingTo("-200000");
@@ -96,7 +96,7 @@ class BalanceServiceTest {
                 cobros("0", "0", "0", 0),
                 avance("0", 0, 0));
 
-        var balance = servicio.de(1L);
+        var balance = servicio.calcularBalanceDeObra(1L);
 
         assertThat(balance.margenPorcentaje()).isEqualByComparingTo("0");
         assertThat(balance.gananciaEstimada()).isEqualByComparingTo("-150000");
@@ -114,7 +114,7 @@ class BalanceServiceTest {
                 cobros("1000000", "400000", "600000", 2),
                 avance("40", 2, 5));
 
-        var balance = servicio.de(1L);
+        var balance = servicio.calcularBalanceDeObra(1L);
 
         assertThat(balance.pendientes())
                 .anyMatch(p -> p.contains("3 hitos sin completar"))
@@ -132,7 +132,7 @@ class BalanceServiceTest {
                 cobros("1000000", "1000000", "0", 0),
                 avance("100", 3, 3));
 
-        var balance = servicio.de(1L);
+        var balance = servicio.calcularBalanceDeObra(1L);
 
         assertThat(balance.pendientes()).anyMatch(p -> p.contains("1 rubro se pasó"));
     }
@@ -145,7 +145,7 @@ class BalanceServiceTest {
                 cobros("1000000", "1000000", "0", 0),
                 avance("100", 3, 3));
 
-        assertThat(servicio.de(1L).pendientes()).isEmpty();
+        assertThat(servicio.calcularBalanceDeObra(1L).pendientes()).isEmpty();
     }
 
     // ------------------------------------------------------------------
@@ -156,7 +156,7 @@ class BalanceServiceTest {
         when(obraRepositorio.findById(1L)).thenReturn(Optional.of(unaObra()));
         when(gastoService.estadoFinancieroOVacio(1L)).thenReturn(economia);
         when(cobrosService.resumenOVacio(1L)).thenReturn(cobros);
-        when(seguimientoService.avance(1L)).thenReturn(avance);
+        when(seguimientoService.calcularAvanceDeObra(1L)).thenReturn(avance);
     }
 
     private Obra unaObra() {

@@ -43,9 +43,17 @@ public class OperarioObra {
     @Column(name = "fecha_desasignacion")
     private LocalDate fechaDesasignacion;
 
+    /**
+     * Constructor vacío que exige la base de datos (JPA) para poder armar el
+     * objeto al leerlo. No se usa desde el código.
+     */
     protected OperarioObra() {
     }
 
+    /**
+     * Crea la asignación de un operario a una obra, con la fecha de hoy como
+     * inicio.
+     */
     public OperarioObra(Operario operario, Obra obra) {
         this.id = new OperarioObraId(operario.getIdOperario(), obra.getIdObra());
         this.operario = operario;
@@ -53,6 +61,10 @@ public class OperarioObra {
         this.fechaAsignacion = LocalDate.now();
     }
 
+    /**
+     * Cierra la asignación en la fecha indicada. La fila no se borra, para
+     * conservar el historial de en qué obras trabajó.
+     */
     public void desasignar(LocalDate fecha) {
         this.fechaDesasignacion = fecha;
     }
@@ -63,10 +75,18 @@ public class OperarioObra {
         this.fechaAsignacion = LocalDate.now();
     }
 
+    /**
+     * Indica si la asignación sigue abierta, es decir que el operario todavía
+     * trabaja en esa obra.
+     */
     public boolean estaVigente() {
         return fechaDesasignacion == null;
     }
 
+    /**
+     * Métodos de lectura: devuelven los datos guardados de la asignación. Solo
+     * leen, no modifican nada.
+     */
     public OperarioObraId getId() {
         return id;
     }

@@ -212,7 +212,7 @@ class PortfolioServiceTest {
         p.publicar();
         when(repositorio.publicadas()).thenReturn(List.of(p));
 
-        List<VidrieraRespuesta> vidriera = servicio.vidriera(null);
+        List<VidrieraRespuesta> vidriera = servicio.listarObrasDeLaVidriera(null);
 
         // La restricción vive en el TIPO: VidrieraRespuesta no tiene campos de
         // cliente ni de dirección, así que no hay forma de filtrarlos por

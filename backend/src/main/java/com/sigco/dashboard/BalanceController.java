@@ -35,13 +35,17 @@ public class BalanceController {
 
     private final BalanceService servicio;
 
+    /**
+     * Constructor: Spring le entrega automáticamente el servicio que calcula el
+     * balance.
+     */
     public BalanceController(BalanceService servicio) {
         this.servicio = servicio;
     }
 
     /** GET /api/balance/{idObra} */
     @GetMapping("/{idObra}")
-    public BalanceDeObra de(@PathVariable Long idObra) {
-        return servicio.de(idObra);
+    public BalanceDeObra calcularBalanceDeObra(@PathVariable Long idObra) {
+        return servicio.calcularBalanceDeObra(idObra);
     }
 }

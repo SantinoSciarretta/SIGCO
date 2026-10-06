@@ -60,6 +60,9 @@ public interface CotizacionRepository extends JpaRepository<Cotizacion, Long> {
 
     /** Cuantas cotizaciones tiene un proveedor. */
     /**
+     * Devuelve la última cotización que dio un proveedor para un material. Se
+     * usa para sugerir el precio al aprobar un pedido.
+     *
      * Ultima cotizacion de un proveedor para un material.
      *
      * La usa Compras al aprobar un pedido, para proponer el precio de cada

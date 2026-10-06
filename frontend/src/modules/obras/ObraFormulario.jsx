@@ -70,11 +70,18 @@ export default function ObraFormulario({ abierto, obra, onCerrar, onGuardado }) 
       .catch((fallo) => setErrorGeneral(fallo.mensaje));
   }, [editando]);
 
+  /**
+   * Actualiza un campo del formulario y borra el error que ese campo tuviera.
+   */
   const cambiar = (campo) => (evento) => {
     setDatos((previo) => ({ ...previo, [campo]: evento.target.value }));
     setCamposInvalidos((previo) => ({ ...previo, [campo]: undefined }));
   };
 
+  /**
+   * Da de alta un cliente nuevo sin salir del formulario de la obra y lo deja
+   * elegido.
+   */
   const guardarClienteNuevo = async () => {
     setErrorCliente(null);
     try {
@@ -92,6 +99,10 @@ export default function ObraFormulario({ abierto, obra, onCerrar, onGuardado }) 
     }
   };
 
+  /**
+   * Guarda la obra (nueva o editada). Si algún dato es rechazado, marca el
+   * campo con el problema.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);

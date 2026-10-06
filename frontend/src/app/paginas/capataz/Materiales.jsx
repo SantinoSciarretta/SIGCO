@@ -85,6 +85,10 @@ function Pedido({ obra }) {
     return () => { vigente = false; };
   }, []);
 
+  /**
+   * Suma o resta unidades de un material en el pedido que está armando el
+   * capataz. Nunca deja una cantidad negativa.
+   */
   const cambiar = (idMaterial, delta) => {
     setCantidades((actual) => {
       const nueva = Math.max(0, (actual[idMaterial] ?? 0) + delta);
@@ -96,6 +100,9 @@ function Pedido({ obra }) {
   const lineas = Object.entries(cantidades).filter(([, c]) => c > 0);
   const unidades = lineas.reduce((suma, [, c]) => suma + c, 0);
 
+  /**
+   * Envía el pedido de materiales al dueño para que lo apruebe.
+   */
   const enviar = async () => {
     setEnviando(true);
     setError(null);
@@ -294,6 +301,10 @@ function Recepcion({ obra }) {
 
 /* ========================================================================== */
 
+/**
+ * Pantalla donde el capataz confirma que llegó un pedido: sube la foto del
+ * remito y, si algo vino distinto, escribe qué.
+ */
 function FormularioRecepcion({ pedido, varios, onVolver, onConfirmado, errorPrevio }) {
   const [remito, setRemito] = useState('');
   const [huboDiferencias, setHuboDiferencias] = useState(null);
@@ -308,6 +319,10 @@ function FormularioRecepcion({ pedido, varios, onVolver, onConfirmado, errorPrev
     && huboDiferencias !== null
     && (huboDiferencias === 'no' || notaDiferencia.trim().length > 0);
 
+  /**
+   * Envía la confirmación de recepción con la foto del remito y la nota de
+   * diferencias, si la hay.
+   */
   const confirmar = async () => {
     setConfirmando(true);
     setError(null);

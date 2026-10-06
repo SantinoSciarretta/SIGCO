@@ -35,6 +35,10 @@ export default function CambiarEstadoObra({ obra, onCerrar, onCambiado }) {
    */
   const obraEnMarcha = obra.estado === 'En ejecución';
 
+  /**
+   * Envía el cambio de estado de la obra (pasar a ejecución, finalizar o
+   * cancelar) con los datos que pide cada caso.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);

@@ -34,11 +34,17 @@ export default function ConfigurarHitos({ idObra, hitosActuales, onCerrar, onGua
   const suma = lineas.reduce((s, l) => s + (Number(l.ponderacion) || 0), 0);
   const cierra = Math.abs(suma - 100) < 0.001;
 
+  /**
+   * Actualiza un dato de un hito a medida que el dueño escribe.
+   */
   const cambiar = (indice, campo) => (e) => {
     const valor = e.target.value;
     setLineas((previas) => previas.map((l, i) => (i === indice ? { ...l, [campo]: valor } : l)));
   };
 
+  /**
+   * Agrega un hito vacío al final de la lista.
+   */
   const agregar = () => setLineas((p) => [
     ...p, { nombreHito: '', ponderacion: '', orden: p.length + 1 }]);
 
@@ -48,6 +54,9 @@ export default function ConfigurarHitos({ idObra, hitosActuales, onCerrar, onGua
     .filter((_, j) => j !== i)
     .map((l, j) => ({ ...l, orden: j + 1 })));
 
+  /**
+   * Carga los hitos de la obra a partir de una plantilla guardada.
+   */
   const usarPlantilla = async (idPlantilla) => {
     if (!idPlantilla) return;
     setError(null);
@@ -59,6 +68,9 @@ export default function ConfigurarHitos({ idObra, hitosActuales, onCerrar, onGua
     }
   };
 
+  /**
+   * Guarda el plan de hitos con sus ponderaciones, que tienen que sumar 100.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);

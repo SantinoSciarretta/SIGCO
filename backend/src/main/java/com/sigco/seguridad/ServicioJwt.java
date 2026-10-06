@@ -44,6 +44,11 @@ public class ServicioJwt {
     private final SecretKey clave;
     private final long duracionEnSegundos;
 
+    /**
+     * Constructor: prepara la clave secreta con la que se firman los pases de
+     * sesión y su duración. Si la clave es demasiado corta, el sistema no
+     * arranca, para no firmar con una clave débil.
+     */
     public ServicioJwt(@Value("${sigco.jwt.secreto}") String secreto,
                        @Value("${sigco.jwt.duracion-segundos}") long duracionEnSegundos) {
         // HMAC-SHA256 exige una clave de al menos 256 bits (32 caracteres). Si
@@ -79,6 +84,10 @@ public class ServicioJwt {
         return construir(idUsuario, nombreUsuario, nombreRol, versionSesion, inicioSesion);
     }
 
+    /**
+     * Arma y firma el pase de sesión con los datos de la cuenta, el momento en
+     * que empezó la sesión y su vencimiento.
+     */
     private String construir(Long idUsuario, String nombreUsuario, String nombreRol,
                              int versionSesion, Instant inicioSesion) {
         Instant ahora = Instant.now();
@@ -230,6 +239,9 @@ public class ServicioJwt {
                 .getSeconds() >= topeEnSegundos;
     }
 
+    /**
+     * Devuelve cuántos segundos dura un pase de sesión.
+     */
     public long getDuracionEnSegundos() {
         return duracionEnSegundos;
     }

@@ -24,6 +24,9 @@ export default function Modal({ abierto, onCerrar, titulo, children, ancho }) {
   useEffect(() => {
     if (!abierto) return undefined;
 
+    /**
+     * Cierra la ventana emergente si se aprieta la tecla Escape.
+     */
     const alPresionarTecla = (evento) => {
       if (evento.key === 'Escape') onCerrar();
     };

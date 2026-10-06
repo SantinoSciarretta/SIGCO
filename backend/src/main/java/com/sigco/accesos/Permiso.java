@@ -46,9 +46,18 @@ public class Permiso {
     @Column(name = "descripcion", length = 200)
     private String descripcion;
 
+    /**
+     * Constructor vacío que exige la base de datos (JPA) para poder armar el
+     * objeto al leerlo. No se usa desde el código: los permisos los crea la
+     * migración V13.
+     */
     protected Permiso() {
     }
 
+    /**
+     * Métodos de lectura: devuelven los datos guardados del permiso. Solo leen,
+     * no modifican nada.
+     */
     public Long getIdPermiso() {
         return idPermiso;
     }

@@ -21,6 +21,10 @@ import java.util.List;
  */
 public final class TableroDtos {
 
+    /**
+     * Constructor privado: esta clase solo agrupa los formatos de datos del
+     * tablero, no se crean objetos de ella.
+     */
     private TableroDtos() {
     }
 

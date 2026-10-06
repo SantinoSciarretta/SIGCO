@@ -9,6 +9,10 @@ import org.springframework.data.repository.query.Param;
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 
     /**
+     * Busca pedidos, del más nuevo al más viejo, filtrando opcionalmente por
+     * obra, por proveedor y por estado. Un filtro en 0 o vacío significa
+     * "todos".
+     *
      * Listado con filtros combinables.
      *
      * NINGUN PARAMETRO PUEDE LLEGAR NULO. El patron habitual

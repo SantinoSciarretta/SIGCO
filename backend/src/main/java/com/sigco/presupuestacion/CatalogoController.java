@@ -45,6 +45,10 @@ public class CatalogoController {
 
     private final CatalogoService servicio;
 
+    /**
+     * Constructor: Spring le entrega automáticamente el servicio que administra
+     * el catálogo de rubros y subrubros.
+     */
     public CatalogoController(CatalogoService servicio) {
         this.servicio = servicio;
     }

@@ -62,6 +62,11 @@ public class AlmacenSupabase implements AlmacenDeArchivos {
     private final ValidadorDeArchivos validador;
     private final HttpClient cliente;
 
+    /**
+     * Constructor: recibe la dirección y la clave de Supabase Storage, el
+     * servicio en la nube donde se guardan las fotos y PDF del sistema en
+     * producción.
+     */
     public AlmacenSupabase(@Value("${sigco.almacenamiento.supabase.url}") String urlBase,
                            @Value("${sigco.almacenamiento.supabase.clave}") String claveDeServicio,
                            ValidadorDeArchivos validador) {
@@ -83,6 +88,10 @@ public class AlmacenSupabase implements AlmacenDeArchivos {
         this.cliente = HttpClient.newBuilder().connectTimeout(ESPERA).build();
     }
 
+    /**
+     * Sube un archivo a Supabase Storage con un nombre al azar y devuelve la
+     * referencia que se anota en la base de datos.
+     */
     @Override
     public String guardar(MultipartFile archivo, String carpeta, Ambito ambito) {
         String extension = validador.validar(archivo);
@@ -124,6 +133,10 @@ public class AlmacenSupabase implements AlmacenDeArchivos {
         return ambito.getPrefijo() + "/" + ruta;
     }
 
+    /**
+     * Descarga de Supabase Storage el archivo que corresponde a esa referencia,
+     * para mostrarlo o descargarlo.
+     */
     @Override
     public Resource leer(String referencia) {
         Ambito ambito = Ambito.de(referencia);
@@ -156,6 +169,9 @@ public class AlmacenSupabase implements AlmacenDeArchivos {
         }
     }
 
+    /**
+     * Elimina de Supabase Storage el archivo que corresponde a esa referencia.
+     */
     @Override
     public void borrar(String referencia) {
         Ambito ambito = Ambito.de(referencia);
@@ -181,6 +197,10 @@ public class AlmacenSupabase implements AlmacenDeArchivos {
         return urlBase + "/storage/v1/object/sigco-" + ambito.getPrefijo() + "/" + ruta;
     }
 
+    /**
+     * Quita de la referencia el prefijo del ámbito ("publico/" o "privado/")
+     * para obtener la ruta del archivo dentro de Supabase.
+     */
     private String sinPrefijo(String referencia, Ambito ambito) {
         String prefijo = ambito.getPrefijo() + "/";
         return referencia.startsWith(prefijo)

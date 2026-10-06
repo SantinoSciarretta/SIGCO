@@ -95,9 +95,18 @@ public class Pago {
     @Column(name = "motivo_anulacion", length = 200)
     private String motivoAnulacion;
 
+    /**
+     * Constructor vacío que exige la base de datos (JPA) para poder armar el
+     * objeto al leerlo. No se usa desde el código.
+     */
     protected Pago() {
     }
 
+    /**
+     * Crea el registro de un pago: a qué cuota corresponde, cuánto se pagó,
+     * cuándo, por qué medio, qué comprobante se entregó y quién lo cargó. La
+     * fecha de carga se completa sola.
+     */
     public Pago(Cuota cuota, BigDecimal monto, LocalDate fechaPago,
                 String medioPago, String comprobanteEmitido, Long idUsuarioRegistro) {
         this.cuota = cuota;
@@ -109,6 +118,10 @@ public class Pago {
         this.fechaCarga = LocalDateTime.now();
     }
 
+    /**
+     * Métodos de lectura: devuelven los datos guardados del pago. Solo leen, no
+     * modifican nada.
+     */
     public Long getIdPago() {
         return idPago;
     }
@@ -141,6 +154,10 @@ public class Pago {
         return fechaCarga;
     }
 
+    /**
+     * Indica si el pago fue anulado. Un pago anulado se conserva pero ya no
+     * suma a lo cobrado.
+     */
     public boolean estaAnulado() {
         return anulado;
     }

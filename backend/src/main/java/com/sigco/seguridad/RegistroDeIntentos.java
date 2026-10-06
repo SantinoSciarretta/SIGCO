@@ -43,6 +43,10 @@ public class RegistroDeIntentos {
     private final int intentosMaximos;
     private final int minutosDeBloqueo;
 
+    /**
+     * Constructor: recibe dónde guardar los intentos fallidos, la auditoría, y
+     * cuántos intentos se permiten y cuántos minutos dura el bloqueo.
+     */
     public RegistroDeIntentos(UsuarioRepository repositorio,
                               ServicioAuditoria auditoria,
                               @Value("${sigco.seguridad.intentos-maximos}") int intentosMaximos,
@@ -81,6 +85,10 @@ public class RegistroDeIntentos {
         return quedoBloqueada;
     }
 
+    /**
+     * Métodos de lectura: devuelven la cantidad de intentos permitidos y los
+     * minutos de bloqueo configurados.
+     */
     public int getIntentosMaximos() {
         return intentosMaximos;
     }

@@ -75,6 +75,10 @@ public class FiltroJwt extends OncePerRequestFilter {
      */
     private final long topeEnSegundos;
 
+    /**
+     * Constructor: recibe el servicio que verifica los pases de sesión, la
+     * consulta de cuentas y el tope máximo de duración de una sesión.
+     */
     public FiltroJwt(ServicioJwt servicioJwt,
                      UsuarioRepository usuarioRepositorio,
                      @org.springframework.beans.factory.annotation.Value(
@@ -84,6 +88,12 @@ public class FiltroJwt extends OncePerRequestFilter {
         this.topeEnSegundos = topeEnSegundos;
     }
 
+    /**
+     * Se ejecuta en cada pedido al servidor. Lee el pase de sesión (token) que
+     * manda el navegador, verifica que sea auténtico y vigente, carga los
+     * permisos actuales de la cuenta desde la base, y si la sesión está por
+     * vencer le entrega un pase renovado.
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest peticion,
                                     HttpServletResponse respuesta,
@@ -162,6 +172,10 @@ public class FiltroJwt extends OncePerRequestFilter {
         }
     }
 
+    /**
+     * Saca el pase de sesión de la cabecera "Authorization" del pedido. Si no
+     * viene, devuelve nada.
+     */
     private String extraerToken(HttpServletRequest peticion) {
         String cabecera = peticion.getHeader(CABECERA);
         if (cabecera == null || !cabecera.startsWith(PREFIJO)) {

@@ -12,6 +12,11 @@ import org.springframework.data.repository.query.Param;
 public interface ObraRepository extends JpaRepository<Obra, Long> {
 
     /**
+     * Busca obras filtrando opcionalmente por cliente, tipo de obra, estado,
+     * fecha de alta y un texto que puede estar en la dirección o en el nombre
+     * del cliente. Primero aparecen las obras en ejecución, después las que se
+     * presupuestan y al final las cerradas.
+     *
      * Listado con los filtros combinables que pide el informe: cliente, tipo de
      * obra, estado y rango de fechas de creacion.
      *

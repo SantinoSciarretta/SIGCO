@@ -4,6 +4,10 @@ import client from '../../api/client';
  * Llamadas al backend de presupuestos.
  */
 
+/**
+ * Pide al servidor los presupuestos, filtrando opcionalmente por obra, tipo y
+ * estado.
+ */
 export async function listarPresupuestos({ obra, tipo, estado } = {}) {
   const respuesta = await client.get('/presupuestos', {
     params: {
@@ -32,6 +36,9 @@ export async function obtenerPresupuesto(id) {
   return respuesta.data;
 }
 
+/**
+ * Crea un presupuesto nuevo para una obra.
+ */
 export async function crearPresupuesto(datos) {
   const respuesta = await client.post('/presupuestos', datos);
   return respuesta.data;
@@ -48,16 +55,25 @@ export async function duplicarPresupuesto(id, datos) {
   return respuesta.data;
 }
 
+/**
+ * Agrega un ítem suelto al presupuesto.
+ */
 export async function agregarItem(idPresupuesto, item) {
   const respuesta = await client.post(`/presupuestos/${idPresupuesto}/items`, item);
   return respuesta.data;
 }
 
+/**
+ * Corrige un ítem del presupuesto.
+ */
 export async function actualizarItem(idPresupuesto, idItem, item) {
   const respuesta = await client.put(`/presupuestos/${idPresupuesto}/items/${idItem}`, item);
   return respuesta.data;
 }
 
+/**
+ * Saca un ítem del presupuesto.
+ */
 export async function quitarItem(idPresupuesto, idItem) {
   const respuesta = await client.delete(`/presupuestos/${idPresupuesto}/items/${idItem}`);
   return respuesta.data;
@@ -89,6 +105,9 @@ export async function guardarPlanilla(idPresupuesto, idRubro, filas) {
   return data;
 }
 
+/**
+ * Guarda la forma de pago del presupuesto.
+ */
 export async function definirPlanDePago(id, plan) {
   const respuesta = await client.put(`/presupuestos/${id}/plan-de-pago`, plan);
   return respuesta.data;

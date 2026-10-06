@@ -35,6 +35,9 @@ export default function FichaOperario({ operario, obras, onCerrar, onCambio }) {
     return () => { vigente = false; };
   }, [operario.idOperario, recarga]);
 
+  /**
+   * Vuelve a cargar la ficha y avisa al listado que algo cambió.
+   */
   const recargar = () => { setRecarga((n) => n + 1); onCambio(); };
 
   const asignaciones = detalle?.asignaciones ?? [];
@@ -156,6 +159,10 @@ export default function FichaOperario({ operario, obras, onCerrar, onCambio }) {
 
 /* ========================================================================== */
 
+/**
+ * Selector para asignar el operario a una obra. Solo ofrece obras activas a las
+ * que todavía no está asignado.
+ */
 function AsignarAObra({ operario, obras, yaAsignadas, onAsignado, onError }) {
   const [idObra, setIdObra] = useState('');
   const [guardando, setGuardando] = useState(false);
@@ -164,6 +171,9 @@ function AsignarAObra({ operario, obras, yaAsignadas, onAsignado, onError }) {
     (o) => !yaAsignadas.includes(o.idObra)
       && o.estado !== 'Cancelada' && o.estado !== 'Finalizada');
 
+  /**
+   * Asigna el operario a la obra elegida.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);
@@ -198,6 +208,10 @@ function AsignarAObra({ operario, obras, yaAsignadas, onAsignado, onError }) {
 
 /* ========================================================================== */
 
+/**
+ * Formulario para registrar una falta del operario: obra, fecha y motivo
+ * opcional.
+ */
 function RegistrarFalta({ operario, obras, onRegistrada, onError }) {
   const hoy = new Date().toISOString().slice(0, 10);
   const [idObra, setIdObra] = useState('');
@@ -205,6 +219,9 @@ function RegistrarFalta({ operario, obras, onRegistrada, onError }) {
   const [motivo, setMotivo] = useState('');
   const [guardando, setGuardando] = useState(false);
 
+  /**
+   * Registra la falta en el servidor.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);
@@ -257,6 +274,9 @@ function RegistrarFalta({ operario, obras, onRegistrada, onError }) {
 
 /* ========================================================================== */
 
+/**
+ * Permite escribir después el motivo de una falta que se cargó sin motivo.
+ */
 function CompletarMotivo({ inasistencia, onCompletado, onError }) {
   const [editando, setEditando] = useState(false);
   const [motivo, setMotivo] = useState('');

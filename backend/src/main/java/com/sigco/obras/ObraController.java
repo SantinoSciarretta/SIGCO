@@ -41,6 +41,10 @@ public class ObraController {
 
     private final ObraService servicio;
 
+    /**
+     * Constructor: Spring le entrega automáticamente el servicio que contiene
+     * la lógica de Obras.
+     */
     public ObraController(ObraService servicio) {
         this.servicio = servicio;
     }
@@ -77,8 +81,8 @@ public class ObraController {
      * numero y fallando con un 400.
      */
     @GetMapping("/mias")
-    public List<ObraRespuesta> mias() {
-        return servicio.mias();
+    public List<ObraRespuesta> obrasAsignadasAlUsuario() {
+        return servicio.obrasAsignadasAlUsuario();
     }
 
     /** GET /api/obras/{id} */

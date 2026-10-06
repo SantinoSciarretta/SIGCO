@@ -12,6 +12,10 @@ import org.springframework.data.repository.query.Param;
 public interface ProveedorRepository extends JpaRepository<Proveedor, Long> {
 
     /**
+     * Busca proveedores por parte del nombre y de la zona, sin importar
+     * mayúsculas, y opcionalmente por estado. Los resultados salen en orden
+     * alfabético.
+     *
      * Listado con buscador por nombre y filtros por zona y estado.
      *
      * La zona se compara de forma parcial y sin distinguir mayusculas, igual

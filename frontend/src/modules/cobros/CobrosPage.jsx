@@ -5,7 +5,7 @@ import Modal from '../../components/ui/Modal';
 import { listarObras } from '../obras/obrasApi';
 import ActualizarCac from './ActualizarCac';
 import {
-  MEDIOS_DE_PAGO, COMPROBANTES, anularPago, claseDeEstadoCuota, consolidado,
+  MEDIOS_DE_PAGO, COMPROBANTES, anularPago, claseDeEstadoCuota, resumenDeCobrosPorObra,
   fecha, generarPlan, pesos, pesosCorto, planDeCobro, registrarPago,
 } from './cobrosApi';
 import estilos from './Cobros.module.css';
@@ -53,7 +53,7 @@ export default function CobrosPage() {
 
   useEffect(() => {
     let vigente = true;
-    consolidado().then((d) => { if (vigente) setResumen(d); }).catch(() => {});
+    resumenDeCobrosPorObra().then((d) => { if (vigente) setResumen(d); }).catch(() => {});
     return () => { vigente = false; };
   }, [recarga]);
 
@@ -75,6 +75,10 @@ export default function CobrosPage() {
   const planVisible = idObra ? plan : null;
   const obraElegida = obras.find((o) => String(o.idObra) === idObra);
 
+  /**
+   * Genera el plan de cobro de la obra a partir de su presupuesto aprobado, con
+   * el primer vencimiento a quince días.
+   */
   const generar = async () => {
     setGenerando(true);
     try {
@@ -327,6 +331,10 @@ export default function CobrosPage() {
 
 /* ========================================================================== */
 
+/**
+ * Ventana para registrar el pago de una cuota. Propone el saldo completo, pero
+ * se puede cambiar para registrar un pago parcial.
+ */
 function RegistrarPagoModal({ cuota, onCerrar, onRegistrado }) {
   const hoy = new Date().toISOString().slice(0, 10);
   const [datos, setDatos] = useState({
@@ -339,8 +347,14 @@ function RegistrarPagoModal({ cuota, onCerrar, onRegistrado }) {
   const [error, setError] = useState(null);
   const [guardando, setGuardando] = useState(false);
 
+  /**
+   * Actualiza un campo del formulario a medida que el usuario escribe.
+   */
   const cambiar = (campo) => (e) => setDatos((p) => ({ ...p, [campo]: e.target.value }));
 
+  /**
+   * Envía el pago al servidor y, si sale bien, cierra la ventana.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);
@@ -431,11 +445,18 @@ function RegistrarPagoModal({ cuota, onCerrar, onRegistrado }) {
 
 /* ========================================================================== */
 
+/**
+ * Ventana para anular los pagos de una cuota, pidiendo el motivo. Los pagos no
+ * se borran, quedan marcados como anulados.
+ */
 function AnularPagoModal({ cuota, onCerrar, onAnulado }) {
   const [motivo, setMotivo] = useState('');
   const [error, setError] = useState(null);
   const [guardando, setGuardando] = useState(false);
 
+  /**
+   * Envía la anulación al servidor y, si sale bien, cierra la ventana.
+   */
   const enviar = async (evento) => {
     evento.preventDefault();
     setGuardando(true);

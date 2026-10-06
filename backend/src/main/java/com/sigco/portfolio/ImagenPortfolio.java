@@ -36,19 +36,34 @@ public class ImagenPortfolio {
     @Column(name = "orden", nullable = false)
     private Integer orden;
 
+    /**
+     * Constructor vacío que exige la base de datos (JPA) para poder armar el
+     * objeto al leerlo. No se usa desde el código.
+     */
     protected ImagenPortfolio() {
     }
 
+    /**
+     * Crea una imagen de la galería: a qué publicación pertenece, dónde está
+     * guardada y en qué lugar se muestra.
+     */
     public ImagenPortfolio(PublicacionPortfolio publicacion, String urlImagen, Integer orden) {
         this.publicacion = publicacion;
         this.urlImagen = urlImagen;
         this.orden = orden;
     }
 
+    /**
+     * Cambia el lugar en el que se muestra la imagen dentro de la galería.
+     */
     public void reordenar(Integer orden) {
         this.orden = orden;
     }
 
+    /**
+     * Métodos de lectura: devuelven los datos guardados de la imagen. Solo
+     * leen, no modifican nada.
+     */
     public Long getIdImagen() {
         return idImagen;
     }
