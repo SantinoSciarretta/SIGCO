@@ -124,18 +124,66 @@ class PresupuestoServiceTest {
                     .hasMessageContaining("solo a las reformas");
         }
 
+        /**
+         * Antes el definitivo de una reforma exigía un anteproyecto previo.
+         * Desde el 05/10/2026 se puede presupuestar directo.
+         */
         @Test
-        @DisplayName("Una reforma no puede tener definitivo sin anteproyecto previo")
-        void reformaExigeAnteproyecto() {
+        @DisplayName("Una reforma puede tener definitivo sin anteproyecto previo")
+        void reformaSinAnteproyectoPuedeTenerDefinitivo() {
             when(obraRepositorio.findById(1L))
                     .thenReturn(Optional.of(obra(Obra.TIPO_REFORMA, 1L)));
-            when(repositorio.countByObraIdObraAndTipoPresupuesto(1L, Presupuesto.TIPO_ANTEPROYECTO))
-                    .thenReturn(0L);
+            when(repositorio.ultimaVersion(1L, Presupuesto.TIPO_DEFINITIVO)).thenReturn(0);
+            devolverLoQueSeGuarda();
 
-            assertThatThrownBy(() -> servicio.crear(new NuevoPresupuesto(
-                    1L, Presupuesto.TIPO_DEFINITIVO, null, null, null, null)))
-                    .isInstanceOf(ReglaDeNegocioException.class)
-                    .hasMessageContaining("sin un anteproyecto previo");
+            PresupuestoRespuesta r = servicio.crear(new NuevoPresupuesto(
+                    1L, Presupuesto.TIPO_DEFINITIVO, null, null, null, null));
+
+            assertThat(r.estado()).isEqualTo(Presupuesto.ESTADO_BORRADOR);
+        }
+
+        @Test
+        @DisplayName("Una reforma puede tener anteproyecto sin cotización inicial")
+        void anteproyectoSinCotizacion() {
+            when(obraRepositorio.findById(1L))
+                    .thenReturn(Optional.of(obra(Obra.TIPO_REFORMA, 1L)));
+            when(repositorio.ultimaVersion(1L, Presupuesto.TIPO_ANTEPROYECTO)).thenReturn(0);
+            devolverLoQueSeGuarda();
+
+            PresupuestoRespuesta r = servicio.crear(new NuevoPresupuesto(
+                    1L, Presupuesto.TIPO_ANTEPROYECTO, null, null, null, null));
+
+            assertThat(r.tipoPresupuesto()).isEqualTo(Presupuesto.TIPO_ANTEPROYECTO);
+        }
+
+        @Test
+        @DisplayName("Si no se escribe el plazo, se toma la duración estimada de la obra")
+        void plazoTomadoDeLaObra() {
+            Obra obra = obra(Obra.TIPO_REFORMA, 1L);
+            obra.estimarPlazo(java.time.LocalDate.of(2026, 11, 1), 6);
+            when(obraRepositorio.findById(1L)).thenReturn(Optional.of(obra));
+            when(repositorio.ultimaVersion(1L, Presupuesto.TIPO_DEFINITIVO)).thenReturn(0);
+            devolverLoQueSeGuarda();
+
+            PresupuestoRespuesta r = servicio.crear(new NuevoPresupuesto(
+                    1L, Presupuesto.TIPO_DEFINITIVO, null, null, null, null));
+
+            assertThat(r.plazoEstimadoObra()).isEqualTo("6 meses");
+        }
+
+        @Test
+        @DisplayName("Un plazo escrito a mano tiene prioridad sobre el de la obra")
+        void plazoEscritoTienePrioridad() {
+            Obra obra = obra(Obra.TIPO_REFORMA, 1L);
+            obra.estimarPlazo(java.time.LocalDate.of(2026, 11, 1), 6);
+            when(obraRepositorio.findById(1L)).thenReturn(Optional.of(obra));
+            when(repositorio.ultimaVersion(1L, Presupuesto.TIPO_DEFINITIVO)).thenReturn(0);
+            devolverLoQueSeGuarda();
+
+            PresupuestoRespuesta r = servicio.crear(new NuevoPresupuesto(
+                    1L, Presupuesto.TIPO_DEFINITIVO, null, null, null, "8 semanas"));
+
+            assertThat(r.plazoEstimadoObra()).isEqualTo("8 semanas");
         }
 
         @Test
@@ -143,8 +191,6 @@ class PresupuestoServiceTest {
         void reformaConAnteproyecto() {
             when(obraRepositorio.findById(1L))
                     .thenReturn(Optional.of(obra(Obra.TIPO_REFORMA, 1L)));
-            when(repositorio.countByObraIdObraAndTipoPresupuesto(1L, Presupuesto.TIPO_ANTEPROYECTO))
-                    .thenReturn(1L);
             when(repositorio.ultimaVersion(1L, Presupuesto.TIPO_DEFINITIVO)).thenReturn(0);
             devolverLoQueSeGuarda();
 
@@ -410,8 +456,6 @@ class PresupuestoServiceTest {
                     "Contrapiso", "m2", new BigDecimal("40"), new BigDecimal("12500")));
 
             when(repositorio.buscarCompleto(10L)).thenReturn(Optional.of(anteproyecto));
-            when(repositorio.countByObraIdObraAndTipoPresupuesto(1L, Presupuesto.TIPO_ANTEPROYECTO))
-                    .thenReturn(1L);
             when(repositorio.ultimaVersion(1L, Presupuesto.TIPO_DEFINITIVO)).thenReturn(0);
             devolverLoQueSeGuarda();
 

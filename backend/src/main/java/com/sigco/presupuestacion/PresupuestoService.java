@@ -181,7 +181,7 @@ public class PresupuestoService {
         int version = repositorio.ultimaVersion(obra.getIdObra(), tipo) + 1;
 
         Presupuesto presupuesto = new Presupuesto(
-                obra, tipo, version, base, normalizar(solicitud.plazoEstimadoObra()));
+                obra, tipo, version, base, plazoDelPresupuesto(solicitud, obra));
 
         // La cotizacion inicial es la unica instancia sin items: su precio sale
         // de multiplicar la superficie por un valor de referencia.
@@ -726,6 +726,28 @@ public class PresupuestoService {
      * circuito: el anteproyecto solo existe en reformas, y el definitivo de una
      * reforma necesita antes un anteproyecto.
      */
+    /**
+     * El plazo que se escribe en el presupuesto. Si no se indica uno, se toma
+     * la duración estimada que ya tiene cargada la obra (por ejemplo "6
+     * meses"), para no tener que escribir dos veces el mismo dato. Si la obra
+     * tampoco la tiene, queda vacío y se puede completar en el plan de pago.
+     */
+    private String plazoDelPresupuesto(NuevoPresupuesto solicitud, Obra obra) {
+        String escrito = normalizar(solicitud.plazoEstimadoObra());
+        if (escrito != null) {
+            return escrito;
+        }
+        Integer meses = obra.getMesesEstimados();
+        if (meses == null) {
+            return null;
+        }
+        return meses + (meses == 1 ? " mes" : " meses");
+    }
+
+    /**
+     * Controla que el tipo de presupuesto respete el circuito: el anteproyecto
+     * solo existe en reformas, y un adicional necesita un definitivo aprobado.
+     */
     private void validarCircuito(Obra obra, String tipo) {
         if (Presupuesto.TIPO_ANTEPROYECTO.equals(tipo)) {
             // El tipo de obra determina el circuito: en construccion nueva no
@@ -737,18 +759,13 @@ public class PresupuestoService {
             }
         }
 
-        if (Presupuesto.TIPO_DEFINITIVO.equals(tipo)
-                && Obra.TIPO_REFORMA.equals(obra.getTipoObra())) {
-
-            long anteproyectos = repositorio.countByObraIdObraAndTipoPresupuesto(
-                    obra.getIdObra(), Presupuesto.TIPO_ANTEPROYECTO);
-
-            if (anteproyectos == 0) {
-                throw new ReglaDeNegocioException(
-                        "No se puede generar el presupuesto definitivo de una reforma "
-                        + "sin un anteproyecto previo para esta obra.");
-            }
-        }
+        // El definitivo y el anteproyecto se pueden crear sin las instancias
+        // anteriores (pedido de Santino del 05/10/2026). El informe exigia un
+        // anteproyecto antes del definitivo de una reforma, pero en la
+        // practica hay obras chicas que se presupuestan directo, o clientes
+        // que llegan con los planos definitivos ya hechos, y la regla
+        // obligaba a cargar una instancia que no existio. El circuito completo
+        // sigue disponible: lo que se saco es la obligacion de recorrerlo.
 
         if (Presupuesto.TIPO_ADICIONAL.equals(tipo)) {
             List<Presupuesto> definitivosAprobados =

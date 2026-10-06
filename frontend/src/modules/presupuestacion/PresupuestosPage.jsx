@@ -267,6 +267,9 @@ function NuevoPresupuestoModal({ onCerrar, onCreado }) {
 
   const esCotizacion = datos.tipoPresupuesto === 'Cotización inicial';
   const obraElegida = obras.find((o) => String(o.idObra) === datos.idObra);
+  const plazoDeLaObra = obraElegida?.mesesEstimados
+    ? `${obraElegida.mesesEstimados} ${obraElegida.mesesEstimados === 1 ? 'mes' : 'meses'}`
+    : null;
 
   /**
    * Actualiza un campo del formulario y borra el error que ese campo tuviera.
@@ -291,11 +294,13 @@ function NuevoPresupuestoModal({ onCerrar, onCreado }) {
         tipoPresupuesto: datos.tipoPresupuesto,
         metrosCuadrados: esCotizacion && datos.metrosCuadrados ? datos.metrosCuadrados : null,
         valorPorM2: esCotizacion && datos.valorPorM2 ? datos.valorPorM2 : null,
-        plazoEstimadoObra: datos.plazoEstimadoObra || null,
+        // Si la obra tiene su duración cargada no se manda nada: el servidor
+        // la toma de la obra, así no se escribe dos veces el mismo dato.
+        plazoEstimadoObra: plazoDeLaObra ? null : (datos.plazoEstimadoObra || null),
       }));
     } catch (fallo) {
-      // Acá llegan los 409 del circuito: "el anteproyecto corresponde solo a
-      // las reformas", "sin un anteproyecto previo"…
+      // Acá llegan los 409 del circuito, por ejemplo "el anteproyecto
+      // corresponde solo a las reformas".
       if (fallo.camposInvalidos) setCamposInvalidos(fallo.camposInvalidos);
       else setError(fallo.mensaje);
     } finally {
@@ -346,7 +351,8 @@ function NuevoPresupuestoModal({ onCerrar, onCreado }) {
           )}
           {obraElegida?.tipoObra === 'Reforma' && (
             <p className={estilos.ayuda}>
-              Es una reforma: el definitivo necesita un anteproyecto previo.
+              Es una reforma: puede pasar por cotización y anteproyecto antes del
+              definitivo, o ir directo a cualquiera de las instancias.
             </p>
           )}
         </div>
@@ -378,12 +384,27 @@ function NuevoPresupuestoModal({ onCerrar, onCreado }) {
           </div>
         )}
 
-        <div className={estilos.campo}>
-          <label className={estilos.etiqueta} htmlFor="plazoEstimadoObra">Plazo estimado</label>
-          <input id="plazoEstimadoObra" className={estilos.control} maxLength={100}
-                 placeholder="6 meses" value={datos.plazoEstimadoObra}
-                 onChange={cambiar('plazoEstimadoObra')} />
-        </div>
+        {/* El plazo sale de la duración estimada de la obra. Solo se pide si
+            la obra no la tiene cargada. */}
+        {plazoDeLaObra ? (
+          <p className={estilos.ayuda}>
+            Plazo estimado: <b>{plazoDeLaObra}</b>, tomado de la obra. Si cambia,
+            se corrige desde la obra o en el plan de pago del presupuesto.
+          </p>
+        ) : (
+          <div className={estilos.campo}>
+            <label className={estilos.etiqueta} htmlFor="plazoEstimadoObra">Plazo estimado</label>
+            <input id="plazoEstimadoObra" className={estilos.control} maxLength={100}
+                   placeholder="6 meses" value={datos.plazoEstimadoObra}
+                   onChange={cambiar('plazoEstimadoObra')} />
+            {obraElegida && (
+              <p className={estilos.ayuda}>
+                Esta obra no tiene la duración estimada cargada. Podés escribirla
+                acá, o cargarla en la obra para que se complete sola.
+              </p>
+            )}
+          </div>
+        )}
 
         <div className={estilos.accionesFormulario}>
           <button type="button" className={estilos.botonSecundario} onClick={onCerrar}>

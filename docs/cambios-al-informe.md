@@ -246,6 +246,25 @@ Después de "Elaboración del presupuesto definitivo, con estructura de rubro, s
 
 **Por qué:** son las reglas de la planilla, de V18, de V7 (`id_material`) y del listado por obra del 23/09.
 
+### 4.4b [Reemplazar] Validaciones y Lógica, segundo punto (cambio del 05/10/2026)
+
+**Buscá:**
+> No se puede generar el presupuesto definitivo de una reforma sin que exista antes un presupuesto de anteproyecto para esa misma obra.
+
+**Pegá:**
+> Las instancias del circuito no son obligatorias: el presupuesto definitivo puede generarse sin anteproyecto ni cotización inicial, y el anteproyecto sin cotización inicial. En la práctica hay obras chicas que se presupuestan directo y clientes que llegan con los planos definitivos ya hechos, y exigir el recorrido completo obligaba a cargar instancias que no existieron. El circuito completo sigue disponible para las obras que lo recorren.
+
+**Buscá en Circuito Descriptivo, paso 4:**
+> Si la obra es una construcción nueva, este paso se salta y se pasa directamente al siguiente.
+
+**Pegá:**
+> Si la obra es una construcción nueva, este paso se salta y se pasa directamente al siguiente. En una reforma también puede saltearse cuando no hace falta.
+
+**Buscá en Campos del Formulario de Presupuesto, fila Plazo_Estimado_Obra, el texto del cambio 4.6 y agregale al final:**
+> Al crear el presupuesto se completa solo con la duración estimada cargada en la obra.
+
+**Por qué:** pedido del 05/10/2026. El definitivo ya no exige anteproyecto, y el plazo se toma de la obra para no cargarlo dos veces.
+
 ### 4.5 [Reemplazar] Campos del Formulario de Presupuesto, fila Unidad_Medida
 
 **Buscá:**

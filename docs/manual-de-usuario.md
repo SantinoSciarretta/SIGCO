@@ -196,7 +196,7 @@ La obra queda en estado **En presupuestación**.
 *Figura 8. Alta rápida de un cliente desde el formulario de la obra.*
 *Cómo sacarla: en "Nueva obra", tocar "Es nuevo" al lado de Cliente y capturar con el nombre del cliente nuevo escrito.*
 
-> **Tené en cuenta.** El tipo de obra define el circuito de presupuestación: una construcción nueva va directo al presupuesto definitivo, y una reforma necesita antes un anteproyecto. Por eso el tipo de obra solo se puede corregir mientras la obra no tiene presupuestos de anteproyecto o definitivo.
+> **Tené en cuenta.** El tipo de obra define el circuito de presupuestación: una construcción nueva no tiene anteproyecto, y una reforma puede tenerlo antes del definitivo. Por eso el tipo de obra solo se puede corregir mientras la obra no tiene presupuestos de anteproyecto o definitivo.
 
 ### Editar una obra {#obras-editar}
 
@@ -335,13 +335,13 @@ La cotización inicial es el precio estimativo que se le pasa al cliente en el p
 2. Elegí la obra. Solo aparecen las obras en presupuestación.
 3. En el tipo elegí "Cotización inicial".
 4. Cargá los "Metros cuadrados" y el "Valor por m²". El sistema calcula el precio estimativo.
-5. Si querés, cargá el plazo estimado y tocá el botón para crearlo.
+5. Tocá el botón para crearlo. El plazo estimado se toma solo de la duración cargada en la obra. Solo si la obra no la tiene, el formulario te lo pide.
 
 ### Crear el anteproyecto o el definitivo {#presupuestos-crear}
 
 1. Tocá "Nuevo presupuesto" y elegí la obra.
-2. Elegí el tipo. El sistema te recuerda el circuito según la obra: en una construcción no hay anteproyecto y se va directo al definitivo, y en una reforma el definitivo necesita un anteproyecto previo.
-3. Tocá el botón para crearlo. Se abre el detalle del presupuesto, en estado Borrador, listo para cargar.
+2. Elegí el tipo. En una construcción no hay anteproyecto. En una reforma se puede pasar por cotización y anteproyecto antes del definitivo, o ir directo a la instancia que corresponda: ninguna de las anteriores es obligatoria.
+3. Tocá el botón para crearlo. Igual que en la cotización, el plazo se toma de la obra. Se abre el detalle del presupuesto, en estado Borrador, listo para cargar.
 
 Para armar el definitivo **a partir del anteproyecto**, sin volver a cargar todo, abrí el anteproyecto y usá "Usar como base" (ver más abajo).
 

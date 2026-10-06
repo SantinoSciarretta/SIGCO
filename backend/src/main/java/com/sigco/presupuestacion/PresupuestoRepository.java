@@ -63,9 +63,6 @@ public interface PresupuestoRepository extends JpaRepository<Presupuesto, Long> 
             """)
     Integer ultimaVersion(@Param("idObra") Long idObra, @Param("tipo") String tipo);
 
-    /** Cuantos presupuestos de un tipo tiene una obra. Se usa para las reglas de circuito. */
-    long countByObraIdObraAndTipoPresupuesto(Long idObra, String tipoPresupuesto);
-
     /** Presupuestos de una obra en un estado dado y de un tipo dado. */
     List<Presupuesto> findByObraIdObraAndTipoPresupuestoAndEstado(
             Long idObra, String tipoPresupuesto, String estado);
