@@ -302,6 +302,16 @@ Después de "Elaboración del presupuesto definitivo, con estructura de rubro, s
 
 **Por qué:** pedido del 05/10/2026 (migración V26). Los imprevistos y los honorarios se cargaban a mano y había que recalcularlos con cada cambio. La mano de obra no se factura con IVA.
 
+### 4.4e [Agregar] El catálogo de rubros y los rubros especiales (cambio del 05/10/2026)
+
+**En Vistas de Interfaz, agregá:**
+> * Catálogo de Rubros y Subrubros: sección propia del menú principal, desde la que se cargan, editan y desactivan los rubros y sus subrubros en cualquier momento.
+
+**En Validaciones y Lógica, agregá:**
+> * El sistema trae creados los rubros especiales "Mano de obra" e "Imprevistos", cada uno identificado por una marca y no por su nombre, de modo que renombrarlos no rompe su funcionamiento. Solo puede existir un rubro de cada tipo, y un mismo rubro no puede ser los dos a la vez.
+
+**Por qué:** antes el catálogo solo se alcanzaba desde un enlace dentro de Presupuestos y en la práctica no se encontraba. Los dos rubros especiales los crean las migraciones V25 y V26 para que no haya que configurarlos a mano.
+
 ### 4.5 [Reemplazar] Campos del Formulario de Presupuesto, fila Unidad_Medida
 
 **Buscá:**
