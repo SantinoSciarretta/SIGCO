@@ -122,7 +122,7 @@ Nadie puede ver tu contraseña, ni siquiera el dueño, porque se guarda cifrada.
 
 Algunos datos se usan en todo el sistema y conviene cargarlos antes de empezar a trabajar con obras. Este es el orden recomendado:
 
-1. **Rubros y subrubros** (desde Presupuestos, "Ver catálogo de rubros"). Son la clasificación con la que se arman los presupuestos y se ordenan los gastos. Incluí un rubro de mano de obra y marcalo como tal.
+1. **Rubros y subrubros** (desde Presupuestos, "Ver catálogo de rubros"). Son la clasificación con la que se arman los presupuestos y se ordenan los gastos. El rubro "Mano de obra" ya viene creado en el sistema, así que no hace falta agregarlo.
 2. **Materiales.** Cada material pertenece a un rubro, por eso van después.
 3. **Proveedores**, con su zona y su teléfono. El teléfono es el que se usa para mandarles los pedidos por WhatsApp.
 4. **Clientes** actuales.
@@ -309,7 +309,7 @@ Antes de presupuestar hace falta el catálogo de rubros y subrubros, que es la c
 3. Para sumar un subrubro, tocá "Agregar subrubro" en el rubro correspondiente (por ejemplo "Demolición" dentro de "Albañilería").
 4. "Editar" permite cambiarle el nombre a un rubro, y "Desactivar" lo saca de la lista para presupuestos nuevos sin afectar a los que ya lo usan.
 
-**El rubro de mano de obra.** Uno de los rubros tiene que estar marcado como rubro de mano de obra. Al crearlo o editarlo, tildá la casilla "Es el rubro de mano de obra". Su planilla funciona distinto (ver más abajo) y en el catálogo se lo reconoce por la leyenda "Rubro de mano de obra". Solo puede haber uno: si marcás otro, el anterior pierde la marca.
+**El rubro de mano de obra.** El sistema ya trae creado el rubro "Mano de obra", marcado como tal. Si alguna vez querés que sea otro, editalo y tildá la casilla "Es el rubro de mano de obra". Su planilla funciona distinto (ver más abajo) y en el catálogo se lo reconoce por la leyenda "Rubro de mano de obra". Solo puede haber uno: si marcás otro, el anterior pierde la marca.
 
 **[ESPACIO PARA CAPTURA 14]**
 *Figura 14. Catálogo de rubros y subrubros.*
