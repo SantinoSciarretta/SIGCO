@@ -359,7 +359,7 @@ public class GastoService {
         rubros.sort((a, b) -> a.nombreRubro().compareToIgnoreCase(b.nombreRubro()));
 
         BigDecimal totalPresupuestado = definitivo != null
-                ? definitivo.getTotalPresupuesto() : BigDecimal.ZERO;
+                ? definitivo.getSubtotalSinIva() : BigDecimal.ZERO;
         BigDecimal totalGastado = repositorio.totalGastado(idObra);
         BigDecimal porcentajeGeneral = calcularPorcentaje(totalGastado, totalPresupuestado);
 
@@ -401,7 +401,7 @@ public class GastoService {
             return BigDecimal.ZERO;
         }
         return calcularPorcentaje(repositorio.totalGastado(idObra),
-                                  aprobados.get(0).getTotalPresupuesto());
+                                  aprobados.get(0).getSubtotalSinIva());
     }
 
     /**
@@ -431,7 +431,9 @@ public class GastoService {
                     BigDecimal.ZERO, BigDecimal.ZERO, SEMAFORO_SIN_PRESUPUESTO);
         }
 
-        BigDecimal presupuestado = aprobados.get(0).getTotalPresupuesto();
+        // Sin IVA: el IVA no es un costo de la obra, y lo gastado se compara
+        // contra lo que cuestan los trabajos.
+        BigDecimal presupuestado = aprobados.get(0).getSubtotalSinIva();
         BigDecimal porcentaje = calcularPorcentaje(gastado, presupuestado);
 
         return new ResumenFinanciero(true, presupuestado, gastado,

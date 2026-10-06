@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { cargarPlanilla, guardarPlanilla } from './presupuestosApi';
 import estilos from './Presupuestos.module.css';
 
@@ -32,15 +32,12 @@ import estilos from './Presupuestos.module.css';
  * ------------------------------------------------------------------
  *
  * Si el rubro está marcado como el de mano de obra, sus filas no son materiales
- * sino los otros rubros: se carga de una sola vez cuánto sale la mano de obra de
- * albañilería, de plomería, de pintura. El backend decide eso y manda
- * `esManoDeObra`.
+ * sino una por cada rubro y subrubro del catálogo ("Albañilería / Demolición",
+ * "Albañilería / Colocación"...), y de cada una se carga solo el TOTAL de mano
+ * de obra. Las filas que quedan vacías o en 0 no entran al presupuesto. El
+ * backend arma las filas y manda `esManoDeObra`.
  *
- * Y ahí la carga admite las dos formas en que se piensa el número: jornales por
- * valor del jornal, o el total directo. Ricardo lo pidió así porque en la
- * práctica a veces sabe los jornales y a veces le pasan un precio cerrado por
- * el trabajo. Obligarlo a inventar una de las dos partes para poder cargar la
- * otra daría un dato falso en la planilla.
+ * En los demás rubros, una fila con cantidad 0 tampoco entra al presupuesto.
  */
 export default function PlanillaDeRubro({ idPresupuesto, rubro, onCerrar, onGuardado }) {
   const [planilla, setPlanilla] = useState(null);
@@ -86,39 +83,35 @@ export default function PlanillaDeRubro({ idPresupuesto, rubro, onCerrar, onGuar
   };
 
   /**
-   * Escribir el total directamente, sin pasar por los jornales.
-   *
-   * El presupuesto guarda cantidad por valor unitario, así que un total suelto
-   * se representa como una cantidad de 1: el ítem queda "Albañilería, 1 global,
-   * $450.000". No hace falta una columna nueva en la base ni un caso especial
-   * al sumar, y el PDF lo muestra igual que cualquier otro ítem.
-   *
-   * Que los jornales pasen a 1 se VE en la pantalla, y está bien que se vea: es
-   * lo que acaba de pasar con el dato.
+   * Escribe el total de mano de obra de una fila. El ítem se guarda como 1
+   * global por ese importe, así no hace falta una columna nueva en la base.
    */
   const escribirTotal = (indice) => (evento) => {
     const valor = evento.target.value;
     setFilas((previas) => previas.map((f, i) => (i === indice ? {
       ...f,
       cantidad: valor === '' ? '' : '1',
-      unidadMedida: valor === '' ? f.unidadMedida : 'global',
+      unidadMedida: 'global',
       valorUnitario: valor,
     } : f)));
   };
 
   /**
-   * Calcula el subtotal de una fila (cantidad por precio). Si la fila está
-   * incompleta, no muestra nada.
+   * Calcula el subtotal de una fila. En mano de obra es el total escrito, y en
+   * los materiales, cantidad por precio. Una fila vacía o en 0 no cuenta, igual
+   * que en el presupuesto.
    */
   const subtotalDe = (fila) => {
-    const c = Number(fila.cantidad);
     const v = Number(fila.valorUnitario);
+    if (esManoDeObra) {
+      return fila.valorUnitario !== '' && v > 0 ? v : null;
+    }
+    const c = Number(fila.cantidad);
     return c > 0 && fila.valorUnitario !== '' ? c * v : null;
   };
 
   /** El total de lo cargado, para verlo crecer sin guardar. */
-  const total = useMemo(
-    () => filas.reduce((suma, f) => suma + (subtotalDe(f) ?? 0), 0), [filas]);
+  const total = filas.reduce((suma, f) => suma + (subtotalDe(f) ?? 0), 0);
 
   const cargadas = filas.filter((f) => subtotalDe(f) !== null).length;
 
@@ -169,11 +162,11 @@ export default function PlanillaDeRubro({ idPresupuesto, rubro, onCerrar, onGuar
 
           <p className={estilos.ayuda}>
             {esManoDeObra
-              ? 'Cargá los jornales y el valor de cada uno, o escribí el total '
-                + 'directamente en la última columna. '
+              ? 'Cada rubro con sus subrubros: escribí el total de mano de obra '
+                + 'de los trabajos que lleva la obra. '
               : 'Todos los materiales del rubro, con su unidad. '}
-            Completá las filas que vayan al presupuesto; las que dejes vacías no
-            se cargan.
+            Completá las filas que vayan al presupuesto. Las que dejes vacías o
+            en 0 no se cargan.
           </p>
 
           {filas.length === 0 ? (
@@ -188,22 +181,46 @@ export default function PlanillaDeRubro({ idPresupuesto, rubro, onCerrar, onGuar
               <table className={`table ${estilos.planilla}`}>
                 <thead>
                   <tr>
-                    <th>{esManoDeObra ? 'Rubro' : 'Material'}</th>
-                    <th style={{ width: 110, textAlign: 'right' }}>
-                      {esManoDeObra ? 'Jornales' : 'Cantidad'}
-                    </th>
-                    {!esManoDeObra && <th style={{ width: 96 }}>Unidad</th>}
-                    <th style={{ width: 140, textAlign: 'right' }}>
-                      {esManoDeObra ? 'Valor del jornal' : 'Precio unit.'}
-                    </th>
-                    <th style={{ width: 150, textAlign: 'right' }}>
-                      {esManoDeObra ? 'Total' : 'Subtotal'}
-                    </th>
+                    {esManoDeObra ? (
+                      <>
+                        <th>Rubro</th>
+                        <th>Subrubro</th>
+                        <th style={{ width: 170, textAlign: 'right' }}>Total</th>
+                      </>
+                    ) : (
+                      <>
+                        <th>Material</th>
+                        <th style={{ width: 110, textAlign: 'right' }}>Cantidad</th>
+                        <th style={{ width: 96 }}>Unidad</th>
+                        <th style={{ width: 140, textAlign: 'right' }}>Precio unit.</th>
+                        <th style={{ width: 150, textAlign: 'right' }}>Subtotal</th>
+                      </>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
                   {filas.map((fila, i) => {
                     const subtotal = subtotalDe(fila);
+
+                    if (esManoDeObra) {
+                      return (
+                        <tr key={`d-${fila.descripcion}-${i}`}
+                            className={subtotal !== null ? estilos.filaCargada : undefined}>
+                          <td>{fila.rubroReferido ?? fila.descripcion}</td>
+                          <td>{fila.subrubroReferido ?? '—'}</td>
+                          <td>
+                            <input
+                              type="number" min="0" step="0.01"
+                              className={estilos.celda}
+                              value={fila.valorUnitario}
+                              onChange={escribirTotal(i)}
+                              placeholder="—"
+                              aria-label={`Total de mano de obra de ${fila.descripcion}`}
+                            />
+                          </td>
+                        </tr>
+                      );
+                    }
 
                     return (
                       <tr key={fila.idMaterial ?? `d-${fila.descripcion}-${i}`}
@@ -217,21 +234,19 @@ export default function PlanillaDeRubro({ idPresupuesto, rubro, onCerrar, onGuar
                             value={fila.cantidad}
                             onChange={cambiar(i, 'cantidad')}
                             placeholder="—"
-                            aria-label={`${esManoDeObra ? 'Jornales' : 'Cantidad'} de ${fila.descripcion}`}
+                            aria-label={`Cantidad de ${fila.descripcion}`}
                           />
                         </td>
 
-                        {!esManoDeObra && (
-                          <td>
-                            <input
-                              type="text"
-                              className={estilos.celda}
-                              value={fila.unidadMedida ?? ''}
-                              onChange={cambiar(i, 'unidadMedida')}
-                              aria-label={`Unidad de ${fila.descripcion}`}
-                            />
-                          </td>
-                        )}
+                        <td>
+                          <input
+                            type="text"
+                            className={estilos.celda}
+                            value={fila.unidadMedida ?? ''}
+                            onChange={cambiar(i, 'unidadMedida')}
+                            aria-label={`Unidad de ${fila.descripcion}`}
+                          />
+                        </td>
 
                         <td>
                           <input
@@ -240,29 +255,14 @@ export default function PlanillaDeRubro({ idPresupuesto, rubro, onCerrar, onGuar
                             value={fila.valorUnitario}
                             onChange={cambiar(i, 'valorUnitario')}
                             placeholder="—"
-                            aria-label={`${esManoDeObra ? 'Valor del jornal' : 'Precio'} de ${fila.descripcion}`}
+                            aria-label={`Precio de ${fila.descripcion}`}
                           />
                         </td>
 
-                        {/* En mano de obra el total se puede escribir: a veces
-                            se sabe el jornal y a veces le pasan un precio
-                            cerrado por el trabajo. En los materiales el
-                            subtotal siempre sale de cantidad por precio. */}
                         <td className={`cifra ${estilos.total}`}>
-                          {esManoDeObra ? (
-                            <input
-                              type="number" min="0" step="0.01"
-                              className={estilos.celda}
-                              value={subtotal ?? ''}
-                              onChange={escribirTotal(i)}
-                              placeholder="—"
-                              aria-label={`Total de mano de obra de ${fila.descripcion}`}
-                            />
-                          ) : (
-                            subtotal !== null
-                              ? '$ ' + Math.round(subtotal).toLocaleString('es-AR')
-                              : '—'
-                          )}
+                          {subtotal !== null
+                            ? '$ ' + Math.round(subtotal).toLocaleString('es-AR')
+                            : '—'}
                         </td>
                       </tr>
                     );

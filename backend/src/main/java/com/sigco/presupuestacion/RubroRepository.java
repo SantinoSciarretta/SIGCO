@@ -63,12 +63,4 @@ public interface RubroRepository extends JpaRepository<Rubro, Long> {
      * un indice unico parcial (V18).
      */
     Optional<Rubro> findByEsManoDeObraTrue();
-
-    /**
-     * Los rubros activos, para armar la planilla de mano de obra.
-     *
-     * Ordenados por nombre para que la planilla salga siempre igual: un orden
-     * que cambia entre una vez y otra obliga a buscar cada fila de nuevo.
-     */
-    List<Rubro> findByEstadoOrderByNombreRubroAsc(String estado);
 }

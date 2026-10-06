@@ -492,7 +492,8 @@ public class PresupuestoService {
                     material.getNombreMaterial(),
                     material.getUnidadMedida(),
                     item != null ? item.getCantidad() : null,
-                    item != null ? item.getValorUnitario() : null));
+                    item != null ? item.getValorUnitario() : null,
+                    null, null));
         }
 
         // Los items de este rubro que NO salieron del catalogo —cargados a mano
@@ -510,43 +511,75 @@ public class PresupuestoService {
                     item.getDescripcion(),
                     item.getUnidadMedida(),
                     item.getCantidad(),
-                    item.getValorUnitario()));
+                    item.getValorUnitario(),
+                    null, null));
         }
 
         return filas;
     }
 
     /**
-     * Una fila por cada OTRO rubro del catalogo.
+     * La planilla del rubro de mano de obra: una fila por cada rubro y
+     * subrubro activos del catálogo ("Albañilería / Demolición", "Albañilería
+     * / Colocación"...), donde se carga solo el total de mano de obra de ese
+     * trabajo. Un rubro sin subrubros tiene una sola fila con su nombre.
      *
      * El rubro de mano de obra no se incluye a si mismo: seria "mano de obra de
      * la mano de obra".
+     *
+     * El total se devuelve en valorUnitario con cantidad 1: así se guarda el
+     * ítem (1 global por el total), sin columnas nuevas en la base.
      */
     private List<FilaPlanilla> filasDeManoDeObra(Rubro manoDeObra,
                                                  Map<String, ItemPresupuesto> yaCargado) {
         List<FilaPlanilla> filas = new ArrayList<>();
+        Map<String, ItemPresupuesto> sinUsar = new LinkedHashMap<>(yaCargado);
 
-        for (Rubro otro : rubroRepositorio.findByEstadoOrderByNombreRubroAsc(Rubro.ESTADO_ACTIVO)) {
+        for (Rubro otro : rubroRepositorio.buscarConSubrubros("", Rubro.ESTADO_ACTIVO)) {
             if (otro.getIdRubro().equals(manoDeObra.getIdRubro())) {
                 continue;
             }
 
-            // Las filas de mano de obra no tienen material: se identifican por
-            // la descripcion, que es el nombre del rubro al que corresponden.
-            ItemPresupuesto item = yaCargado.get("d" + otro.getNombreRubro());
+            List<Subrubro> subrubros = otro.getSubrubros().stream()
+                    .filter(Subrubro::estaActivo)
+                    .toList();
 
-            filas.add(new FilaPlanilla(
-                    null,
-                    null,
-                    otro.getNombreRubro(),
-                    // La mano de obra se presupuesta por jornal o global; se
-                    // propone jornal y el usuario lo cambia si hace falta.
-                    item != null ? item.getUnidadMedida() : "jornal",
-                    item != null ? item.getCantidad() : null,
-                    item != null ? item.getValorUnitario() : null));
+            if (subrubros.isEmpty()) {
+                filas.add(filaDeManoDeObra(otro.getNombreRubro(), null, sinUsar));
+            }
+            for (Subrubro subrubro : subrubros) {
+                filas.add(filaDeManoDeObra(otro.getNombreRubro(),
+                        subrubro.getNombreSubrubro(), sinUsar));
+            }
+        }
+
+        // Lo que estaba cargado y no corresponde a ninguna fila del catálogo
+        // (cargado con la planilla anterior, por rubro, o de un subrubro que
+        // después se desactivó) se agrega al final. Si no apareciera, guardar
+        // la planilla lo borraría sin que nadie lo haya visto.
+        for (ItemPresupuesto item : sinUsar.values()) {
+            filas.add(new FilaPlanilla(null, null, item.getDescripcion(), "global",
+                    BigDecimal.ONE, item.getSubtotal(), item.getDescripcion(), null));
         }
 
         return filas;
+    }
+
+    /**
+     * Una fila de la planilla de mano de obra. Se identifica por su
+     * descripción ("Albañilería / Demolición"), que es también la descripción
+     * del ítem que se guarda.
+     */
+    private FilaPlanilla filaDeManoDeObra(String rubro, String subrubro,
+                                         Map<String, ItemPresupuesto> sinUsar) {
+        String descripcion = subrubro == null ? rubro : rubro + " / " + subrubro;
+        ItemPresupuesto item = sinUsar.remove("d" + descripcion);
+
+        return new FilaPlanilla(
+                null, null, descripcion, "global",
+                item != null ? BigDecimal.ONE : null,
+                item != null ? item.getSubtotal() : null,
+                rubro, subrubro);
     }
 
     /**
@@ -588,13 +621,17 @@ public class PresupuestoService {
 
         // Y adentro lo que vino completo.
         for (FilaCompletada fila : planilla.filas()) {
+            if (rubro.esManoDeObra()) {
+                agregarManoDeObra(presupuesto, rubro, fila);
+                continue;
+            }
+
+            // Una fila con cantidad 0 o vacía no entra al presupuesto.
             if (!fila.tieneCarga()) {
                 continue;
             }
 
-            Material material = rubro.esManoDeObra()
-                    ? null                                   // las filas son rubros, no materiales
-                    : resolverMaterial(fila.idMaterial(), rubro);
+            Material material = resolverMaterial(fila.idMaterial(), rubro);
 
             Subrubro subrubro = resolverSubrubro(fila.idSubrubro(), rubro);
 
@@ -615,6 +652,29 @@ public class PresupuestoService {
         }
 
         return PresupuestoRespuesta.completa(presupuesto);
+    }
+
+    /**
+     * Agrega al presupuesto una fila de la planilla de mano de obra.
+     *
+     * De la mano de obra solo se carga el total: el ítem queda como 1 global
+     * por ese importe, sin importar qué cantidad o unidad haya mandado la
+     * pantalla. Una fila en 0 o vacía no entra al presupuesto.
+     */
+    private void agregarManoDeObra(Presupuesto presupuesto, Rubro manoDeObra,
+                                   FilaCompletada fila) {
+        BigDecimal total = fila.valorUnitario();
+        if (total == null || total.signum() <= 0) {
+            return;
+        }
+        if (fila.descripcion() == null || fila.descripcion().isBlank()) {
+            throw new ReglaDeNegocioException(
+                    "Hay una fila de mano de obra cargada sin rubro.");
+        }
+
+        presupuesto.agregarItem(new ItemPresupuesto(
+                presupuesto, manoDeObra, null, null, fila.descripcion().trim(),
+                "global", BigDecimal.ONE, total));
     }
 
     /**
@@ -721,11 +781,6 @@ public class PresupuestoService {
     //  Reglas del circuito
     // ------------------------------------------------------------------
 
-    /**
-     * Controla que el tipo de presupuesto que se quiere crear respete el
-     * circuito: el anteproyecto solo existe en reformas, y el definitivo de una
-     * reforma necesita antes un anteproyecto.
-     */
     /**
      * El plazo que se escribe en el presupuesto. Si no se indica uno, se toma
      * la duración estimada que ya tiene cargada la obra (por ejemplo "6

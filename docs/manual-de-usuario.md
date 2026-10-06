@@ -351,21 +351,23 @@ Esta es la forma principal de cargar un presupuesto.
 
 1. En el detalle del presupuesto, en "Presupuestar un rubro", tocá el rubro que querés cargar.
 2. Debajo se despliega la planilla del rubro con **todos los materiales del catálogo** de ese rubro, cada uno con su unidad.
-3. Completá la cantidad y el precio unitario solo en las filas que lleva la obra. Las filas que dejes vacías no se cargan. A medida que escribís se ve el subtotal de cada fila y el total del rubro.
+3. Completá la cantidad y el precio unitario solo en las filas que lleva la obra. Las filas que dejes vacías o con cantidad 0 no se cargan. A medida que escribís se ve el subtotal de cada fila y el total del rubro.
 4. Tocá "Guardar el rubro".
 5. Repetí con cada rubro.
 
 Si volvés a abrir un rubro ya cargado, la planilla aparece con lo que cargaste, para corregirlo. Al guardar, lo que había en ese rubro se reemplaza por lo que quedó en la planilla.
 
+> **El total incluye IVA.** Debajo de los subtotales por rubro se ven el subtotal, el IVA del 21% y el total con IVA, que es lo que paga el cliente. El anticipo y las cuotas se calculan sobre ese total. Los presupuestos que ya estaban enviados o aprobados antes de este cambio conservan su total original y muestran el IVA en cero.
+
 **[ESPACIO PARA CAPTURA 17]**
 *Figura 17. Planilla de un rubro de materiales.*
 *Cómo sacarla: en un presupuesto definitivo en borrador, tocar un rubro con al menos seis materiales en el catálogo y completar cantidad y precio en tres o cuatro filas, dejando otras vacías.*
 
-**La mano de obra.** Al tocar el rubro de mano de obra, la planilla no lista materiales sino **los demás rubros**, para cargar de una sola vez cuánto sale la mano de obra de cada especialidad. Para cada rubro podés cargar la cantidad de jornales y el valor del jornal, o escribir directamente el total si te pasaron un precio cerrado.
+**La mano de obra.** Al tocar el rubro de mano de obra, la planilla no lista materiales sino **cada rubro con sus subrubros**, una fila por cada uno (por ejemplo "Albañilería, Demolición" y "Albañilería, Colocación"). En cada fila se escribe solo el total de mano de obra de ese trabajo. Las filas que dejes vacías o en 0 no aparecen en el presupuesto.
 
 **[ESPACIO PARA CAPTURA 18]**
 *Figura 18. Planilla de mano de obra.*
-*Cómo sacarla: en el mismo presupuesto, tocar el rubro de mano de obra y completar dos especialidades por jornales y una por total directo.*
+*Cómo sacarla: en el mismo presupuesto, tocar el rubro de mano de obra y completar el total de tres o cuatro filas, dejando las demás vacías.*
 
 ### Agregar un ítem suelto {#presupuestos-ítem}
 
@@ -394,7 +396,7 @@ El módulo Cobranzas toma estos valores para generar el plan de cuotas de la obr
 
 ### Ver el PDF {#presupuestos-pdf}
 
-Tocá "Ver PDF". El documento se abre en una pestaña nueva tal como lo va a recibir el cliente, con el membrete de Granica, los subtotales por rubro, el total y la forma de pago. Desde ahí se puede descargar o imprimir para mandarlo.
+Tocá "Ver PDF". El documento se abre en una pestaña nueva tal como lo va a recibir el cliente, con el membrete de Granica, los subtotales por rubro, el subtotal, el IVA del 21%, el total con IVA y la forma de pago. Desde ahí se puede descargar o imprimir para mandarlo.
 
 **[ESPACIO PARA CAPTURA 20]**
 *Figura 20. PDF del presupuesto para el cliente.*
@@ -1113,7 +1115,7 @@ Solo la vidriera de obras realizadas, que no muestra nombres ni direcciones. Ade
 | 15 | Presupuestos, listado | Dueño | Una fila por obra con instancias. |
 | 16 | Instancias de una obra | Dueño | Versiones con estado y vigente. |
 | 17 | Planilla de rubro | Dueño | Filas completas y vacías. |
-| 18 | Planilla de mano de obra | Dueño | Jornales y total directo. |
+| 18 | Planilla de mano de obra | Dueño | Rubros, subrubros y total de cada uno. |
 | 19 | Detalle de presupuesto | Dueño | Ítems, subtotales y botones. |
 | 20 | PDF del presupuesto | Dueño | Primera página con membrete. |
 | 21 | Materiales | Dueño | Catálogo con un material inactivo. |

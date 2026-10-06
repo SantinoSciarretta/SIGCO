@@ -176,13 +176,21 @@ public class GeneradorDePdf {
     }
 
     /**
-     * Escribe en el PDF el total general del presupuesto, destacado.
+     * Escribe en el PDF el subtotal, el IVA y el total general del
+     * presupuesto, este último destacado.
      */
     private void escribirTotal(Document documento, Presupuesto p) throws DocumentException {
         PdfPTable tabla = new PdfPTable(2);
         tabla.setWidthPercentage(100);
         tabla.setWidths(new float[]{3.2f, 1f});
         tabla.setSpacingBefore(4);
+
+        // Subtotal e IVA solo si el presupuesto tiene IVA: los aprobados antes
+        // de que se sumara conservan su total tal como se le mostró al cliente.
+        if (p.getIva().signum() > 0) {
+            agregarLineaDeTotal(tabla, "SUBTOTAL", p.getSubtotalSinIva());
+            agregarLineaDeTotal(tabla, "IVA 21%", p.getIva());
+        }
 
         PdfPCell etiqueta = new PdfPCell(new Phrase("TOTAL", TOTAL));
         etiqueta.setBorder(com.lowagie.text.Rectangle.NO_BORDER);
@@ -195,6 +203,22 @@ public class GeneradorDePdf {
         tabla.addCell(etiqueta);
         tabla.addCell(valor);
         documento.add(tabla);
+    }
+
+    /** Agrega una línea chica (subtotal o IVA) arriba del total. */
+    private void agregarLineaDeTotal(PdfPTable tabla, String texto, BigDecimal monto) {
+        PdfPCell etiqueta = new PdfPCell(new Phrase(texto, TEXTO));
+        etiqueta.setBorder(com.lowagie.text.Rectangle.NO_BORDER);
+        etiqueta.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        etiqueta.setPadding(4);
+
+        PdfPCell valor = new PdfPCell(new Phrase(pesos(monto), TEXTO));
+        valor.setBorder(com.lowagie.text.Rectangle.NO_BORDER);
+        valor.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        valor.setPadding(4);
+
+        tabla.addCell(etiqueta);
+        tabla.addCell(valor);
     }
 
     /**

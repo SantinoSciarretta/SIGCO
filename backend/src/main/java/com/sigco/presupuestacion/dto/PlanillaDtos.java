@@ -80,7 +80,15 @@ public final class PlanillaDtos {
             String descripcion,
             String unidadMedida,
             BigDecimal cantidad,
-            BigDecimal valorUnitario) {
+            BigDecimal valorUnitario,
+
+            /**
+             * Solo en la planilla de mano de obra: el rubro y el subrubro a los
+             * que corresponde la fila ("Albañilería" y "Demolición"). En la de
+             * materiales van vacíos.
+             */
+            String rubroReferido,
+            String subrubroReferido) {
     }
 
     // ------------------------------------------------------------------

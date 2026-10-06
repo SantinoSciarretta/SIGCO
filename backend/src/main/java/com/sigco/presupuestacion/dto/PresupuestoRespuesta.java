@@ -28,6 +28,11 @@ public record PresupuestoRespuesta(
         String estado,
         BigDecimal metrosCuadrados,
         BigDecimal valorPorM2,
+        /** La suma de los ítems, antes del IVA. */
+        BigDecimal subtotalSinIva,
+        /** El 21% de IVA. */
+        BigDecimal iva,
+        /** Lo que paga el cliente: subtotal más IVA. */
         BigDecimal totalPresupuesto,
         BigDecimal anticipoPorcentaje,
         BigDecimal montoAnticipo,
@@ -109,6 +114,8 @@ public record PresupuestoRespuesta(
                 p.getEstado(),
                 p.getMetrosCuadrados(),
                 p.getValorPorM2(),
+                p.getSubtotalSinIva(),
+                p.getIva(),
                 p.getTotalPresupuesto(),
                 p.getAnticipoPorcentaje(),
                 p.calcularAnticipo(),

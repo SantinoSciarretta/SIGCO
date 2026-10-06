@@ -260,7 +260,8 @@ class PresupuestoServiceTest {
                     new BigDecimal("85.50"), new BigDecimal("420000.00"), "6 meses"));
 
             // 85,50 m2 x 420.000 = 35.910.000
-            assertThat(r.totalPresupuesto()).isEqualByComparingTo("35910000.00");
+            assertThat(r.subtotalSinIva()).isEqualByComparingTo("35910000.00");
+            assertThat(r.totalPresupuesto()).isEqualByComparingTo("43451100.00");
         }
 
         @Test
@@ -319,7 +320,9 @@ class PresupuestoServiceTest {
             // 40 x 12.500 = 500.000 ; 60 x 8.000 = 480.000
             assertThat(r.items()).hasSize(2);
             assertThat(r.items().get(0).subtotal()).isEqualByComparingTo("500000.00");
-            assertThat(r.totalPresupuesto()).isEqualByComparingTo("980000.00");
+            assertThat(r.subtotalSinIva()).isEqualByComparingTo("980000.00");
+            assertThat(r.iva()).isEqualByComparingTo("205800.00");
+            assertThat(r.totalPresupuesto()).isEqualByComparingTo("1185800.00");
         }
 
         @Test
@@ -464,7 +467,7 @@ class PresupuestoServiceTest {
 
             // El definitivo arranca con una copia de los ítems...
             assertThat(definitivo.items()).hasSize(1);
-            assertThat(definitivo.totalPresupuesto()).isEqualByComparingTo("500000.00");
+            assertThat(definitivo.totalPresupuesto()).isEqualByComparingTo("605000.00");
             // ...y queda vinculado al presupuesto que le sirvió de base.
             assertThat(definitivo.idPresupuestoBase()).isEqualTo(10L);
             // El anteproyecto sigue intacto: son dos registros independientes.
@@ -574,7 +577,7 @@ class PresupuestoServiceTest {
             // Sigue estando, con sus ítems y su total: la negociación queda
             // documentada.
             assertThat(r.items()).hasSize(1);
-            assertThat(r.totalPresupuesto()).isEqualByComparingTo("10000");
+            assertThat(r.totalPresupuesto()).isEqualByComparingTo("12100");
         }
     }
 
@@ -602,8 +605,8 @@ class PresupuestoServiceTest {
                     10L, new PlanDePago(new BigDecimal("30"), 7, "7 meses"));
 
             // 30% de 10.000.000 = 3.000.000 ; saldo 7.000.000 en 7 cuotas
-            assertThat(r.montoAnticipo()).isEqualByComparingTo("3000000.00");
-            assertThat(r.montoCuota()).isEqualByComparingTo("1000000.00");
+            assertThat(r.montoAnticipo()).isEqualByComparingTo("3630000.00");
+            assertThat(r.montoCuota()).isEqualByComparingTo("1210000.00");
         }
 
         @Test
@@ -636,7 +639,7 @@ class PresupuestoServiceTest {
             PresupuestoRespuesta r = servicio.definirPlanDePago(
                     10L, new PlanDePago(new BigDecimal("100"), 0, null));
 
-            assertThat(r.montoAnticipo()).isEqualByComparingTo("10000000.00");
+            assertThat(r.montoAnticipo()).isEqualByComparingTo("12100000.00");
             assertThat(r.montoCuota()).isNull();
         }
     }
@@ -926,7 +929,7 @@ class PresupuestoServiceTest {
 
             p.agregarItem(new ItemPresupuesto(p, albanileria, null, cemento,
                     "Cemento", "bolsa", new BigDecimal("40"), new BigDecimal("9000")));
-            assertThat(p.getTotalPresupuesto()).isEqualByComparingTo("360000");
+            assertThat(p.getTotalPresupuesto()).isEqualByComparingTo("435600");
 
             when(rubroRepositorio.findById(1L)).thenReturn(Optional.of(albanileria));
 
@@ -961,53 +964,79 @@ class PresupuestoServiceTest {
 
         /**
          * El rubro de mano de obra se comporta distinto: sus filas no son
-         * materiales sino los OTROS rubros, para cargar de una sola vez cuánto
-         * sale la mano de obra de cada especialidad.
+         * materiales sino una por cada rubro y subrubro del catálogo, para
+         * cargar el total de mano de obra de cada trabajo.
          */
         @Test
-        @DisplayName("La planilla de mano de obra lista los otros rubros, no materiales")
-        void manoDeObraListaRubros() {
+        @DisplayName("La planilla de mano de obra lista cada rubro con sus subrubros")
+        void manoDeObraListaRubrosYSubrubros() {
             enBorrador();
             Rubro manoDeObra = rubro("Mano de obra", 9L);
             manoDeObra.marcarComoManoDeObra(true);
+            Rubro albanileria = rubro("Albañilería", 1L);
+            new Subrubro(albanileria, "Demolición");
+            new Subrubro(albanileria, "Colocación");
+            Rubro pintura = rubro("Pintura", 2L);
 
             when(rubroRepositorio.findById(9L)).thenReturn(Optional.of(manoDeObra));
-            when(rubroRepositorio.findByEstadoOrderByNombreRubroAsc(Rubro.ESTADO_ACTIVO))
-                    .thenReturn(List.of(rubro("Albañilería", 1L), rubro("Pintura", 2L),
-                                        manoDeObra));
+            when(rubroRepositorio.buscarConSubrubros("", Rubro.ESTADO_ACTIVO))
+                    .thenReturn(List.of(albanileria, pintura, manoDeObra));
 
             var planilla = servicio.obtenerPlanillaDeRubro(10L, 9L);
 
             assertThat(planilla.esManoDeObra()).isTrue();
-            // Los otros dos rubros, y NO se incluye a sí mismo: sería "mano de
-            // obra de la mano de obra".
+            // Una fila por subrubro, una sola para el rubro sin subrubros, y NO
+            // se incluye a sí mismo: sería "mano de obra de la mano de obra".
             assertThat(planilla.filas())
                     .extracting(f -> f.descripcion())
-                    .containsExactly("Albañilería", "Pintura");
+                    .containsExactly("Albañilería / Demolición", "Albañilería / Colocación",
+                                     "Pintura");
+            assertThat(planilla.filas().get(0).rubroReferido()).isEqualTo("Albañilería");
+            assertThat(planilla.filas().get(0).subrubroReferido()).isEqualTo("Demolición");
             assertThat(planilla.filas()).allMatch(f -> f.idMaterial() == null);
-            assertThat(planilla.filas()).allMatch(f -> "jornal".equals(f.unidadMedida()));
         }
 
         @Test
-        @DisplayName("La mano de obra cargada queda como ítem de su propio rubro")
-        void manoDeObraSeGuardaEnSuRubro() {
+        @DisplayName("De la mano de obra se guarda solo el total, y las filas en 0 no entran")
+        void manoDeObraGuardaSoloElTotal() {
             Presupuesto p = enBorrador();
             Rubro manoDeObra = rubro("Mano de obra", 9L);
             manoDeObra.marcarComoManoDeObra(true);
             when(rubroRepositorio.findById(9L)).thenReturn(Optional.of(manoDeObra));
 
             servicio.guardarPlanilla(10L, 9L, new PlanillaCompletada(List.of(
-                    new FilaCompletada(null, null, "Albañilería", "jornal",
-                            new BigDecimal("30"), new BigDecimal("45000")),
-                    new FilaCompletada(null, null, "Pintura", "jornal",
-                            new BigDecimal("10"), new BigDecimal("40000")))));
+                    new FilaCompletada(null, null, "Albañilería / Demolición", null,
+                            null, new BigDecimal("1350000")),
+                    new FilaCompletada(null, null, "Albañilería / Colocación", null,
+                            null, BigDecimal.ZERO),
+                    new FilaCompletada(null, null, "Pintura", null,
+                            null, new BigDecimal("400000")))));
 
+            // La fila en 0 no entra al presupuesto.
             assertThat(p.getItems()).hasSize(2);
-            // Los dos pertenecen al rubro Mano de obra: así el total de mano de
-            // obra queda junto y no repartido entre los rubros de material.
+            // Todos pertenecen al rubro Mano de obra, como 1 global por el
+            // total: así el total de mano de obra queda junto.
             assertThat(p.getItems())
-                    .allMatch(i -> i.getRubro().getIdRubro().equals(9L));
-            assertThat(p.getTotalPresupuesto()).isEqualByComparingTo("1750000");
+                    .allMatch(i -> i.getRubro().getIdRubro().equals(9L))
+                    .allMatch(i -> "global".equals(i.getUnidadMedida()))
+                    .allMatch(i -> i.getCantidad().compareTo(BigDecimal.ONE) == 0);
+            // 1.750.000 más el 21% de IVA.
+            assertThat(p.getSubtotalSinIva()).isEqualByComparingTo("1750000");
+            assertThat(p.getTotalPresupuesto()).isEqualByComparingTo("2117500");
+        }
+
+        @Test
+        @DisplayName("Un material con cantidad 0 no entra al presupuesto")
+        void materialEnCeroNoEntra() {
+            Presupuesto p = enBorrador();
+            Rubro albanileria = rubro("Albañilería", 1L);
+            when(rubroRepositorio.findById(1L)).thenReturn(Optional.of(albanileria));
+
+            servicio.guardarPlanilla(10L, 1L, new PlanillaCompletada(List.of(
+                    new FilaCompletada(null, null, "Arena", "m3",
+                            BigDecimal.ZERO, new BigDecimal("30000")))));
+
+            assertThat(p.getItems()).isEmpty();
         }
     }
 

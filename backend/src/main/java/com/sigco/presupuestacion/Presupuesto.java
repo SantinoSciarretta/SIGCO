@@ -53,6 +53,13 @@ public class Presupuesto {
 
     private static final int DECIMALES = 2;
 
+    /**
+     * El IVA que se le suma al precio de los trabajos (21%). El total del
+     * presupuesto, que es lo que paga el cliente, es la suma de los ítems
+     * multiplicada por este factor.
+     */
+    public static final BigDecimal FACTOR_IVA = new BigDecimal("1.21");
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_presupuesto")
@@ -155,22 +162,51 @@ public class Presupuesto {
     public void calcularCotizacionInicial(BigDecimal metrosCuadrados, BigDecimal valorPorM2) {
         this.metrosCuadrados = metrosCuadrados;
         this.valorPorM2 = valorPorM2;
-        this.totalPresupuesto = metrosCuadrados.multiply(valorPorM2)
-                .setScale(DECIMALES, RoundingMode.HALF_UP);
+        this.totalPresupuesto = conIva(getSubtotalSinIva());
     }
 
     /**
-     * Recalcula el total sumando los subtotales de todos los items.
+     * Recalcula el total: la suma de los subtotales de todos los ítems, más el
+     * IVA.
      *
      * Se llama cada vez que cambia un item. El total se guarda calculado, no se
      * deriva al leer: asi un presupuesto aprobado conserva exactamente el numero
      * que se le mostro al cliente.
      */
     public void recalcularTotal() {
-        this.totalPresupuesto = items.stream()
+        this.totalPresupuesto = conIva(getSubtotalSinIva());
+    }
+
+    /**
+     * Lo que vale el presupuesto antes del IVA: la suma de los ítems, o en la
+     * cotización inicial los metros cuadrados por el valor de referencia.
+     *
+     * No se guarda: se calcula de los datos que ya están. Es el número contra
+     * el que Gastos compara lo gastado, porque el IVA no es un costo de la
+     * obra sino un impuesto que se cobra y se paga aparte.
+     */
+    public BigDecimal getSubtotalSinIva() {
+        if (esCotizacionInicial() && metrosCuadrados != null && valorPorM2 != null) {
+            return metrosCuadrados.multiply(valorPorM2).setScale(DECIMALES, RoundingMode.HALF_UP);
+        }
+        return items.stream()
                 .map(ItemPresupuesto::getSubtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add)
                 .setScale(DECIMALES, RoundingMode.HALF_UP);
+    }
+
+    /**
+     * El IVA incluido en el total: la diferencia entre el total y el subtotal.
+     * En los presupuestos aprobados antes de que se sumara el IVA da cero,
+     * porque su total se conserva tal como se le mostró al cliente.
+     */
+    public BigDecimal getIva() {
+        return totalPresupuesto.subtract(getSubtotalSinIva()).max(BigDecimal.ZERO);
+    }
+
+    /** Le suma el 21% de IVA a un importe. */
+    private static BigDecimal conIva(BigDecimal neto) {
+        return neto.multiply(FACTOR_IVA).setScale(DECIMALES, RoundingMode.HALF_UP);
     }
 
     /**

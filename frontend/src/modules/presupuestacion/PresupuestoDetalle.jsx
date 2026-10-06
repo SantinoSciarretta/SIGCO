@@ -131,7 +131,7 @@ export default function PresupuestoDetalle() {
         </div>
 
         <div className={estilos.totalBloque}>
-          <span className="kicker">Total</span>
+          <span className="kicker">Total con IVA</span>
           <span className={`cifra ${estilos.totalCifra}`}>{pesos(presupuesto.totalPresupuesto)}</span>
           <span className={claseDeEstado(presupuesto.estado)}>{presupuesto.estado}</span>
         </div>
@@ -186,11 +186,13 @@ export default function PresupuestoDetalle() {
             <span className={estilos.calculoOperador}>×</span>
             <span className={`cifra ${estilos.calculoValor}`}>{pesos(presupuesto.valorPorM2)}</span>
             <span className={estilos.calculoOperador}>=</span>
-            <span className={`cifra ${estilos.calculoTotal}`}>{pesos(presupuesto.totalPresupuesto)}</span>
+            <span className={`cifra ${estilos.calculoTotal}`}>{pesos(presupuesto.subtotalSinIva)}</span>
           </div>
           <p className={estilos.ayuda}>
-            La cotización inicial no lleva ítems: es el precio estimativo que se le
-            pasa al cliente en el primer contacto.
+            Más IVA 21% ({pesos(presupuesto.iva)}): total{' '}
+            <b>{pesos(presupuesto.totalPresupuesto)}</b>. La cotización inicial no
+            lleva ítems: es el precio estimativo que se le pasa al cliente en el
+            primer contacto.
           </p>
         </Blueprint>
       )}
@@ -325,8 +327,19 @@ export default function PresupuestoDetalle() {
                 <span className={`cifra ${estilos.numero}`}>{pesos(s.subtotal)}</span>
               </li>
             ))}
+            {/* El total es lo que paga el cliente: la suma de los rubros más el
+                21% de IVA. Los presupuestos aprobados antes de que se sumara el
+                IVA lo muestran en cero, porque se conserva su total original. */}
+            <li>
+              <span>Subtotal</span>
+              <span className={`cifra ${estilos.numero}`}>{pesos(presupuesto.subtotalSinIva)}</span>
+            </li>
+            <li>
+              <span>IVA 21%</span>
+              <span className={`cifra ${estilos.numero}`}>{pesos(presupuesto.iva)}</span>
+            </li>
             <li className={estilos.subtotalTotal}>
-              <span>Total</span>
+              <span>Total con IVA</span>
               <span className={`cifra ${estilos.numero}`}>{pesos(presupuesto.totalPresupuesto)}</span>
             </li>
           </ul>

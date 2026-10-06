@@ -214,7 +214,7 @@ Es el módulo que más cambió. Te recomiendo además **acortar** las Vistas de 
 Después de "Elaboración del presupuesto definitivo, con estructura de rubro, subrubro e ítem, tomando como base el presupuesto del anteproyecto cuando corresponde." **pegá estos dos puntos:**
 
 > * Carga de los ítems de cada rubro mediante una planilla: al elegir un rubro, el sistema lista todos los materiales del catálogo que pertenecen a ese rubro con su unidad de medida, y el dueño completa la cantidad y el precio solo en las filas que necesita. Las filas que quedan vacías no se cargan.
-> * Carga de la mano de obra desde un rubro especial, cuya planilla no lista materiales sino los demás rubros, para indicar cuánto sale la mano de obra de cada especialidad, ya sea por cantidad de jornales y valor del jornal o escribiendo directamente el total acordado.
+> * Carga de la mano de obra desde un rubro especial, cuya planilla no lista materiales sino una fila por cada rubro y subrubro del catálogo, por ejemplo albañilería demolición y albañilería colocación. En cada fila se indica solo el total de mano de obra de ese trabajo, y las que quedan en cero no aparecen en el presupuesto.
 
 **Por qué:** la planilla y el rubro de mano de obra (V18) son pedidos de Ricardo al probar el sistema. Es la forma real de cargar un presupuesto hoy.
 
@@ -265,15 +265,32 @@ Después de "Elaboración del presupuesto definitivo, con estructura de rubro, s
 
 **Por qué:** pedido del 05/10/2026. El definitivo ya no exige anteproyecto, y el plazo se toma de la obra para no cargarlo dos veces.
 
+### 4.4c [Agregar] Validaciones y Lógica, al final de la lista (cambio del 05/10/2026)
+
+**Pegá estos dos puntos:**
+> * Un ítem con cantidad cero, o una fila de mano de obra con total cero, no se incluye en el presupuesto.
+> * El total del presupuesto se calcula como la suma de todos los ítems multiplicada por 1,21, porque se le presenta al cliente con el IVA incluido. El anticipo y las cuotas del plan de pago salen de ese total. En cambio, el control de gastos compara lo gastado contra el subtotal sin IVA, porque el IVA no es un costo de la obra. Los presupuestos que ya estaban enviados o aprobados al incorporarse esta regla conservan su total, que es el que vio el cliente y la base de sus cuotas.
+
+**Buscá en Circuito Descriptivo, paso 6 (el texto del cambio 4.2):**
+> El sistema calcula los subtotales por rubro y el total general a medida que se va cargando la información.
+
+**Pegá:**
+> El sistema calcula los subtotales por rubro, el subtotal general, el IVA del 21% y el total con IVA a medida que se va cargando la información.
+
+**Buscá en Desarrollo y Tecnología Propuesta, donde se describe el PDF, y agregá al final:**
+> Al pie de los subtotales por rubro el documento muestra el subtotal, el IVA del 21% y el total con IVA.
+
+**Por qué:** pedido del 05/10/2026 (migración V24). El total con IVA es lo que efectivamente paga el cliente. La mano de obra se presupuesta por trabajo cerrado y no por jornales.
+
 ### 4.5 [Reemplazar] Campos del Formulario de Presupuesto, fila Unidad_Medida
 
 **Buscá:**
 > | Unidad_Medida | Lista desplegable | Metros cuadrados / metros lineales / unidades. |
 
 **Pegá:**
-> | Unidad_Medida | Lista desplegable | m² / ml / unidad / global / jornal. Las dos últimas se usan en la carga de mano de obra. |
+> | Unidad_Medida | Lista desplegable | m² / ml / unidad / global / jornal. La mano de obra se guarda siempre como global, por su total. |
 
-**Por qué:** son los cinco valores reales (`presupuestosApi.js`). "global" es el total cerrado y "jornal" la carga por jornales.
+**Por qué:** son los cinco valores reales (`presupuestosApi.js`). "global" es el total cerrado, que es como se carga la mano de obra desde el 05/10.
 
 ### 4.6 [Agregar y Reemplazar] Campos del Formulario de Presupuesto
 
@@ -287,7 +304,7 @@ Después de "Elaboración del presupuesto definitivo, con estructura de rubro, s
 > | Plazo_Estimado_Obra | Texto | Duración estimada de la obra tal como se le informa al cliente en el presupuesto. La fecha estimada de finalización de la obra no se toma de acá sino del plazo cargado en el módulo Obras. |
 
 **En "Campos del Rubro", agregá como última fila:**
-> | Es_Mano_De_Obra | Marca (sí / no) | Indica el único rubro cuya planilla carga la mano de obra por especialidad. Solo un rubro puede tenerla. |
+> | Es_Mano_De_Obra | Marca (sí / no) | Indica el único rubro cuya planilla carga el total de mano de obra de cada rubro y subrubro. Solo un rubro puede tenerla. |
 
 ### 4.7 [Reemplazar y acortar] Vistas de Interfaz, la lista completa
 
@@ -1209,7 +1226,7 @@ Te recomiendo **reemplazar entera** la lista de Validaciones (cambio 13.3). Los 
 ### D.4 [Agregar] Tabla rubro, al final
 
 **Pegá:**
-> | es_mano_de_obra | BOOLEAN |  | Marca el único rubro cuya planilla carga la mano de obra por especialidad. Un índice único impide que haya dos. Obligatorio. |
+> | es_mano_de_obra | BOOLEAN |  | Marca el único rubro cuya planilla carga el total de mano de obra de cada rubro y subrubro. Un índice único impide que haya dos. Obligatorio. |
 
 ### D.5 [Reemplazar] Tabla presupuesto, fila plazo_estimado_obra
 
@@ -1225,7 +1242,7 @@ Te recomiendo **reemplazar entera** la lista de Validaciones (cambio 13.3). Los 
 > | unidad_medida | VARCHAR(20) |  | Unidad (metros cuadrados / metros lineales / unidades). Obligatorio. |
 
 **Pegá:**
-> | unidad_medida | VARCHAR(20) |  | Unidad (m² / ml / unidad / global / jornal). Las dos últimas se usan en la carga de mano de obra. Obligatorio. |
+> | unidad_medida | VARCHAR(20) |  | Unidad (m² / ml / unidad / global / jornal). La mano de obra se guarda como global. Obligatorio. |
 
 ### D.6b [Agregar] Tabla proveedor, después de la fila zona_cobertura
 
