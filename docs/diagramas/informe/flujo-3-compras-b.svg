@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="2012" viewBox="0 0 1200 2012" font-family="Arial, Helvetica, sans-serif">
+<defs>
+<marker id="arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#3a3a3a"/></marker>
+<marker id="arrowLoop" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#4b3b7d"/></marker>
+<marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12" fill="none" stroke="#7b4fc0" stroke-width="1.6"/></marker>
+<marker id="gen" viewBox="0 0 16 16" refX="15" refY="8" markerWidth="20" markerHeight="20" markerUnits="userSpaceOnUse" orient="auto"><path d="M1,1 L15,8 L1,15 z" fill="#ffffff" stroke="#3d1466" stroke-width="1.6"/></marker>
+</defs>
+<rect width="1200" height="2012" fill="#ffffff"/>
+<text x="600.0" y="52" font-size="34" font-weight="bold" fill="#2f2f2f" text-anchor="middle">Proceso de Pedido de Materiales (parte 2 de 2)</text>
+<rect x="30" y="74" width="270" height="106" rx="7" fill="#fbfbfb" stroke="#dadada" stroke-width="1.2"/>
+<rect x="44" y="87" width="20" height="20" rx="4" fill="#e8e0f6" stroke="#9b86c9" stroke-width="1.2"/>
+<text x="74" y="102" font-size="15" fill="#444">Acción de una persona</text>
+<rect x="44" y="117" width="20" height="20" rx="4" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.2"/>
+<text x="74" y="132" font-size="15" fill="#444">Acción automática del sistema</text>
+<circle cx="54" cy="157" r="10" fill="#ffffff" stroke="#3a3a3a" stroke-width="1.6"/>
+<text x="54" y="161.5" font-size="12" font-weight="bold" fill="#2a2a2a" text-anchor="middle">A</text>
+<text x="74" y="162" font-size="15" fill="#444">Conector con la otra parte</text>
+<path d="M 345.0 554.5 L 312.0 554.5" fill="none" stroke="#a9a9ae" stroke-width="1.4" stroke-dasharray="3 4" stroke-linejoin="round"/>
+<path d="M 345.0 1068.0 L 312.0 1068.0" fill="none" stroke="#a9a9ae" stroke-width="1.4" stroke-dasharray="3 4" stroke-linejoin="round"/>
+<path d="M 345.0 1226.0 L 312.0 1226.0" fill="none" stroke="#a9a9ae" stroke-width="1.4" stroke-dasharray="3 4" stroke-linejoin="round"/>
+<path d="M 345.0 1403.5 L 312.0 1403.5" fill="none" stroke="#a9a9ae" stroke-width="1.4" stroke-dasharray="3 4" stroke-linejoin="round"/>
+<path d="M 560.0 228.0 L 560.0 284.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 725.0 364.0 L 810.0 364.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="743.0" y="334.4" width="32.0" height="21.2" fill="#ffffff"/>
+<text x="759.0" y="353.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">No</text>
+<path d="M 975.0 407.0 L 975.0 453.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 975.0 562.0 L 975.0 608.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 560.0 444.0 L 560.0 500.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="523.0" y="458.4" width="26.0" height="21.2" fill="#ffffff"/>
+<text x="536.0" y="477.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">Sí</text>
+<path d="M 560.0 609.0 L 560.0 665.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 560.0 751.0 L 560.0 807.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 395.0 892.0 L 105.0 892.0 L 105.0 708.0 L 345.0 708.0" fill="none" stroke="#4b3b7d" stroke-width="2.4" stroke-dasharray="9 7" marker-end="url(#arrowLoop)" stroke-linejoin="round"/>
+<rect x="345.0" y="862.4" width="32.0" height="21.2" fill="#ffffff"/>
+<text x="361.0" y="881.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">No</text>
+<path d="M 560.0 977.0 L 560.0 1033.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="523.0" y="991.4" width="26.0" height="21.2" fill="#ffffff"/>
+<text x="536.0" y="1010.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">Sí</text>
+<path d="M 560.0 1103.0 L 560.0 1159.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 560.0 1293.0 L 560.0 1349.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 560.0 1458.0 L 560.0 1514.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 720.0 1594.0 L 810.0 1594.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="741.0" y="1564.4" width="26.0" height="21.2" fill="#ffffff"/>
+<text x="754.0" y="1583.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">Sí</text>
+<path d="M 975.0 1637.0 L 975.0 1723.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 975.0 1807.0 L 975.0 1863.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 810.0 1917.5 L 670.0 1917.5" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 560.0 1674.0 L 560.0 1730.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="520.0" y="1688.4" width="32.0" height="21.2" fill="#ffffff"/>
+<text x="536.0" y="1707.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">No</text>
+<path d="M 560.0 1800.0 L 560.0 1876.5" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<circle cx="560" cy="198.0" r="30.0" fill="#ffffff" stroke="#3a3a3a" stroke-width="2.2"/>
+<text x="560.0" y="206.4" font-size="24" fill="#2a2a2a" text-anchor="middle" font-weight="bold">A</text>
+<polygon points="560,284.0 725.0,364.0 560,444.0 395.0,364.0" fill="#ffffff" stroke="#8a8a8a" stroke-width="2.2"/>
+<text x="560.0" y="359.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">¿El corralón pasó</text>
+<text x="560.0" y="381.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">precio y se compra?</text>
+<rect x="345.0" y="500.0" width="430" height="109.0" rx="10" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.2"/>
+<text x="560.0" y="536.5" font-size="20" fill="#ffffff" text-anchor="middle">El sistema propone como precio de cada</text>
+<text x="560.0" y="561.5" font-size="20" fill="#ffffff" text-anchor="middle">material la última cotización de ese</text>
+<text x="560.0" y="586.5" font-size="20" fill="#ffffff" text-anchor="middle">corralón</text>
+<rect x="345.0" y="665.0" width="430" height="86.0" rx="10" fill="#e8e0f6" stroke="#d6c9ef" stroke-width="1.2"/>
+<text x="560.0" y="702.5" font-size="20" fill="#1d1d1f" text-anchor="middle">El dueño confirma o corrige el precio sin</text>
+<text x="560.0" y="727.5" font-size="20" fill="#1d1d1f" text-anchor="middle">IVA de cada material</text>
+<polygon points="560,807.0 725.0,892.0 560,977.0 395.0,892.0" fill="#ffffff" stroke="#8a8a8a" stroke-width="2.2"/>
+<text x="560.0" y="876.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">¿Están los precios</text>
+<text x="560.0" y="898.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">de todos los</text>
+<text x="560.0" y="920.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">materiales?</text>
+<rect x="345.0" y="1033.0" width="430" height="70.0" rx="10" fill="#e8e0f6" stroke="#d6c9ef" stroke-width="1.2"/>
+<text x="560.0" y="1075.0" font-size="20" fill="#1d1d1f" text-anchor="middle">El dueño aprueba el pedido</text>
+<rect x="345.0" y="1159.0" width="430" height="134.0" rx="10" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.2"/>
+<text x="560.0" y="1195.5" font-size="20" fill="#ffffff" text-anchor="middle">El sistema guarda los precios como</text>
+<text x="560.0" y="1220.5" font-size="20" fill="#ffffff" text-anchor="middle">cotización, carga el gasto por rubro, audita</text>
+<text x="560.0" y="1245.5" font-size="20" fill="#ffffff" text-anchor="middle">la aprobación y pasa el pedido a &quot;Enviado</text>
+<text x="560.0" y="1270.5" font-size="20" fill="#ffffff" text-anchor="middle">al proveedor&quot;</text>
+<rect x="345.0" y="1349.0" width="430" height="109.0" rx="10" fill="#e8e0f6" stroke="#d6c9ef" stroke-width="1.2"/>
+<text x="560.0" y="1385.5" font-size="20" fill="#1d1d1f" text-anchor="middle">Al llegar el material, quien lo recibe lo</text>
+<text x="560.0" y="1410.5" font-size="20" fill="#1d1d1f" text-anchor="middle">controla contra el remito, le saca una foto y</text>
+<text x="560.0" y="1435.5" font-size="20" fill="#1d1d1f" text-anchor="middle">confirma</text>
+<polygon points="560,1514.0 720.0,1594.0 560,1674.0 400.0,1594.0" fill="#ffffff" stroke="#8a8a8a" stroke-width="2.2"/>
+<text x="560.0" y="1600.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">¿Hubo diferencias?</text>
+<rect x="345.0" y="1730.0" width="430" height="70.0" rx="10" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.2"/>
+<text x="560.0" y="1772.0" font-size="20" fill="#ffffff" text-anchor="middle">El pedido queda &quot;Recibido completo&quot;</text>
+<rect x="450.0" y="1876.5" width="220" height="82" rx="41.0" fill="#ffffff" stroke="#3a3a3a" stroke-width="1.8"/>
+<text x="560.0" y="1924.8" font-size="21" fill="#2a2a2a" text-anchor="middle" font-weight="bold">FIN</text>
+<rect x="810.0" y="321.0" width="330" height="86.0" rx="10" fill="#e8e0f6" stroke="#d6c9ef" stroke-width="1.2"/>
+<text x="975.0" y="358.5" font-size="20" fill="#1d1d1f" text-anchor="middle">El dueño anula el pedido e</text>
+<text x="975.0" y="383.5" font-size="20" fill="#1d1d1f" text-anchor="middle">indica el motivo</text>
+<rect x="810.0" y="453.0" width="330" height="109.0" rx="10" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.2"/>
+<text x="975.0" y="489.5" font-size="20" fill="#ffffff" text-anchor="middle">Queda &quot;Anulado&quot; y, si ya tenía</text>
+<text x="975.0" y="514.5" font-size="20" fill="#ffffff" text-anchor="middle">gasto, el gasto se anula</text>
+<text x="975.0" y="539.5" font-size="20" fill="#ffffff" text-anchor="middle">también</text>
+<rect x="885.0" y="608.0" width="180" height="70" rx="35.0" fill="#ffffff" stroke="#3a3a3a" stroke-width="1.8"/>
+<text x="975.0" y="650.4" font-size="21" fill="#2a2a2a" text-anchor="middle" font-weight="bold">FIN</text>
+<rect x="810.0" y="1551.0" width="330" height="86.0" rx="10" fill="#e8e0f6" stroke="#d6c9ef" stroke-width="1.2"/>
+<text x="975.0" y="1588.5" font-size="20" fill="#1d1d1f" text-anchor="middle">Marca que hubo diferencias y</text>
+<text x="975.0" y="1613.5" font-size="20" fill="#1d1d1f" text-anchor="middle">deja una nota</text>
+<rect x="810.0" y="1723.0" width="330" height="84.0" rx="10" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.2"/>
+<text x="975.0" y="1759.5" font-size="20" fill="#ffffff" text-anchor="middle">Queda &quot;Recibido con</text>
+<text x="975.0" y="1784.5" font-size="20" fill="#ffffff" text-anchor="middle">diferencias&quot;</text>
+<rect x="810.0" y="1863.0" width="330" height="109.0" rx="10" fill="#e8e0f6" stroke="#d6c9ef" stroke-width="1.2"/>
+<text x="975.0" y="1899.5" font-size="20" fill="#1d1d1f" text-anchor="middle">El dueño puede dejar una</text>
+<text x="975.0" y="1924.5" font-size="20" fill="#1d1d1f" text-anchor="middle">observación en la ficha del</text>
+<text x="975.0" y="1949.5" font-size="20" fill="#1d1d1f" text-anchor="middle">proveedor</text>
+<rect x="52.0" y="508.3" width="260" height="92.4" rx="6" fill="#f1f1f3" stroke="#b5b5ba" stroke-width="1.3" stroke-dasharray="5 4"/>
+<text x="182.0" y="539.3" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">Muestra el subtotal, el IVA 21%</text>
+<text x="182.0" y="560.1" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">y el total, que es lo que se le</text>
+<text x="182.0" y="580.9" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">paga al corralón</text>
+<rect x="52.0" y="1032.2" width="260" height="71.6" rx="6" fill="#f1f1f3" stroke="#b5b5ba" stroke-width="1.3" stroke-dasharray="5 4"/>
+<text x="182.0" y="1063.2" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">Aprobar es una acción que</text>
+<text x="182.0" y="1084.0" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">solo puede hacer el dueño</text>
+<rect x="52.0" y="1179.8" width="260" height="92.4" rx="6" fill="#f1f1f3" stroke="#b5b5ba" stroke-width="1.3" stroke-dasharray="5 4"/>
+<text x="182.0" y="1210.8" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">El gasto va sin IVA, igual que</text>
+<text x="182.0" y="1231.6" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">el presupuesto contra el que se</text>
+<text x="182.0" y="1252.4" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">compara</text>
+<rect x="52.0" y="1357.3" width="260" height="92.4" rx="6" fill="#f1f1f3" stroke="#b5b5ba" stroke-width="1.3" stroke-dasharray="5 4"/>
+<text x="182.0" y="1388.3" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">Si hace falta, el dueño</text>
+<text x="182.0" y="1409.1" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">descarga la orden en PDF para</text>
+<text x="182.0" y="1429.9" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">el corralón</text>
+</svg>

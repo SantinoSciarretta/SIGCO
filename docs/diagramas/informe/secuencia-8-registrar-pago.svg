@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1354" height="1415" viewBox="0 0 1354 1415" font-family="Arial, Helvetica, sans-serif"><defs><marker id="call" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#3a3a3a"/></marker><marker id="ret" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M1,1 L11,6 L1,11" fill="none" stroke="#55555a" stroke-width="1.6"/></marker></defs>
+<rect width="1354" height="1415" fill="#ffffff"/>
+<text x="40" y="52" font-size="30" font-weight="bold" fill="#2f2f2f">Secuencia 8: Registro de un pago</text>
+<rect x="1124" y="14" width="214" height="84" rx="7" fill="#fbfbfb" stroke="#dadada"/>
+<rect x="1136" y="22" width="16" height="16" rx="3" fill="#e8e0f6" stroke="#b7a3e3"/><text x="1160" y="35" font-size="13" fill="#444">Pantalla (frontend)</text>
+<rect x="1136" y="46" width="16" height="16" rx="3" fill="#4b2a83" stroke="#3c1f6e"/><text x="1160" y="59" font-size="13" fill="#444">Servidor (backend)</text>
+<rect x="1136" y="70" width="16" height="16" rx="3" fill="#f1f1f3" stroke="#9a9aa0"/><text x="1160" y="83" font-size="13" fill="#444">Datos y archivos</text>
+<line x1="150" y1="198" x2="150" y2="1317" stroke="#b3b3b8" stroke-width="1.5"/>
+<line x1="466.0" y1="176" x2="466.0" y2="1317" stroke="#b3b3b8" stroke-width="1.5"/>
+<line x1="696.0" y1="176" x2="696.0" y2="1317" stroke="#b3b3b8" stroke-width="1.5"/>
+<line x1="920.0" y1="176" x2="920.0" y2="1317" stroke="#b3b3b8" stroke-width="1.5"/>
+<line x1="1236.0" y1="176" x2="1236.0" y2="1317" stroke="#b3b3b8" stroke-width="1.5"/>
+<rect x="120" y="590" width="1176.0" height="677" fill="none" stroke="#8a7fb0" stroke-width="1.5" stroke-dasharray="6 4"/>
+<path d="M 120 590 h 33.0 v 14 l -8 8 h -25.0 z" fill="#ede8f7" stroke="#8a7fb0" stroke-width="1.3"/><text x="128" y="606" font-size="13" font-weight="bold" fill="#3d1a78">alt</text>
+<rect x="161.0" y="593" width="381.0" height="19" fill="#ffffff"/><text x="165.0" y="607" font-size="14" font-style="italic" font-weight="bold" fill="#4b3b7d">[La cuota ya está abonada o el monto supera el saldo]</text>
+<line x1="120" y1="678" x2="1296.0" y2="678" stroke="#8a7fb0" stroke-width="1.3" stroke-dasharray="6 4"/>
+<rect x="161.0" y="681" width="108.0" height="19" fill="#ffffff"/><text x="165.0" y="695" font-size="14" font-style="italic" font-weight="bold" fill="#4b3b7d">[Monto válido]</text>
+<g stroke="#3d1466" stroke-width="2.4" fill="none" stroke-linecap="round"><circle cx="150" cy="127" r="9" fill="#fff"/><line x1="150" y1="136" x2="150" y2="156"/><line x1="136" y1="143" x2="164" y2="143"/><line x1="150" y1="156" x2="139" y2="172"/><line x1="150" y1="156" x2="161" y2="172"/></g>
+<text x="150" y="192" font-size="15" font-weight="bold" fill="#3d1466" text-anchor="middle">Dueño</text>
+<g stroke="#3d1466" stroke-width="2.4" fill="none" stroke-linecap="round"><circle cx="150" cy="1326" r="9" fill="#fff"/><line x1="150" y1="1335" x2="150" y2="1355"/><line x1="136" y1="1342" x2="164" y2="1342"/><line x1="150" y1="1355" x2="139" y2="1371"/><line x1="150" y1="1355" x2="161" y2="1371"/></g>
+<text x="150" y="1391" font-size="15" font-weight="bold" fill="#3d1466" text-anchor="middle">Dueño</text>
+<rect x="378.0" y="118" width="176" height="58" rx="8" fill="#e8e0f6" stroke="#b7a3e3" stroke-width="1.4"/>
+<text x="466.0" y="143" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">Pantalla de Cobros</text>
+<text x="466.0" y="162" font-size="12.5" fill="#5b4a85" text-anchor="middle">React</text>
+<rect x="378.0" y="1317" width="176" height="58" rx="8" fill="#e8e0f6" stroke="#b7a3e3" stroke-width="1.4"/>
+<text x="466.0" y="1342" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">Pantalla de Cobros</text>
+<text x="466.0" y="1361" font-size="12.5" fill="#5b4a85" text-anchor="middle">React</text>
+<rect x="608.0" y="118" width="176" height="58" rx="8" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<text x="696.0" y="143" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">CobrosController</text>
+<text x="696.0" y="162" font-size="12.5" fill="#d9cff0" text-anchor="middle">recibe el pedido</text>
+<rect x="608.0" y="1317" width="176" height="58" rx="8" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<text x="696.0" y="1342" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">CobrosController</text>
+<text x="696.0" y="1361" font-size="12.5" fill="#d9cff0" text-anchor="middle">recibe el pedido</text>
+<rect x="832.0" y="118" width="176" height="58" rx="8" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<text x="920.0" y="143" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">CobrosService</text>
+<text x="920.0" y="162" font-size="12.5" fill="#d9cff0" text-anchor="middle">reglas del negocio</text>
+<rect x="832.0" y="1317" width="176" height="58" rx="8" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<text x="920.0" y="1342" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">CobrosService</text>
+<text x="920.0" y="1361" font-size="12.5" fill="#d9cff0" text-anchor="middle">reglas del negocio</text>
+<rect x="1148.0" y="118" width="176" height="58" rx="8" fill="#f1f1f3" stroke="#9a9aa0" stroke-width="1.4"/>
+<text x="1236.0" y="143" font-size="15" font-weight="bold" fill="#2f2f2f" text-anchor="middle">Base de datos</text>
+<text x="1236.0" y="162" font-size="12.5" fill="#666670" text-anchor="middle">PostgreSQL</text>
+<rect x="1148.0" y="1317" width="176" height="58" rx="8" fill="#f1f1f3" stroke="#9a9aa0" stroke-width="1.4"/>
+<text x="1236.0" y="1342" font-size="15" font-weight="bold" fill="#2f2f2f" text-anchor="middle">Base de datos</text>
+<text x="1236.0" y="1361" font-size="12.5" fill="#666670" text-anchor="middle">PostgreSQL</text>
+<line x1="160" y1="285" x2="464.0" y2="285" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="181.5" y="243.0" width="253.0" height="20" fill="#ffffff"/>
+<text x="308.0" y="257.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Carga fecha, monto, medio de pago y</text>
+<rect x="261.0" y="262.0" width="94.0" height="20" fill="#ffffff"/>
+<text x="308.0" y="276.0" font-size="15" fill="#2b2b2b" text-anchor="middle">comprobante</text>
+<circle cx="150" cy="285" r="10" fill="#2f2f2f"/><text x="150" y="289.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">1</text>
+<line x1="476.0" y1="348" x2="694.0" y2="348" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="495.0" y="306.0" width="172.0" height="20" fill="#ffffff"/>
+<text x="581.0" y="320.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Envía el pago de la cuota</text>
+<rect x="490.0" y="327.5" width="182.0" height="17.5" fill="#ffffff"/>
+<text x="581.0" y="339.0" font-size="12.5" fill="#6a6a72" text-anchor="middle">(PATCH /api/cuotas/{id}/pago)</text>
+<circle cx="466.0" cy="348" r="10" fill="#2f2f2f"/><text x="466.0" y="352.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">2</text>
+<path d="M 706.0 388 L 738.0 388 L 738.0 434 L 699.0 434" fill="none" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="744.0" y="387.0" width="185.0" height="20" fill="#ffffff"/>
+<text x="748.0" y="401.0" font-size="15" fill="#2b2b2b" text-anchor="start">Controla el permiso: solo el</text>
+<rect x="744.0" y="406.0" width="89.0" height="20" fill="#ffffff"/>
+<text x="748.0" y="420.0" font-size="15" fill="#2b2b2b" text-anchor="start">dueño cobra</text>
+<circle cx="696.0" cy="388" r="10" fill="#2f2f2f"/><text x="696.0" y="392.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">3</text>
+<line x1="706.0" y1="472" x2="918.0" y2="472" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="735.0" y="449.0" width="146.0" height="20" fill="#ffffff"/>
+<text x="808.0" y="463.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Pide registrar el pago</text>
+<circle cx="696.0" cy="472" r="10" fill="#2f2f2f"/><text x="696.0" y="476.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">4</text>
+<line x1="930.0" y1="516" x2="1234.0" y2="516" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="975.5" y="493.0" width="205.0" height="20" fill="#ffffff"/>
+<text x="1078.0" y="507.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Busca la cuota con sus pagos</text>
+<circle cx="920.0" cy="516" r="10" fill="#2f2f2f"/><text x="920.0" y="520.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">5</text>
+<line x1="1226.0" y1="560" x2="922.0" y2="560" stroke="#55555a" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#ret)"/>
+<rect x="1012.5" y="537.0" width="131.0" height="20" fill="#ffffff"/>
+<text x="1078.0" y="551.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Cuota y sus pagos</text>
+<circle cx="1236.0" cy="560" r="10" fill="#2f2f2f"/><text x="1236.0" y="564.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">6</text>
+<line x1="910.0" y1="656" x2="468.0" y2="656" stroke="#55555a" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#ret)"/>
+<rect x="529.5" y="633.0" width="327.0" height="20" fill="#ffffff"/>
+<text x="693.0" y="647.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Error: no se puede cobrar más de lo que se debe</text>
+<circle cx="920.0" cy="656" r="10" fill="#2f2f2f"/><text x="920.0" y="660.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">7</text>
+<path d="M 930.0 736 L 962.0 736 L 962.0 766 L 923.0 766" fill="none" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="968.0" y="735.0" width="165.0" height="20" fill="#ffffff"/>
+<text x="972.0" y="749.0" font-size="15" fill="#2b2b2b" text-anchor="start">Suma el pago a la cuota</text>
+<circle cx="920.0" cy="736" r="10" fill="#2f2f2f"/><text x="920.0" y="740.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">8</text>
+<path d="M 930.0 800 L 962.0 800 L 962.0 865 L 923.0 865" fill="none" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="968.0" y="799.0" width="219.0" height="20" fill="#ffffff"/>
+<text x="972.0" y="813.0" font-size="15" fill="#2b2b2b" text-anchor="start">El estado sale de los pagos: con</text>
+<rect x="968.0" y="818.0" width="202.0" height="20" fill="#ffffff"/>
+<text x="972.0" y="832.0" font-size="15" fill="#2b2b2b" text-anchor="start">saldo queda Parcial, sin saldo</text>
+<rect x="968.0" y="837.0" width="66.0" height="20" fill="#ffffff"/>
+<text x="972.0" y="851.0" font-size="15" fill="#2b2b2b" text-anchor="start">Abonada</text>
+<circle cx="920.0" cy="800" r="10" fill="#2f2f2f"/><text x="920.0" y="804.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">9</text>
+<line x1="930.0" y1="922" x2="1234.0" y2="922" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="948.0" y="880.0" width="260.0" height="20" fill="#ffffff"/>
+<text x="1078.0" y="894.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Guarda el pago y lo audita con el saldo</text>
+<rect x="1040.0" y="899.0" width="76.0" height="20" fill="#ffffff"/>
+<text x="1078.0" y="913.0" font-size="15" fill="#2b2b2b" text-anchor="middle">que queda</text>
+<circle cx="920.0" cy="922" r="10" fill="#2f2f2f"/><text x="920.0" y="926.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">10</text>
+<line x1="930.0" y1="966" x2="1234.0" y2="966" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="974.5" y="943.0" width="207.0" height="20" fill="#ffffff"/>
+<text x="1078.0" y="957.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Lee el plan de cobro de la obra</text>
+<circle cx="920.0" cy="966" r="10" fill="#2f2f2f"/><text x="920.0" y="970.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">11</text>
+<line x1="1226.0" y1="1010" x2="922.0" y2="1010" stroke="#55555a" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#ret)"/>
+<rect x="1016.5" y="987.0" width="123.0" height="20" fill="#ffffff"/>
+<text x="1078.0" y="1001.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Cuotas de la obra</text>
+<circle cx="1236.0" cy="1010" r="10" fill="#2f2f2f"/><text x="1236.0" y="1014.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">12</text>
+<path d="M 930.0 1050 L 962.0 1050 L 962.0 1096 L 923.0 1096" fill="none" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="968.0" y="1049.0" width="240.0" height="20" fill="#ffffff"/>
+<text x="972.0" y="1063.0" font-size="15" fill="#2b2b2b" text-anchor="start">Recalcula vencimientos, lo cobrado</text>
+<rect x="968.0" y="1068.0" width="136.0" height="20" fill="#ffffff"/>
+<text x="972.0" y="1082.0" font-size="15" fill="#2b2b2b" text-anchor="start">y lo que falta cobrar</text>
+<circle cx="920.0" cy="1050" r="10" fill="#2f2f2f"/><text x="920.0" y="1054.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">13</text>
+<line x1="910.0" y1="1134" x2="698.0" y2="1134" stroke="#55555a" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#ret)"/>
+<rect x="720.0" y="1111.0" width="176.0" height="20" fill="#ffffff"/>
+<text x="808.0" y="1125.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Plan de cobro actualizado</text>
+<circle cx="920.0" cy="1134" r="10" fill="#2f2f2f"/><text x="920.0" y="1138.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">14</text>
+<line x1="686.0" y1="1197" x2="468.0" y2="1197" stroke="#55555a" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#ret)"/>
+<rect x="525.5" y="1155.0" width="111.0" height="20" fill="#ffffff"/>
+<text x="581.0" y="1169.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Pago registrado</text>
+<rect x="500.5" y="1176.5" width="161.0" height="17.5" fill="#ffffff"/>
+<text x="581.0" y="1188.0" font-size="12.5" fill="#6a6a72" text-anchor="middle">(respuesta 200: salió bien)</text>
+<circle cx="696.0" cy="1197" r="10" fill="#2f2f2f"/><text x="696.0" y="1201.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">15</text>
+<line x1="456.0" y1="1241" x2="152" y2="1241" stroke="#55555a" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#ret)"/>
+<rect x="180.5" y="1218.0" width="255.0" height="20" fill="#ffffff"/>
+<text x="308.0" y="1232.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Muestra la cuota y lo que resta cobrar</text>
+<circle cx="466.0" cy="1241" r="10" fill="#2f2f2f"/><text x="466.0" y="1245.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">16</text></svg>

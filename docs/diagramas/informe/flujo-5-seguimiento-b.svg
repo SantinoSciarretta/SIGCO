@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1924" viewBox="0 0 1200 1924" font-family="Arial, Helvetica, sans-serif">
+<defs>
+<marker id="arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#3a3a3a"/></marker>
+<marker id="arrowLoop" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#4b3b7d"/></marker>
+<marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12" fill="none" stroke="#7b4fc0" stroke-width="1.6"/></marker>
+<marker id="gen" viewBox="0 0 16 16" refX="15" refY="8" markerWidth="20" markerHeight="20" markerUnits="userSpaceOnUse" orient="auto"><path d="M1,1 L15,8 L1,15 z" fill="#ffffff" stroke="#3d1466" stroke-width="1.6"/></marker>
+</defs>
+<rect width="1200" height="1924" fill="#ffffff"/>
+<text x="600.0" y="52" font-size="34" font-weight="bold" fill="#2f2f2f" text-anchor="middle">Proceso de Seguimiento de Obras (parte 2 de 2)</text>
+<rect x="30" y="74" width="270" height="106" rx="7" fill="#fbfbfb" stroke="#dadada" stroke-width="1.2"/>
+<rect x="44" y="87" width="20" height="20" rx="4" fill="#e8e0f6" stroke="#9b86c9" stroke-width="1.2"/>
+<text x="74" y="102" font-size="15" fill="#444">Acción de una persona</text>
+<rect x="44" y="117" width="20" height="20" rx="4" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.2"/>
+<text x="74" y="132" font-size="15" fill="#444">Acción automática del sistema</text>
+<circle cx="54" cy="157" r="10" fill="#ffffff" stroke="#3a3a3a" stroke-width="1.6"/>
+<text x="54" y="161.5" font-size="12" font-weight="bold" fill="#2a2a2a" text-anchor="middle">A</text>
+<text x="74" y="162" font-size="15" fill="#444">Conector con la otra parte</text>
+<path d="M 345.0 718.0 L 310.0 718.0" fill="none" stroke="#a9a9ae" stroke-width="1.4" stroke-dasharray="3 4" stroke-linejoin="round"/>
+<path d="M 345.0 1703.0 L 312.0 1703.0" fill="none" stroke="#a9a9ae" stroke-width="1.4" stroke-dasharray="3 4" stroke-linejoin="round"/>
+<path d="M 560.0 228.0 L 560.0 284.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 560.0 393.0 L 560.0 449.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 725.0 534.0 L 830.0 534.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="746.0" y="504.4" width="26.0" height="21.2" fill="#ffffff"/>
+<text x="759.0" y="523.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">Sí</text>
+<path d="M 975.0 454.0 L 975.0 338.5 L 775.0 338.5" fill="none" stroke="#4b3b7d" stroke-width="2.4" stroke-dasharray="9 7" marker-end="url(#arrowLoop)" stroke-linejoin="round"/>
+<rect x="935.0" y="406.4" width="32.0" height="21.2" fill="#ffffff"/>
+<text x="951.0" y="425.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">No</text>
+<path d="M 975.0 614.0 L 975.0 647.0 L 560.0 647.0 L 560.0 675.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 560.0 619.0 L 560.0 675.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="520.0" y="633.4" width="32.0" height="21.2" fill="#ffffff"/>
+<text x="536.0" y="652.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">No</text>
+<path d="M 560.0 761.0 L 560.0 817.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 560.0 926.0 L 560.0 982.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 730.0 1072.0 L 810.0 1072.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="751.0" y="1042.4" width="26.0" height="21.2" fill="#ffffff"/>
+<text x="764.0" y="1061.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">Sí</text>
+<path d="M 975.0 1115.0 L 975.0 1190.0 L 560.0 1190.0 L 560.0 1218.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 560.0 1162.0 L 560.0 1218.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="520.0" y="1176.4" width="32.0" height="21.2" fill="#ffffff"/>
+<text x="536.0" y="1195.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">No</text>
+<path d="M 730.0 1303.0 L 810.0 1303.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="751.0" y="1273.4" width="26.0" height="21.2" fill="#ffffff"/>
+<text x="764.0" y="1292.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">Sí</text>
+<path d="M 975.0 1341.0 L 975.0 1416.0 L 560.0 1416.0 L 560.0 1444.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 560.0 1388.0 L 560.0 1444.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="520.0" y="1402.4" width="32.0" height="21.2" fill="#ffffff"/>
+<text x="536.0" y="1421.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">No</text>
+<path d="M 400.0 1524.0 L 34.0 1524.0 L 34.0 338.5 L 345.0 338.5" fill="none" stroke="#4b3b7d" stroke-width="2.4" stroke-dasharray="9 7" marker-end="url(#arrowLoop)" stroke-linejoin="round"/>
+<rect x="350.0" y="1494.4" width="32.0" height="21.2" fill="#ffffff"/>
+<text x="366.0" y="1513.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">No</text>
+<path d="M 560.0 1604.0 L 560.0 1660.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="523.0" y="1618.4" width="26.0" height="21.2" fill="#ffffff"/>
+<text x="536.0" y="1637.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">Sí</text>
+<path d="M 560.0 1746.0 L 560.0 1802.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<circle cx="560" cy="198.0" r="30.0" fill="#ffffff" stroke="#3a3a3a" stroke-width="2.2"/>
+<text x="560.0" y="206.4" font-size="24" fill="#2a2a2a" text-anchor="middle" font-weight="bold">A</text>
+<rect x="345.0" y="284.0" width="430" height="109.0" rx="10" fill="#e8e0f6" stroke="#d6c9ef" stroke-width="1.2"/>
+<text x="560.0" y="320.5" font-size="20" fill="#1d1d1f" text-anchor="middle">El dueño o el capataz general marca una</text>
+<text x="560.0" y="345.5" font-size="20" fill="#1d1d1f" text-anchor="middle">etapa como completada, con la fecha y</text>
+<text x="560.0" y="370.5" font-size="20" fill="#1d1d1f" text-anchor="middle">una observación opcional</text>
+<polygon points="560,449.0 725.0,534.0 560,619.0 395.0,534.0" fill="#ffffff" stroke="#8a8a8a" stroke-width="2.2"/>
+<text x="560.0" y="518.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">¿Quedan etapas</text>
+<text x="560.0" y="540.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">anteriores sin</text>
+<text x="560.0" y="562.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">completar?</text>
+<rect x="345.0" y="675.0" width="430" height="86.0" rx="10" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.2"/>
+<text x="560.0" y="712.5" font-size="20" fill="#ffffff" text-anchor="middle">El sistema registra la fecha y quién la</text>
+<text x="560.0" y="737.5" font-size="20" fill="#ffffff" text-anchor="middle">completó, y recalcula el avance físico</text>
+<rect x="345.0" y="817.0" width="430" height="109.0" rx="10" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.2"/>
+<text x="560.0" y="853.5" font-size="20" fill="#ffffff" text-anchor="middle">Compara el avance físico con el financiero</text>
+<text x="560.0" y="878.5" font-size="20" fill="#ffffff" text-anchor="middle">que aporta Gastos y con el plazo de la</text>
+<text x="560.0" y="903.5" font-size="20" fill="#ffffff" text-anchor="middle">obra</text>
+<polygon points="560,982.0 730.0,1072.0 560,1162.0 390.0,1072.0" fill="#ffffff" stroke="#8a8a8a" stroke-width="2.2"/>
+<text x="560.0" y="1056.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">¿Lo gastado supera</text>
+<text x="560.0" y="1078.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">al avance por más de</text>
+<text x="560.0" y="1100.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">15 puntos?</text>
+<polygon points="560,1218.0 730.0,1303.0 560,1388.0 390.0,1303.0" fill="#ffffff" stroke="#8a8a8a" stroke-width="2.2"/>
+<text x="560.0" y="1287.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">¿Se pasó la fecha de</text>
+<text x="560.0" y="1309.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">fin con obra</text>
+<text x="560.0" y="1331.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">pendiente?</text>
+<polygon points="560,1444.0 720.0,1524.0 560,1604.0 400.0,1524.0" fill="#ffffff" stroke="#8a8a8a" stroke-width="2.2"/>
+<text x="560.0" y="1519.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">¿Era la última etapa</text>
+<text x="560.0" y="1541.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">pendiente?</text>
+<rect x="345.0" y="1660.0" width="430" height="86.0" rx="10" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.2"/>
+<text x="560.0" y="1697.5" font-size="20" fill="#ffffff" text-anchor="middle">La obra pasa sola a &quot;Finalizada&quot; y sus</text>
+<text x="560.0" y="1722.5" font-size="20" fill="#ffffff" text-anchor="middle">etapas quedan bloqueadas</text>
+<rect x="450.0" y="1802.0" width="220" height="82" rx="41.0" fill="#ffffff" stroke="#3a3a3a" stroke-width="1.8"/>
+<text x="560.0" y="1850.3" font-size="21" fill="#2a2a2a" text-anchor="middle" font-weight="bold">FIN</text>
+<polygon points="975,454.0 1120.0,534.0 975,614.0 830.0,534.0" fill="#ffffff" stroke="#8a8a8a" stroke-width="2.2"/>
+<text x="975.0" y="518.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">¿Confirma que</text>
+<text x="975.0" y="540.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">esta etapa se</text>
+<text x="975.0" y="562.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">adelantó?</text>
+<rect x="810.0" y="1029.0" width="330" height="86.0" rx="10" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.2"/>
+<text x="975.0" y="1066.5" font-size="20" fill="#ffffff" text-anchor="middle">Alerta de desfasaje en el</text>
+<text x="975.0" y="1091.5" font-size="20" fill="#ffffff" text-anchor="middle">Tablero y en la ficha de la obra</text>
+<rect x="810.0" y="1265.0" width="330" height="76.0" rx="10" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.2"/>
+<text x="975.0" y="1310.0" font-size="20" fill="#ffffff" text-anchor="middle">La obra figura como atrasada</text>
+<rect x="90.0" y="661.4" width="220" height="113.2" rx="6" fill="#f1f1f3" stroke="#b5b5ba" stroke-width="1.3" stroke-dasharray="5 4"/>
+<text x="200.0" y="692.4" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">Una etapa marcada por</text>
+<text x="200.0" y="713.2" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">error se puede reabrir</text>
+<text x="200.0" y="734.0" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">mientras la obra no esté</text>
+<text x="200.0" y="754.8" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">finalizada</text>
+<rect x="52.0" y="1656.8" width="260" height="92.4" rx="6" fill="#f1f1f3" stroke="#b5b5ba" stroke-width="1.3" stroke-dasharray="5 4"/>
+<text x="182.0" y="1687.8" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">Si el dueño cierra la obra con</text>
+<text x="182.0" y="1708.6" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">etapas pendientes, el sistema</text>
+<text x="182.0" y="1729.4" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">le pide confirmación</text>
+</svg>

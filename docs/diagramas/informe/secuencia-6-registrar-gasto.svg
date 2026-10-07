@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1394" height="1588" viewBox="0 0 1394 1588" font-family="Arial, Helvetica, sans-serif"><defs><marker id="call" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#3a3a3a"/></marker><marker id="ret" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M1,1 L11,6 L1,11" fill="none" stroke="#55555a" stroke-width="1.6"/></marker></defs>
+<rect width="1394" height="1588" fill="#ffffff"/>
+<text x="40" y="52" font-size="30" font-weight="bold" fill="#2f2f2f">Secuencia 6: Registro de un gasto y cálculo del semáforo</text>
+<rect x="1164" y="14" width="214" height="84" rx="7" fill="#fbfbfb" stroke="#dadada"/>
+<rect x="1176" y="22" width="16" height="16" rx="3" fill="#e8e0f6" stroke="#b7a3e3"/><text x="1200" y="35" font-size="13" fill="#444">Pantalla (frontend)</text>
+<rect x="1176" y="46" width="16" height="16" rx="3" fill="#4b2a83" stroke="#3c1f6e"/><text x="1200" y="59" font-size="13" fill="#444">Servidor (backend)</text>
+<rect x="1176" y="70" width="16" height="16" rx="3" fill="#f1f1f3" stroke="#9a9aa0"/><text x="1200" y="83" font-size="13" fill="#444">Datos y archivos</text>
+<line x1="150" y1="198" x2="150" y2="1490" stroke="#b3b3b8" stroke-width="1.5"/>
+<line x1="453.0" y1="176" x2="453.0" y2="1490" stroke="#b3b3b8" stroke-width="1.5"/>
+<line x1="736.0" y1="176" x2="736.0" y2="1490" stroke="#b3b3b8" stroke-width="1.5"/>
+<line x1="960.0" y1="176" x2="960.0" y2="1490" stroke="#b3b3b8" stroke-width="1.5"/>
+<line x1="1276.0" y1="176" x2="1276.0" y2="1490" stroke="#b3b3b8" stroke-width="1.5"/>
+<rect x="393.0" y="491" width="943.0" height="363" fill="none" stroke="#8a7fb0" stroke-width="1.5" stroke-dasharray="6 4"/>
+<path d="M 393.0 491 h 33.0 v 14 l -8 8 h -25.0 z" fill="#ede8f7" stroke="#8a7fb0" stroke-width="1.3"/><text x="401.0" y="507" font-size="13" font-weight="bold" fill="#3d1a78">alt</text>
+<rect x="434.0" y="494" width="429.0" height="19" fill="#ffffff"/><text x="438.0" y="508" font-size="14" font-style="italic" font-weight="bold" fill="#4b3b7d">[La obra no está en ejecución o no tiene definitivo aprobado]</text>
+<line x1="393.0" y1="579" x2="1336.0" y2="579" stroke="#8a7fb0" stroke-width="1.3" stroke-dasharray="6 4"/>
+<rect x="434.0" y="582" width="264.0" height="19" fill="#ffffff"/><text x="438.0" y="596" font-size="14" font-style="italic" font-weight="bold" fill="#4b3b7d">[Obra en ejecución con presupuesto]</text>
+<g stroke="#3d1466" stroke-width="2.4" fill="none" stroke-linecap="round"><circle cx="150" cy="127" r="9" fill="#fff"/><line x1="150" y1="136" x2="150" y2="156"/><line x1="136" y1="143" x2="164" y2="143"/><line x1="150" y1="156" x2="139" y2="172"/><line x1="150" y1="156" x2="161" y2="172"/></g>
+<text x="150" y="192" font-size="15" font-weight="bold" fill="#3d1466" text-anchor="middle">Dueño</text>
+<g stroke="#3d1466" stroke-width="2.4" fill="none" stroke-linecap="round"><circle cx="150" cy="1499" r="9" fill="#fff"/><line x1="150" y1="1508" x2="150" y2="1528"/><line x1="136" y1="1515" x2="164" y2="1515"/><line x1="150" y1="1528" x2="139" y2="1544"/><line x1="150" y1="1528" x2="161" y2="1544"/></g>
+<text x="150" y="1564" font-size="15" font-weight="bold" fill="#3d1466" text-anchor="middle">Dueño</text>
+<rect x="365.0" y="118" width="176" height="58" rx="8" fill="#e8e0f6" stroke="#b7a3e3" stroke-width="1.4"/>
+<text x="453.0" y="143" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">Pantalla de Gastos</text>
+<text x="453.0" y="162" font-size="12.5" fill="#5b4a85" text-anchor="middle">React</text>
+<rect x="365.0" y="1490" width="176" height="58" rx="8" fill="#e8e0f6" stroke="#b7a3e3" stroke-width="1.4"/>
+<text x="453.0" y="1515" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">Pantalla de Gastos</text>
+<text x="453.0" y="1534" font-size="12.5" fill="#5b4a85" text-anchor="middle">React</text>
+<rect x="634.0" y="118" width="204.0" height="58" rx="8" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<text x="736.0" y="143" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">Controladores de Gastos</text>
+<text x="736.0" y="162" font-size="12.5" fill="#d9cff0" text-anchor="middle">reciben el pedido</text>
+<rect x="634.0" y="1490" width="204.0" height="58" rx="8" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<text x="736.0" y="1515" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">Controladores de Gastos</text>
+<text x="736.0" y="1534" font-size="12.5" fill="#d9cff0" text-anchor="middle">reciben el pedido</text>
+<rect x="872.0" y="118" width="176" height="58" rx="8" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<text x="960.0" y="143" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">GastoService</text>
+<text x="960.0" y="162" font-size="12.5" fill="#d9cff0" text-anchor="middle">reglas del negocio</text>
+<rect x="872.0" y="1490" width="176" height="58" rx="8" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<text x="960.0" y="1515" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">GastoService</text>
+<text x="960.0" y="1534" font-size="12.5" fill="#d9cff0" text-anchor="middle">reglas del negocio</text>
+<rect x="1188.0" y="118" width="176" height="58" rx="8" fill="#f1f1f3" stroke="#9a9aa0" stroke-width="1.4"/>
+<text x="1276.0" y="143" font-size="15" font-weight="bold" fill="#2f2f2f" text-anchor="middle">Base de datos</text>
+<text x="1276.0" y="162" font-size="12.5" fill="#666670" text-anchor="middle">PostgreSQL</text>
+<rect x="1188.0" y="1490" width="176" height="58" rx="8" fill="#f1f1f3" stroke="#9a9aa0" stroke-width="1.4"/>
+<text x="1276.0" y="1515" font-size="15" font-weight="bold" fill="#2f2f2f" text-anchor="middle">Base de datos</text>
+<text x="1276.0" y="1534" font-size="12.5" fill="#666670" text-anchor="middle">PostgreSQL</text>
+<line x1="160" y1="266" x2="451.0" y2="266" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="174.0" y="243.0" width="255.0" height="20" fill="#ffffff"/>
+<text x="301.5" y="257.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Carga obra, rubro, tipo, monto y fecha</text>
+<circle cx="150" cy="266" r="10" fill="#2f2f2f"/><text x="150" y="270.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">1</text>
+<line x1="463.0" y1="329" x2="734.0" y2="329" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="522.0" y="287.0" width="145.0" height="20" fill="#ffffff"/>
+<text x="594.5" y="301.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Envía el gasto nuevo</text>
+<rect x="534.5" y="308.5" width="120.0" height="17.5" fill="#ffffff"/>
+<text x="594.5" y="320.0" font-size="12.5" fill="#6a6a72" text-anchor="middle">(POST /api/gastos)</text>
+<circle cx="453.0" cy="329" r="10" fill="#2f2f2f"/><text x="453.0" y="333.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">2</text>
+<line x1="746.0" y1="373" x2="958.0" y2="373" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="773.0" y="350.0" width="150.0" height="20" fill="#ffffff"/>
+<text x="848.0" y="364.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Pide registrar el gasto</text>
+<circle cx="736.0" cy="373" r="10" fill="#2f2f2f"/><text x="736.0" y="377.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">3</text>
+<line x1="970.0" y1="417" x2="1274.0" y2="417" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="990.0" y="394.0" width="256.0" height="20" fill="#ffffff"/>
+<text x="1118.0" y="408.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Busca la obra y su definitivo aprobado</text>
+<circle cx="960.0" cy="417" r="10" fill="#2f2f2f"/><text x="960.0" y="421.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">4</text>
+<line x1="1266.0" y1="461" x2="962.0" y2="461" stroke="#55555a" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#ret)"/>
+<rect x="1016.5" y="438.0" width="203.0" height="20" fill="#ffffff"/>
+<text x="1118.0" y="452.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Obra y presupuesto aprobado</text>
+<circle cx="1276.0" cy="461" r="10" fill="#2f2f2f"/><text x="1276.0" y="465.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">5</text>
+<line x1="950.0" y1="557" x2="455.0" y2="557" stroke="#55555a" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#ret)"/>
+<rect x="540.0" y="534.0" width="333.0" height="20" fill="#ffffff"/>
+<text x="706.5" y="548.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Error: no hay presupuesto contra el que comparar</text>
+<circle cx="960.0" cy="557" r="10" fill="#2f2f2f"/><text x="960.0" y="561.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">6</text>
+<path d="M 970.0 637 L 1002.0 637 L 1002.0 683 L 963.0 683" fill="none" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="1008.0" y="636.0" width="213.0" height="20" fill="#ffffff"/>
+<text x="1012.0" y="650.0" font-size="15" fill="#2b2b2b" text-anchor="start">Verifica que el subrubro sea del</text>
+<rect x="1008.0" y="655.0" width="92.0" height="20" fill="#ffffff"/>
+<text x="1012.0" y="669.0" font-size="15" fill="#2b2b2b" text-anchor="start">rubro elegido</text>
+<circle cx="960.0" cy="637" r="10" fill="#2f2f2f"/><text x="960.0" y="641.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">7</text>
+<line x1="970.0" y1="721" x2="1274.0" y2="721" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="994.5" y="698.0" width="247.0" height="20" fill="#ffffff"/>
+<text x="1118.0" y="712.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Guarda el gasto con quién lo registró</text>
+<circle cx="960.0" cy="721" r="10" fill="#2f2f2f"/><text x="960.0" y="725.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">8</text>
+<line x1="950.0" y1="765" x2="738.0" y2="765" stroke="#55555a" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#ret)"/>
+<rect x="791.5" y="742.0" width="113.0" height="20" fill="#ffffff"/>
+<text x="848.0" y="756.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Gasto guardado</text>
+<circle cx="960.0" cy="765" r="10" fill="#2f2f2f"/><text x="960.0" y="769.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">9</text>
+<line x1="726.0" y1="828" x2="455.0" y2="828" stroke="#55555a" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#ret)"/>
+<rect x="536.0" y="786.0" width="117.0" height="20" fill="#ffffff"/>
+<text x="594.5" y="800.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Gasto registrado</text>
+<rect x="520.0" y="807.5" width="149.0" height="17.5" fill="#ffffff"/>
+<text x="594.5" y="819.0" font-size="12.5" fill="#6a6a72" text-anchor="middle">(respuesta 201: se creó)</text>
+<circle cx="736.0" cy="828" r="10" fill="#2f2f2f"/><text x="736.0" y="832.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">10</text>
+<line x1="463.0" y1="917" x2="734.0" y2="917" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="477.0" y="875.0" width="235.0" height="20" fill="#ffffff"/>
+<text x="594.5" y="889.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Pide el estado financiero de la obra</text>
+<rect x="480.0" y="896.5" width="229.0" height="17.5" fill="#ffffff"/>
+<text x="594.5" y="908.0" font-size="12.5" fill="#6a6a72" text-anchor="middle">(GET /api/obras/{id}/estado-financiero)</text>
+<circle cx="453.0" cy="917" r="10" fill="#2f2f2f"/><text x="453.0" y="921.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">11</text>
+<line x1="746.0" y1="961" x2="958.0" y2="961" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="764.5" y="938.0" width="167.0" height="20" fill="#ffffff"/>
+<text x="848.0" y="952.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Pide el estado financiero</text>
+<circle cx="736.0" cy="961" r="10" fill="#2f2f2f"/><text x="736.0" y="965.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">12</text>
+<line x1="970.0" y1="1005" x2="1274.0" y2="1005" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="987.5" y="982.0" width="261.0" height="20" fill="#ffffff"/>
+<text x="1118.0" y="996.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Ítems del definitivo aprobado, por rubro</text>
+<circle cx="960.0" cy="1005" r="10" fill="#2f2f2f"/><text x="960.0" y="1009.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">13</text>
+<line x1="970.0" y1="1049" x2="1274.0" y2="1049" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="979.0" y="1026.0" width="278.0" height="20" fill="#ffffff"/>
+<text x="1118.0" y="1040.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Total gastado por rubro (sin los anulados)</text>
+<circle cx="960.0" cy="1049" r="10" fill="#2f2f2f"/><text x="960.0" y="1053.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">14</text>
+<line x1="1266.0" y1="1093" x2="962.0" y2="1093" stroke="#55555a" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#ret)"/>
+<rect x="1030.5" y="1070.0" width="175.0" height="20" fill="#ffffff"/>
+<text x="1118.0" y="1084.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Presupuestado y gastado</text>
+<circle cx="1276.0" cy="1093" r="10" fill="#2f2f2f"/><text x="1276.0" y="1097.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">15</text>
+<path d="M 970.0 1133 L 1002.0 1133 L 1002.0 1179 L 963.0 1179" fill="none" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="1008.0" y="1132.0" width="242.0" height="20" fill="#ffffff"/>
+<text x="1012.0" y="1146.0" font-size="15" fill="#2b2b2b" text-anchor="start">Por rubro: porcentaje gastado sobre</text>
+<rect x="1008.0" y="1151.0" width="120.0" height="20" fill="#ffffff"/>
+<text x="1012.0" y="1165.0" font-size="15" fill="#2b2b2b" text-anchor="start">lo presupuestado</text>
+<circle cx="960.0" cy="1133" r="10" fill="#2f2f2f"/><text x="960.0" y="1137.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">16</text>
+<path d="M 970.0 1213 L 1002.0 1213 L 1002.0 1278 L 963.0 1278" fill="none" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="1008.0" y="1212.0" width="215.0" height="20" fill="#ffffff"/>
+<text x="1012.0" y="1226.0" font-size="15" fill="#2b2b2b" text-anchor="start">Semáforo: rojo si pasa el 100%,</text>
+<rect x="1008.0" y="1231.0" width="221.0" height="20" fill="#ffffff"/>
+<text x="1012.0" y="1245.0" font-size="15" fill="#2b2b2b" text-anchor="start">amarillo desde el 90%, verde por</text>
+<rect x="1008.0" y="1250.0" width="51.0" height="20" fill="#ffffff"/>
+<text x="1012.0" y="1264.0" font-size="15" fill="#2b2b2b" text-anchor="start">debajo</text>
+<circle cx="960.0" cy="1213" r="10" fill="#2f2f2f"/><text x="960.0" y="1217.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">17</text>
+<path d="M 970.0 1312 L 1002.0 1312 L 1002.0 1358 L 963.0 1358" fill="none" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="1008.0" y="1311.0" width="194.0" height="20" fill="#ffffff"/>
+<text x="1012.0" y="1325.0" font-size="15" fill="#2b2b2b" text-anchor="start">Ganancia estimada: subtotal</text>
+<rect x="1008.0" y="1330.0" width="225.0" height="20" fill="#ffffff"/>
+<text x="1012.0" y="1344.0" font-size="15" fill="#2b2b2b" text-anchor="start">presupuestado menos lo gastado</text>
+<circle cx="960.0" cy="1312" r="10" fill="#2f2f2f"/><text x="960.0" y="1316.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">18</text>
+<line x1="950.0" y1="1396" x2="455.0" y2="1396" stroke="#55555a" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#ret)"/>
+<rect x="583.5" y="1373.0" width="246.0" height="20" fill="#ffffff"/>
+<text x="706.5" y="1387.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Estado financiero con los semáforos</text>
+<circle cx="960.0" cy="1396" r="10" fill="#2f2f2f"/><text x="960.0" y="1400.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">19</text>
+<line x1="443.0" y1="1440" x2="152" y2="1440" stroke="#55555a" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#ret)"/>
+<rect x="183.0" y="1417.0" width="237.0" height="20" fill="#ffffff"/>
+<text x="301.5" y="1431.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Muestra el semáforo de cada rubro</text>
+<circle cx="453.0" cy="1440" r="10" fill="#2f2f2f"/><text x="453.0" y="1444.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">20</text></svg>

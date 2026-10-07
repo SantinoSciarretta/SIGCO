@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="860" viewBox="0 0 1600 860" font-family="Arial, Helvetica, sans-serif">
+<defs>
+<marker id="arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#3a3a3a"/></marker>
+<marker id="arrowLoop" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#4b3b7d"/></marker>
+<marker id="arrowDf" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#3a3a3a"/></marker>
+<marker id="arrowDfOut" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#7a7a80"/></marker>
+<marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12" fill="none" stroke="#7b4fc0" stroke-width="1.6"/></marker>
+<marker id="gen" viewBox="0 0 16 16" refX="15" refY="8" markerWidth="20" markerHeight="20" markerUnits="userSpaceOnUse" orient="auto"><path d="M1,1 L15,8 L1,15 z" fill="#ffffff" stroke="#3d1466" stroke-width="1.6"/></marker>
+</defs>
+<rect width="1600" height="860" fill="#ffffff"/>
+<text x="40" y="52" font-size="30" font-weight="bold" fill="#2f2f2f">DFD de contexto (nivel 0): SIGCO y su entorno</text>
+<rect x="1250" y="14" width="330" height="150" rx="7" fill="#fbfbfb" stroke="#dadada"/>
+<rect x="1264" y="28" width="30" height="20" fill="#fff" stroke="#3d1466" stroke-width="1.8"/><text x="1306" y="43" font-size="14" fill="#444">Entidad externa</text>
+<rect x="1264" y="56" width="30" height="20" rx="5" fill="#4b2a83"/><text x="1306" y="71" font-size="14" fill="#444">Proceso</text>
+<path d="M 1264 88 L 1264 102 A 15 5 0 0 0 1294 102 L 1294 88" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.5"/><ellipse cx="1279" cy="88" rx="15" ry="5" fill="#fafafb" stroke="#8a8a90" stroke-width="1.5"/><text x="1306" y="100" font-size="14" fill="#444">Almacén de datos</text>
+<line x1="1262" y1="122" x2="1294" y2="122" stroke="#7a7a80" stroke-width="1.8" stroke-dasharray="6 4"/><text x="1306" y="127" font-size="14" fill="#444">Por fuera del sistema, vía el dueño</text>
+<text x="1272" y="153" font-size="16" font-weight="bold" fill="#444">*</text><text x="1306" y="151" font-size="14" fill="#444">Aparece más de una vez</text>
+<path d="M 280.0 330.0 L 655.0 330.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="315.0" y="309.0" width="305.0" height="18.8" fill="#ffffff"/>
+<text x="467.5" y="325.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Presupuestos, gastos, pagos y aprobaciones</text>
+<path d="M 655.0 360.0 L 280.0 360.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="313.0" y="371.0" width="309.0" height="18.8" fill="#ffffff"/>
+<text x="467.5" y="387.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Tablero, alertas, balances y documentos PDF</text>
+<path d="M 280.0 520.0 L 655.0 520.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="326.0" y="499.0" width="283.0" height="18.8" fill="#ffffff"/>
+<text x="467.5" y="515.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Pedidos, recepciones y avance de etapas</text>
+<path d="M 655.0 550.0 L 280.0 550.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="340.5" y="561.0" width="254.0" height="18.8" fill="#ffffff"/>
+<text x="467.5" y="577.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Obras, pedidos y avance, sin montos</text>
+<path d="M 280.0 710.0 L 655.0 710.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="334.0" y="689.0" width="267.0" height="18.8" fill="#ffffff"/>
+<text x="467.5" y="705.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Pedidos y recepción con foto del remito</text>
+<path d="M 655.0 740.0 L 280.0 740.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="367.5" y="751.0" width="200.0" height="18.8" fill="#ffffff"/>
+<text x="467.5" y="767.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Pedidos y avance de su obra</text>
+<path d="M 955.0 295.0 L 1320.0 295.0" fill="none" stroke="#7a7a80" stroke-width="1.9" stroke-dasharray="8 6" marker-end="url(#arrowDfOut)" stroke-linejoin="round"/>
+<rect x="1002.0" y="274.0" width="271.0" height="18.8" fill="#ffffff"/>
+<text x="1137.5" y="290.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Presupuesto y planilla de pagos en PDF</text>
+<path d="M 1320.0 325.0 L 955.0 325.0" fill="none" stroke="#7a7a80" stroke-width="1.9" stroke-dasharray="8 6" marker-end="url(#arrowDfOut)" stroke-linejoin="round"/>
+<rect x="1067.5" y="336.0" width="140.0" height="18.8" fill="#ffffff"/>
+<text x="1137.5" y="352.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Aprobación y pagos</text>
+<path d="M 955.0 445.0 L 1320.0 445.0" fill="none" stroke="#7a7a80" stroke-width="1.9" stroke-dasharray="8 6" marker-end="url(#arrowDfOut)" stroke-linejoin="round"/>
+<rect x="1016.5" y="424.0" width="242.0" height="18.8" fill="#ffffff"/>
+<text x="1137.5" y="440.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Pedido de cotización por WhatsApp</text>
+<path d="M 1320.0 475.0 L 955.0 475.0" fill="none" stroke="#7a7a80" stroke-width="1.9" stroke-dasharray="8 6" marker-end="url(#arrowDfOut)" stroke-linejoin="round"/>
+<rect x="1050.0" y="486.0" width="175.0" height="18.8" fill="#ffffff"/>
+<text x="1137.5" y="502.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Precios de los materiales</text>
+<path d="M 1320.0 610.0 L 955.0 610.0" fill="none" stroke="#7a7a80" stroke-width="1.9" stroke-dasharray="8 6" marker-end="url(#arrowDfOut)" stroke-linejoin="round"/>
+<rect x="1050.0" y="589.0" width="175.0" height="18.8" fill="#ffffff"/>
+<text x="1137.5" y="605.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Coeficiente CAC del mes</text>
+<path d="M 955.0 760.0 L 1320.0 760.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="1038.5" y="739.0" width="198.0" height="18.8" fill="#ffffff"/>
+<text x="1137.5" y="755.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Obras realizadas y sus fotos</text>
+<rect x="655.0" y="250.0" width="300" height="570.0" rx="12" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<path d="M 655.0 280.0 L 955.0 280.0" stroke="#7d62b3" stroke-width="1.4"/>
+<text x="805.0" y="271.0" font-size="15" font-weight="bold" fill="#d9cff0" text-anchor="middle">0</text>
+<text x="805.0" y="544.8" font-size="19" fill="#ffffff" text-anchor="middle">SIGCO: Sistema Integral de</text>
+<text x="805.0" y="568.5" font-size="19" fill="#ffffff" text-anchor="middle">Gestión de Obras</text>
+<rect x="40.0" y="310.0" width="240" height="70.0" fill="#ffffff" stroke="#3d1466" stroke-width="2.2"/>
+<text x="160.0" y="350.9" font-size="17" fill="#2a1650" text-anchor="middle" font-weight="bold">Dueño</text>
+<rect x="40.0" y="500.0" width="240" height="70.0" fill="#ffffff" stroke="#3d1466" stroke-width="2.2"/>
+<text x="160.0" y="541.0" font-size="17" fill="#2a1650" text-anchor="middle" font-weight="bold">Capataz General</text>
+<rect x="40.0" y="690.0" width="240" height="70.0" fill="#ffffff" stroke="#3d1466" stroke-width="2.2"/>
+<text x="160.0" y="731.0" font-size="17" fill="#2a1650" text-anchor="middle" font-weight="bold">Capataz de Obra</text>
+<rect x="1320.0" y="275.0" width="240" height="70.0" fill="#ffffff" stroke="#3d1466" stroke-width="2.2"/>
+<text x="1440.0" y="315.9" font-size="17" fill="#2a1650" text-anchor="middle" font-weight="bold">Cliente</text>
+<rect x="1320.0" y="425.0" width="240" height="70.0" fill="#ffffff" stroke="#3d1466" stroke-width="2.2"/>
+<text x="1440.0" y="465.9" font-size="17" fill="#2a1650" text-anchor="middle" font-weight="bold">Corralón</text>
+<rect x="1320.0" y="575.0" width="240" height="70.0" fill="#ffffff" stroke="#3d1466" stroke-width="2.2"/>
+<text x="1440.0" y="605.3" font-size="17" fill="#2a1650" text-anchor="middle" font-weight="bold">Cámara Argentina de la</text>
+<text x="1440.0" y="626.6" font-size="17" fill="#2a1650" text-anchor="middle" font-weight="bold">Construcción</text>
+<rect x="1320.0" y="725.0" width="240" height="70.0" fill="#ffffff" stroke="#3d1466" stroke-width="2.2"/>
+<text x="1440.0" y="766.0" font-size="17" fill="#2a1650" text-anchor="middle" font-weight="bold">Visitante de la vidriera</text>
+</svg>

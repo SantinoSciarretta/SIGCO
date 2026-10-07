@@ -1,0 +1,369 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3170" height="1990" viewBox="0 0 3170 1990" font-family="Arial, Helvetica, sans-serif">
+<defs>
+<marker id="arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#3a3a3a"/></marker>
+<marker id="arrowLoop" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#4b3b7d"/></marker>
+<marker id="arrowDf" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#3a3a3a"/></marker>
+<marker id="arrowDfOut" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#7a7a80"/></marker>
+<marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12" fill="none" stroke="#7b4fc0" stroke-width="1.6"/></marker>
+<marker id="gen" viewBox="0 0 16 16" refX="15" refY="8" markerWidth="20" markerHeight="20" markerUnits="userSpaceOnUse" orient="auto"><path d="M1,1 L15,8 L1,15 z" fill="#ffffff" stroke="#3d1466" stroke-width="1.6"/></marker>
+</defs>
+<rect width="3170" height="1990" fill="#ffffff"/>
+<text x="40" y="52" font-size="30" font-weight="bold" fill="#2f2f2f">Entidad-relación completo de SIGCO</text>
+<rect x="2700" y="16" width="452" height="168" rx="7" fill="#fbfbfb" stroke="#dadada"/>
+<rect x="2714" y="30" width="38" height="22" fill="#fff" stroke="#3d1a78" stroke-width="1.8"/><text x="2764" y="46" font-size="14" fill="#444">Entidad</text>
+<rect x="2850" y="30" width="38" height="22" fill="#fff" stroke="#9a9aa2" stroke-width="1.8"/><text x="2900" y="46" font-size="14" fill="#444">Entidad de otra área</text>
+<polygon points="2733,62 2752,73 2733,84 2714,73" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.6"/><text x="2764" y="78" font-size="14" fill="#444">Relación (1:N, M:N o 1:1)</text>
+<ellipse cx="2733" cy="105" rx="19" ry="10" fill="#fff" stroke="#8a7fb0" stroke-width="1.5"/><text x="2764" y="110" font-size="14" fill="#444">Atributo de una relación</text>
+<text x="2714" y="140" font-size="14" font-weight="bold" fill="#3d1a78">(1,1) (0,N)</text><text x="2804" y="140" font-size="14" fill="#444">Mínimo y máximo, junto a cada entidad.</text>
+<text x="2714" y="166" font-size="13" fill="#6a6a72">Ej.: Cliente (1,1) — encarga — (0,N) Obra: cada obra tiene un</text>
+<text x="2714" y="182" font-size="13" fill="#6a6a72">cliente, y cada cliente tiene de cero a muchas obras.</text>
+<path d="M 2810.0 1430.0 L 2689.0 1430.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2410.0 1430.0 L 2531.0 1430.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2825.5 1619.0 L 2660.0 1558.3" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2394.5 1461.0 L 2560.0 1521.7" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2352.3 1399.0 L 2576.8 1234.3" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2867.7 1021.0 L 2643.2 1185.7" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2910.0 959.0 L 2910.0 702.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2910.0 361.0 L 2910.0 618.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2335.4 519.0 L 2470.9 453.3" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2795.0 348.4 L 2562.7 418.1" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2410.0 536.1 L 2654.2 462.8" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2884.6 361.0 L 2752.5 425.1" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2631.1 739.0 L 2739.0 580.8" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2888.9 361.0 L 2781.0 519.2" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 1510.0 535.3 L 2098.1 449.1" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2795.0 346.9 L 2221.9 430.9" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2352.3 581.0 L 2426.8 635.7" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2567.7 739.0 L 2493.2 684.3" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2210.0 550.0 L 1939.0 550.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 1510.0 550.0 L 1781.0 550.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2210.0 1400.7 L 1610.9 1224.9" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 910.0 1019.3 L 1509.1 1195.1" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 552.3 801.0 L 626.8 855.7" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 767.7 959.0 L 693.2 904.3" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 770.0 1399.0 L 770.0 1313.6" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 770.0 1021.0 L 770.0 1229.6" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 850.0 1399.0 L 850.0 1190.4" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 850.0 1021.0 L 850.0 1106.4" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 852.3 959.0 L 1076.8 794.3" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 1367.7 581.0 L 1143.2 745.7" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 552.3 739.0 L 626.8 684.3" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 767.7 581.0 L 693.2 635.7" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 1310.0 550.0 L 1189.0 550.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 910.0 550.0 L 1031.0 550.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 510.0 801.0 L 510.0 948.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 510.0 1179.0 L 510.0 1032.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 767.7 1021.0 L 693.2 1075.7" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 552.3 1179.0 L 626.8 1124.3" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2246.6 1399.0 L 1901.2 1230.1" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 1473.4 1021.0 L 1818.8 1189.9" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2246.6 581.0 L 1901.2 749.9" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 1473.4 959.0 L 1818.8 790.1" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2510.0 788.3 L 2068.7 869.2" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 1510.0 971.7 L 1951.3 890.8" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 910.0 990.0 L 1031.0 990.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 1310.0 990.0 L 1189.0 990.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 1124.1 1619.0 L 1244.6 1353.8" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 1395.9 1021.0 L 1275.4 1286.2" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 852.3 1399.0 L 1076.8 1234.3" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 1367.7 1021.0 L 1143.2 1185.7" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 1210.0 1631.7 L 1651.3 1550.8" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2210.0 1448.3 L 1768.7 1529.2" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 1152.3 1619.0 L 1226.8 1564.3" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 1367.7 1461.0 L 1293.2 1515.7" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2210.0 1430.0 L 1939.0 1430.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 1510.0 1430.0 L 1781.0 1430.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 910.0 1430.0 L 1031.0 1430.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 1310.0 1430.0 L 1189.0 1430.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2310.0 1399.0 L 2310.0 1362.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2310.0 1241.0 L 2310.0 1278.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2310.0 581.0 L 2310.0 838.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2310.0 1179.0 L 2310.0 922.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 910.0 1415.3 L 1498.1 1329.1" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2210.0 1224.7 L 1621.9 1310.9" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 210.0 519.0 L 210.0 482.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 210.0 361.0 L 210.0 398.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2225.5 1461.0 L 2056.8 1522.9" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 1794.5 1619.0 L 1963.2 1557.1" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 1610.0 1674.4 L 1314.1 1746.8" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 910.0 1845.6 L 1205.9 1773.2" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 810.0 1461.0 L 810.0 1608.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 810.0 1839.0 L 810.0 1692.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2310.0 1461.0 L 2310.0 1498.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2310.0 1619.0 L 2310.0 1582.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2310.0 1681.0 L 2310.0 1718.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 2310.0 1839.0 L 2310.0 1802.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 310.0 1430.0 L 431.0 1430.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 710.0 1430.0 L 589.0 1430.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 210.0 1461.0 L 210.0 1498.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 210.0 1619.0 L 210.0 1582.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 767.7 1461.0 L 693.2 1515.7" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 552.3 1619.0 L 626.8 1564.3" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 1067.7 1619.0 L 996.6 1566.8" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 852.3 1461.0 L 923.4 1513.2" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<rect x="2810.0" y="1399.0" width="200" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="2910" y="1436.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Cliente</text>
+<rect x="2210.0" y="1399.0" width="200" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="2310" y="1436.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Obra</text>
+<rect x="2810.0" y="959.0" width="200" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="2910" y="996.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Presupuesto</text>
+<rect x="2795.0" y="299.0" width="230" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="2910" y="336.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Ítem de presupuesto</text>
+<rect x="2210.0" y="519.0" width="200" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="2310" y="556.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Rubro</text>
+<rect x="2510.0" y="739.0" width="200" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="2610" y="776.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Subrubro</text>
+<rect x="1310.0" y="519.0" width="200" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="1410" y="556.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Material</text>
+<rect x="2810.0" y="1619.0" width="200" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="2910" y="1656.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Registro CAC</text>
+<rect x="710.0" y="959.0" width="200" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="810" y="996.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Pedido</text>
+<rect x="410.0" y="739.0" width="200" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="510" y="776.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Proveedor</text>
+<rect x="710.0" y="519.0" width="200" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="810" y="556.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Cotización</text>
+<rect x="385.0" y="1179.0" width="250" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="510" y="1216.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Observación de proveedor</text>
+<rect x="1310.0" y="959.0" width="200" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="1410" y="996.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Gasto</text>
+<rect x="1010.0" y="1619.0" width="200" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="1110" y="1656.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Operario</text>
+<rect x="1310.0" y="1399.0" width="200" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="1410" y="1436.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Inasistencia</text>
+<rect x="2210.0" y="1179.0" width="200" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="2310" y="1216.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Hito (etapa)</text>
+<rect x="105.0" y="519.0" width="210" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="210" y="556.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Plantilla de hitos</text>
+<rect x="100.0" y="299.0" width="220" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="210" y="336.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Detalle de plantilla</text>
+<rect x="1610.0" y="1619.0" width="200" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="1710" y="1656.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Cuota</text>
+<rect x="710.0" y="1839.0" width="200" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="810" y="1876.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Pago</text>
+<rect x="2190.0" y="1619.0" width="240" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="2310" y="1656.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Publicación de portfolio</text>
+<rect x="2200.0" y="1839.0" width="220" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="2310" y="1876.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Imagen de portfolio</text>
+<rect x="710.0" y="1399.0" width="200" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="810" y="1436.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Usuario</text>
+<rect x="110.0" y="1399.0" width="200" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="210" y="1436.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Rol</text>
+<rect x="110.0" y="1619.0" width="200" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="210" y="1656.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Permiso</text>
+<rect x="395.0" y="1619.0" width="230" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="510" y="1656.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Registro de auditoría</text>
+<polygon points="2610.0,1388.0 2689.0,1430.0 2610.0,1472.0 2531.0,1430.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="2610.0" y="1426.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">encarga</text>
+<text x="2610.0" y="1444.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="2610.0,1490.0 2689.0,1540.0 2610.0,1590.0 2531.0,1540.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="2610.0" y="1527.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">último</text>
+<text x="2610.0" y="1545.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">aplicado</text>
+<text x="2610.0" y="1563.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="2610.0,1168.0 2689.0,1210.0 2610.0,1252.0 2531.0,1210.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="2610.0" y="1206.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">tiene</text>
+<text x="2610.0" y="1224.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="2910.0,618.0 2989.0,660.0 2910.0,702.0 2831.0,660.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="2910.0" y="656.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">contiene</text>
+<text x="2910.0" y="674.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="2512.229814033663,391.2449473645357 2591.229814033663,433.2449473645357 2512.229814033663,475.2449473645357 2433.229814033663,433.2449473645357" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="2512.229814033663" y="429.2" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">clasifica</text>
+<text x="2512.229814033663" y="447.2" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="2707.770185966337,396.7550526354643 2786.770185966337,446.7550526354643 2707.770185966337,496.7550526354643 2628.770185966337,446.7550526354643" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="2707.770185966337" y="433.8" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">es referido</text>
+<text x="2707.770185966337" y="451.8" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">por</text>
+<text x="2707.770185966337" y="469.8" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="2760.0,508.0 2839.0,550.0 2760.0,592.0 2681.0,550.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="2760.0" y="546.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">detalla</text>
+<text x="2760.0" y="564.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="2160.0,398.0 2239.0,440.0 2160.0,482.0 2081.0,440.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="2160.0" y="436.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">se usa en</text>
+<text x="2160.0" y="454.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="2460.0,618.0 2539.0,660.0 2460.0,702.0 2381.0,660.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="2460.0" y="656.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">se divide en</text>
+<text x="2460.0" y="674.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="1860.0,508.0 1939.0,550.0 1860.0,592.0 1781.0,550.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="1860.0" y="546.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">agrupa</text>
+<text x="1860.0" y="564.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="1560.0,1168.0 1639.0,1210.0 1560.0,1252.0 1481.0,1210.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="1560.0" y="1206.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">genera</text>
+<text x="1560.0" y="1224.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="660.0,838.0 739.0,880.0 660.0,922.0 581.0,880.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="660.0" y="876.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">se le pide a</text>
+<text x="660.0" y="894.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="770.0,1229.6 849.0,1271.6 770.0,1313.6 691.0,1271.6" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="770.0" y="1267.6" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">solicita</text>
+<text x="770.0" y="1285.6" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="850.0,1106.4 929.0,1148.4 850.0,1190.4 771.0,1148.4" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="850.0" y="1144.4" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">recibe</text>
+<text x="850.0" y="1162.4" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="1110.0,728.0 1189.0,770.0 1110.0,812.0 1031.0,770.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="1110.0" y="766.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">incluye</text>
+<text x="1110.0" y="784.0" font-size="13" fill="#6a4aa3" text-anchor="middle">M:N</text>
+<polygon points="660.0,618.0 739.0,660.0 660.0,702.0 581.0,660.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="660.0" y="656.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">cotiza</text>
+<text x="660.0" y="674.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="1110.0,508.0 1189.0,550.0 1110.0,592.0 1031.0,550.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="1110.0" y="546.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">precio de</text>
+<text x="1110.0" y="564.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="510.0,948.0 589.0,990.0 510.0,1032.0 431.0,990.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="510.0" y="986.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">recibe</text>
+<text x="510.0" y="1004.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="660.0,1058.0 739.0,1100.0 660.0,1142.0 581.0,1100.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="660.0" y="1096.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">origina</text>
+<text x="660.0" y="1114.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="1860.0,1168.0 1939.0,1210.0 1860.0,1252.0 1781.0,1210.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="1860.0" y="1206.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">tiene</text>
+<text x="1860.0" y="1224.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="1860.0,728.0 1939.0,770.0 1860.0,812.0 1781.0,770.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="1860.0" y="766.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">clasifica</text>
+<text x="1860.0" y="784.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="2010.0,838.0 2089.0,880.0 2010.0,922.0 1931.0,880.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="2010.0" y="876.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">detalla</text>
+<text x="2010.0" y="894.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="1110.0,948.0 1189.0,990.0 1110.0,1032.0 1031.0,990.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="1110.0" y="986.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">genera</text>
+<text x="1110.0" y="1004.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="1260.0,1278.0 1339.0,1320.0 1260.0,1362.0 1181.0,1320.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="1260.0" y="1316.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">cobra</text>
+<text x="1260.0" y="1334.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="1110.0,1168.0 1189.0,1210.0 1110.0,1252.0 1031.0,1210.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="1110.0" y="1206.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">registra</text>
+<text x="1110.0" y="1224.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="1710.0,1498.0 1789.0,1540.0 1710.0,1582.0 1631.0,1540.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="1710.0" y="1536.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">trabaja en</text>
+<text x="1710.0" y="1554.0" font-size="13" fill="#6a4aa3" text-anchor="middle">M:N</text>
+<polygon points="1260.0,1498.0 1339.0,1540.0 1260.0,1582.0 1181.0,1540.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="1260.0" y="1536.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">falta</text>
+<text x="1260.0" y="1554.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="1860.0,1388.0 1939.0,1430.0 1860.0,1472.0 1781.0,1430.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="1860.0" y="1426.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">ocurre en</text>
+<text x="1860.0" y="1444.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="1110.0,1388.0 1189.0,1430.0 1110.0,1472.0 1031.0,1430.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="1110.0" y="1426.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">registra</text>
+<text x="1110.0" y="1444.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="2310.0,1278.0 2389.0,1320.0 2310.0,1362.0 2231.0,1320.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="2310.0" y="1316.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">se divide en</text>
+<text x="2310.0" y="1334.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="2310.0,838.0 2389.0,880.0 2310.0,922.0 2231.0,880.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="2310.0" y="876.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">clasifica</text>
+<text x="2310.0" y="894.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="1560.0,1278.0 1639.0,1320.0 1560.0,1362.0 1481.0,1320.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="1560.0" y="1316.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">completa</text>
+<text x="1560.0" y="1334.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="210.0,398.0 289.0,440.0 210.0,482.0 131.0,440.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="210.0" y="436.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">contiene</text>
+<text x="210.0" y="454.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="2010.0,1498.0 2089.0,1540.0 2010.0,1582.0 1931.0,1540.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="2010.0" y="1536.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">se cobra en</text>
+<text x="2010.0" y="1554.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="1260.0,1718.0 1339.0,1760.0 1260.0,1802.0 1181.0,1760.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="1260.0" y="1756.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">recibe</text>
+<text x="1260.0" y="1774.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="810.0,1608.0 889.0,1650.0 810.0,1692.0 731.0,1650.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="810.0" y="1646.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">registra</text>
+<text x="810.0" y="1664.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="2310.0,1498.0 2389.0,1540.0 2310.0,1582.0 2231.0,1540.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="2310.0" y="1536.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">se publica en</text>
+<text x="2310.0" y="1554.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:1</text>
+<polygon points="2310.0,1718.0 2389.0,1760.0 2310.0,1802.0 2231.0,1760.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="2310.0" y="1756.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">muestra</text>
+<text x="2310.0" y="1774.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="510.0,1388.0 589.0,1430.0 510.0,1472.0 431.0,1430.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="510.0" y="1426.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">asigna</text>
+<text x="510.0" y="1444.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="210.0,1498.0 289.0,1540.0 210.0,1582.0 131.0,1540.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="210.0" y="1536.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">incluye</text>
+<text x="210.0" y="1554.0" font-size="13" fill="#6a4aa3" text-anchor="middle">M:N</text>
+<polygon points="660.0,1498.0 739.0,1540.0 660.0,1582.0 581.0,1540.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="660.0" y="1536.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">realiza</text>
+<text x="660.0" y="1554.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="960.0,1490.0 1039.0,1540.0 960.0,1590.0 881.0,1540.0" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="960.0" y="1527.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">se vincula</text>
+<text x="960.0" y="1545.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">con</text>
+<text x="960.0" y="1563.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:1</text>
+<rect x="2762.0" y="1403.0" width="36.0" height="18" fill="#ffffff"/><text x="2780.0" y="1418.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(1,1)</text>
+<rect x="2421.0" y="1403.0" width="38.0" height="18" fill="#ffffff"/><text x="2440.0" y="1418.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="2784.8" y="1582.7" width="36.0" height="18" fill="#ffffff"/><text x="2802.8" y="1597.7" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,1)</text>
+<rect x="2409.2" y="1445.3" width="38.0" height="18" fill="#ffffff"/><text x="2428.2" y="1460.3" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="2367.9" y="1383.2" width="36.0" height="18" fill="#ffffff"/><text x="2385.9" y="1398.2" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(1,1)</text>
+<rect x="2834.0" y="1040.6" width="38.0" height="18" fill="#ffffff"/><text x="2853.0" y="1055.6" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="2908.0" y="918.0" width="36.0" height="18" fill="#ffffff"/><text x="2926.0" y="933.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(1,1)</text>
+<rect x="2907.0" y="380.0" width="38.0" height="18" fill="#ffffff"/><text x="2926.0" y="395.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="2351.4" y="509.3" width="36.0" height="18" fill="#ffffff"/><text x="2369.4" y="524.3" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(1,1)</text>
+<rect x="2751.9" y="361.3" width="38.0" height="18" fill="#ffffff"/><text x="2770.9" y="376.3" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="2425.3" y="531.8" width="36.0" height="18" fill="#ffffff"/><text x="2443.3" y="546.8" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,1)</text>
+<rect x="2845.6" y="377.5" width="38.0" height="18" fill="#ffffff"/><text x="2864.6" y="392.5" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="2643.3" y="712.2" width="36.0" height="18" fill="#ffffff"/><text x="2661.3" y="727.2" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,1)</text>
+<rect x="2866.2" y="383.8" width="38.0" height="18" fill="#ffffff"/><text x="2885.2" y="398.8" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="1524.0" y="535.8" width="36.0" height="18" fill="#ffffff"/><text x="1542.0" y="550.8" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,1)</text>
+<rect x="2748.6" y="356.1" width="38.0" height="18" fill="#ffffff"/><text x="2767.6" y="371.1" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="2349.0" y="600.6" width="36.0" height="18" fill="#ffffff"/><text x="2367.0" y="615.6" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(1,1)</text>
+<rect x="2515.1" y="723.2" width="38.0" height="18" fill="#ffffff"/><text x="2534.1" y="738.2" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="2162.0" y="523.0" width="36.0" height="18" fill="#ffffff"/><text x="2180.0" y="538.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(1,1)</text>
+<rect x="1521.0" y="523.0" width="38.0" height="18" fill="#ffffff"/><text x="1540.0" y="538.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="2167.7" y="1365.9" width="36.0" height="18" fill="#ffffff"/><text x="2185.7" y="1380.9" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(1,1)</text>
+<rect x="924.3" y="1001.4" width="38.0" height="18" fill="#ffffff"/><text x="943.3" y="1016.4" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="549.0" y="820.6" width="36.0" height="18" fill="#ffffff"/><text x="567.0" y="835.6" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,1)</text>
+<rect x="715.1" y="943.2" width="38.0" height="18" fill="#ffffff"/><text x="734.1" y="958.2" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="768.0" y="1358.0" width="36.0" height="18" fill="#ffffff"/><text x="786.0" y="1373.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,1)</text>
+<rect x="767.0" y="1040.0" width="38.0" height="18" fill="#ffffff"/><text x="786.0" y="1055.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="848.0" y="1358.0" width="36.0" height="18" fill="#ffffff"/><text x="866.0" y="1373.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,1)</text>
+<rect x="847.0" y="1040.0" width="38.0" height="18" fill="#ffffff"/><text x="866.0" y="1055.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="866.9" y="943.2" width="38.0" height="18" fill="#ffffff"/><text x="885.9" y="958.2" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="1334.0" y="600.6" width="38.0" height="18" fill="#ffffff"/><text x="1353.0" y="615.6" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="567.9" y="723.2" width="36.0" height="18" fill="#ffffff"/><text x="585.9" y="738.2" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(1,1)</text>
+<rect x="734.0" y="600.6" width="38.0" height="18" fill="#ffffff"/><text x="753.0" y="615.6" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="1262.0" y="523.0" width="36.0" height="18" fill="#ffffff"/><text x="1280.0" y="538.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(1,1)</text>
+<rect x="921.0" y="523.0" width="38.0" height="18" fill="#ffffff"/><text x="940.0" y="538.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="476.0" y="820.0" width="36.0" height="18" fill="#ffffff"/><text x="494.0" y="835.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(1,1)</text>
+<rect x="475.0" y="1138.0" width="38.0" height="18" fill="#ffffff"/><text x="494.0" y="1153.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="716.1" y="1014.8" width="36.0" height="18" fill="#ffffff"/><text x="734.1" y="1029.8" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,1)</text>
+<rect x="548.0" y="1137.4" width="38.0" height="18" fill="#ffffff"/><text x="567.0" y="1152.4" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="2208.7" y="1360.4" width="36.0" height="18" fill="#ffffff"/><text x="2226.7" y="1375.4" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(1,1)</text>
+<rect x="1488.4" y="1008.8" width="38.0" height="18" fill="#ffffff"/><text x="1507.4" y="1023.8" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="2194.6" y="568.8" width="36.0" height="18" fill="#ffffff"/><text x="2212.6" y="583.8" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(1,1)</text>
+<rect x="1474.3" y="920.4" width="38.0" height="18" fill="#ffffff"/><text x="1493.3" y="935.4" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="2459.6" y="767.0" width="36.0" height="18" fill="#ffffff"/><text x="2477.6" y="782.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,1)</text>
+<rect x="1517.6" y="939.5" width="38.0" height="18" fill="#ffffff"/><text x="1536.6" y="954.5" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="922.0" y="995.0" width="36.0" height="18" fill="#ffffff"/><text x="940.0" y="1010.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,1)</text>
+<rect x="1261.0" y="995.0" width="38.0" height="18" fill="#ffffff"/><text x="1280.0" y="1010.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="1133.1" y="1587.3" width="36.0" height="18" fill="#ffffff"/><text x="1151.1" y="1602.3" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,1)</text>
+<rect x="1379.1" y="1043.9" width="38.0" height="18" fill="#ffffff"/><text x="1398.1" y="1058.9" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="867.9" y="1383.2" width="36.0" height="18" fill="#ffffff"/><text x="885.9" y="1398.2" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,1)</text>
+<rect x="1334.0" y="1040.6" width="38.0" height="18" fill="#ffffff"/><text x="1353.0" y="1055.6" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="1223.4" y="1631.0" width="38.0" height="18" fill="#ffffff"/><text x="1242.4" y="1646.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="2164.4" y="1458.5" width="38.0" height="18" fill="#ffffff"/><text x="2183.4" y="1473.5" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="1167.9" y="1603.2" width="36.0" height="18" fill="#ffffff"/><text x="1185.9" y="1618.2" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(1,1)</text>
+<rect x="1334.0" y="1480.6" width="38.0" height="18" fill="#ffffff"/><text x="1353.0" y="1495.6" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="2162.0" y="1403.0" width="36.0" height="18" fill="#ffffff"/><text x="2180.0" y="1418.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(1,1)</text>
+<rect x="1521.0" y="1403.0" width="38.0" height="18" fill="#ffffff"/><text x="1540.0" y="1418.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="922.0" y="1435.0" width="36.0" height="18" fill="#ffffff"/><text x="940.0" y="1450.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,1)</text>
+<rect x="1261.0" y="1435.0" width="38.0" height="18" fill="#ffffff"/><text x="1280.0" y="1450.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="2308.0" y="1358.0" width="36.0" height="18" fill="#ffffff"/><text x="2326.0" y="1373.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(1,1)</text>
+<rect x="2307.0" y="1260.0" width="38.0" height="18" fill="#ffffff"/><text x="2326.0" y="1275.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="2276.0" y="600.0" width="36.0" height="18" fill="#ffffff"/><text x="2294.0" y="615.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,1)</text>
+<rect x="2275.0" y="1138.0" width="38.0" height="18" fill="#ffffff"/><text x="2294.0" y="1153.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="924.0" y="1415.8" width="36.0" height="18" fill="#ffffff"/><text x="942.0" y="1430.8" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,1)</text>
+<rect x="2163.6" y="1233.9" width="38.0" height="18" fill="#ffffff"/><text x="2182.6" y="1248.9" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="208.0" y="478.0" width="36.0" height="18" fill="#ffffff"/><text x="226.0" y="493.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(1,1)</text>
+<rect x="207.0" y="380.0" width="38.0" height="18" fill="#ffffff"/><text x="226.0" y="395.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="2173.8" y="1445.3" width="36.0" height="18" fill="#ffffff"/><text x="2191.8" y="1460.3" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(1,1)</text>
+<rect x="1798.2" y="1582.7" width="38.0" height="18" fill="#ffffff"/><text x="1817.2" y="1597.7" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="1559.1" y="1655.0" width="36.0" height="18" fill="#ffffff"/><text x="1577.1" y="1670.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(1,1)</text>
+<rect x="916.3" y="1811.9" width="38.0" height="18" fill="#ffffff"/><text x="935.3" y="1826.9" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="776.0" y="1480.0" width="36.0" height="18" fill="#ffffff"/><text x="794.0" y="1495.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,1)</text>
+<rect x="775.0" y="1798.0" width="38.0" height="18" fill="#ffffff"/><text x="794.0" y="1813.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="2276.0" y="1480.0" width="36.0" height="18" fill="#ffffff"/><text x="2294.0" y="1495.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(1,1)</text>
+<rect x="2276.0" y="1578.0" width="36.0" height="18" fill="#ffffff"/><text x="2294.0" y="1593.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,1)</text>
+<rect x="2276.0" y="1700.0" width="36.0" height="18" fill="#ffffff"/><text x="2294.0" y="1715.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(1,1)</text>
+<rect x="2275.0" y="1798.0" width="38.0" height="18" fill="#ffffff"/><text x="2294.0" y="1813.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="322.0" y="1435.0" width="36.0" height="18" fill="#ffffff"/><text x="340.0" y="1450.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(1,1)</text>
+<rect x="661.0" y="1435.0" width="38.0" height="18" fill="#ffffff"/><text x="680.0" y="1450.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="175.0" y="1480.0" width="38.0" height="18" fill="#ffffff"/><text x="194.0" y="1495.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="175.0" y="1578.0" width="38.0" height="18" fill="#ffffff"/><text x="194.0" y="1593.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="716.1" y="1454.8" width="36.0" height="18" fill="#ffffff"/><text x="734.1" y="1469.8" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(1,1)</text>
+<rect x="548.0" y="1577.4" width="38.0" height="18" fill="#ffffff"/><text x="567.0" y="1592.4" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="1035.0" y="1577.4" width="36.0" height="18" fill="#ffffff"/><text x="1053.0" y="1592.4" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,1)</text>
+<rect x="867.9" y="1454.8" width="36.0" height="18" fill="#ffffff"/><text x="885.9" y="1469.8" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,1)</text>
+</svg>

@@ -1,0 +1,241 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1251" height="1028" viewBox="0 0 1251 1028" font-family="Arial, Helvetica, sans-serif">
+<rect width="1251" height="1028" fill="#ffffff"/>
+<text x="40" y="54" font-size="30" font-weight="bold" fill="#2f2f2f">Modelo relacional 3: Gastos y personal</text>
+<rect x="831" y="18" width="400" height="196" rx="7" fill="#fbfbfb" stroke="#dadada"/>
+<rect x="845" y="32" width="26" height="15" rx="3" fill="#4b2a83" stroke="#4b2a83"/><text x="858" y="43.5" font-size="10.5" font-weight="bold" fill="#ffffff" text-anchor="middle">PK</text><text x="883" y="44" font-size="14" fill="#444">Clave primaria</text>
+<rect x="845" y="58" width="26" height="15" rx="3" fill="#e8e0f6" stroke="#b7a3e3"/><text x="858" y="69.5" font-size="10.5" font-weight="bold" fill="#4b2a83" text-anchor="middle">FK</text><text x="883" y="70" font-size="14" fill="#444">Clave foránea</text>
+<rect x="845" y="84" width="26" height="15" rx="3" fill="#ffffff" stroke="#a9a9b0"/><text x="858" y="95.5" font-size="10.5" font-weight="bold" fill="#6a6a72" text-anchor="middle">UQ</text><text x="883" y="96" font-size="14" fill="#444">Valor único</text>
+<text x="845" y="122" font-size="14" font-style="italic" fill="#6a6a72">en cursiva</text><text x="923" y="122" font-size="14" fill="#444">Admite valor nulo</text>
+<rect x="845" y="138" width="26" height="14" rx="3" fill="#9a9aa2"/><text x="883" y="150" font-size="14" fill="#444">Tabla de otra área (solo su clave)</text>
+<line x1="1036" y1="40" x2="1076" y2="40" stroke="#4a3d78" stroke-width="1.7"/>
+<line x1="1068" y1="33" x2="1068" y2="47" stroke="#4a3d78" stroke-width="1.8"/>
+<line x1="1062" y1="33" x2="1062" y2="47" stroke="#4a3d78" stroke-width="1.8"/>
+<text x="1088" y="45" font-size="14" fill="#444">Uno y solo uno</text>
+<line x1="1036" y1="66" x2="1076" y2="66" stroke="#4a3d78" stroke-width="1.7"/>
+<line x1="1068" y1="59" x2="1068" y2="73" stroke="#4a3d78" stroke-width="1.8"/>
+<circle cx="1059" cy="66" r="5" fill="#ffffff" stroke="#4a3d78" stroke-width="1.6"/>
+<text x="1088" y="71" font-size="14" fill="#444">Cero o uno</text>
+<line x1="1036" y1="92" x2="1076" y2="92" stroke="#4a3d78" stroke-width="1.7"/>
+<path d="M 1076 84 L 1062 92 L 1076 100 M 1076 92 L 1062 92" fill="none" stroke="#4a3d78" stroke-width="1.7"/>
+<circle cx="1055" cy="92" r="5" fill="#ffffff" stroke="#4a3d78" stroke-width="1.6"/>
+<text x="1088" y="97" font-size="14" fill="#444">Cero o muchos</text>
+<text x="845" y="198" font-size="13" fill="#6a6a72">La línea va de la clave foránea a la clave primaria.</text>
+<path d="M 321.0 301.5 L 397.0 301.5 L 397.0 706.0 L 473.0 706.0" fill="none" stroke="#4a3d78" stroke-width="1.7" stroke-linejoin="round"/>
+<path d="M 321.0 328.5 L 390.0 328.5 A 7 7 0 0 1 404.0 328.5 L 414.0 328.5 L 414.0 262.0 L 473.0 262.0" fill="none" stroke="#4a3d78" stroke-width="1.7" stroke-linejoin="round"/>
+<path d="M 283.0 520.5 L 380.0 520.5 L 380.0 753.5 L 473.0 753.5" fill="none" stroke="#4a3d78" stroke-width="1.7" stroke-linejoin="round"/>
+<path d="M 283.0 547.5 L 373.0 547.5 A 7 7 0 0 1 387.0 547.5 L 390.0 547.5 A 7 7 0 0 1 404.0 547.5 L 431.0 547.5 L 431.0 310.0 L 473.0 310.0" fill="none" stroke="#4a3d78" stroke-width="1.7" stroke-linejoin="round"/>
+<path d="M 283.0 628.5 L 363.0 628.5 L 363.0 964.5 L 473.0 964.5" fill="none" stroke="#4a3d78" stroke-width="1.7" stroke-linejoin="round"/>
+<path d="M 910.0 328.5 L 783.0 328.5 L 783.0 301.5 L 673.0 301.5" fill="none" stroke="#4a3d78" stroke-width="1.7" stroke-linejoin="round"/>
+<path d="M 910.0 355.5 L 800.0 355.5 L 800.0 412.5 L 673.0 412.5" fill="none" stroke="#4a3d78" stroke-width="1.7" stroke-linejoin="round"/>
+<path d="M 910.0 382.5 L 817.0 382.5 L 817.0 523.5 L 678.0 523.5" fill="none" stroke="#4a3d78" stroke-width="1.7" stroke-linejoin="round"/>
+<path d="M 910.0 517.5 L 834.0 517.5 L 834.0 634.5 L 673.0 634.5" fill="none" stroke="#4a3d78" stroke-width="1.7" stroke-linejoin="round"/>
+<path d="M 910.0 544.5 L 851.0 544.5 L 851.0 745.5 L 741.0 745.5" fill="none" stroke="#4a3d78" stroke-width="1.7" stroke-linejoin="round"/>
+<path d="M 910.0 625.5 L 868.0 625.5 L 868.0 964.5 L 673.0 964.5" fill="none" stroke="#4a3d78" stroke-width="1.7" stroke-linejoin="round"/>
+<rect x="40" y="250" width="281.0" height="146" rx="7" fill="#ffffff" stroke="#3d1a78" stroke-width="1.6"/>
+<path d="M 40 288 L 40 257 Q 40 250 47 250 L 314.0 250 Q 321.0 250 321.0 257 L 321.0 288 Z" fill="#4b2a83"/>
+<text x="54" y="275" font-size="17" font-weight="bold" fill="#ffffff">operario_obra</text>
+<rect x="48" y="294" width="26" height="15" rx="3" fill="#4b2a83" stroke="#4b2a83" stroke-width="1"/><text x="61" y="305.5" font-size="10.5" font-weight="bold" fill="#ffffff" text-anchor="middle">PK</text>
+<rect x="78" y="294" width="26" height="15" rx="3" fill="#e8e0f6" stroke="#b7a3e3" stroke-width="1"/><text x="91" y="305.5" font-size="10.5" font-weight="bold" fill="#4b2a83" text-anchor="middle">FK</text>
+<text x="118" y="306.5" font-size="15" fill="#1f1f24" font-weight="bold">id_operario</text>
+<text x="309.0" y="306" font-size="13" fill="#8a8a92" text-anchor="end">bigint</text>
+<rect x="41" y="315" width="279.0" height="27" fill="#f7f4fc"/>
+<line x1="40" y1="315" x2="321.0" y2="315" stroke="#ebe6f4" stroke-width="1"/>
+<rect x="48" y="321" width="26" height="15" rx="3" fill="#4b2a83" stroke="#4b2a83" stroke-width="1"/><text x="61" y="332.5" font-size="10.5" font-weight="bold" fill="#ffffff" text-anchor="middle">PK</text>
+<rect x="78" y="321" width="26" height="15" rx="3" fill="#e8e0f6" stroke="#b7a3e3" stroke-width="1"/><text x="91" y="332.5" font-size="10.5" font-weight="bold" fill="#4b2a83" text-anchor="middle">FK</text>
+<text x="118" y="333.5" font-size="15" fill="#1f1f24" font-weight="bold">id_obra</text>
+<text x="309.0" y="333" font-size="13" fill="#8a8a92" text-anchor="end">bigint</text>
+<line x1="40" y1="342" x2="321.0" y2="342" stroke="#ebe6f4" stroke-width="1"/>
+<text x="118" y="360.5" font-size="15" fill="#1f1f24">fecha_asignacion</text>
+<text x="309.0" y="360" font-size="13" fill="#8a8a92" text-anchor="end">date</text>
+<rect x="41" y="369" width="279.0" height="27" fill="#f7f4fc"/>
+<line x1="40" y1="369" x2="321.0" y2="369" stroke="#ebe6f4" stroke-width="1"/>
+<text x="118" y="387.5" font-size="15" fill="#6a6a72" font-style="italic">fecha_desasignacion</text>
+<text x="309.0" y="387" font-size="13" fill="#8a8a92" text-anchor="end">date</text>
+<rect x="40" y="442" width="243.0" height="200" rx="7" fill="#ffffff" stroke="#3d1a78" stroke-width="1.6"/>
+<path d="M 40 480 L 40 449 Q 40 442 47 442 L 276.0 442 Q 283.0 442 283.0 449 L 283.0 480 Z" fill="#4b2a83"/>
+<text x="54" y="467" font-size="17" font-weight="bold" fill="#ffffff">inasistencia</text>
+<rect x="48" y="486" width="26" height="15" rx="3" fill="#4b2a83" stroke="#4b2a83" stroke-width="1"/><text x="61" y="497.5" font-size="10.5" font-weight="bold" fill="#ffffff" text-anchor="middle">PK</text>
+<text x="88" y="498.5" font-size="15" fill="#1f1f24" font-weight="bold">id_inasistencia</text>
+<text x="271.0" y="498" font-size="13" fill="#8a8a92" text-anchor="end">bigint</text>
+<rect x="41" y="507" width="241.0" height="27" fill="#f7f4fc"/>
+<line x1="40" y1="507" x2="283.0" y2="507" stroke="#ebe6f4" stroke-width="1"/>
+<rect x="48" y="513" width="26" height="15" rx="3" fill="#e8e0f6" stroke="#b7a3e3" stroke-width="1"/><text x="61" y="524.5" font-size="10.5" font-weight="bold" fill="#4b2a83" text-anchor="middle">FK</text>
+<text x="88" y="525.5" font-size="15" fill="#1f1f24">id_operario</text>
+<text x="271.0" y="525" font-size="13" fill="#8a8a92" text-anchor="end">bigint</text>
+<line x1="40" y1="534" x2="283.0" y2="534" stroke="#ebe6f4" stroke-width="1"/>
+<rect x="48" y="540" width="26" height="15" rx="3" fill="#e8e0f6" stroke="#b7a3e3" stroke-width="1"/><text x="61" y="551.5" font-size="10.5" font-weight="bold" fill="#4b2a83" text-anchor="middle">FK</text>
+<text x="88" y="552.5" font-size="15" fill="#1f1f24">id_obra</text>
+<text x="271.0" y="552" font-size="13" fill="#8a8a92" text-anchor="end">bigint</text>
+<rect x="41" y="561" width="241.0" height="27" fill="#f7f4fc"/>
+<line x1="40" y1="561" x2="283.0" y2="561" stroke="#ebe6f4" stroke-width="1"/>
+<text x="88" y="579.5" font-size="15" fill="#1f1f24">fecha_falta</text>
+<text x="271.0" y="579" font-size="13" fill="#8a8a92" text-anchor="end">date</text>
+<line x1="40" y1="588" x2="283.0" y2="588" stroke="#ebe6f4" stroke-width="1"/>
+<text x="88" y="606.5" font-size="15" fill="#6a6a72" font-style="italic">motivo</text>
+<text x="271.0" y="606" font-size="13" fill="#8a8a92" text-anchor="end">varchar(200)</text>
+<rect x="41" y="615" width="241.0" height="27" fill="#f7f4fc"/>
+<line x1="40" y1="615" x2="283.0" y2="615" stroke="#ebe6f4" stroke-width="1"/>
+<rect x="48" y="621" width="26" height="15" rx="3" fill="#e8e0f6" stroke="#b7a3e3" stroke-width="1"/><text x="61" y="632.5" font-size="10.5" font-weight="bold" fill="#4b2a83" text-anchor="middle">FK</text>
+<text x="88" y="633.5" font-size="15" fill="#6a6a72" font-style="italic">id_usuario_registro</text>
+<text x="271.0" y="633" font-size="13" fill="#8a8a92" text-anchor="end">bigint</text>
+<rect x="473.0" y="250" width="200" height="65" rx="7" fill="#ffffff" stroke="#9a9aa2" stroke-width="1.6"/>
+<path d="M 473.0 288 L 473.0 257 Q 473.0 250 480.0 250 L 666.0 250 Q 673.0 250 673.0 257 L 673.0 288 Z" fill="#9a9aa2"/>
+<text x="487.0" y="275" font-size="17" font-weight="bold" fill="#ffffff">obra</text>
+<text x="661.0" y="274" font-size="12.5" fill="#f0f0f2" text-anchor="end">ver Obras</text>
+<rect x="481.0" y="294" width="26" height="15" rx="3" fill="#4b2a83" stroke="#4b2a83" stroke-width="1"/><text x="494.0" y="305.5" font-size="10.5" font-weight="bold" fill="#ffffff" text-anchor="middle">PK</text>
+<text x="521.0" y="306.5" font-size="15" fill="#1f1f24" font-weight="bold">id_obra</text>
+<text x="661.0" y="306" font-size="13" fill="#8a8a92" text-anchor="end">bigint</text>
+<rect x="473.0" y="361" width="200" height="65" rx="7" fill="#ffffff" stroke="#9a9aa2" stroke-width="1.6"/>
+<path d="M 473.0 399 L 473.0 368 Q 473.0 361 480.0 361 L 666.0 361 Q 673.0 361 673.0 368 L 673.0 399 Z" fill="#9a9aa2"/>
+<text x="487.0" y="386" font-size="17" font-weight="bold" fill="#ffffff">rubro</text>
+<text x="661.0" y="385" font-size="12.5" fill="#f0f0f2" text-anchor="end">ver Obras</text>
+<rect x="481.0" y="405" width="26" height="15" rx="3" fill="#4b2a83" stroke="#4b2a83" stroke-width="1"/><text x="494.0" y="416.5" font-size="10.5" font-weight="bold" fill="#ffffff" text-anchor="middle">PK</text>
+<text x="521.0" y="417.5" font-size="15" fill="#1f1f24" font-weight="bold">id_rubro</text>
+<text x="661.0" y="417" font-size="13" fill="#8a8a92" text-anchor="end">bigint</text>
+<rect x="473.0" y="472" width="205.0" height="65" rx="7" fill="#ffffff" stroke="#9a9aa2" stroke-width="1.6"/>
+<path d="M 473.0 510 L 473.0 479 Q 473.0 472 480.0 472 L 671.0 472 Q 678.0 472 678.0 479 L 678.0 510 Z" fill="#9a9aa2"/>
+<text x="487.0" y="497" font-size="17" font-weight="bold" fill="#ffffff">subrubro</text>
+<text x="666.0" y="496" font-size="12.5" fill="#f0f0f2" text-anchor="end">ver Obras</text>
+<rect x="481.0" y="516" width="26" height="15" rx="3" fill="#4b2a83" stroke="#4b2a83" stroke-width="1"/><text x="494.0" y="527.5" font-size="10.5" font-weight="bold" fill="#ffffff" text-anchor="middle">PK</text>
+<text x="521.0" y="528.5" font-size="15" fill="#1f1f24" font-weight="bold">id_subrubro</text>
+<text x="666.0" y="528" font-size="13" fill="#8a8a92" text-anchor="end">bigint</text>
+<rect x="473.0" y="583" width="200" height="65" rx="7" fill="#ffffff" stroke="#9a9aa2" stroke-width="1.6"/>
+<path d="M 473.0 621 L 473.0 590 Q 473.0 583 480.0 583 L 666.0 583 Q 673.0 583 673.0 590 L 673.0 621 Z" fill="#9a9aa2"/>
+<text x="487.0" y="608" font-size="17" font-weight="bold" fill="#ffffff">pedido</text>
+<text x="661.0" y="607" font-size="12.5" fill="#f0f0f2" text-anchor="end">ver Compras</text>
+<rect x="481.0" y="627" width="26" height="15" rx="3" fill="#4b2a83" stroke="#4b2a83" stroke-width="1"/><text x="494.0" y="638.5" font-size="10.5" font-weight="bold" fill="#ffffff" text-anchor="middle">PK</text>
+<text x="521.0" y="639.5" font-size="15" fill="#1f1f24" font-weight="bold">id_pedido</text>
+<text x="661.0" y="639" font-size="13" fill="#8a8a92" text-anchor="end">bigint</text>
+<rect x="473.0" y="694" width="268.0" height="173" rx="7" fill="#ffffff" stroke="#3d1a78" stroke-width="1.6"/>
+<path d="M 473.0 732 L 473.0 701 Q 473.0 694 480.0 694 L 734.0 694 Q 741.0 694 741.0 701 L 741.0 732 Z" fill="#4b2a83"/>
+<text x="487.0" y="719" font-size="17" font-weight="bold" fill="#ffffff">operario</text>
+<rect x="481.0" y="738" width="26" height="15" rx="3" fill="#4b2a83" stroke="#4b2a83" stroke-width="1"/><text x="494.0" y="749.5" font-size="10.5" font-weight="bold" fill="#ffffff" text-anchor="middle">PK</text>
+<text x="521.0" y="750.5" font-size="15" fill="#1f1f24" font-weight="bold">id_operario</text>
+<text x="729.0" y="750" font-size="13" fill="#8a8a92" text-anchor="end">bigint</text>
+<rect x="474.0" y="759" width="266.0" height="27" fill="#f7f4fc"/>
+<line x1="473.0" y1="759" x2="741.0" y2="759" stroke="#ebe6f4" stroke-width="1"/>
+<text x="521.0" y="777.5" font-size="15" fill="#1f1f24">nombre_apellido</text>
+<text x="729.0" y="777" font-size="13" fill="#8a8a92" text-anchor="end">varchar(150)</text>
+<line x1="473.0" y1="786" x2="741.0" y2="786" stroke="#ebe6f4" stroke-width="1"/>
+<text x="521.0" y="804.5" font-size="15" fill="#6a6a72" font-style="italic">telefono_contacto</text>
+<text x="729.0" y="804" font-size="13" fill="#8a8a92" text-anchor="end">varchar(30)</text>
+<rect x="474.0" y="813" width="266.0" height="27" fill="#f7f4fc"/>
+<line x1="473.0" y1="813" x2="741.0" y2="813" stroke="#ebe6f4" stroke-width="1"/>
+<text x="521.0" y="831.5" font-size="15" fill="#1f1f24">estado</text>
+<text x="729.0" y="831" font-size="13" fill="#8a8a92" text-anchor="end">varchar(10)</text>
+<line x1="473.0" y1="840" x2="741.0" y2="840" stroke="#ebe6f4" stroke-width="1"/>
+<text x="521.0" y="858.5" font-size="15" fill="#1f1f24">fecha_alta</text>
+<text x="729.0" y="858" font-size="13" fill="#8a8a92" text-anchor="end">timestamp</text>
+<rect x="473.0" y="913" width="200" height="65" rx="7" fill="#ffffff" stroke="#9a9aa2" stroke-width="1.6"/>
+<path d="M 473.0 951 L 473.0 920 Q 473.0 913 480.0 913 L 666.0 913 Q 673.0 913 673.0 920 L 673.0 951 Z" fill="#9a9aa2"/>
+<text x="487.0" y="938" font-size="17" font-weight="bold" fill="#ffffff">usuario</text>
+<text x="661.0" y="937" font-size="12.5" fill="#f0f0f2" text-anchor="end">ver Usuarios</text>
+<rect x="481.0" y="957" width="26" height="15" rx="3" fill="#4b2a83" stroke="#4b2a83" stroke-width="1"/><text x="494.0" y="968.5" font-size="10.5" font-weight="bold" fill="#ffffff" text-anchor="middle">PK</text>
+<text x="521.0" y="969.5" font-size="15" fill="#1f1f24" font-weight="bold">id_usuario</text>
+<text x="661.0" y="969" font-size="13" fill="#8a8a92" text-anchor="end">bigint</text>
+<rect x="910.0" y="250" width="301.0" height="443" rx="7" fill="#ffffff" stroke="#3d1a78" stroke-width="1.6"/>
+<path d="M 910.0 288 L 910.0 257 Q 910.0 250 917.0 250 L 1204.0 250 Q 1211.0 250 1211.0 257 L 1211.0 288 Z" fill="#4b2a83"/>
+<text x="924.0" y="275" font-size="17" font-weight="bold" fill="#ffffff">gasto</text>
+<rect x="918.0" y="294" width="26" height="15" rx="3" fill="#4b2a83" stroke="#4b2a83" stroke-width="1"/><text x="931.0" y="305.5" font-size="10.5" font-weight="bold" fill="#ffffff" text-anchor="middle">PK</text>
+<text x="958.0" y="306.5" font-size="15" fill="#1f1f24" font-weight="bold">id_gasto</text>
+<text x="1199.0" y="306" font-size="13" fill="#8a8a92" text-anchor="end">bigint</text>
+<rect x="911.0" y="315" width="299.0" height="27" fill="#f7f4fc"/>
+<line x1="910.0" y1="315" x2="1211.0" y2="315" stroke="#ebe6f4" stroke-width="1"/>
+<rect x="918.0" y="321" width="26" height="15" rx="3" fill="#e8e0f6" stroke="#b7a3e3" stroke-width="1"/><text x="931.0" y="332.5" font-size="10.5" font-weight="bold" fill="#4b2a83" text-anchor="middle">FK</text>
+<text x="958.0" y="333.5" font-size="15" fill="#1f1f24">id_obra</text>
+<text x="1199.0" y="333" font-size="13" fill="#8a8a92" text-anchor="end">bigint</text>
+<line x1="910.0" y1="342" x2="1211.0" y2="342" stroke="#ebe6f4" stroke-width="1"/>
+<rect x="918.0" y="348" width="26" height="15" rx="3" fill="#e8e0f6" stroke="#b7a3e3" stroke-width="1"/><text x="931.0" y="359.5" font-size="10.5" font-weight="bold" fill="#4b2a83" text-anchor="middle">FK</text>
+<text x="958.0" y="360.5" font-size="15" fill="#1f1f24">id_rubro</text>
+<text x="1199.0" y="360" font-size="13" fill="#8a8a92" text-anchor="end">bigint</text>
+<rect x="911.0" y="369" width="299.0" height="27" fill="#f7f4fc"/>
+<line x1="910.0" y1="369" x2="1211.0" y2="369" stroke="#ebe6f4" stroke-width="1"/>
+<rect x="918.0" y="375" width="26" height="15" rx="3" fill="#e8e0f6" stroke="#b7a3e3" stroke-width="1"/><text x="931.0" y="386.5" font-size="10.5" font-weight="bold" fill="#4b2a83" text-anchor="middle">FK</text>
+<text x="958.0" y="387.5" font-size="15" fill="#6a6a72" font-style="italic">id_subrubro</text>
+<text x="1199.0" y="387" font-size="13" fill="#8a8a92" text-anchor="end">bigint</text>
+<line x1="910.0" y1="396" x2="1211.0" y2="396" stroke="#ebe6f4" stroke-width="1"/>
+<text x="958.0" y="414.5" font-size="15" fill="#1f1f24">tipo_gasto</text>
+<text x="1199.0" y="414" font-size="13" fill="#8a8a92" text-anchor="end">varchar(15)</text>
+<rect x="911.0" y="423" width="299.0" height="27" fill="#f7f4fc"/>
+<line x1="910.0" y1="423" x2="1211.0" y2="423" stroke="#ebe6f4" stroke-width="1"/>
+<text x="958.0" y="441.5" font-size="15" fill="#1f1f24">monto</text>
+<text x="1199.0" y="441" font-size="13" fill="#8a8a92" text-anchor="end">numeric(14,2)</text>
+<line x1="910.0" y1="450" x2="1211.0" y2="450" stroke="#ebe6f4" stroke-width="1"/>
+<text x="958.0" y="468.5" font-size="15" fill="#1f1f24">fecha_gasto</text>
+<text x="1199.0" y="468" font-size="13" fill="#8a8a92" text-anchor="end">date</text>
+<rect x="911.0" y="477" width="299.0" height="27" fill="#f7f4fc"/>
+<line x1="910.0" y1="477" x2="1211.0" y2="477" stroke="#ebe6f4" stroke-width="1"/>
+<text x="958.0" y="495.5" font-size="15" fill="#1f1f24">fecha_carga</text>
+<text x="1199.0" y="495" font-size="13" fill="#8a8a92" text-anchor="end">timestamp</text>
+<line x1="910.0" y1="504" x2="1211.0" y2="504" stroke="#ebe6f4" stroke-width="1"/>
+<rect x="918.0" y="510" width="26" height="15" rx="3" fill="#e8e0f6" stroke="#b7a3e3" stroke-width="1"/><text x="931.0" y="521.5" font-size="10.5" font-weight="bold" fill="#4b2a83" text-anchor="middle">FK</text>
+<text x="958.0" y="522.5" font-size="15" fill="#6a6a72" font-style="italic">id_pedido</text>
+<text x="1199.0" y="522" font-size="13" fill="#8a8a92" text-anchor="end">bigint</text>
+<rect x="911.0" y="531" width="299.0" height="27" fill="#f7f4fc"/>
+<line x1="910.0" y1="531" x2="1211.0" y2="531" stroke="#ebe6f4" stroke-width="1"/>
+<rect x="918.0" y="537" width="26" height="15" rx="3" fill="#e8e0f6" stroke="#b7a3e3" stroke-width="1"/><text x="931.0" y="548.5" font-size="10.5" font-weight="bold" fill="#4b2a83" text-anchor="middle">FK</text>
+<text x="958.0" y="549.5" font-size="15" fill="#6a6a72" font-style="italic">id_operario</text>
+<text x="1199.0" y="549" font-size="13" fill="#8a8a92" text-anchor="end">bigint</text>
+<line x1="910.0" y1="558" x2="1211.0" y2="558" stroke="#ebe6f4" stroke-width="1"/>
+<text x="958.0" y="576.5" font-size="15" fill="#6a6a72" font-style="italic">descripcion</text>
+<text x="1199.0" y="576" font-size="13" fill="#8a8a92" text-anchor="end">varchar(250)</text>
+<rect x="911.0" y="585" width="299.0" height="27" fill="#f7f4fc"/>
+<line x1="910.0" y1="585" x2="1211.0" y2="585" stroke="#ebe6f4" stroke-width="1"/>
+<text x="958.0" y="603.5" font-size="15" fill="#6a6a72" font-style="italic">comprobante_adjunto</text>
+<text x="1199.0" y="603" font-size="13" fill="#8a8a92" text-anchor="end">varchar(255)</text>
+<line x1="910.0" y1="612" x2="1211.0" y2="612" stroke="#ebe6f4" stroke-width="1"/>
+<rect x="918.0" y="618" width="26" height="15" rx="3" fill="#e8e0f6" stroke="#b7a3e3" stroke-width="1"/><text x="931.0" y="629.5" font-size="10.5" font-weight="bold" fill="#4b2a83" text-anchor="middle">FK</text>
+<text x="958.0" y="630.5" font-size="15" fill="#6a6a72" font-style="italic">id_usuario_registro</text>
+<text x="1199.0" y="630" font-size="13" fill="#8a8a92" text-anchor="end">bigint</text>
+<rect x="911.0" y="639" width="299.0" height="27" fill="#f7f4fc"/>
+<line x1="910.0" y1="639" x2="1211.0" y2="639" stroke="#ebe6f4" stroke-width="1"/>
+<text x="958.0" y="657.5" font-size="15" fill="#1f1f24">estado</text>
+<text x="1199.0" y="657" font-size="13" fill="#8a8a92" text-anchor="end">varchar(12)</text>
+<line x1="910.0" y1="666" x2="1211.0" y2="666" stroke="#ebe6f4" stroke-width="1"/>
+<text x="958.0" y="684.5" font-size="15" fill="#6a6a72" font-style="italic">motivo_anulacion</text>
+<text x="1199.0" y="684" font-size="13" fill="#8a8a92" text-anchor="end">varchar(200)</text>
+<path d="M 321.0 293.5 L 335.0 301.5 L 321.0 309.5 M 321.0 301.5 L 335.0 301.5" fill="none" stroke="#4a3d78" stroke-width="1.7"/>
+<circle cx="342.0" cy="301.5" r="5" fill="#ffffff" stroke="#4a3d78" stroke-width="1.6"/>
+<line x1="465.0" y1="699.0" x2="465.0" y2="713.0" stroke="#4a3d78" stroke-width="1.8"/>
+<line x1="459.0" y1="699.0" x2="459.0" y2="713.0" stroke="#4a3d78" stroke-width="1.8"/>
+<path d="M 321.0 320.5 L 335.0 328.5 L 321.0 336.5 M 321.0 328.5 L 335.0 328.5" fill="none" stroke="#4a3d78" stroke-width="1.7"/>
+<circle cx="342.0" cy="328.5" r="5" fill="#ffffff" stroke="#4a3d78" stroke-width="1.6"/>
+<line x1="465.0" y1="255.0" x2="465.0" y2="269.0" stroke="#4a3d78" stroke-width="1.8"/>
+<line x1="459.0" y1="255.0" x2="459.0" y2="269.0" stroke="#4a3d78" stroke-width="1.8"/>
+<path d="M 283.0 512.5 L 297.0 520.5 L 283.0 528.5 M 283.0 520.5 L 297.0 520.5" fill="none" stroke="#4a3d78" stroke-width="1.7"/>
+<circle cx="304.0" cy="520.5" r="5" fill="#ffffff" stroke="#4a3d78" stroke-width="1.6"/>
+<line x1="465.0" y1="746.5" x2="465.0" y2="760.5" stroke="#4a3d78" stroke-width="1.8"/>
+<line x1="459.0" y1="746.5" x2="459.0" y2="760.5" stroke="#4a3d78" stroke-width="1.8"/>
+<path d="M 283.0 539.5 L 297.0 547.5 L 283.0 555.5 M 283.0 547.5 L 297.0 547.5" fill="none" stroke="#4a3d78" stroke-width="1.7"/>
+<circle cx="304.0" cy="547.5" r="5" fill="#ffffff" stroke="#4a3d78" stroke-width="1.6"/>
+<line x1="465.0" y1="303.0" x2="465.0" y2="317.0" stroke="#4a3d78" stroke-width="1.8"/>
+<line x1="459.0" y1="303.0" x2="459.0" y2="317.0" stroke="#4a3d78" stroke-width="1.8"/>
+<path d="M 283.0 620.5 L 297.0 628.5 L 283.0 636.5 M 283.0 628.5 L 297.0 628.5" fill="none" stroke="#4a3d78" stroke-width="1.7"/>
+<circle cx="304.0" cy="628.5" r="5" fill="#ffffff" stroke="#4a3d78" stroke-width="1.6"/>
+<line x1="465.0" y1="957.5" x2="465.0" y2="971.5" stroke="#4a3d78" stroke-width="1.8"/>
+<circle cx="456.0" cy="964.5" r="5" fill="#ffffff" stroke="#4a3d78" stroke-width="1.6"/>
+<path d="M 910.0 320.5 L 896.0 328.5 L 910.0 336.5 M 910.0 328.5 L 896.0 328.5" fill="none" stroke="#4a3d78" stroke-width="1.7"/>
+<circle cx="889.0" cy="328.5" r="5" fill="#ffffff" stroke="#4a3d78" stroke-width="1.6"/>
+<line x1="681.0" y1="294.5" x2="681.0" y2="308.5" stroke="#4a3d78" stroke-width="1.8"/>
+<line x1="687.0" y1="294.5" x2="687.0" y2="308.5" stroke="#4a3d78" stroke-width="1.8"/>
+<path d="M 910.0 347.5 L 896.0 355.5 L 910.0 363.5 M 910.0 355.5 L 896.0 355.5" fill="none" stroke="#4a3d78" stroke-width="1.7"/>
+<circle cx="889.0" cy="355.5" r="5" fill="#ffffff" stroke="#4a3d78" stroke-width="1.6"/>
+<line x1="681.0" y1="405.5" x2="681.0" y2="419.5" stroke="#4a3d78" stroke-width="1.8"/>
+<line x1="687.0" y1="405.5" x2="687.0" y2="419.5" stroke="#4a3d78" stroke-width="1.8"/>
+<path d="M 910.0 374.5 L 896.0 382.5 L 910.0 390.5 M 910.0 382.5 L 896.0 382.5" fill="none" stroke="#4a3d78" stroke-width="1.7"/>
+<circle cx="889.0" cy="382.5" r="5" fill="#ffffff" stroke="#4a3d78" stroke-width="1.6"/>
+<line x1="686.0" y1="516.5" x2="686.0" y2="530.5" stroke="#4a3d78" stroke-width="1.8"/>
+<circle cx="695.0" cy="523.5" r="5" fill="#ffffff" stroke="#4a3d78" stroke-width="1.6"/>
+<path d="M 910.0 509.5 L 896.0 517.5 L 910.0 525.5 M 910.0 517.5 L 896.0 517.5" fill="none" stroke="#4a3d78" stroke-width="1.7"/>
+<circle cx="889.0" cy="517.5" r="5" fill="#ffffff" stroke="#4a3d78" stroke-width="1.6"/>
+<line x1="681.0" y1="627.5" x2="681.0" y2="641.5" stroke="#4a3d78" stroke-width="1.8"/>
+<circle cx="690.0" cy="634.5" r="5" fill="#ffffff" stroke="#4a3d78" stroke-width="1.6"/>
+<path d="M 910.0 536.5 L 896.0 544.5 L 910.0 552.5 M 910.0 544.5 L 896.0 544.5" fill="none" stroke="#4a3d78" stroke-width="1.7"/>
+<circle cx="889.0" cy="544.5" r="5" fill="#ffffff" stroke="#4a3d78" stroke-width="1.6"/>
+<line x1="749.0" y1="738.5" x2="749.0" y2="752.5" stroke="#4a3d78" stroke-width="1.8"/>
+<circle cx="758.0" cy="745.5" r="5" fill="#ffffff" stroke="#4a3d78" stroke-width="1.6"/>
+<path d="M 910.0 617.5 L 896.0 625.5 L 910.0 633.5 M 910.0 625.5 L 896.0 625.5" fill="none" stroke="#4a3d78" stroke-width="1.7"/>
+<circle cx="889.0" cy="625.5" r="5" fill="#ffffff" stroke="#4a3d78" stroke-width="1.6"/>
+<line x1="681.0" y1="957.5" x2="681.0" y2="971.5" stroke="#4a3d78" stroke-width="1.8"/>
+<circle cx="690.0" cy="964.5" r="5" fill="#ffffff" stroke="#4a3d78" stroke-width="1.6"/>
+</svg>

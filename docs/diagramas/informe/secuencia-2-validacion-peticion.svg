@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1511" height="1442" viewBox="0 0 1511 1442" font-family="Arial, Helvetica, sans-serif"><defs><marker id="call" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#3a3a3a"/></marker><marker id="ret" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M1,1 L11,6 L1,11" fill="none" stroke="#55555a" stroke-width="1.6"/></marker></defs>
+<rect width="1511" height="1442" fill="#ffffff"/>
+<text x="40" y="52" font-size="30" font-weight="bold" fill="#2f2f2f">Secuencia 2: Validación de cada petición</text>
+<rect x="1281" y="14" width="214" height="84" rx="7" fill="#fbfbfb" stroke="#dadada"/>
+<rect x="1293" y="22" width="16" height="16" rx="3" fill="#e8e0f6" stroke="#b7a3e3"/><text x="1317" y="35" font-size="13" fill="#444">Pantalla (frontend)</text>
+<rect x="1293" y="46" width="16" height="16" rx="3" fill="#4b2a83" stroke="#3c1f6e"/><text x="1317" y="59" font-size="13" fill="#444">Servidor (backend)</text>
+<rect x="1293" y="70" width="16" height="16" rx="3" fill="#f1f1f3" stroke="#9a9aa0"/><text x="1317" y="83" font-size="13" fill="#444">Datos y archivos</text>
+<line x1="150" y1="198" x2="150" y2="1344" stroke="#b3b3b8" stroke-width="1.5"/>
+<line x1="391.0" y1="176" x2="391.0" y2="1344" stroke="#b3b3b8" stroke-width="1.5"/>
+<line x1="657.0" y1="176" x2="657.0" y2="1344" stroke="#b3b3b8" stroke-width="1.5"/>
+<line x1="973.0" y1="176" x2="973.0" y2="1344" stroke="#b3b3b8" stroke-width="1.5"/>
+<line x1="1183.0" y1="176" x2="1183.0" y2="1344" stroke="#b3b3b8" stroke-width="1.5"/>
+<line x1="1393.0" y1="176" x2="1393.0" y2="1344" stroke="#b3b3b8" stroke-width="1.5"/>
+<rect x="347.0" y="966" width="1090.0" height="302" fill="none" stroke="#8a7fb0" stroke-width="1.5" stroke-dasharray="6 4"/>
+<path d="M 347.0 966 h 33.0 v 14 l -8 8 h -25.0 z" fill="#ede8f7" stroke="#8a7fb0" stroke-width="1.3"/><text x="355.0" y="982" font-size="13" font-weight="bold" fill="#3d1a78">alt</text>
+<rect x="388.0" y="969" width="99.0" height="19" fill="#ffffff"/><text x="392.0" y="983" font-size="14" font-style="italic" font-weight="bold" fill="#4b3b7d">[Sin permiso]</text>
+<line x1="347.0" y1="1073" x2="1437.0" y2="1073" stroke="#8a7fb0" stroke-width="1.3" stroke-dasharray="6 4"/>
+<rect x="388.0" y="1076" width="105.0" height="19" fill="#ffffff"/><text x="392.0" y="1090" font-size="14" font-style="italic" font-weight="bold" fill="#4b3b7d">[Con permiso]</text>
+<rect x="331.0" y="420" width="1122.0" height="874" fill="none" stroke="#8a7fb0" stroke-width="1.5" stroke-dasharray="6 4"/>
+<path d="M 331.0 420 h 33.0 v 14 l -8 8 h -25.0 z" fill="#ede8f7" stroke="#8a7fb0" stroke-width="1.3"/><text x="339.0" y="436" font-size="13" font-weight="bold" fill="#3d1a78">alt</text>
+<rect x="372.0" y="423" width="191.984375" height="19" fill="#ffffff"/><text x="376.0" y="437" font-size="14" font-style="italic" font-weight="bold" fill="#4b3b7d">[Token inválido o vencido]</text>
+<line x1="331.0" y1="607" x2="1453.0" y2="607" stroke="#8a7fb0" stroke-width="1.3" stroke-dasharray="6 4"/>
+<rect x="372.0" y="610" width="106.984375" height="19" fill="#ffffff"/><text x="376.0" y="624" font-size="14" font-style="italic" font-weight="bold" fill="#4b3b7d">[Token válido]</text>
+<g stroke="#3d1466" stroke-width="2.4" fill="none" stroke-linecap="round"><circle cx="150" cy="127" r="9" fill="#fff"/><line x1="150" y1="136" x2="150" y2="156"/><line x1="136" y1="143" x2="164" y2="143"/><line x1="150" y1="156" x2="139" y2="172"/><line x1="150" y1="156" x2="161" y2="172"/></g>
+<text x="150" y="192" font-size="15" font-weight="bold" fill="#3d1466" text-anchor="middle">Usuario</text>
+<g stroke="#3d1466" stroke-width="2.4" fill="none" stroke-linecap="round"><circle cx="150" cy="1353" r="9" fill="#fff"/><line x1="150" y1="1362" x2="150" y2="1382"/><line x1="136" y1="1369" x2="164" y2="1369"/><line x1="150" y1="1382" x2="139" y2="1398"/><line x1="150" y1="1382" x2="161" y2="1398"/></g>
+<text x="150" y="1418" font-size="15" font-weight="bold" fill="#3d1466" text-anchor="middle">Usuario</text>
+<rect x="303.0" y="118" width="176" height="58" rx="8" fill="#e8e0f6" stroke="#b7a3e3" stroke-width="1.4"/>
+<text x="391.0" y="143" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">Pantalla</text>
+<text x="391.0" y="162" font-size="12.5" fill="#5b4a85" text-anchor="middle">React y Axios</text>
+<rect x="303.0" y="1344" width="176" height="58" rx="8" fill="#e8e0f6" stroke="#b7a3e3" stroke-width="1.4"/>
+<text x="391.0" y="1369" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">Pantalla</text>
+<text x="391.0" y="1388" font-size="12.5" fill="#5b4a85" text-anchor="middle">React y Axios</text>
+<rect x="569.0" y="118" width="176" height="58" rx="8" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<text x="657.0" y="143" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">FiltroJwt</text>
+<text x="657.0" y="162" font-size="12.5" fill="#d9cff0" text-anchor="middle">controla el token</text>
+<rect x="569.0" y="1344" width="176" height="58" rx="8" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<text x="657.0" y="1369" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">FiltroJwt</text>
+<text x="657.0" y="1388" font-size="12.5" fill="#d9cff0" text-anchor="middle">controla el token</text>
+<rect x="885.0" y="118" width="176" height="58" rx="8" fill="#f1f1f3" stroke="#9a9aa0" stroke-width="1.4"/>
+<text x="973.0" y="143" font-size="15" font-weight="bold" fill="#2f2f2f" text-anchor="middle">Base de datos</text>
+<text x="973.0" y="162" font-size="12.5" fill="#666670" text-anchor="middle">PostgreSQL</text>
+<rect x="885.0" y="1344" width="176" height="58" rx="8" fill="#f1f1f3" stroke="#9a9aa0" stroke-width="1.4"/>
+<text x="973.0" y="1369" font-size="15" font-weight="bold" fill="#2f2f2f" text-anchor="middle">Base de datos</text>
+<text x="973.0" y="1388" font-size="12.5" fill="#666670" text-anchor="middle">PostgreSQL</text>
+<rect x="1095.0" y="118" width="176" height="58" rx="8" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<text x="1183.0" y="143" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">Controlador</text>
+<text x="1183.0" y="162" font-size="12.5" fill="#d9cff0" text-anchor="middle">controla el permiso</text>
+<rect x="1095.0" y="1344" width="176" height="58" rx="8" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<text x="1183.0" y="1369" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">Controlador</text>
+<text x="1183.0" y="1388" font-size="12.5" fill="#d9cff0" text-anchor="middle">controla el permiso</text>
+<rect x="1305.0" y="118" width="176" height="58" rx="8" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<text x="1393.0" y="143" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">Servicio</text>
+<text x="1393.0" y="162" font-size="12.5" fill="#d9cff0" text-anchor="middle">reglas de negocio</text>
+<rect x="1305.0" y="1344" width="176" height="58" rx="8" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<text x="1393.0" y="1369" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">Servicio</text>
+<text x="1393.0" y="1388" font-size="12.5" fill="#d9cff0" text-anchor="middle">reglas de negocio</text>
+<line x1="160" y1="266" x2="389.0" y2="266" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="174.0" y="243.0" width="193.0" height="20" fill="#ffffff"/>
+<text x="270.5" y="257.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Usa una función del sistema</text>
+<circle cx="150" cy="266" r="10" fill="#2f2f2f"/><text x="150" y="270.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">1</text>
+<line x1="401.0" y1="310" x2="655.0" y2="310" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="415.0" y="287.0" width="218.0" height="20" fill="#ffffff"/>
+<text x="524.0" y="301.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Pedido con el token de la sesión</text>
+<circle cx="391.0" cy="310" r="10" fill="#2f2f2f"/><text x="391.0" y="314.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">2</text>
+<path d="M 667.0 350 L 699.0 350 L 699.0 396 L 660.0 396" fill="none" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="705.0" y="349.0" width="238.0" height="20" fill="#ffffff"/>
+<text x="709.0" y="363.0" font-size="15" fill="#2b2b2b" text-anchor="start">Verifica la firma, el vencimiento y el</text>
+<rect x="705.0" y="368.0" width="117.0" height="20" fill="#ffffff"/>
+<text x="709.0" y="382.0" font-size="15" fill="#2b2b2b" text-anchor="start">tope de 24 horas</text>
+<circle cx="657.0" cy="350" r="10" fill="#2f2f2f"/><text x="657.0" y="354.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">3</text>
+<line x1="647.0" y1="505" x2="393.0" y2="505" stroke="#55555a" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#ret)"/>
+<rect x="465.0" y="463.0" width="118.0" height="20" fill="#ffffff"/>
+<text x="524.0" y="477.0" font-size="15" fill="#2b2b2b" text-anchor="middle">La sesión venció</text>
+<rect x="475.0" y="484.5" width="98.0" height="17.5" fill="#ffffff"/>
+<text x="524.0" y="496.0" font-size="12.5" fill="#6a6a72" text-anchor="middle">(respuesta 401)</text>
+<circle cx="657.0" cy="505" r="10" fill="#2f2f2f"/><text x="657.0" y="509.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">4</text>
+<path d="M 401.0 545 L 433.0 545 L 433.0 591 L 394.0 591" fill="none" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="439.0" y="544.0" width="154.0" height="20" fill="#ffffff"/>
+<text x="443.0" y="558.0" font-size="15" fill="#2b2b2b" text-anchor="start">Vuelve a la pantalla de</text>
+<rect x="439.0" y="563.0" width="56.0" height="20" fill="#ffffff"/>
+<text x="443.0" y="577.0" font-size="15" fill="#2b2b2b" text-anchor="start">ingreso</text>
+<circle cx="391.0" cy="545" r="10" fill="#2f2f2f"/><text x="391.0" y="549.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">5</text>
+<line x1="667.0" y1="669" x2="971.0" y2="669" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="681.0" y="646.0" width="268.0" height="20" fill="#ffffff"/>
+<text x="815.0" y="660.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Lee la cuenta con su rol y sus permisos</text>
+<circle cx="657.0" cy="669" r="10" fill="#2f2f2f"/><text x="657.0" y="673.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">6</text>
+<line x1="963.0" y1="713" x2="659.0" y2="713" stroke="#55555a" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#ret)"/>
+<rect x="737.0" y="690.0" width="156.0" height="20" fill="#ffffff"/>
+<text x="815.0" y="704.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Cuenta, rol y permisos</text>
+<circle cx="973.0" cy="713" r="10" fill="#2f2f2f"/><text x="973.0" y="717.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">7</text>
+<path d="M 667.0 753 L 699.0 753 L 699.0 818 L 660.0 818" fill="none" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="705.0" y="752.0" width="207.0" height="20" fill="#ffffff"/>
+<text x="709.0" y="766.0" font-size="15" fill="#2b2b2b" text-anchor="start">Compara la versión de sesión:</text>
+<rect x="705.0" y="771.0" width="213.0" height="20" fill="#ffffff"/>
+<text x="709.0" y="785.0" font-size="15" fill="#2b2b2b" text-anchor="start">cambiar la contraseña corta las</text>
+<rect x="705.0" y="790.0" width="67.0" height="20" fill="#ffffff"/>
+<text x="709.0" y="804.0" font-size="15" fill="#2b2b2b" text-anchor="start">sesiones</text>
+<circle cx="657.0" cy="753" r="10" fill="#2f2f2f"/><text x="657.0" y="757.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">8</text>
+<line x1="667.0" y1="856" x2="1181.0" y2="856" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="850.5" y="833.0" width="139.0" height="20" fill="#ffffff"/>
+<text x="920.0" y="847.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Petición autenticada</text>
+<circle cx="657.0" cy="856" r="10" fill="#2f2f2f"/><text x="657.0" y="860.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">9</text>
+<path d="M 1193.0 896 L 1225.0 896 L 1225.0 942 L 1186.0 942" fill="none" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="1231.0" y="895.0" width="185.0" height="20" fill="#ffffff"/>
+<text x="1235.0" y="909.0" font-size="15" fill="#2b2b2b" text-anchor="start">¿El rol tiene el permiso que</text>
+<rect x="1231.0" y="914.0" width="134.0" height="20" fill="#ffffff"/>
+<text x="1235.0" y="928.0" font-size="15" fill="#2b2b2b" text-anchor="start">pide este endpoint?</text>
+<circle cx="1183.0" cy="896" r="10" fill="#2f2f2f"/><text x="1183.0" y="900.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">10</text>
+<line x1="1173.0" y1="1051" x2="393.0" y2="1051" stroke="#55555a" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#ret)"/>
+<rect x="671.5" y="1009.0" width="231.0" height="20" fill="#ffffff"/>
+<text x="787.0" y="1023.0" font-size="15" fill="#2b2b2b" text-anchor="middle">No tiene permiso para esta acción</text>
+<rect x="738.0" y="1030.5" width="98.0" height="17.5" fill="#ffffff"/>
+<text x="787.0" y="1042.0" font-size="12.5" fill="#6a6a72" text-anchor="middle">(respuesta 403)</text>
+<circle cx="1183.0" cy="1051" r="10" fill="#2f2f2f"/><text x="1183.0" y="1055.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">11</text>
+<line x1="1193.0" y1="1135" x2="1391.0" y2="1135" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="1210.5" y="1112.0" width="155.0" height="20" fill="#ffffff"/>
+<text x="1288.0" y="1126.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Pide ejecutar la acción</text>
+<circle cx="1183.0" cy="1135" r="10" fill="#2f2f2f"/><text x="1183.0" y="1139.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">12</text>
+<line x1="1383.0" y1="1179" x2="1185.0" y2="1179" stroke="#55555a" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#ret)"/>
+<rect x="1251.0" y="1156.0" width="74.0" height="20" fill="#ffffff"/>
+<text x="1288.0" y="1170.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Resultado</text>
+<circle cx="1393.0" cy="1179" r="10" fill="#2f2f2f"/><text x="1393.0" y="1183.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">13</text>
+<line x1="1173.0" y1="1242" x2="393.0" y2="1242" stroke="#55555a" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#ret)"/>
+<rect x="589.5" y="1200.0" width="395.0" height="20" fill="#ffffff"/>
+<text x="787.0" y="1214.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Resultado y, si faltan menos de 2 horas, un token renovado</text>
+<rect x="738.0" y="1221.5" width="98.0" height="17.5" fill="#ffffff"/>
+<text x="787.0" y="1233.0" font-size="12.5" fill="#6a6a72" text-anchor="middle">(respuesta 200)</text>
+<circle cx="1183.0" cy="1242" r="10" fill="#2f2f2f"/><text x="1183.0" y="1246.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">14</text></svg>

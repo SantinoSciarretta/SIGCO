@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1653" height="1542" viewBox="0 0 1653 1542" font-family="Arial, Helvetica, sans-serif"><defs><marker id="call" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#3a3a3a"/></marker><marker id="ret" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M1,1 L11,6 L1,11" fill="none" stroke="#55555a" stroke-width="1.6"/></marker></defs>
+<rect width="1653" height="1542" fill="#ffffff"/>
+<text x="40" y="52" font-size="30" font-weight="bold" fill="#2f2f2f">Secuencia 3: Aprobación del presupuesto definitivo</text>
+<rect x="1423" y="14" width="214" height="84" rx="7" fill="#fbfbfb" stroke="#dadada"/>
+<rect x="1435" y="22" width="16" height="16" rx="3" fill="#e8e0f6" stroke="#b7a3e3"/><text x="1459" y="35" font-size="13" fill="#444">Pantalla (frontend)</text>
+<rect x="1435" y="46" width="16" height="16" rx="3" fill="#4b2a83" stroke="#3c1f6e"/><text x="1459" y="59" font-size="13" fill="#444">Servidor (backend)</text>
+<rect x="1435" y="70" width="16" height="16" rx="3" fill="#f1f1f3" stroke="#9a9aa0"/><text x="1459" y="83" font-size="13" fill="#444">Datos y archivos</text>
+<line x1="150" y1="198" x2="150" y2="1444" stroke="#b3b3b8" stroke-width="1.5"/>
+<line x1="466.0" y1="176" x2="466.0" y2="1444" stroke="#b3b3b8" stroke-width="1.5"/>
+<line x1="746.0" y1="176" x2="746.0" y2="1444" stroke="#b3b3b8" stroke-width="1.5"/>
+<line x1="985.0" y1="176" x2="985.0" y2="1444" stroke="#b3b3b8" stroke-width="1.5"/>
+<line x1="1219.0" y1="176" x2="1219.0" y2="1444" stroke="#b3b3b8" stroke-width="1.5"/>
+<line x1="1535.0" y1="176" x2="1535.0" y2="1444" stroke="#b3b3b8" stroke-width="1.5"/>
+<rect x="406.0" y="571" width="639.0" height="92" fill="none" stroke="#8a7fb0" stroke-width="1.5" stroke-dasharray="6 4"/>
+<path d="M 406.0 571 h 38.0 v 14 l -8 8 h -30.0 z" fill="#ede8f7" stroke="#8a7fb0" stroke-width="1.3"/><text x="414.0" y="587" font-size="13" font-weight="bold" fill="#3d1a78">opt</text>
+<rect x="452.0" y="574" width="226.0" height="19" fill="#ffffff"/><text x="456.0" y="588" font-size="14" font-style="italic" font-weight="bold" fill="#4b3b7d">[Ya está aprobado o rechazado]</text>
+<rect x="120" y="781" width="1475.0" height="613" fill="none" stroke="#8a7fb0" stroke-width="1.5" stroke-dasharray="6 4"/>
+<path d="M 120 781 h 33.0 v 14 l -8 8 h -25.0 z" fill="#ede8f7" stroke="#8a7fb0" stroke-width="1.3"/><text x="128" y="797" font-size="13" font-weight="bold" fill="#3d1a78">alt</text>
+<rect x="161.0" y="784" width="289.0" height="19" fill="#ffffff"/><text x="165.0" y="798" font-size="14" font-style="italic" font-weight="bold" fill="#4b3b7d">[La obra ya tiene un definitivo aprobado]</text>
+<line x1="120" y1="869" x2="1595.0" y2="869" stroke="#8a7fb0" stroke-width="1.3" stroke-dasharray="6 4"/>
+<rect x="161.0" y="872" width="168.0" height="19" fill="#ffffff"/><text x="165.0" y="886" font-size="14" font-style="italic" font-weight="bold" fill="#4b3b7d">[No hay otro aprobado]</text>
+<g stroke="#3d1466" stroke-width="2.4" fill="none" stroke-linecap="round"><circle cx="150" cy="127" r="9" fill="#fff"/><line x1="150" y1="136" x2="150" y2="156"/><line x1="136" y1="143" x2="164" y2="143"/><line x1="150" y1="156" x2="139" y2="172"/><line x1="150" y1="156" x2="161" y2="172"/></g>
+<text x="150" y="192" font-size="15" font-weight="bold" fill="#3d1466" text-anchor="middle">Dueño</text>
+<g stroke="#3d1466" stroke-width="2.4" fill="none" stroke-linecap="round"><circle cx="150" cy="1453" r="9" fill="#fff"/><line x1="150" y1="1462" x2="150" y2="1482"/><line x1="136" y1="1469" x2="164" y2="1469"/><line x1="150" y1="1482" x2="139" y2="1498"/><line x1="150" y1="1482" x2="161" y2="1498"/></g>
+<text x="150" y="1518" font-size="15" font-weight="bold" fill="#3d1466" text-anchor="middle">Dueño</text>
+<rect x="352.5" y="118" width="227.0" height="58" rx="8" fill="#e8e0f6" stroke="#b7a3e3" stroke-width="1.4"/>
+<text x="466.0" y="143" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">Pantalla de Presupuestación</text>
+<text x="466.0" y="162" font-size="12.5" fill="#5b4a85" text-anchor="middle">React</text>
+<rect x="352.5" y="1444" width="227.0" height="58" rx="8" fill="#e8e0f6" stroke="#b7a3e3" stroke-width="1.4"/>
+<text x="466.0" y="1469" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">Pantalla de Presupuestación</text>
+<text x="466.0" y="1488" font-size="12.5" fill="#5b4a85" text-anchor="middle">React</text>
+<rect x="652.0" y="118" width="188.0" height="58" rx="8" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<text x="746.0" y="143" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">PresupuestoController</text>
+<text x="746.0" y="162" font-size="12.5" fill="#d9cff0" text-anchor="middle">recibe el pedido</text>
+<rect x="652.0" y="1444" width="188.0" height="58" rx="8" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<text x="746.0" y="1469" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">PresupuestoController</text>
+<text x="746.0" y="1488" font-size="12.5" fill="#d9cff0" text-anchor="middle">recibe el pedido</text>
+<rect x="897.0" y="118" width="176" height="58" rx="8" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<text x="985.0" y="143" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">PresupuestoService</text>
+<text x="985.0" y="162" font-size="12.5" fill="#d9cff0" text-anchor="middle">reglas del negocio</text>
+<rect x="897.0" y="1444" width="176" height="58" rx="8" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<text x="985.0" y="1469" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">PresupuestoService</text>
+<text x="985.0" y="1488" font-size="12.5" fill="#d9cff0" text-anchor="middle">reglas del negocio</text>
+<rect x="1131.0" y="118" width="176" height="58" rx="8" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<text x="1219.0" y="143" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">ServicioAuditoria</text>
+<text x="1219.0" y="162" font-size="12.5" fill="#d9cff0" text-anchor="middle">registra quién hizo qué</text>
+<rect x="1131.0" y="1444" width="176" height="58" rx="8" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<text x="1219.0" y="1469" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">ServicioAuditoria</text>
+<text x="1219.0" y="1488" font-size="12.5" fill="#d9cff0" text-anchor="middle">registra quién hizo qué</text>
+<rect x="1447.0" y="118" width="176" height="58" rx="8" fill="#f1f1f3" stroke="#9a9aa0" stroke-width="1.4"/>
+<text x="1535.0" y="143" font-size="15" font-weight="bold" fill="#2f2f2f" text-anchor="middle">Base de datos</text>
+<text x="1535.0" y="162" font-size="12.5" fill="#666670" text-anchor="middle">PostgreSQL</text>
+<rect x="1447.0" y="1444" width="176" height="58" rx="8" fill="#f1f1f3" stroke="#9a9aa0" stroke-width="1.4"/>
+<text x="1535.0" y="1469" font-size="15" font-weight="bold" fill="#2f2f2f" text-anchor="middle">Base de datos</text>
+<text x="1535.0" y="1488" font-size="12.5" fill="#666670" text-anchor="middle">PostgreSQL</text>
+<line x1="160" y1="266" x2="464.0" y2="266" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="179.0" y="243.0" width="258.0" height="20" fill="#ffffff"/>
+<text x="308.0" y="257.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Toca &quot;Aprobar&quot; en el definitivo enviado</text>
+<circle cx="150" cy="266" r="10" fill="#2f2f2f"/><text x="150" y="270.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">1</text>
+<line x1="476.0" y1="329" x2="744.0" y2="329" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="510.5" y="287.0" width="191.0" height="20" fill="#ffffff"/>
+<text x="606.0" y="301.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Pide aprobar el presupuesto</text>
+<rect x="490.0" y="308.5" width="232.0" height="17.5" fill="#ffffff"/>
+<text x="606.0" y="320.0" font-size="12.5" fill="#6a6a72" text-anchor="middle">(PATCH /api/presupuestos/{id}/estado)</text>
+<circle cx="466.0" cy="329" r="10" fill="#2f2f2f"/><text x="466.0" y="333.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">2</text>
+<path d="M 756.0 369 L 788.0 369 L 788.0 415 L 749.0 415" fill="none" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="794.0" y="368.0" width="185.0" height="20" fill="#ffffff"/>
+<text x="798.0" y="382.0" font-size="15" fill="#2b2b2b" text-anchor="start">Controla el permiso: solo el</text>
+<rect x="794.0" y="387.0" width="105.0" height="20" fill="#ffffff"/>
+<text x="798.0" y="401.0" font-size="15" fill="#2b2b2b" text-anchor="start">dueño aprueba</text>
+<circle cx="746.0" cy="369" r="10" fill="#2f2f2f"/><text x="746.0" y="373.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">3</text>
+<line x1="756.0" y1="453" x2="983.0" y2="453" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="770.0" y="430.0" width="191.0" height="20" fill="#ffffff"/>
+<text x="865.5" y="444.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Pide aprobar el presupuesto</text>
+<circle cx="746.0" cy="453" r="10" fill="#2f2f2f"/><text x="746.0" y="457.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">4</text>
+<line x1="995.0" y1="497" x2="1533.0" y2="497" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="1104.0" y="474.0" width="312.0" height="20" fill="#ffffff"/>
+<text x="1260.0" y="488.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Busca el presupuesto con sus ítems y su obra</text>
+<circle cx="985.0" cy="497" r="10" fill="#2f2f2f"/><text x="985.0" y="501.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">5</text>
+<line x1="1525.0" y1="541" x2="987.0" y2="541" stroke="#55555a" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#ret)"/>
+<rect x="1214.5" y="518.0" width="91.0" height="20" fill="#ffffff"/>
+<text x="1260.0" y="532.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Presupuesto</text>
+<circle cx="1535.0" cy="541" r="10" fill="#2f2f2f"/><text x="1535.0" y="545.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">6</text>
+<line x1="975.0" y1="637" x2="468.0" y2="637" stroke="#55555a" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#ret)"/>
+<rect x="595.0" y="614.0" width="261.0" height="20" fill="#ffffff"/>
+<text x="725.5" y="628.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Error: ya no admite cambios de estado</text>
+<circle cx="985.0" cy="637" r="10" fill="#2f2f2f"/><text x="985.0" y="641.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">7</text>
+<line x1="995.0" y1="707" x2="1533.0" y2="707" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="1123.5" y="684.0" width="273.0" height="20" fill="#ffffff"/>
+<text x="1260.0" y="698.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Busca otro definitivo aprobado de la obra</text>
+<circle cx="985.0" cy="707" r="10" fill="#2f2f2f"/><text x="985.0" y="711.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">8</text>
+<line x1="1525.0" y1="751" x2="987.0" y2="751" stroke="#55555a" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#ret)"/>
+<rect x="1185.5" y="728.0" width="149.0" height="20" fill="#ffffff"/>
+<text x="1260.0" y="742.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Definitivos aprobados</text>
+<circle cx="1535.0" cy="751" r="10" fill="#2f2f2f"/><text x="1535.0" y="755.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">9</text>
+<line x1="975.0" y1="847" x2="468.0" y2="847" stroke="#55555a" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#ret)"/>
+<rect x="596.5" y="824.0" width="258.0" height="20" fill="#ffffff"/>
+<text x="725.5" y="838.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Error: los cambios van como adicional</text>
+<circle cx="985.0" cy="847" r="10" fill="#2f2f2f"/><text x="985.0" y="851.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">10</text>
+<path d="M 995.0 927 L 1027.0 927 L 1027.0 973 L 988.0 973" fill="none" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="1033.0" y="926.0" width="191.0" height="20" fill="#ffffff"/>
+<text x="1037.0" y="940.0" font-size="15" fill="#2b2b2b" text-anchor="start">Marca el presupuesto como</text>
+<rect x="1033.0" y="945.0" width="69.0" height="20" fill="#ffffff"/>
+<text x="1037.0" y="959.0" font-size="15" fill="#2b2b2b" text-anchor="start">aprobado</text>
+<circle cx="985.0" cy="927" r="10" fill="#2f2f2f"/><text x="985.0" y="931.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">11</text>
+<path d="M 995.0 1007 L 1027.0 1007 L 1027.0 1053 L 988.0 1053" fill="none" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="1033.0" y="1006.0" width="129.0" height="20" fill="#ffffff"/>
+<text x="1037.0" y="1020.0" font-size="15" fill="#2b2b2b" text-anchor="start">Pasa la obra a &quot;En</text>
+<rect x="1033.0" y="1025.0" width="75.0" height="20" fill="#ffffff"/>
+<text x="1037.0" y="1039.0" font-size="15" fill="#2b2b2b" text-anchor="start">ejecución&quot;</text>
+<circle cx="985.0" cy="1007" r="10" fill="#2f2f2f"/><text x="985.0" y="1011.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">12</text>
+<line x1="995.0" y1="1091" x2="1217.0" y2="1091" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="1009.0" y="1068.0" width="186.0" height="20" fill="#ffffff"/>
+<text x="1102.0" y="1082.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Pide registrar la aprobación</text>
+<circle cx="985.0" cy="1091" r="10" fill="#2f2f2f"/><text x="985.0" y="1095.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">13</text>
+<line x1="1229.0" y1="1154" x2="1533.0" y2="1154" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="1260.0" y="1112.0" width="234.0" height="20" fill="#ffffff"/>
+<text x="1377.0" y="1126.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Guarda quién aprobó, qué monto y</text>
+<rect x="1349.0" y="1131.0" width="56.0" height="20" fill="#ffffff"/>
+<text x="1377.0" y="1145.0" font-size="15" fill="#2b2b2b" text-anchor="middle">cuándo</text>
+<circle cx="1219.0" cy="1154" r="10" fill="#2f2f2f"/><text x="1219.0" y="1158.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">14</text>
+<line x1="995.0" y1="1198" x2="1533.0" y2="1198" stroke="#3a3a3a" stroke-width="1.8" marker-end="url(#call)"/>
+<rect x="1111.5" y="1175.0" width="297.0" height="20" fill="#ffffff"/>
+<text x="1260.0" y="1189.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Confirma la transacción: presupuesto y obra</text>
+<circle cx="985.0" cy="1198" r="10" fill="#2f2f2f"/><text x="985.0" y="1202.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">15</text>
+<line x1="975.0" y1="1242" x2="748.0" y2="1242" stroke="#55555a" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#ret)"/>
+<rect x="787.5" y="1219.0" width="156.0" height="20" fill="#ffffff"/>
+<text x="865.5" y="1233.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Presupuesto aprobado</text>
+<circle cx="985.0" cy="1242" r="10" fill="#2f2f2f"/><text x="985.0" y="1246.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">16</text>
+<line x1="736.0" y1="1305" x2="468.0" y2="1305" stroke="#55555a" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#ret)"/>
+<rect x="528.0" y="1263.0" width="156.0" height="20" fill="#ffffff"/>
+<text x="606.0" y="1277.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Presupuesto aprobado</text>
+<rect x="525.5" y="1284.5" width="161.0" height="17.5" fill="#ffffff"/>
+<text x="606.0" y="1296.0" font-size="12.5" fill="#6a6a72" text-anchor="middle">(respuesta 200: salió bien)</text>
+<circle cx="746.0" cy="1305" r="10" fill="#2f2f2f"/><text x="746.0" y="1309.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">17</text>
+<line x1="456.0" y1="1368" x2="152" y2="1368" stroke="#55555a" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#ret)"/>
+<rect x="198.5" y="1326.0" width="219.0" height="20" fill="#ffffff"/>
+<text x="308.0" y="1340.0" font-size="15" fill="#2b2b2b" text-anchor="middle">Muestra &quot;Aprobado&quot; y la obra en</text>
+<rect x="273.0" y="1345.0" width="70.0" height="20" fill="#ffffff"/>
+<text x="308.0" y="1359.0" font-size="15" fill="#2b2b2b" text-anchor="middle">ejecución</text>
+<circle cx="466.0" cy="1368" r="10" fill="#2f2f2f"/><text x="466.0" y="1372.2" font-size="11.5" font-weight="bold" fill="#fff" text-anchor="middle">18</text></svg>

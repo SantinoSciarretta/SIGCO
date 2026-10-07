@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1360" height="1384" viewBox="0 0 1360 1384" font-family="Arial, Helvetica, sans-serif">
+<defs>
+<marker id="arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#3a3a3a"/></marker>
+<marker id="arrowLoop" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#4b3b7d"/></marker>
+<marker id="arrowDf" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#3a3a3a"/></marker>
+<marker id="arrowDfOut" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#7a7a80"/></marker>
+<marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12" fill="none" stroke="#7b4fc0" stroke-width="1.6"/></marker>
+<marker id="gen" viewBox="0 0 16 16" refX="15" refY="8" markerWidth="20" markerHeight="20" markerUnits="userSpaceOnUse" orient="auto"><path d="M1,1 L15,8 L1,15 z" fill="#ffffff" stroke="#3d1466" stroke-width="1.6"/></marker>
+</defs>
+<rect width="1360" height="1384" fill="#ffffff"/>
+<text x="40" y="52" font-size="30" font-weight="bold" fill="#2f2f2f">DFD 5: Cobros</text>
+<rect x="1010" y="14" width="330" height="150" rx="7" fill="#fbfbfb" stroke="#dadada"/>
+<rect x="1024" y="28" width="30" height="20" fill="#fff" stroke="#3d1466" stroke-width="1.8"/><text x="1066" y="43" font-size="14" fill="#444">Entidad externa</text>
+<rect x="1024" y="56" width="30" height="20" rx="5" fill="#4b2a83"/><text x="1066" y="71" font-size="14" fill="#444">Proceso</text>
+<path d="M 1024 88 L 1024 102 A 15 5 0 0 0 1054 102 L 1054 88" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.5"/><ellipse cx="1039" cy="88" rx="15" ry="5" fill="#fafafb" stroke="#8a8a90" stroke-width="1.5"/><text x="1066" y="100" font-size="14" fill="#444">Almacén de datos</text>
+<line x1="1022" y1="122" x2="1054" y2="122" stroke="#7a7a80" stroke-width="1.8" stroke-dasharray="6 4"/><text x="1066" y="127" font-size="14" fill="#444">Por fuera del sistema, vía el dueño</text>
+<text x="1032" y="153" font-size="16" font-weight="bold" fill="#444">*</text><text x="1066" y="151" font-size="14" fill="#444">Aparece más de una vez</text>
+<text x="155" y="196" font-size="14" font-weight="bold" fill="#8a8a90" text-anchor="middle" letter-spacing="1">ENTIDADES EXTERNAS</text>
+<text x="690" y="196" font-size="14" font-weight="bold" fill="#8a8a90" text-anchor="middle" letter-spacing="1">PROCESOS</text>
+<text x="1180" y="196" font-size="14" font-weight="bold" fill="#8a8a90" text-anchor="middle" letter-spacing="1">ALMACENES DE DATOS</text>
+<path d="M 1060.0 274.0 L 830.0 274.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="865.0" y="253.0" width="160.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="269.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Total, anticipo y cuotas</text>
+<path d="M 830.0 368.0 L 1060.0 368.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="884.0" y="347.0" width="122.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="363.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Anticipo y cuotas</text>
+<path d="M 260.0 321.0 L 550.0 321.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="336.5" y="300.0" width="137.0" height="18.8" fill="#ffffff"/>
+<text x="405.0" y="316.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Primer vencimiento</text>
+<path d="M 1060.0 539.0 L 830.0 539.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="884.0" y="518.0" width="122.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="534.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Saldo de la cuota</text>
+<path d="M 830.0 565.0 L 1060.0 565.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="855.5" y="576.0" width="179.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="592.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Pago y estado de la cuota</text>
+<path d="M 830.0 646.0 L 1060.0 646.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="885.5" y="625.0" width="119.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="641.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Cobro registrado</text>
+<path d="M 260.0 599.0 L 550.0 599.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="348.5" y="578.0" width="113.0" height="18.8" fill="#ffffff"/>
+<text x="405.0" y="594.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Pago del cliente</text>
+<path d="M 690.0 412.0 L 690.0 508.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="701.0" y="453.0" width="100.0" height="18.8" fill="#ffffff"/>
+<text x="751.0" y="469.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Plan de cobro</text>
+<path d="M 830.0 830.0 L 1060.0 830.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="903.5" y="809.0" width="83.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="825.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Coeficiente</text>
+<path d="M 1060.0 911.0 L 830.0 911.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="880.0" y="890.0" width="130.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="906.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Saldos pendientes</text>
+<path d="M 830.0 937.0 L 1060.0 937.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="874.5" y="948.0" width="141.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="964.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Saldos actualizados</text>
+<path d="M 830.0 1018.0 L 1060.0 1018.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="867.5" y="997.0" width="155.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="1013.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Actualización aplicada</text>
+<path d="M 260.0 911.0 L 550.0 911.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="335.5" y="890.0" width="139.0" height="18.8" fill="#ffffff"/>
+<text x="405.0" y="906.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Coeficiente del mes</text>
+<path d="M 550.0 937.0 L 260.0 937.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="324.0" y="948.0" width="162.0" height="18.8" fill="#ffffff"/>
+<text x="405.0" y="964.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Cuánto pasa a deberse</text>
+<path d="M 1060.0 1253.0 L 830.0 1253.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="888.5" y="1232.0" width="113.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="1248.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Cuotas y pagos</text>
+<path d="M 550.0 1203.0 L 260.0 1203.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="302.0" y="1182.0" width="206.0" height="18.8" fill="#ffffff"/>
+<text x="405.0" y="1198.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Cuotas por vencer y vencidas</text>
+<path d="M 550.0 1303.0 L 260.0 1303.0" fill="none" stroke="#7a7a80" stroke-width="1.9" stroke-dasharray="8 6" marker-end="url(#arrowDfOut)" stroke-linejoin="round"/>
+<rect x="318.0" y="1282.0" width="174.0" height="18.8" fill="#ffffff"/>
+<text x="405.0" y="1298.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Planilla de pagos en PDF</text>
+<rect x="550.0" y="230.0" width="280" height="182.0" rx="12" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<path d="M 550.0 260.0 L 830.0 260.0" stroke="#7d62b3" stroke-width="1.4"/>
+<text x="690.0" y="251.0" font-size="15" font-weight="bold" fill="#d9cff0" text-anchor="middle">5.1</text>
+<text x="690.0" y="341.9" font-size="17" fill="#ffffff" text-anchor="middle">Generar el plan de cobro</text>
+<path d="M 1060.0 252.0 L 1060.0 296.0 A 120.0 9 0 0 0 1300.0 296.0 L 1300.0 252.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="252.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="283.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D2 Presupuestos</text>
+<path d="M 1060.0 346.0 L 1060.0 390.0 A 120.0 9 0 0 0 1300.0 390.0 L 1300.0 346.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="346.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="377.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D8 Cuotas y pagos *</text>
+<rect x="50.0" y="289.0" width="210" height="64.0" fill="#ffffff" stroke="#3d1466" stroke-width="2.2"/>
+<text x="155.0" y="326.9" font-size="17" fill="#2a1650" text-anchor="middle" font-weight="bold">Dueño *</text>
+<rect x="550.0" y="508.0" width="280" height="182.0" rx="12" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<path d="M 550.0 538.0 L 830.0 538.0" stroke="#7d62b3" stroke-width="1.4"/>
+<text x="690.0" y="529.0" font-size="15" font-weight="bold" fill="#d9cff0" text-anchor="middle">5.2</text>
+<text x="690.0" y="620.0" font-size="17" fill="#ffffff" text-anchor="middle">Registrar un pago</text>
+<path d="M 1060.0 530.0 L 1060.0 574.0 A 120.0 9 0 0 0 1300.0 574.0 L 1300.0 530.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="530.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="561.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D8 Cuotas y pagos *</text>
+<path d="M 1060.0 624.0 L 1060.0 668.0 A 120.0 9 0 0 0 1300.0 668.0 L 1300.0 624.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="624.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="655.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D10 Auditoría *</text>
+<rect x="50.0" y="567.0" width="210" height="64.0" fill="#ffffff" stroke="#3d1466" stroke-width="2.2"/>
+<text x="155.0" y="605.0" font-size="17" fill="#2a1650" text-anchor="middle" font-weight="bold">Dueño *</text>
+<rect x="550.0" y="786.0" width="280" height="276.0" rx="12" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<path d="M 550.0 816.0 L 830.0 816.0" stroke="#7d62b3" stroke-width="1.4"/>
+<text x="690.0" y="807.0" font-size="15" font-weight="bold" fill="#d9cff0" text-anchor="middle">5.3</text>
+<text x="690.0" y="945.0" font-size="17" fill="#ffffff" text-anchor="middle">Actualizar el saldo por CAC</text>
+<path d="M 1060.0 808.0 L 1060.0 852.0 A 120.0 9 0 0 0 1300.0 852.0 L 1300.0 808.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="808.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="839.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D9 Coeficientes CAC</text>
+<path d="M 1060.0 902.0 L 1060.0 946.0 A 120.0 9 0 0 0 1300.0 946.0 L 1300.0 902.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="902.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="933.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D8 Cuotas y pagos *</text>
+<path d="M 1060.0 996.0 L 1060.0 1040.0 A 120.0 9 0 0 0 1300.0 1040.0 L 1300.0 996.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="996.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="1027.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D10 Auditoría *</text>
+<rect x="50.0" y="892.0" width="210" height="64.0" fill="#ffffff" stroke="#3d1466" stroke-width="2.2"/>
+<text x="155.0" y="930.0" font-size="17" fill="#2a1650" text-anchor="middle" font-weight="bold">Dueño *</text>
+<rect x="550.0" y="1158.0" width="280" height="190.0" rx="12" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<path d="M 550.0 1188.0 L 830.0 1188.0" stroke="#7d62b3" stroke-width="1.4"/>
+<text x="690.0" y="1179.0" font-size="15" font-weight="bold" fill="#d9cff0" text-anchor="middle">5.4</text>
+<text x="690.0" y="1263.3" font-size="17" fill="#ffffff" text-anchor="middle">Emitir la planilla y avisar</text>
+<text x="690.0" y="1284.6" font-size="17" fill="#ffffff" text-anchor="middle">vencimientos</text>
+<path d="M 1060.0 1231.0 L 1060.0 1275.0 A 120.0 9 0 0 0 1300.0 1275.0 L 1300.0 1231.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="1231.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="1262.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D8 Cuotas y pagos *</text>
+<rect x="50.0" y="1171.0" width="210" height="64.0" fill="#ffffff" stroke="#3d1466" stroke-width="2.2"/>
+<text x="155.0" y="1209.0" font-size="17" fill="#2a1650" text-anchor="middle" font-weight="bold">Dueño *</text>
+<rect x="50.0" y="1271.0" width="210" height="64.0" fill="#ffffff" stroke="#3d1466" stroke-width="2.2"/>
+<text x="155.0" y="1309.0" font-size="17" fill="#2a1650" text-anchor="middle" font-weight="bold">Cliente</text>
+</svg>

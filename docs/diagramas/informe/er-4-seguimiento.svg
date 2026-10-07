@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="900" viewBox="0 0 1240 900" font-family="Arial, Helvetica, sans-serif">
+<defs>
+<marker id="arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#3a3a3a"/></marker>
+<marker id="arrowLoop" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#4b3b7d"/></marker>
+<marker id="arrowDf" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#3a3a3a"/></marker>
+<marker id="arrowDfOut" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#7a7a80"/></marker>
+<marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12" fill="none" stroke="#7b4fc0" stroke-width="1.6"/></marker>
+<marker id="gen" viewBox="0 0 16 16" refX="15" refY="8" markerWidth="20" markerHeight="20" markerUnits="userSpaceOnUse" orient="auto"><path d="M1,1 L15,8 L1,15 z" fill="#ffffff" stroke="#3d1466" stroke-width="1.6"/></marker>
+</defs>
+<rect width="1240" height="900" fill="#ffffff"/>
+<text x="40" y="52" font-size="30" font-weight="bold" fill="#2f2f2f">Entidad-relación 4: Seguimiento de obras</text>
+<rect x="770" y="16" width="452" height="168" rx="7" fill="#fbfbfb" stroke="#dadada"/>
+<rect x="784" y="30" width="38" height="22" fill="#fff" stroke="#3d1a78" stroke-width="1.8"/><text x="834" y="46" font-size="14" fill="#444">Entidad</text>
+<rect x="920" y="30" width="38" height="22" fill="#fff" stroke="#9a9aa2" stroke-width="1.8"/><text x="970" y="46" font-size="14" fill="#444">Entidad de otra área</text>
+<polygon points="803,62 822,73 803,84 784,73" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.6"/><text x="834" y="78" font-size="14" fill="#444">Relación (1:N, M:N o 1:1)</text>
+<ellipse cx="803" cy="105" rx="19" ry="10" fill="#fff" stroke="#8a7fb0" stroke-width="1.5"/><text x="834" y="110" font-size="14" fill="#444">Atributo de una relación</text>
+<text x="784" y="140" font-size="14" font-weight="bold" fill="#3d1a78">(1,1) (0,N)</text><text x="874" y="140" font-size="14" fill="#444">Mínimo y máximo, junto a cada entidad.</text>
+<text x="784" y="166" font-size="13" fill="#6a6a72">Ej.: Cliente (1,1) — encarga — (0,N) Obra: cada obra tiene un</text>
+<text x="784" y="182" font-size="13" fill="#6a6a72">cliente, y cada cliente tiene de cero a muchas obras.</text>
+<path d="M 620.0 281.0 L 620.0 343.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 620.0 489.0 L 620.0 427.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 960.0 520.0 L 919.0 520.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 720.0 520.0 L 761.0 520.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 280.0 520.0 L 321.0 520.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 520.0 520.0 L 479.0 520.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 430.0 790.0 L 536.0 790.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 800.0 790.0 L 694.0 790.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<rect x="520.0" y="489.0" width="200" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="620" y="526.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Hito (etapa)</text>
+<rect x="520.0" y="219.0" width="200" height="62" fill="#ffffff" stroke="#9a9aa2" stroke-width="2.2"/>
+<text x="620" y="256.0" font-size="17" font-weight="bold" fill="#6a6a72" text-anchor="middle">Obra</text>
+<rect x="960.0" y="489.0" width="200" height="62" fill="#ffffff" stroke="#9a9aa2" stroke-width="2.2"/>
+<text x="1060" y="526.0" font-size="17" font-weight="bold" fill="#6a6a72" text-anchor="middle">Rubro</text>
+<rect x="80.0" y="489.0" width="200" height="62" fill="#ffffff" stroke="#9a9aa2" stroke-width="2.2"/>
+<text x="180" y="526.0" font-size="17" font-weight="bold" fill="#6a6a72" text-anchor="middle">Usuario</text>
+<rect x="230.0" y="759.0" width="200" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="330" y="796.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Plantilla de hitos</text>
+<rect x="800.0" y="759.0" width="200" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="900" y="796.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Detalle de plantilla</text>
+<polygon points="620,343.0 699.0,385 620,427.0 541.0,385" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="620" y="381.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">se divide en</text>
+<text x="620" y="399.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="840,478.0 919.0,520 840,562.0 761.0,520" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="840" y="516.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">clasifica</text>
+<text x="840" y="534.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="400,478.0 479.0,520 400,562.0 321.0,520" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="400" y="516.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">completa</text>
+<text x="400" y="534.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="615,748.0 694.0,790 615,832.0 536.0,790" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="615" y="786.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">contiene</text>
+<text x="615" y="804.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<rect x="586.0" y="300.0" width="36.0" height="18" fill="#ffffff"/><text x="604.0" y="315.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(1,1)</text>
+<rect x="585.0" y="448.0" width="38.0" height="18" fill="#ffffff"/><text x="604.0" y="463.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="912.0" y="525.0" width="36.0" height="18" fill="#ffffff"/><text x="930.0" y="540.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,1)</text>
+<rect x="731.0" y="525.0" width="38.0" height="18" fill="#ffffff"/><text x="750.0" y="540.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="292.0" y="525.0" width="36.0" height="18" fill="#ffffff"/><text x="310.0" y="540.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,1)</text>
+<rect x="471.0" y="525.0" width="38.0" height="18" fill="#ffffff"/><text x="490.0" y="540.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="442.0" y="795.0" width="36.0" height="18" fill="#ffffff"/><text x="460.0" y="810.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(1,1)</text>
+<rect x="751.0" y="795.0" width="38.0" height="18" fill="#ffffff"/><text x="770.0" y="810.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+</svg>

@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1360" height="1098" viewBox="0 0 1360 1098" font-family="Arial, Helvetica, sans-serif">
+<defs>
+<marker id="arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#3a3a3a"/></marker>
+<marker id="arrowLoop" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#4b3b7d"/></marker>
+<marker id="arrowDf" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#3a3a3a"/></marker>
+<marker id="arrowDfOut" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#7a7a80"/></marker>
+<marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12" fill="none" stroke="#7b4fc0" stroke-width="1.6"/></marker>
+<marker id="gen" viewBox="0 0 16 16" refX="15" refY="8" markerWidth="20" markerHeight="20" markerUnits="userSpaceOnUse" orient="auto"><path d="M1,1 L15,8 L1,15 z" fill="#ffffff" stroke="#3d1466" stroke-width="1.6"/></marker>
+</defs>
+<rect width="1360" height="1098" fill="#ffffff"/>
+<text x="40" y="52" font-size="30" font-weight="bold" fill="#2f2f2f">DFD 3: Gastos</text>
+<rect x="1010" y="14" width="330" height="150" rx="7" fill="#fbfbfb" stroke="#dadada"/>
+<rect x="1024" y="28" width="30" height="20" fill="#fff" stroke="#3d1466" stroke-width="1.8"/><text x="1066" y="43" font-size="14" fill="#444">Entidad externa</text>
+<rect x="1024" y="56" width="30" height="20" rx="5" fill="#4b2a83"/><text x="1066" y="71" font-size="14" fill="#444">Proceso</text>
+<path d="M 1024 88 L 1024 102 A 15 5 0 0 0 1054 102 L 1054 88" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.5"/><ellipse cx="1039" cy="88" rx="15" ry="5" fill="#fafafb" stroke="#8a8a90" stroke-width="1.5"/><text x="1066" y="100" font-size="14" fill="#444">Almacén de datos</text>
+<line x1="1022" y1="122" x2="1054" y2="122" stroke="#7a7a80" stroke-width="1.8" stroke-dasharray="6 4"/><text x="1066" y="127" font-size="14" fill="#444">Por fuera del sistema, vía el dueño</text>
+<text x="1032" y="153" font-size="16" font-weight="bold" fill="#444">*</text><text x="1066" y="151" font-size="14" fill="#444">Aparece más de una vez</text>
+<text x="155" y="196" font-size="14" font-weight="bold" fill="#8a8a90" text-anchor="middle" letter-spacing="1">ENTIDADES EXTERNAS</text>
+<text x="690" y="196" font-size="14" font-weight="bold" fill="#8a8a90" text-anchor="middle" letter-spacing="1">PROCESOS</text>
+<text x="1180" y="196" font-size="14" font-weight="bold" fill="#8a8a90" text-anchor="middle" letter-spacing="1">ALMACENES DE DATOS</text>
+<path d="M 1060.0 274.0 L 830.0 274.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="877.5" y="253.0" width="135.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="269.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Definitivo aprobado</text>
+<path d="M 830.0 368.0 L 1060.0 368.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="869.0" y="347.0" width="152.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="363.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Foto del comprobante</text>
+<path d="M 830.0 462.0 L 1060.0 462.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="866.5" y="441.0" width="157.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="457.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Gasto y quién lo cargó</text>
+<path d="M 260.0 368.0 L 550.0 368.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="296.5" y="347.0" width="217.0" height="18.8" fill="#ffffff"/>
+<text x="405.0" y="363.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Obra, rubro, tipo, monto y fecha</text>
+<path d="M 1060.0 646.0 L 830.0 646.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="859.0" y="625.0" width="172.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="641.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Presupuestado por rubro</text>
+<path d="M 1060.0 740.0 L 830.0 740.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="880.5" y="719.0" width="129.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="735.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Gastado por rubro</text>
+<path d="M 550.0 693.0 L 260.0 693.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="299.0" y="672.0" width="212.0" height="18.8" fill="#ffffff"/>
+<text x="405.0" y="688.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Semáforo por rubro y ganancia</text>
+<path d="M 690.0 506.0 L 690.0 602.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="701.0" y="547.0" width="119.0" height="18.8" fill="#ffffff"/>
+<text x="760.5" y="563.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Gasto registrado</text>
+<path d="M 830.0 924.0 L 1060.0 924.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="892.5" y="903.0" width="105.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="919.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Gasto anulado</text>
+<path d="M 830.0 1018.0 L 1060.0 1018.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="861.0" y="997.0" width="168.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="1013.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Quién lo anuló y por qué</text>
+<path d="M 260.0 971.0 L 550.0 971.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="350.0" y="950.0" width="110.0" height="18.8" fill="#ffffff"/>
+<text x="405.0" y="966.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Gasto y motivo</text>
+<rect x="550.0" y="230.0" width="280" height="276.0" rx="12" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<path d="M 550.0 260.0 L 830.0 260.0" stroke="#7d62b3" stroke-width="1.4"/>
+<text x="690.0" y="251.0" font-size="15" font-weight="bold" fill="#d9cff0" text-anchor="middle">3.1</text>
+<text x="690.0" y="388.9" font-size="17" fill="#ffffff" text-anchor="middle">Registrar el gasto</text>
+<path d="M 1060.0 252.0 L 1060.0 296.0 A 120.0 9 0 0 0 1300.0 296.0 L 1300.0 252.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="252.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="283.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D2 Presupuestos *</text>
+<path d="M 1060.0 346.0 L 1060.0 390.0 A 120.0 9 0 0 0 1300.0 390.0 L 1300.0 346.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="346.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="377.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D11 Archivos (fotos)</text>
+<path d="M 1060.0 440.0 L 1060.0 484.0 A 120.0 9 0 0 0 1300.0 484.0 L 1300.0 440.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="440.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="471.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D6 Gastos *</text>
+<rect x="50.0" y="336.0" width="210" height="64.0" fill="#ffffff" stroke="#3d1466" stroke-width="2.2"/>
+<text x="155.0" y="373.9" font-size="17" fill="#2a1650" text-anchor="middle" font-weight="bold">Dueño *</text>
+<rect x="550.0" y="602.0" width="280" height="182.0" rx="12" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<path d="M 550.0 632.0 L 830.0 632.0" stroke="#7d62b3" stroke-width="1.4"/>
+<text x="690.0" y="623.0" font-size="15" font-weight="bold" fill="#d9cff0" text-anchor="middle">3.2</text>
+<text x="690.0" y="714.0" font-size="17" fill="#ffffff" text-anchor="middle">Calcular el estado financiero</text>
+<path d="M 1060.0 624.0 L 1060.0 668.0 A 120.0 9 0 0 0 1300.0 668.0 L 1300.0 624.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="624.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="655.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D2 Presupuestos *</text>
+<path d="M 1060.0 718.0 L 1060.0 762.0 A 120.0 9 0 0 0 1300.0 762.0 L 1300.0 718.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="718.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="749.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D6 Gastos *</text>
+<rect x="50.0" y="661.0" width="210" height="64.0" fill="#ffffff" stroke="#3d1466" stroke-width="2.2"/>
+<text x="155.0" y="699.0" font-size="17" fill="#2a1650" text-anchor="middle" font-weight="bold">Dueño *</text>
+<rect x="550.0" y="880.0" width="280" height="182.0" rx="12" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<path d="M 550.0 910.0 L 830.0 910.0" stroke="#7d62b3" stroke-width="1.4"/>
+<text x="690.0" y="901.0" font-size="15" font-weight="bold" fill="#d9cff0" text-anchor="middle">3.3</text>
+<text x="690.0" y="992.0" font-size="17" fill="#ffffff" text-anchor="middle">Anular un gasto</text>
+<path d="M 1060.0 902.0 L 1060.0 946.0 A 120.0 9 0 0 0 1300.0 946.0 L 1300.0 902.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="902.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="933.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D6 Gastos *</text>
+<path d="M 1060.0 996.0 L 1060.0 1040.0 A 120.0 9 0 0 0 1300.0 1040.0 L 1300.0 996.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="996.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="1027.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D10 Auditoría</text>
+<rect x="50.0" y="939.0" width="210" height="64.0" fill="#ffffff" stroke="#3d1466" stroke-width="2.2"/>
+<text x="155.0" y="977.0" font-size="17" fill="#2a1650" text-anchor="middle" font-weight="bold">Dueño *</text>
+</svg>

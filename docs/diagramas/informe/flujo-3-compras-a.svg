@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="2064" viewBox="0 0 1200 2064" font-family="Arial, Helvetica, sans-serif">
+<defs>
+<marker id="arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#3a3a3a"/></marker>
+<marker id="arrowLoop" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#4b3b7d"/></marker>
+<marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12" fill="none" stroke="#7b4fc0" stroke-width="1.6"/></marker>
+<marker id="gen" viewBox="0 0 16 16" refX="15" refY="8" markerWidth="20" markerHeight="20" markerUnits="userSpaceOnUse" orient="auto"><path d="M1,1 L15,8 L1,15 z" fill="#ffffff" stroke="#3d1466" stroke-width="1.6"/></marker>
+</defs>
+<rect width="1200" height="2064" fill="#ffffff"/>
+<text x="600.0" y="52" font-size="34" font-weight="bold" fill="#2f2f2f" text-anchor="middle">Proceso de Pedido de Materiales (parte 1 de 2)</text>
+<rect x="30" y="74" width="270" height="106" rx="7" fill="#fbfbfb" stroke="#dadada" stroke-width="1.2"/>
+<rect x="44" y="87" width="20" height="20" rx="4" fill="#e8e0f6" stroke="#9b86c9" stroke-width="1.2"/>
+<text x="74" y="102" font-size="15" fill="#444">Acción de una persona</text>
+<rect x="44" y="117" width="20" height="20" rx="4" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.2"/>
+<text x="74" y="132" font-size="15" fill="#444">Acción automática del sistema</text>
+<circle cx="54" cy="157" r="10" fill="#ffffff" stroke="#3a3a3a" stroke-width="1.6"/>
+<text x="54" y="161.5" font-size="12" font-weight="bold" fill="#2a2a2a" text-anchor="middle">A</text>
+<text x="74" y="162" font-size="15" fill="#444">Conector con la otra parte</text>
+<path d="M 345.0 309.0 L 312.0 309.0" fill="none" stroke="#a9a9ae" stroke-width="1.4" stroke-dasharray="3 4" stroke-linejoin="round"/>
+<path d="M 400.0 846.0 L 312.0 846.0" fill="none" stroke="#a9a9ae" stroke-width="1.4" stroke-dasharray="3 4" stroke-linejoin="round"/>
+<path d="M 345.0 1865.0 L 312.0 1865.0" fill="none" stroke="#a9a9ae" stroke-width="1.4" stroke-dasharray="3 4" stroke-linejoin="round"/>
+<path d="M 560.0 210.0 L 560.0 266.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 560.0 352.0 L 560.0 408.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 720.0 488.0 L 810.0 488.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="738.0" y="458.4" width="32.0" height="21.2" fill="#ffffff"/>
+<text x="754.0" y="477.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">No</text>
+<path d="M 975.0 531.0 L 975.0 577.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 560.0 568.0 L 560.0 624.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="523.0" y="582.4" width="26.0" height="21.2" fill="#ffffff"/>
+<text x="536.0" y="601.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">Sí</text>
+<path d="M 560.0 710.0 L 560.0 766.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 720.0 846.0 L 810.0 846.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="741.0" y="816.4" width="26.0" height="21.2" fill="#ffffff"/>
+<text x="754.0" y="835.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">Sí</text>
+<path d="M 975.0 889.0 L 975.0 954.0 L 560.0 954.0 L 560.0 982.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 560.0 926.0 L 560.0 982.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="520.0" y="940.4" width="32.0" height="21.2" fill="#ffffff"/>
+<text x="536.0" y="959.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">No</text>
+<path d="M 560.0 1091.0 L 560.0 1147.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 560.0 1233.0 L 560.0 1289.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 560.0 1375.0 L 560.0 1431.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 730.0 1516.0 L 810.0 1516.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="748.0" y="1486.4" width="32.0" height="21.2" fill="#ffffff"/>
+<text x="764.0" y="1505.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">No</text>
+<path d="M 975.0 1559.0 L 975.0 1794.0 L 560.0 1794.0 L 560.0 1822.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 560.0 1601.0 L 560.0 1657.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="523.0" y="1615.4" width="26.0" height="21.2" fill="#ffffff"/>
+<text x="536.0" y="1634.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">Sí</text>
+<path d="M 560.0 1766.0 L 560.0 1822.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 560.0 1908.0 L 560.0 1964.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="450.0" y="128.0" width="220" height="82" rx="41.0" fill="#ffffff" stroke="#3a3a3a" stroke-width="1.8"/>
+<text x="560.0" y="176.3" font-size="21" fill="#2a2a2a" text-anchor="middle" font-weight="bold">INICIO</text>
+<rect x="345.0" y="266.0" width="430" height="86.0" rx="10" fill="#e8e0f6" stroke="#d6c9ef" stroke-width="1.2"/>
+<text x="560.0" y="303.5" font-size="20" fill="#1d1d1f" text-anchor="middle">Quien está en la obra detecta que falta</text>
+<text x="560.0" y="328.5" font-size="20" fill="#1d1d1f" text-anchor="middle">material y abre un pedido nuevo</text>
+<polygon points="560,408.0 720.0,488.0 560,568.0 400.0,488.0" fill="#ffffff" stroke="#8a8a8a" stroke-width="2.2"/>
+<text x="560.0" y="483.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">¿La obra está en</text>
+<text x="560.0" y="505.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">ejecución?</text>
+<rect x="345.0" y="624.0" width="430" height="86.0" rx="10" fill="#e8e0f6" stroke="#d6c9ef" stroke-width="1.2"/>
+<text x="560.0" y="661.5" font-size="20" fill="#1d1d1f" text-anchor="middle">Elige los materiales del catálogo y la</text>
+<text x="560.0" y="686.5" font-size="20" fill="#1d1d1f" text-anchor="middle">cantidad de cada uno</text>
+<polygon points="560,766.0 720.0,846.0 560,926.0 400.0,846.0" fill="#ffffff" stroke="#8a8a8a" stroke-width="2.2"/>
+<text x="560.0" y="841.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">¿El pedido lo carga</text>
+<text x="560.0" y="863.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">el dueño?</text>
+<rect x="345.0" y="982.0" width="430" height="109.0" rx="10" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.2"/>
+<text x="560.0" y="1018.5" font-size="20" fill="#ffffff" text-anchor="middle">El sistema controla que los materiales</text>
+<text x="560.0" y="1043.5" font-size="20" fill="#ffffff" text-anchor="middle">estén activos y no se repitan, y registra</text>
+<text x="560.0" y="1068.5" font-size="20" fill="#ffffff" text-anchor="middle">quién pidió</text>
+<rect x="345.0" y="1147.0" width="430" height="86.0" rx="10" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.2"/>
+<text x="560.0" y="1184.5" font-size="20" fill="#ffffff" text-anchor="middle">El pedido queda &quot;Pendiente de aprobación&quot;</text>
+<text x="560.0" y="1209.5" font-size="20" fill="#ffffff" text-anchor="middle">y aparece en el Tablero del dueño</text>
+<rect x="345.0" y="1289.0" width="430" height="86.0" rx="10" fill="#e8e0f6" stroke="#d6c9ef" stroke-width="1.2"/>
+<text x="560.0" y="1326.5" font-size="20" fill="#1d1d1f" text-anchor="middle">El dueño abre el pedido y toca &quot;Pedir</text>
+<text x="560.0" y="1351.5" font-size="20" fill="#1d1d1f" text-anchor="middle">cotización&quot;</text>
+<polygon points="560,1431.0 730.0,1516.0 560,1601.0 390.0,1516.0" fill="#ffffff" stroke="#8a8a8a" stroke-width="2.2"/>
+<text x="560.0" y="1500.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">¿El teléfono del</text>
+<text x="560.0" y="1522.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">corralón se puede</text>
+<text x="560.0" y="1544.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">interpretar?</text>
+<rect x="345.0" y="1657.0" width="430" height="109.0" rx="10" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.2"/>
+<text x="560.0" y="1693.5" font-size="20" fill="#ffffff" text-anchor="middle">El sistema abre WhatsApp con un mensaje</text>
+<text x="560.0" y="1718.5" font-size="20" fill="#ffffff" text-anchor="middle">que lleva los materiales y las cantidades,</text>
+<text x="560.0" y="1743.5" font-size="20" fill="#ffffff" text-anchor="middle">sin precios</text>
+<rect x="345.0" y="1822.0" width="430" height="86.0" rx="10" fill="#e8e0f6" stroke="#d6c9ef" stroke-width="1.2"/>
+<text x="560.0" y="1859.5" font-size="20" fill="#1d1d1f" text-anchor="middle">El dueño manda el mensaje desde su</text>
+<text x="560.0" y="1884.5" font-size="20" fill="#1d1d1f" text-anchor="middle">teléfono y espera la respuesta del corralón</text>
+<circle cx="560" cy="1994.0" r="30.0" fill="#ffffff" stroke="#3a3a3a" stroke-width="2.2"/>
+<text x="560.0" y="2002.4" font-size="24" fill="#2a2a2a" text-anchor="middle" font-weight="bold">A</text>
+<rect x="810.0" y="445.0" width="330" height="86.0" rx="10" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.2"/>
+<text x="975.0" y="482.5" font-size="20" fill="#ffffff" text-anchor="middle">El sistema no permite pedir</text>
+<text x="975.0" y="507.5" font-size="20" fill="#ffffff" text-anchor="middle">para esa obra</text>
+<rect x="885.0" y="577.0" width="180" height="70" rx="35.0" fill="#ffffff" stroke="#3a3a3a" stroke-width="1.8"/>
+<text x="975.0" y="619.4" font-size="21" fill="#2a2a2a" text-anchor="middle" font-weight="bold">FIN</text>
+<rect x="810.0" y="803.0" width="330" height="86.0" rx="10" fill="#e8e0f6" stroke="#d6c9ef" stroke-width="1.2"/>
+<text x="975.0" y="840.5" font-size="20" fill="#1d1d1f" text-anchor="middle">Elige el corralón al que le va a</text>
+<text x="975.0" y="865.5" font-size="20" fill="#1d1d1f" text-anchor="middle">pedir precio</text>
+<rect x="810.0" y="1473.0" width="330" height="86.0" rx="10" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.2"/>
+<text x="975.0" y="1510.5" font-size="20" fill="#ffffff" text-anchor="middle">El sistema avisa y muestra el</text>
+<text x="975.0" y="1535.5" font-size="20" fill="#ffffff" text-anchor="middle">número para escribirle a mano</text>
+<rect x="52.0" y="273.2" width="260" height="71.6" rx="6" fill="#f1f1f3" stroke="#b5b5ba" stroke-width="1.3" stroke-dasharray="5 4"/>
+<text x="182.0" y="304.2" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">Lo puede cargar el capataz</text>
+<text x="182.0" y="325.0" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">desde el celular</text>
+<rect x="52.0" y="799.8" width="260" height="92.4" rx="6" fill="#f1f1f3" stroke="#b5b5ba" stroke-width="1.3" stroke-dasharray="5 4"/>
+<text x="182.0" y="830.8" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">El capataz no ve los</text>
+<text x="182.0" y="851.6" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">proveedores: el corralón lo</text>
+<text x="182.0" y="872.4" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">elige el dueño al aprobar</text>
+<rect x="52.0" y="1829.2" width="260" height="71.6" rx="6" fill="#f1f1f3" stroke="#b5b5ba" stroke-width="1.3" stroke-dasharray="5 4"/>
+<text x="182.0" y="1860.2" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">SIGCO no envía nada: el</text>
+<text x="182.0" y="1881.0" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">mensaje lo manda una persona</text>
+</svg>

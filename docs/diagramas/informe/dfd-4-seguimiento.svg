@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1360" height="1192" viewBox="0 0 1360 1192" font-family="Arial, Helvetica, sans-serif">
+<defs>
+<marker id="arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#3a3a3a"/></marker>
+<marker id="arrowLoop" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#4b3b7d"/></marker>
+<marker id="arrowDf" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#3a3a3a"/></marker>
+<marker id="arrowDfOut" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#7a7a80"/></marker>
+<marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12" fill="none" stroke="#7b4fc0" stroke-width="1.6"/></marker>
+<marker id="gen" viewBox="0 0 16 16" refX="15" refY="8" markerWidth="20" markerHeight="20" markerUnits="userSpaceOnUse" orient="auto"><path d="M1,1 L15,8 L1,15 z" fill="#ffffff" stroke="#3d1466" stroke-width="1.6"/></marker>
+</defs>
+<rect width="1360" height="1192" fill="#ffffff"/>
+<text x="40" y="52" font-size="30" font-weight="bold" fill="#2f2f2f">DFD 4: Seguimiento de obras</text>
+<rect x="1010" y="14" width="330" height="150" rx="7" fill="#fbfbfb" stroke="#dadada"/>
+<rect x="1024" y="28" width="30" height="20" fill="#fff" stroke="#3d1466" stroke-width="1.8"/><text x="1066" y="43" font-size="14" fill="#444">Entidad externa</text>
+<rect x="1024" y="56" width="30" height="20" rx="5" fill="#4b2a83"/><text x="1066" y="71" font-size="14" fill="#444">Proceso</text>
+<path d="M 1024 88 L 1024 102 A 15 5 0 0 0 1054 102 L 1054 88" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.5"/><ellipse cx="1039" cy="88" rx="15" ry="5" fill="#fafafb" stroke="#8a8a90" stroke-width="1.5"/><text x="1066" y="100" font-size="14" fill="#444">Almacén de datos</text>
+<line x1="1022" y1="122" x2="1054" y2="122" stroke="#7a7a80" stroke-width="1.8" stroke-dasharray="6 4"/><text x="1066" y="127" font-size="14" fill="#444">Por fuera del sistema, vía el dueño</text>
+<text x="1032" y="153" font-size="16" font-weight="bold" fill="#444">*</text><text x="1066" y="151" font-size="14" fill="#444">Aparece más de una vez</text>
+<text x="155" y="196" font-size="14" font-weight="bold" fill="#8a8a90" text-anchor="middle" letter-spacing="1">ENTIDADES EXTERNAS</text>
+<text x="690" y="196" font-size="14" font-weight="bold" fill="#8a8a90" text-anchor="middle" letter-spacing="1">PROCESOS</text>
+<text x="1180" y="196" font-size="14" font-weight="bold" fill="#8a8a90" text-anchor="middle" letter-spacing="1">ALMACENES DE DATOS</text>
+<path d="M 1060.0 261.0 L 830.0 261.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="890.0" y="240.0" width="110.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="256.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Plantilla elegida</text>
+<path d="M 830.0 287.0 L 1060.0 287.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="857.0" y="298.0" width="176.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="314.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Etapas con su porcentaje</text>
+<path d="M 1060.0 368.0 L 830.0 368.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="891.0" y="347.0" width="108.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="363.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Fecha de inicio</text>
+<path d="M 260.0 321.0 L 550.0 321.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="300.5" y="300.0" width="209.0" height="18.8" fill="#ffffff"/>
+<text x="405.0" y="316.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Etapas, días y fechas de inicio</text>
+<path d="M 830.0 552.0 L 1060.0 552.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="881.0" y="531.0" width="128.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="547.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Etapa completada</text>
+<path d="M 830.0 646.0 L 1060.0 646.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="891.0" y="625.0" width="108.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="641.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Obra finalizada</text>
+<path d="M 260.0 599.0 L 550.0 599.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="315.0" y="578.0" width="180.0" height="18.8" fill="#ffffff"/>
+<text x="405.0" y="594.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Etapa completada y fecha</text>
+<path d="M 690.0 412.0 L 690.0 508.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="701.0" y="453.0" width="131.0" height="18.8" fill="#ffffff"/>
+<text x="766.5" y="469.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Etapas pendientes</text>
+<path d="M 1060.0 830.0 L 830.0 830.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="865.5" y="809.0" width="159.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="825.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Porcentajes cumplidos</text>
+<path d="M 1060.0 924.0 L 830.0 924.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="896.0" y="903.0" width="98.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="919.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Total gastado</text>
+<path d="M 1060.0 1018.0 L 830.0 1018.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="881.0" y="997.0" width="128.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="1013.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Subtotal aprobado</text>
+<path d="M 1060.0 1112.0 L 830.0 1112.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="887.5" y="1091.0" width="115.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="1107.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Plazo de la obra</text>
+<path d="M 550.0 971.0 L 260.0 971.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="290.0" y="950.0" width="230.0" height="18.8" fill="#ffffff"/>
+<text x="405.0" y="966.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Avance físico, financiero y alertas</text>
+<path d="M 690.0 690.0 L 690.0 786.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="701.0" y="731.0" width="128.0" height="18.8" fill="#ffffff"/>
+<text x="765.0" y="747.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Etapa completada</text>
+<rect x="550.0" y="230.0" width="280" height="182.0" rx="12" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<path d="M 550.0 260.0 L 830.0 260.0" stroke="#7d62b3" stroke-width="1.4"/>
+<text x="690.0" y="251.0" font-size="15" font-weight="bold" fill="#d9cff0" text-anchor="middle">4.1</text>
+<text x="690.0" y="341.9" font-size="17" fill="#ffffff" text-anchor="middle">Definir las etapas</text>
+<path d="M 1060.0 252.0 L 1060.0 296.0 A 120.0 9 0 0 0 1300.0 296.0 L 1300.0 252.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="252.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="283.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D7 Etapas y plantillas *</text>
+<path d="M 1060.0 346.0 L 1060.0 390.0 A 120.0 9 0 0 0 1300.0 390.0 L 1300.0 346.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="346.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="377.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D1 Obras *</text>
+<rect x="50.0" y="289.0" width="210" height="64.0" fill="#ffffff" stroke="#3d1466" stroke-width="2.2"/>
+<text x="155.0" y="326.9" font-size="17" fill="#2a1650" text-anchor="middle" font-weight="bold">Dueño *</text>
+<rect x="550.0" y="508.0" width="280" height="182.0" rx="12" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<path d="M 550.0 538.0 L 830.0 538.0" stroke="#7d62b3" stroke-width="1.4"/>
+<text x="690.0" y="529.0" font-size="15" font-weight="bold" fill="#d9cff0" text-anchor="middle">4.2</text>
+<text x="690.0" y="620.0" font-size="17" fill="#ffffff" text-anchor="middle">Registrar el avance</text>
+<path d="M 1060.0 530.0 L 1060.0 574.0 A 120.0 9 0 0 0 1300.0 574.0 L 1300.0 530.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="530.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="561.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D7 Etapas y plantillas *</text>
+<path d="M 1060.0 624.0 L 1060.0 668.0 A 120.0 9 0 0 0 1300.0 668.0 L 1300.0 624.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="624.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="655.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D1 Obras *</text>
+<rect x="50.0" y="564.8" width="210" height="68.5" fill="#ffffff" stroke="#3d1466" stroke-width="2.2"/>
+<text x="155.0" y="594.3" font-size="17" fill="#2a1650" text-anchor="middle" font-weight="bold">Dueño o capataz</text>
+<text x="155.0" y="615.6" font-size="17" fill="#2a1650" text-anchor="middle" font-weight="bold">general</text>
+<rect x="550.0" y="786.0" width="280" height="370.0" rx="12" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<path d="M 550.0 816.0 L 830.0 816.0" stroke="#7d62b3" stroke-width="1.4"/>
+<text x="690.0" y="807.0" font-size="15" font-weight="bold" fill="#d9cff0" text-anchor="middle">4.3</text>
+<text x="690.0" y="992.0" font-size="17" fill="#ffffff" text-anchor="middle">Calcular el avance</text>
+<path d="M 1060.0 808.0 L 1060.0 852.0 A 120.0 9 0 0 0 1300.0 852.0 L 1300.0 808.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="808.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="839.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D7 Etapas y plantillas *</text>
+<path d="M 1060.0 902.0 L 1060.0 946.0 A 120.0 9 0 0 0 1300.0 946.0 L 1300.0 902.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="902.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="933.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D6 Gastos</text>
+<path d="M 1060.0 996.0 L 1060.0 1040.0 A 120.0 9 0 0 0 1300.0 1040.0 L 1300.0 996.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="996.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="1027.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D2 Presupuestos</text>
+<path d="M 1060.0 1090.0 L 1060.0 1134.0 A 120.0 9 0 0 0 1300.0 1134.0 L 1300.0 1090.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="1090.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="1121.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D1 Obras *</text>
+<rect x="50.0" y="939.0" width="210" height="64.0" fill="#ffffff" stroke="#3d1466" stroke-width="2.2"/>
+<text x="155.0" y="977.0" font-size="17" fill="#2a1650" text-anchor="middle" font-weight="bold">Dueño *</text>
+</svg>

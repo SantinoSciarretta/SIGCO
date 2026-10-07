@@ -1,0 +1,153 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1495" viewBox="0 0 1500 1495" font-family="Arial, Helvetica, sans-serif"><rect width="1500" height="1495" fill="#faf9f6"/>
+<text x="36" y="58" font-size="38" font-weight="bold" fill="#1f1f1f">Diagrama de Gantt</text>
+<text x="36" y="90" font-size="17" fill="#666">Proyecto terminado. Horas reales de la planilla de tiempos: 485 hs (estimadas: 450 hs)</text>
+<rect x="36" y="112" width="16" height="16" rx="3" fill="#2e8b57"/>
+<text x="60" y="125" font-size="15" fill="#333">Inicio y Análisis</text>
+<rect x="187.0" y="112" width="16" height="16" rx="3" fill="#15918a"/>
+<text x="211.0" y="125" font-size="15" fill="#333">Diseño</text>
+<rect x="283.0" y="112" width="16" height="16" rx="3" fill="#2176b5"/>
+<text x="307.0" y="125" font-size="15" fill="#333">Desarrollo</text>
+<rect x="400.0" y="112" width="16" height="16" rx="3" fill="#e07b10"/>
+<text x="424.0" y="125" font-size="15" fill="#333">Pruebas y Documentación</text>
+<rect x="624.0" y="112" width="16" height="16" rx="3" fill="#c8205a"/>
+<text x="648.0" y="125" font-size="15" fill="#333">Cierre</text>
+<text x="452.0" y="168" font-size="15" font-weight="bold" fill="#444" text-anchor="middle" letter-spacing="0.5">MARZO</text>
+<text x="572.0" y="168" font-size="15" font-weight="bold" fill="#444" text-anchor="middle" letter-spacing="0.5">ABRIL</text>
+<text x="694.0" y="168" font-size="15" font-weight="bold" fill="#444" text-anchor="middle" letter-spacing="0.5">MAYO</text>
+<text x="816.0" y="168" font-size="15" font-weight="bold" fill="#444" text-anchor="middle" letter-spacing="0.5">JUNIO</text>
+<text x="938.0" y="168" font-size="15" font-weight="bold" fill="#444" text-anchor="middle" letter-spacing="0.5">JULIO</text>
+<text x="1062.0" y="168" font-size="15" font-weight="bold" fill="#444" text-anchor="middle" letter-spacing="0.5">AGOSTO</text>
+<text x="1184.0" y="168" font-size="15" font-weight="bold" fill="#444" text-anchor="middle" letter-spacing="0.5">SEPTIEMBRE</text>
+<text x="1306.0" y="168" font-size="15" font-weight="bold" fill="#444" text-anchor="middle" letter-spacing="0.5">OCTUBRE</text>
+<text x="392.0" y="194" font-size="12" fill="#888" text-anchor="middle">S1</text>
+<line x1="392.0" y1="204" x2="392.0" y2="1465" stroke="#e4e2dc" stroke-width="1"/>
+<text x="504.0" y="194" font-size="12" fill="#888" text-anchor="middle">S5</text>
+<line x1="504.0" y1="204" x2="504.0" y2="1465" stroke="#e4e2dc" stroke-width="1"/>
+<text x="644.0" y="194" font-size="12" fill="#888" text-anchor="middle">S10</text>
+<line x1="644.0" y1="204" x2="644.0" y2="1465" stroke="#e4e2dc" stroke-width="1"/>
+<text x="784.0" y="194" font-size="12" fill="#888" text-anchor="middle">S15</text>
+<line x1="784.0" y1="204" x2="784.0" y2="1465" stroke="#e4e2dc" stroke-width="1"/>
+<text x="924.0" y="194" font-size="12" fill="#888" text-anchor="middle">S20</text>
+<line x1="924.0" y1="204" x2="924.0" y2="1465" stroke="#e4e2dc" stroke-width="1"/>
+<text x="1064.0" y="194" font-size="12" fill="#888" text-anchor="middle">S25</text>
+<line x1="1064.0" y1="204" x2="1064.0" y2="1465" stroke="#e4e2dc" stroke-width="1"/>
+<text x="1204.0" y="194" font-size="12" fill="#888" text-anchor="middle">S30</text>
+<line x1="1204.0" y1="204" x2="1204.0" y2="1465" stroke="#e4e2dc" stroke-width="1"/>
+<text x="1344.0" y="194" font-size="12" fill="#888" text-anchor="middle">S35</text>
+<line x1="1344.0" y1="204" x2="1344.0" y2="1465" stroke="#e4e2dc" stroke-width="1"/>
+<line x1="392" y1="204" x2="1372" y2="204" stroke="#cfcdc6" stroke-width="1.4"/>
+<text x="1468" y="194" font-size="13" font-weight="bold" fill="#555" text-anchor="end">HORAS</text>
+<text x="36" y="238" font-size="16" font-weight="bold" fill="#2e8b57" letter-spacing="0.6">INICIO Y ANÁLISIS</text>
+<text x="1468" y="238" font-size="16" font-weight="bold" fill="#2e8b57" text-anchor="end">38 hs</text>
+<text x="372" y="275.5" font-size="16" fill="#2b2b2b" text-anchor="end">Estudio de Prefactibilidad</text>
+<rect x="392.0" y="260.5" width="120.0" height="18" rx="3.5" fill="#2e8b57"/>
+<text x="1468" y="275.5" font-size="16" fill="#444" text-anchor="end">5</text>
+<text x="372" y="306.5" font-size="16" fill="#2b2b2b" text-anchor="end">Relevamiento</text>
+<rect x="448.0" y="291.5" width="104.0" height="18" rx="3.5" fill="#2e8b57"/>
+<text x="1468" y="306.5" font-size="16" fill="#444" text-anchor="end">9</text>
+<text x="372" y="337.5" font-size="16" fill="#2b2b2b" text-anchor="end">Entrevistas de validación adicionales</text>
+<rect x="532.0" y="322.5" width="20.0" height="18" rx="3.5" fill="#2e8b57"/>
+<text x="1468" y="337.5" font-size="16" fill="#444" text-anchor="end">2</text>
+<text x="372" y="368.5" font-size="16" fill="#2b2b2b" text-anchor="end">Redacción del Informe de Relevamiento</text>
+<rect x="476.0" y="353.5" width="96.0" height="18" rx="3.5" fill="#2e8b57"/>
+<text x="1468" y="368.5" font-size="16" fill="#444" text-anchor="end">16</text>
+<text x="372" y="399.5" font-size="16" fill="#2b2b2b" text-anchor="end">Identificación de requerimientos</text>
+<rect x="540.0" y="384.5" width="28.0" height="18" rx="3.5" fill="#2e8b57"/>
+<text x="1468" y="399.5" font-size="16" fill="#444" text-anchor="end">4</text>
+<text x="372" y="430.5" font-size="16" fill="#2b2b2b" text-anchor="end">Elaboración del Diagrama de Gantt</text>
+<rect x="560.0" y="415.5" width="12.0" height="18" rx="3.5" fill="#2e8b57"/>
+<text x="1468" y="430.5" font-size="16" fill="#444" text-anchor="end">2</text>
+<line x1="36" y1="448" x2="1468" y2="448" stroke="#dedcd5" stroke-width="1.2"/>
+<text x="36" y="480" font-size="16" font-weight="bold" fill="#15918a" letter-spacing="0.6">DISEÑO</text>
+<text x="1468" y="480" font-size="16" font-weight="bold" fill="#15918a" text-anchor="end">50 hs</text>
+<text x="372" y="517.5" font-size="16" fill="#2b2b2b" text-anchor="end">Desarrollo de la Propuesta Técnica</text>
+<rect x="560.0" y="502.5" width="72.0" height="18" rx="3.5" fill="#15918a"/>
+<text x="1468" y="517.5" font-size="16" fill="#444" text-anchor="end">28</text>
+<text x="372" y="548.5" font-size="16" fill="#2b2b2b" text-anchor="end">Desarrollo de la Propuesta Comercial</text>
+<rect x="588.0" y="533.5" width="44.0" height="18" rx="3.5" fill="#15918a"/>
+<text x="1468" y="548.5" font-size="16" fill="#444" text-anchor="end">8</text>
+<text x="372" y="579.5" font-size="16" fill="#2b2b2b" text-anchor="end">Modelo Relacional de Base de Datos</text>
+<rect x="644.0" y="564.5" width="132.0" height="18" rx="3.5" fill="#15918a"/>
+<text x="1468" y="579.5" font-size="16" fill="#444" text-anchor="end">10</text>
+<text x="372" y="610.5" font-size="16" fill="#2b2b2b" text-anchor="end">Normalización del modelo lógico</text>
+<rect x="784.0" y="595.5" width="76.0" height="18" rx="3.5" fill="#15918a"/>
+<text x="1468" y="610.5" font-size="16" fill="#444" text-anchor="end">4</text>
+<line x1="36" y1="628" x2="1468" y2="628" stroke="#dedcd5" stroke-width="1.2"/>
+<text x="36" y="660" font-size="16" font-weight="bold" fill="#2176b5" letter-spacing="0.6">DESARROLLO</text>
+<text x="1468" y="660" font-size="16" font-weight="bold" fill="#2176b5" text-anchor="end">321 hs</text>
+<text x="372" y="697.5" font-size="16" fill="#2b2b2b" text-anchor="end">Implementación de la BD (PostgreSQL)</text>
+<rect x="1064.0" y="682.5" width="48.0" height="18" rx="3.5" fill="#2176b5"/>
+<rect x="1148.0" y="682.5" width="48.0" height="18" rx="3.5" fill="#2176b5"/>
+<rect x="1232.0" y="682.5" width="36.0" height="18" rx="3.5" fill="#2176b5"/>
+<text x="1468" y="697.5" font-size="16" fill="#444" text-anchor="end">22</text>
+<text x="372" y="728.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Usuarios</text>
+<rect x="1144.0" y="713.5" width="40.0" height="18" rx="3.5" fill="#2176b5"/>
+<text x="1468" y="728.5" font-size="16" fill="#444" text-anchor="end">16</text>
+<text x="372" y="759.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Accesos</text>
+<rect x="1156.0" y="744.5" width="60.0" height="18" rx="3.5" fill="#2176b5"/>
+<text x="1468" y="759.5" font-size="16" fill="#444" text-anchor="end">28</text>
+<text x="372" y="790.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Obras</text>
+<rect x="1064.0" y="775.5" width="44.0" height="18" rx="3.5" fill="#2176b5"/>
+<rect x="1152.0" y="775.5" width="44.0" height="18" rx="3.5" fill="#2176b5"/>
+<text x="1468" y="790.5" font-size="16" fill="#444" text-anchor="end">16</text>
+<text x="372" y="821.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Personal</text>
+<rect x="1124.0" y="806.5" width="36.0" height="18" rx="3.5" fill="#2176b5"/>
+<text x="1468" y="821.5" font-size="16" fill="#444" text-anchor="end">13</text>
+<text x="372" y="852.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Clientes</text>
+<rect x="1064.0" y="837.5" width="40.0" height="18" rx="3.5" fill="#2176b5"/>
+<text x="1468" y="852.5" font-size="16" fill="#444" text-anchor="end">14</text>
+<text x="372" y="883.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Presupuestación</text>
+<rect x="1068.0" y="868.5" width="72.0" height="18" rx="3.5" fill="#2176b5"/>
+<rect x="1176.0" y="868.5" width="92.0" height="18" rx="3.5" fill="#2176b5"/>
+<text x="1468" y="883.5" font-size="16" fill="#444" text-anchor="end">42</text>
+<text x="372" y="914.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Gastos</text>
+<rect x="1124.0" y="899.5" width="44.0" height="18" rx="3.5" fill="#2176b5"/>
+<text x="1468" y="914.5" font-size="16" fill="#444" text-anchor="end">20</text>
+<text x="372" y="945.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Seguimiento de Obras</text>
+<rect x="1128.0" y="930.5" width="40.0" height="18" rx="3.5" fill="#2176b5"/>
+<rect x="1204.0" y="930.5" width="64.0" height="18" rx="3.5" fill="#2176b5"/>
+<text x="1468" y="945.5" font-size="16" fill="#444" text-anchor="end">24</text>
+<text x="372" y="976.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Proveedores</text>
+<rect x="1092.0" y="961.5" width="40.0" height="18" rx="3.5" fill="#2176b5"/>
+<text x="1468" y="976.5" font-size="16" fill="#444" text-anchor="end">12</text>
+<text x="372" y="1007.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Materiales</text>
+<rect x="1072.0" y="992.5" width="28.0" height="18" rx="3.5" fill="#2176b5"/>
+<text x="1468" y="1007.5" font-size="16" fill="#444" text-anchor="end">8</text>
+<text x="372" y="1038.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Compras</text>
+<rect x="1132.0" y="1023.5" width="60.0" height="18" rx="3.5" fill="#2176b5"/>
+<rect x="1212.0" y="1023.5" width="56.0" height="18" rx="3.5" fill="#2176b5"/>
+<text x="1468" y="1038.5" font-size="16" fill="#444" text-anchor="end">30</text>
+<text x="372" y="1069.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Cobros</text>
+<rect x="1136.0" y="1054.5" width="48.0" height="18" rx="3.5" fill="#2176b5"/>
+<rect x="1204.0" y="1054.5" width="44.0" height="18" rx="3.5" fill="#2176b5"/>
+<text x="1468" y="1069.5" font-size="16" fill="#444" text-anchor="end">26</text>
+<text x="372" y="1100.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Portfolio Web</text>
+<rect x="1136.0" y="1085.5" width="32.0" height="18" rx="3.5" fill="#2176b5"/>
+<text x="1468" y="1100.5" font-size="16" fill="#444" text-anchor="end">12</text>
+<text x="372" y="1131.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Dashboard</text>
+<rect x="1156.0" y="1116.5" width="64.0" height="18" rx="3.5" fill="#2176b5"/>
+<text x="1468" y="1131.5" font-size="16" fill="#444" text-anchor="end">14</text>
+<text x="372" y="1162.5" font-size="16" fill="#2b2b2b" text-anchor="end">Integración de módulos y debugging</text>
+<rect x="1204.0" y="1147.5" width="64.0" height="18" rx="3.5" fill="#2176b5"/>
+<text x="1468" y="1162.5" font-size="16" fill="#444" text-anchor="end">24</text>
+<line x1="36" y1="1180" x2="1468" y2="1180" stroke="#dedcd5" stroke-width="1.2"/>
+<text x="36" y="1212" font-size="16" font-weight="bold" fill="#e07b10" letter-spacing="0.6">PRUEBAS Y DOCUMENTACIÓN</text>
+<text x="1468" y="1212" font-size="16" font-weight="bold" fill="#e07b10" text-anchor="end">59 hs</text>
+<text x="372" y="1249.5" font-size="16" fill="#2b2b2b" text-anchor="end">Pruebas funcionales</text>
+<rect x="1068.0" y="1234.5" width="200.0" height="18" rx="3.5" fill="#e07b10"/>
+<text x="1468" y="1249.5" font-size="16" fill="#444" text-anchor="end">24</text>
+<text x="372" y="1280.5" font-size="16" fill="#2b2b2b" text-anchor="end">Corrección de errores detectados</text>
+<rect x="1208.0" y="1265.5" width="60.0" height="18" rx="3.5" fill="#e07b10"/>
+<text x="1468" y="1280.5" font-size="16" fill="#444" text-anchor="end">18</text>
+<text x="372" y="1311.5" font-size="16" fill="#2b2b2b" text-anchor="end">Manual de usuario</text>
+<rect x="1248.0" y="1296.5" width="24.0" height="18" rx="3.5" fill="#e07b10"/>
+<text x="1468" y="1311.5" font-size="16" fill="#444" text-anchor="end">17</text>
+<line x1="36" y1="1329" x2="1468" y2="1329" stroke="#dedcd5" stroke-width="1.2"/>
+<text x="36" y="1361" font-size="16" font-weight="bold" fill="#c8205a" letter-spacing="0.6">CIERRE</text>
+<text x="1468" y="1361" font-size="16" font-weight="bold" fill="#c8205a" text-anchor="end">17 hs</text>
+<text x="372" y="1398.5" font-size="16" fill="#2b2b2b" text-anchor="end">Presentación final del proyecto</text>
+<rect x="1316.0" y="1383.5" width="20.0" height="18" rx="3.5" fill="#c8205a"/>
+<text x="1468" y="1398.5" font-size="16" fill="#444" text-anchor="end">9</text>
+<text x="372" y="1429.5" font-size="16" fill="#2b2b2b" text-anchor="end">Despliegue final en producción</text>
+<rect x="1264.0" y="1414.5" width="8.0" height="18" rx="3.5" fill="#c8205a"/>
+<text x="1468" y="1429.5" font-size="16" fill="#444" text-anchor="end">8</text></svg>

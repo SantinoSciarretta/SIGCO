@@ -1,0 +1,148 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1360" height="1572" viewBox="0 0 1360 1572" font-family="Arial, Helvetica, sans-serif">
+<defs>
+<marker id="arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#3a3a3a"/></marker>
+<marker id="arrowLoop" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#4b3b7d"/></marker>
+<marker id="arrowDf" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#3a3a3a"/></marker>
+<marker id="arrowDfOut" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#7a7a80"/></marker>
+<marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12" fill="none" stroke="#7b4fc0" stroke-width="1.6"/></marker>
+<marker id="gen" viewBox="0 0 16 16" refX="15" refY="8" markerWidth="20" markerHeight="20" markerUnits="userSpaceOnUse" orient="auto"><path d="M1,1 L15,8 L1,15 z" fill="#ffffff" stroke="#3d1466" stroke-width="1.6"/></marker>
+</defs>
+<rect width="1360" height="1572" fill="#ffffff"/>
+<text x="40" y="52" font-size="30" font-weight="bold" fill="#2f2f2f">DFD 2: Compras</text>
+<rect x="1010" y="14" width="330" height="150" rx="7" fill="#fbfbfb" stroke="#dadada"/>
+<rect x="1024" y="28" width="30" height="20" fill="#fff" stroke="#3d1466" stroke-width="1.8"/><text x="1066" y="43" font-size="14" fill="#444">Entidad externa</text>
+<rect x="1024" y="56" width="30" height="20" rx="5" fill="#4b2a83"/><text x="1066" y="71" font-size="14" fill="#444">Proceso</text>
+<path d="M 1024 88 L 1024 102 A 15 5 0 0 0 1054 102 L 1054 88" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.5"/><ellipse cx="1039" cy="88" rx="15" ry="5" fill="#fafafb" stroke="#8a8a90" stroke-width="1.5"/><text x="1066" y="100" font-size="14" fill="#444">Almacén de datos</text>
+<line x1="1022" y1="122" x2="1054" y2="122" stroke="#7a7a80" stroke-width="1.8" stroke-dasharray="6 4"/><text x="1066" y="127" font-size="14" fill="#444">Por fuera del sistema, vía el dueño</text>
+<text x="1032" y="153" font-size="16" font-weight="bold" fill="#444">*</text><text x="1066" y="151" font-size="14" fill="#444">Aparece más de una vez</text>
+<text x="155" y="196" font-size="14" font-weight="bold" fill="#8a8a90" text-anchor="middle" letter-spacing="1">ENTIDADES EXTERNAS</text>
+<text x="690" y="196" font-size="14" font-weight="bold" fill="#8a8a90" text-anchor="middle" letter-spacing="1">PROCESOS</text>
+<text x="1180" y="196" font-size="14" font-weight="bold" fill="#8a8a90" text-anchor="middle" letter-spacing="1">ALMACENES DE DATOS</text>
+<path d="M 1060.0 274.0 L 830.0 274.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="880.5" y="253.0" width="129.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="269.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Obra en ejecución</text>
+<path d="M 1060.0 368.0 L 830.0 368.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="880.5" y="347.0" width="129.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="363.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Materiales activos</text>
+<path d="M 830.0 462.0 L 1060.0 462.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="867.5" y="441.0" width="155.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="457.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Pedido y quién lo pidió</text>
+<path d="M 260.0 355.0 L 550.0 355.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="322.5" y="334.0" width="165.0" height="18.8" fill="#ffffff"/>
+<text x="405.0" y="350.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Materiales y cantidades</text>
+<path d="M 550.0 381.0 L 260.0 381.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="344.0" y="392.0" width="122.0" height="18.8" fill="#ffffff"/>
+<text x="405.0" y="408.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Pedido pendiente</text>
+<path d="M 1060.0 650.0 L 830.0 650.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="862.5" y="629.0" width="165.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="645.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Materiales y cantidades</text>
+<path d="M 1060.0 744.0 L 830.0 744.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="872.0" y="723.0" width="146.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="739.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Teléfono del corralón</text>
+<path d="M 260.0 647.0 L 550.0 647.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="347.5" y="626.0" width="115.0" height="18.8" fill="#ffffff"/>
+<text x="405.0" y="642.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Pedido a cotizar</text>
+<path d="M 550.0 747.0 L 260.0 747.0" fill="none" stroke="#7a7a80" stroke-width="1.9" stroke-dasharray="8 6" marker-end="url(#arrowDfOut)" stroke-linejoin="round"/>
+<rect x="286.5" y="726.0" width="237.0" height="18.8" fill="#ffffff"/>
+<text x="405.0" y="742.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Mensaje de WhatsApp, sin precios</text>
+<path d="M 690.0 506.0 L 690.0 602.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="701.0" y="547.0" width="122.0" height="18.8" fill="#ffffff"/>
+<text x="762.0" y="563.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Pedido pendiente</text>
+<path d="M 1060.0 919.0 L 830.0 919.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="884.0" y="898.0" width="122.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="914.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Última cotización</text>
+<path d="M 830.0 945.0 L 1060.0 945.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="883.5" y="956.0" width="123.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="972.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Cotización nueva</text>
+<path d="M 830.0 1026.0 L 1060.0 1026.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="890.0" y="1005.0" width="110.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="1021.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Pedido enviado</text>
+<path d="M 830.0 1120.0 L 1060.0 1120.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="861.0" y="1099.0" width="168.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="1115.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Gasto por rubro, sin IVA</text>
+<path d="M 830.0 1214.0 L 1060.0 1214.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="896.0" y="1193.0" width="98.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="1209.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Quién aprobó</text>
+<path d="M 260.0 1060.0 L 550.0 1060.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="349.5" y="1039.0" width="111.0" height="18.8" fill="#ffffff"/>
+<text x="405.0" y="1055.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Precios sin IVA</text>
+<path d="M 550.0 1086.0 L 260.0 1086.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="319.5" y="1097.0" width="171.0" height="18.8" fill="#ffffff"/>
+<text x="405.0" y="1113.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Precios sugeridos y total</text>
+<path d="M 690.0 792.0 L 690.0 888.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="701.0" y="833.0" width="145.0" height="18.8" fill="#ffffff"/>
+<text x="773.5" y="849.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Pedido en cotización</text>
+<path d="M 830.0 1398.0 L 1060.0 1398.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="891.5" y="1377.0" width="107.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="1393.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Foto del remito</text>
+<path d="M 830.0 1492.0 L 1060.0 1492.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="865.5" y="1471.0" width="159.0" height="18.8" fill="#ffffff"/>
+<text x="945.0" y="1487.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Estado de la recepción</text>
+<path d="M 260.0 1445.0 L 550.0 1445.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="308.0" y="1424.0" width="194.0" height="18.8" fill="#ffffff"/>
+<text x="405.0" y="1440.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Foto del remito y diferencias</text>
+<path d="M 690.0 1258.0 L 690.0 1354.0" fill="none" stroke="#3a3a3a" stroke-width="1.9" marker-end="url(#arrowDf)" stroke-linejoin="round"/>
+<rect x="701.0" y="1299.0" width="195.0" height="18.8" fill="#ffffff"/>
+<text x="798.5" y="1315.5" font-size="15" text-anchor="middle" fill="#2b2b2b">Pedido enviado al proveedor</text>
+<rect x="550.0" y="230.0" width="280" height="276.0" rx="12" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<path d="M 550.0 260.0 L 830.0 260.0" stroke="#7d62b3" stroke-width="1.4"/>
+<text x="690.0" y="251.0" font-size="15" font-weight="bold" fill="#d9cff0" text-anchor="middle">2.1</text>
+<text x="690.0" y="388.9" font-size="17" fill="#ffffff" text-anchor="middle">Registrar el pedido</text>
+<path d="M 1060.0 252.0 L 1060.0 296.0 A 120.0 9 0 0 0 1300.0 296.0 L 1300.0 252.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="252.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="283.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D1 Obras</text>
+<path d="M 1060.0 346.0 L 1060.0 390.0 A 120.0 9 0 0 0 1300.0 390.0 L 1300.0 346.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="346.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="377.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D3 Rubros y materiales</text>
+<path d="M 1060.0 440.0 L 1060.0 484.0 A 120.0 9 0 0 0 1300.0 484.0 L 1300.0 440.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="440.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="471.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D4 Pedidos *</text>
+<rect x="50.0" y="336.0" width="210" height="64.0" fill="#ffffff" stroke="#3d1466" stroke-width="2.2"/>
+<text x="155.0" y="373.9" font-size="17" fill="#2a1650" text-anchor="middle" font-weight="bold">Capataz o dueño</text>
+<rect x="550.0" y="602.0" width="280" height="190.0" rx="12" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<path d="M 550.0 632.0 L 830.0 632.0" stroke="#7d62b3" stroke-width="1.4"/>
+<text x="690.0" y="623.0" font-size="15" font-weight="bold" fill="#d9cff0" text-anchor="middle">2.2</text>
+<text x="690.0" y="718.0" font-size="17" fill="#ffffff" text-anchor="middle">Pedir cotización</text>
+<path d="M 1060.0 628.0 L 1060.0 672.0 A 120.0 9 0 0 0 1300.0 672.0 L 1300.0 628.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="628.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="659.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D4 Pedidos *</text>
+<path d="M 1060.0 722.0 L 1060.0 766.0 A 120.0 9 0 0 0 1300.0 766.0 L 1300.0 722.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="722.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="743.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D5 Proveedores y</text>
+<text x="1180.0" y="763.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">cotizaciones *</text>
+<rect x="50.0" y="615.0" width="210" height="64.0" fill="#ffffff" stroke="#3d1466" stroke-width="2.2"/>
+<text x="155.0" y="653.0" font-size="17" fill="#2a1650" text-anchor="middle" font-weight="bold">Dueño *</text>
+<rect x="50.0" y="715.0" width="210" height="64.0" fill="#ffffff" stroke="#3d1466" stroke-width="2.2"/>
+<text x="155.0" y="753.0" font-size="17" fill="#2a1650" text-anchor="middle" font-weight="bold">Corralón</text>
+<rect x="550.0" y="888.0" width="280" height="370.0" rx="12" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<path d="M 550.0 918.0 L 830.0 918.0" stroke="#7d62b3" stroke-width="1.4"/>
+<text x="690.0" y="909.0" font-size="15" font-weight="bold" fill="#d9cff0" text-anchor="middle">2.3</text>
+<text x="690.0" y="1094.0" font-size="17" fill="#ffffff" text-anchor="middle">Aprobar el pedido</text>
+<path d="M 1060.0 910.0 L 1060.0 954.0 A 120.0 9 0 0 0 1300.0 954.0 L 1300.0 910.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="910.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="931.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D5 Proveedores y</text>
+<text x="1180.0" y="951.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">cotizaciones *</text>
+<path d="M 1060.0 1004.0 L 1060.0 1048.0 A 120.0 9 0 0 0 1300.0 1048.0 L 1300.0 1004.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="1004.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="1035.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D4 Pedidos *</text>
+<path d="M 1060.0 1098.0 L 1060.0 1142.0 A 120.0 9 0 0 0 1300.0 1142.0 L 1300.0 1098.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="1098.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="1129.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D6 Gastos</text>
+<path d="M 1060.0 1192.0 L 1060.0 1236.0 A 120.0 9 0 0 0 1300.0 1236.0 L 1300.0 1192.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="1192.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="1223.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D10 Auditoría</text>
+<rect x="50.0" y="1041.0" width="210" height="64.0" fill="#ffffff" stroke="#3d1466" stroke-width="2.2"/>
+<text x="155.0" y="1079.0" font-size="17" fill="#2a1650" text-anchor="middle" font-weight="bold">Dueño *</text>
+<rect x="550.0" y="1354.0" width="280" height="182.0" rx="12" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.4"/>
+<path d="M 550.0 1384.0 L 830.0 1384.0" stroke="#7d62b3" stroke-width="1.4"/>
+<text x="690.0" y="1375.0" font-size="15" font-weight="bold" fill="#d9cff0" text-anchor="middle">2.4</text>
+<text x="690.0" y="1466.0" font-size="17" fill="#ffffff" text-anchor="middle">Confirmar la recepción</text>
+<path d="M 1060.0 1376.0 L 1060.0 1420.0 A 120.0 9 0 0 0 1300.0 1420.0 L 1300.0 1376.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="1376.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="1407.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D11 Archivos (fotos)</text>
+<path d="M 1060.0 1470.0 L 1060.0 1514.0 A 120.0 9 0 0 0 1300.0 1514.0 L 1300.0 1470.0" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.8"/>
+<ellipse cx="1180.0" cy="1470.0" rx="120.0" ry="9" fill="#fafafb" stroke="#8a8a90" stroke-width="1.8"/>
+<text x="1180.0" y="1501.6" font-size="16" fill="#2f2f2f" text-anchor="middle" font-weight="bold">D4 Pedidos *</text>
+<rect x="50.0" y="1413.0" width="210" height="64.0" fill="#ffffff" stroke="#3d1466" stroke-width="2.2"/>
+<text x="155.0" y="1451.0" font-size="17" fill="#2a1650" text-anchor="middle" font-weight="bold">Capataz</text>
+</svg>

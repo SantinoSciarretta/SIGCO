@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1360" height="1839" viewBox="0 0 1360 1839" font-family="Arial, Helvetica, sans-serif">
+<defs>
+<marker id="arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#3a3a3a"/></marker>
+<marker id="arrowLoop" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#4b3b7d"/></marker>
+<marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12" fill="none" stroke="#7b4fc0" stroke-width="1.6"/></marker>
+<marker id="gen" viewBox="0 0 16 16" refX="15" refY="8" markerWidth="20" markerHeight="20" markerUnits="userSpaceOnUse" orient="auto"><path d="M1,1 L15,8 L1,15 z" fill="#ffffff" stroke="#3d1466" stroke-width="1.6"/></marker>
+</defs>
+<rect width="1360" height="1839" fill="#ffffff"/>
+<text x="680.0" y="52" font-size="34" font-weight="bold" fill="#3b0f6e" text-anchor="middle">Casos de uso de SIGCO</text>
+<rect x="279.0" y="150" width="830.0" height="1659.0" rx="6" fill="#faf8fd" stroke="#3d1a78" stroke-width="2.4"/><text x="297.0" y="182" font-size="20" font-weight="bold" fill="#3d1a78">SIGCO</text>
+<g stroke="#3d1466" stroke-width="2.6" fill="none" stroke-linecap="round">
+<circle cx="118" cy="284.0" r="15" fill="#ffffff"/>
+<line x1="118" y1="299.0" x2="118" y2="340.0"/>
+<line x1="94" y1="314.0" x2="142" y2="314.0"/>
+<line x1="118" y1="340.0" x2="99" y2="372.0"/>
+<line x1="118" y1="340.0" x2="137" y2="372.0"/>
+</g>
+<text x="118" y="400.0" font-size="19" font-weight="bold" fill="#3d1466" text-anchor="middle">Capataz de Obra</text>
+<text x="118" y="422.0" font-size="15" fill="#6a3fb5" text-anchor="middle">(solo su obra)</text>
+<g stroke="#3d1466" stroke-width="2.6" fill="none" stroke-linecap="round">
+<circle cx="118" cy="550.0" r="15" fill="#ffffff"/>
+<line x1="118" y1="565.0" x2="118" y2="606.0"/>
+<line x1="94" y1="580.0" x2="142" y2="580.0"/>
+<line x1="118" y1="606.0" x2="99" y2="638.0"/>
+<line x1="118" y1="606.0" x2="137" y2="638.0"/>
+</g>
+<text x="118" y="666.0" font-size="19" font-weight="bold" fill="#3d1466" text-anchor="middle">Capataz General</text>
+<text x="118" y="688.0" font-size="15" fill="#6a3fb5" text-anchor="middle">(todas las obras)</text>
+<g stroke="#3d1466" stroke-width="2.6" fill="none" stroke-linecap="round">
+<circle cx="118" cy="1212.0" r="15" fill="#ffffff"/>
+<line x1="118" y1="1227.0" x2="118" y2="1268.0"/>
+<line x1="94" y1="1242.0" x2="142" y2="1242.0"/>
+<line x1="118" y1="1268.0" x2="99" y2="1300.0"/>
+<line x1="118" y1="1268.0" x2="137" y2="1300.0"/>
+</g>
+<text x="118" y="1328.0" font-size="19" font-weight="bold" fill="#3d1466" text-anchor="middle">Dueño</text>
+<g stroke="#6b6b70" stroke-width="2.6" fill="none" stroke-linecap="round">
+<circle cx="1240" cy="1598" r="15" fill="#ffffff"/>
+<line x1="1240" y1="1613" x2="1240" y2="1654"/>
+<line x1="1216" y1="1628" x2="1264" y2="1628"/>
+<line x1="1240" y1="1654" x2="1221" y2="1686"/>
+<line x1="1240" y1="1654" x2="1259" y2="1686"/>
+</g>
+<text x="1240" y="1714" font-size="19" font-weight="bold" fill="#6b6b70" text-anchor="middle">Visitante</text>
+<text x="1240" y="1736" font-size="15" fill="#6b6b70" text-anchor="middle">(sin cuenta)</text>
+<rect x="24" y="70" width="300" height="70" rx="7" fill="#fbfbfb" stroke="#dadada" stroke-width="1.2"/><circle cx="48" cy="92" r="7" fill="none" stroke="#3d1466" stroke-width="2.2"/><text x="68" y="97" font-size="15" fill="#444">Actor con cuenta en el sistema</text><circle cx="48" cy="120" r="7" fill="none" stroke="#6b6b70" stroke-width="2.2"/><text x="68" y="125" font-size="15" fill="#444">Actor sin cuenta</text>
+<path d="M 146.0 318.0 L 313.0 236.0" fill="none" stroke="#7b4fc0" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 146.0 318.0 L 313.0 324.0" fill="none" stroke="#7b4fc0" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 146.0 318.0 L 313.0 412.0" fill="none" stroke="#7b4fc0" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 146.0 584.0 L 313.0 546.0" fill="none" stroke="#7b4fc0" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 146.0 584.0 L 313.0 634.0" fill="none" stroke="#7b4fc0" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 146.0 1246.0 L 313.0 768.0" fill="none" stroke="#7b4fc0" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 146.0 1246.0 L 313.0 856.0" fill="none" stroke="#7b4fc0" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 146.0 1246.0 L 313.0 944.0" fill="none" stroke="#7b4fc0" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 146.0 1246.0 L 313.0 1032.0" fill="none" stroke="#7b4fc0" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 146.0 1246.0 L 313.0 1120.0" fill="none" stroke="#7b4fc0" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 146.0 1246.0 L 313.0 1208.0" fill="none" stroke="#7b4fc0" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 146.0 1246.0 L 313.0 1296.0" fill="none" stroke="#7b4fc0" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 146.0 1246.0 L 313.0 1384.0" fill="none" stroke="#7b4fc0" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 146.0 1246.0 L 313.0 1472.0" fill="none" stroke="#7b4fc0" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 146.0 1246.0 L 313.0 1560.0" fill="none" stroke="#7b4fc0" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 146.0 1246.0 L 313.0 1648.0" fill="none" stroke="#7b4fc0" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 146.0 1246.0 L 313.0 1736.0" fill="none" stroke="#7b4fc0" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 118.0 1194.0 L 118.0 696.0" fill="none" stroke="#3d1466" stroke-width="2" marker-end="url(#gen)" stroke-linejoin="round"/>
+<path d="M 118.0 532.0 L 118.0 430.0" fill="none" stroke="#3d1466" stroke-width="2" marker-end="url(#gen)" stroke-linejoin="round"/>
+<path d="M 643.0 944.0 L 785.0 944.0" fill="none" stroke="#7b4fc0" stroke-width="1.8" stroke-dasharray="8 6" marker-end="url(#open)" stroke-linejoin="round"/>
+<rect x="678.0" y="919.0" width="72.0" height="18.8" fill="#ffffff"/>
+<text x="714.0" y="935.5" font-size="15" text-anchor="middle" fill="#7b4fc0">«include»</text>
+<path d="M 643.0 1208.0 L 785.0 1208.0" fill="none" stroke="#7b4fc0" stroke-width="1.8" stroke-dasharray="8 6" marker-end="url(#open)" stroke-linejoin="round"/>
+<rect x="678.0" y="1183.0" width="72.0" height="18.8" fill="#ffffff"/>
+<text x="714.0" y="1199.5" font-size="15" text-anchor="middle" fill="#7b4fc0">«include»</text>
+<path d="M 785.0 856.0 L 643.0 856.0" fill="none" stroke="#7b4fc0" stroke-width="1.8" stroke-dasharray="8 6" marker-end="url(#open)" stroke-linejoin="round"/>
+<rect x="679.0" y="831.0" width="70.0" height="18.8" fill="#ffffff"/>
+<text x="714.0" y="847.5" font-size="15" text-anchor="middle" fill="#7b4fc0">«extend»</text>
+<path d="M 785.0 546.0 L 643.0 546.0" fill="none" stroke="#7b4fc0" stroke-width="1.8" stroke-dasharray="8 6" marker-end="url(#open)" stroke-linejoin="round"/>
+<rect x="679.0" y="521.0" width="70.0" height="18.8" fill="#ffffff"/>
+<text x="714.0" y="537.5" font-size="15" text-anchor="middle" fill="#7b4fc0">«extend»</text>
+<path d="M 1212.0 1632.0 L 1075.0 1648.0" fill="none" stroke="#8b8b90" stroke-width="1.8" stroke-linejoin="round"/>
+<ellipse cx="478" cy="236" rx="165.0" ry="33.0" fill="#ece7fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="478.0" y="242.3" font-size="18" fill="#2a1650" text-anchor="middle">Generar un pedido de materiales</text>
+<ellipse cx="478" cy="324" rx="165.0" ry="33.0" fill="#ece7fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="478.0" y="319.5" font-size="18" fill="#2a1650" text-anchor="middle">Confirmar la recepción con foto</text>
+<text x="478.0" y="341.1" font-size="18" fill="#2a1650" text-anchor="middle">del remito</text>
+<ellipse cx="478" cy="412" rx="165.0" ry="33.0" fill="#ece7fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="478.0" y="418.3" font-size="18" fill="#2a1650" text-anchor="middle">Consultar el avance de la obra</text>
+<ellipse cx="478" cy="546" rx="165.0" ry="33.0" fill="#ece7fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="478.0" y="541.5" font-size="18" fill="#2a1650" text-anchor="middle">Marcar una etapa como</text>
+<text x="478.0" y="563.1" font-size="18" fill="#2a1650" text-anchor="middle">completada</text>
+<ellipse cx="478" cy="634" rx="165.0" ry="33.0" fill="#ece7fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="478.0" y="640.3" font-size="18" fill="#2a1650" text-anchor="middle">Consultar el Tablero reducido</text>
+<ellipse cx="478" cy="768" rx="165.0" ry="33.0" fill="#ece7fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="478.0" y="774.3" font-size="18" fill="#2a1650" text-anchor="middle">Crear y administrar la obra</text>
+<ellipse cx="478" cy="856" rx="165.0" ry="33.0" fill="#ece7fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="478.0" y="862.3" font-size="18" fill="#2a1650" text-anchor="middle">Armar un presupuesto</text>
+<ellipse cx="478" cy="944" rx="165.0" ry="33.0" fill="#ece7fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="478.0" y="950.3" font-size="18" fill="#2a1650" text-anchor="middle">Aprobar el presupuesto definitivo</text>
+<ellipse cx="478" cy="1032" rx="165.0" ry="33.0" fill="#ece7fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="478.0" y="1038.3" font-size="18" fill="#2a1650" text-anchor="middle">Definir las etapas de la obra</text>
+<ellipse cx="478" cy="1120" rx="165.0" ry="33.0" fill="#ece7fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="478.0" y="1126.3" font-size="18" fill="#2a1650" text-anchor="middle">Pedir cotización por WhatsApp</text>
+<ellipse cx="478" cy="1208" rx="165.0" ry="33.0" fill="#ece7fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="478.0" y="1214.3" font-size="18" fill="#2a1650" text-anchor="middle">Aprobar el pedido con los precios</text>
+<ellipse cx="478" cy="1296" rx="165.0" ry="33.0" fill="#ece7fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="478.0" y="1302.3" font-size="18" fill="#2a1650" text-anchor="middle">Registrar un gasto</text>
+<ellipse cx="478" cy="1384" rx="165.0" ry="33.0" fill="#ece7fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="478.0" y="1390.3" font-size="18" fill="#2a1650" text-anchor="middle">Generar el plan de cobro</text>
+<ellipse cx="478" cy="1472" rx="165.0" ry="33.0" fill="#ece7fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="478.0" y="1478.3" font-size="18" fill="#2a1650" text-anchor="middle">Registrar un pago</text>
+<ellipse cx="478" cy="1560" rx="165.0" ry="33.0" fill="#ece7fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="478.0" y="1566.3" font-size="18" fill="#2a1650" text-anchor="middle">Actualizar el saldo por CAC</text>
+<ellipse cx="478" cy="1648" rx="165.0" ry="33.0" fill="#ece7fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="478.0" y="1654.3" font-size="18" fill="#2a1650" text-anchor="middle">Publicar la obra en el portfolio</text>
+<ellipse cx="478" cy="1736" rx="165.0" ry="33.0" fill="#ece7fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="478.0" y="1742.3" font-size="18" fill="#2a1650" text-anchor="middle">Consultar el balance y los desvíos</text>
+<ellipse cx="930" cy="546" rx="145.0" ry="33.0" fill="#ece7fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="930.0" y="552.3" font-size="18" fill="#2a1650" text-anchor="middle">Dar la obra por finalizada</text>
+<ellipse cx="930" cy="856" rx="145.0" ry="33.0" fill="#ece7fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="930.0" y="862.3" font-size="18" fill="#2a1650" text-anchor="middle">Emitir el PDF del presupuesto</text>
+<ellipse cx="930" cy="944" rx="145.0" ry="33.0" fill="#ece7fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="930.0" y="950.3" font-size="18" fill="#2a1650" text-anchor="middle">Pasar la obra a ejecución</text>
+<ellipse cx="930" cy="1208" rx="145.0" ry="33.0" fill="#ece7fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="930.0" y="1203.5" font-size="18" fill="#2a1650" text-anchor="middle">Cargar el gasto de la compra</text>
+<text x="930.0" y="1225.1" font-size="18" fill="#2a1650" text-anchor="middle">por rubro</text>
+<ellipse cx="930" cy="1648" rx="145.0" ry="33.0" fill="#ece7fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="930.0" y="1643.5" font-size="18" fill="#2a1650" text-anchor="middle">Ver la vidriera de obras</text>
+<text x="930.0" y="1665.1" font-size="18" fill="#2a1650" text-anchor="middle">realizadas</text>
+<rect x="1135.0" y="1174.5" width="210" height="147.0" rx="6" fill="#f1f1f3" stroke="#b5b5ba" stroke-width="1.3" stroke-dasharray="5 4"/>
+<text x="1240.0" y="1204.5" font-size="15" fill="#555559" text-anchor="middle" font-style="italic">El cliente y el proveedor</text>
+<text x="1240.0" y="1224.0" font-size="15" fill="#555559" text-anchor="middle" font-style="italic">no usan el sistema:</text>
+<text x="1240.0" y="1243.5" font-size="15" fill="#555559" text-anchor="middle" font-style="italic">reciben el PDF del</text>
+<text x="1240.0" y="1263.0" font-size="15" fill="#555559" text-anchor="middle" font-style="italic">presupuesto y el pedido</text>
+<text x="1240.0" y="1282.5" font-size="15" fill="#555559" text-anchor="middle" font-style="italic">de cotización que el dueño</text>
+<text x="1240.0" y="1302.0" font-size="15" fill="#555559" text-anchor="middle" font-style="italic">les manda por fuera</text>
+</svg>

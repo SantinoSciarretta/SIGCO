@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="2169" viewBox="0 0 1200 2169" font-family="Arial, Helvetica, sans-serif">
+<defs>
+<marker id="arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#3a3a3a"/></marker>
+<marker id="arrowLoop" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#4b3b7d"/></marker>
+<marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12" fill="none" stroke="#7b4fc0" stroke-width="1.6"/></marker>
+<marker id="gen" viewBox="0 0 16 16" refX="15" refY="8" markerWidth="20" markerHeight="20" markerUnits="userSpaceOnUse" orient="auto"><path d="M1,1 L15,8 L1,15 z" fill="#ffffff" stroke="#3d1466" stroke-width="1.6"/></marker>
+</defs>
+<rect width="1200" height="2169" fill="#ffffff"/>
+<text x="600.0" y="52" font-size="34" font-weight="bold" fill="#2f2f2f" text-anchor="middle">Proceso de Presupuestación (parte 1 de 2)</text>
+<rect x="30" y="74" width="270" height="106" rx="7" fill="#fbfbfb" stroke="#dadada" stroke-width="1.2"/>
+<rect x="44" y="87" width="20" height="20" rx="4" fill="#e8e0f6" stroke="#9b86c9" stroke-width="1.2"/>
+<text x="74" y="102" font-size="15" fill="#444">Acción de una persona</text>
+<rect x="44" y="117" width="20" height="20" rx="4" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.2"/>
+<text x="74" y="132" font-size="15" fill="#444">Acción automática del sistema</text>
+<circle cx="54" cy="157" r="10" fill="#ffffff" stroke="#3a3a3a" stroke-width="1.6"/>
+<text x="54" y="161.5" font-size="12" font-weight="bold" fill="#2a2a2a" text-anchor="middle">A</text>
+<text x="74" y="162" font-size="15" fill="#444">Conector con la otra parte</text>
+<path d="M 670.0 169.0 L 810.0 169.0" fill="none" stroke="#a9a9ae" stroke-width="1.4" stroke-dasharray="3 4" stroke-linejoin="round"/>
+<path d="M 390.0 565.0 L 310.0 565.0" fill="none" stroke="#a9a9ae" stroke-width="1.4" stroke-dasharray="3 4" stroke-linejoin="round"/>
+<path d="M 345.0 1595.5 L 310.0 1595.5" fill="none" stroke="#a9a9ae" stroke-width="1.4" stroke-dasharray="3 4" stroke-linejoin="round"/>
+<path d="M 560.0 210.0 L 560.0 260.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 730.0 345.0 L 810.0 345.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="751.0" y="315.4" width="26.0" height="21.2" fill="#ffffff"/>
+<text x="764.0" y="334.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">Sí</text>
+<path d="M 975.0 399.5 L 975.0 452.0 L 560.0 452.0 L 560.0 480.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 560.0 430.0 L 560.0 480.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="520.0" y="441.4" width="32.0" height="21.2" fill="#ffffff"/>
+<text x="536.0" y="460.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">No</text>
+<path d="M 730.0 565.0 L 810.0 565.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="751.0" y="535.4" width="26.0" height="21.2" fill="#ffffff"/>
+<text x="764.0" y="554.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">Sí</text>
+<path d="M 975.0 608.0 L 975.0 672.0 L 560.0 672.0 L 560.0 700.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 560.0 650.0 L 560.0 700.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="520.0" y="661.4" width="32.0" height="21.2" fill="#ffffff"/>
+<text x="536.0" y="680.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">No</text>
+<path d="M 945.0 738.0 L 775.0 738.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 560.0 776.0 L 560.0 826.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 720.0 906.0 L 810.0 906.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="741.0" y="876.4" width="26.0" height="21.2" fill="#ffffff"/>
+<text x="754.0" y="895.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">Sí</text>
+<path d="M 975.0 960.5 L 975.0 1008.0 L 560.0 1008.0 L 560.0 1036.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 560.0 986.0 L 560.0 1036.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="520.0" y="997.4" width="32.0" height="21.2" fill="#ffffff"/>
+<text x="536.0" y="1016.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">No</text>
+<path d="M 560.0 1122.0 L 560.0 1172.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 560.0 1281.0 L 560.0 1331.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 725.0 1411.0 L 810.0 1411.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="746.0" y="1381.4" width="26.0" height="21.2" fill="#ffffff"/>
+<text x="759.0" y="1400.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">Sí</text>
+<path d="M 975.0 1454.0 L 975.0 1513.0 L 560.0 1513.0 L 560.0 1541.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 560.0 1491.0 L 560.0 1541.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="520.0" y="1502.4" width="32.0" height="21.2" fill="#ffffff"/>
+<text x="536.0" y="1521.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">No</text>
+<path d="M 560.0 1650.0 L 560.0 1700.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 560.0 1809.0 L 560.0 1859.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 400.0 1939.0 L 34.0 1939.0 L 34.0 1226.5 L 345.0 1226.5" fill="none" stroke="#4b3b7d" stroke-width="2.4" stroke-dasharray="9 7" marker-end="url(#arrowLoop)" stroke-linejoin="round"/>
+<rect x="353.0" y="1909.4" width="26.0" height="21.2" fill="#ffffff"/>
+<text x="366.0" y="1928.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">Sí</text>
+<path d="M 560.0 2019.0 L 560.0 2069.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="520.0" y="2030.4" width="32.0" height="21.2" fill="#ffffff"/>
+<text x="536.0" y="2049.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">No</text>
+<rect x="450.0" y="128.0" width="220" height="82" rx="41.0" fill="#ffffff" stroke="#3a3a3a" stroke-width="1.8"/>
+<text x="560.0" y="176.3" font-size="21" fill="#2a2a2a" text-anchor="middle" font-weight="bold">INICIO</text>
+<rect x="810.0" y="133.2" width="330" height="71.6" rx="6" fill="#f1f1f3" stroke="#b5b5ba" stroke-width="1.3" stroke-dasharray="5 4"/>
+<text x="975.0" y="164.2" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">La obra tiene que estar &quot;En</text>
+<text x="975.0" y="185.0" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">presupuestación&quot;</text>
+<polygon points="560,260.0 730.0,345.0 560,430.0 390.0,345.0" fill="#ffffff" stroke="#8a8a8a" stroke-width="2.2"/>
+<text x="560.0" y="329.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">¿Hace falta dar</text>
+<text x="560.0" y="351.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">primero un precio</text>
+<text x="560.0" y="373.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">estimativo?</text>
+<polygon points="560,480.0 730.0,565.0 560,650.0 390.0,565.0" fill="#ffffff" stroke="#8a8a8a" stroke-width="2.2"/>
+<text x="560.0" y="549.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">¿Es una reforma que</text>
+<text x="560.0" y="571.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">necesita</text>
+<text x="560.0" y="593.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">anteproyecto?</text>
+<rect x="345.0" y="700.0" width="430" height="76.0" rx="10" fill="#e8e0f6" stroke="#d6c9ef" stroke-width="1.2"/>
+<text x="560.0" y="745.0" font-size="20" fill="#1d1d1f" text-anchor="middle">Crea el presupuesto definitivo</text>
+<polygon points="560,826.0 720.0,906.0 560,986.0 400.0,906.0" fill="#ffffff" stroke="#8a8a8a" stroke-width="2.2"/>
+<text x="560.0" y="901.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">¿Parte de una</text>
+<text x="560.0" y="923.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">versión anterior?</text>
+<rect x="345.0" y="1036.0" width="430" height="86.0" rx="10" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.2"/>
+<text x="560.0" y="1073.5" font-size="20" fill="#ffffff" text-anchor="middle">El sistema numera la versión y toma el</text>
+<text x="560.0" y="1098.5" font-size="20" fill="#ffffff" text-anchor="middle">plazo de la duración cargada en la obra</text>
+<rect x="345.0" y="1172.0" width="430" height="109.0" rx="10" fill="#e8e0f6" stroke="#d6c9ef" stroke-width="1.2"/>
+<text x="560.0" y="1208.5" font-size="20" fill="#1d1d1f" text-anchor="middle">Elige un rubro y completa su planilla:</text>
+<text x="560.0" y="1233.5" font-size="20" fill="#1d1d1f" text-anchor="middle">cantidad y precio de los materiales del</text>
+<text x="560.0" y="1258.5" font-size="20" fill="#1d1d1f" text-anchor="middle">catálogo</text>
+<polygon points="560,1331.0 725.0,1411.0 560,1491.0 395.0,1411.0" fill="#ffffff" stroke="#8a8a8a" stroke-width="2.2"/>
+<text x="560.0" y="1406.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">¿Falta algo que no</text>
+<text x="560.0" y="1428.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">está en el catálogo?</text>
+<rect x="345.0" y="1541.0" width="430" height="109.0" rx="10" fill="#e8e0f6" stroke="#d6c9ef" stroke-width="1.2"/>
+<text x="560.0" y="1577.5" font-size="20" fill="#1d1d1f" text-anchor="middle">Carga la mano de obra, con un total por</text>
+<text x="560.0" y="1602.5" font-size="20" fill="#1d1d1f" text-anchor="middle">rubro y subrubro, y los imprevistos, con un</text>
+<text x="560.0" y="1627.5" font-size="20" fill="#1d1d1f" text-anchor="middle">porcentaje sobre cada rubro</text>
+<rect x="345.0" y="1700.0" width="430" height="109.0" rx="10" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.2"/>
+<text x="560.0" y="1736.5" font-size="20" fill="#ffffff" text-anchor="middle">El sistema recalcula en el momento los</text>
+<text x="560.0" y="1761.5" font-size="20" fill="#ffffff" text-anchor="middle">subtotales, los honorarios, el IVA (salvo la</text>
+<text x="560.0" y="1786.5" font-size="20" fill="#ffffff" text-anchor="middle">mano de obra) y el total</text>
+<polygon points="560,1859.0 720.0,1939.0 560,2019.0 400.0,1939.0" fill="#ffffff" stroke="#8a8a8a" stroke-width="2.2"/>
+<text x="560.0" y="1934.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">¿Quedan rubros por</text>
+<text x="560.0" y="1956.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">completar?</text>
+<circle cx="560" cy="2099.0" r="30.0" fill="#ffffff" stroke="#3a3a3a" stroke-width="2.2"/>
+<text x="560.0" y="2107.4" font-size="24" fill="#2a2a2a" text-anchor="middle" font-weight="bold">A</text>
+<rect x="810.0" y="290.5" width="330" height="109.0" rx="10" fill="#e8e0f6" stroke="#d6c9ef" stroke-width="1.2"/>
+<text x="975.0" y="327.0" font-size="20" fill="#1d1d1f" text-anchor="middle">Arma la cotización inicial con los</text>
+<text x="975.0" y="352.0" font-size="20" fill="#1d1d1f" text-anchor="middle">m² y el valor por m², y el</text>
+<text x="975.0" y="377.0" font-size="20" fill="#1d1d1f" text-anchor="middle">sistema calcula el precio</text>
+<rect x="810.0" y="522.0" width="330" height="86.0" rx="10" fill="#e8e0f6" stroke="#d6c9ef" stroke-width="1.2"/>
+<text x="975.0" y="559.5" font-size="20" fill="#1d1d1f" text-anchor="middle">Arma el anteproyecto por rubro,</text>
+<text x="975.0" y="584.5" font-size="20" fill="#1d1d1f" text-anchor="middle">con los planos del arquitecto</text>
+<circle cx="975" cy="738.0" r="30.0" fill="#ffffff" stroke="#3a3a3a" stroke-width="2.2"/>
+<text x="975.0" y="746.4" font-size="24" fill="#2a2a2a" text-anchor="middle" font-weight="bold">B</text>
+<rect x="810.0" y="851.5" width="330" height="109.0" rx="10" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.2"/>
+<text x="975.0" y="888.0" font-size="20" fill="#ffffff" text-anchor="middle">El sistema copia sus ítems en</text>
+<text x="975.0" y="913.0" font-size="20" fill="#ffffff" text-anchor="middle">un presupuesto nuevo, sin tocar</text>
+<text x="975.0" y="938.0" font-size="20" fill="#ffffff" text-anchor="middle">el original</text>
+<rect x="810.0" y="1368.0" width="330" height="86.0" rx="10" fill="#e8e0f6" stroke="#d6c9ef" stroke-width="1.2"/>
+<text x="975.0" y="1405.5" font-size="20" fill="#1d1d1f" text-anchor="middle">Lo agrega como ítem suelto,</text>
+<text x="975.0" y="1430.5" font-size="20" fill="#1d1d1f" text-anchor="middle">con su rubro y su unidad</text>
+<rect x="90.0" y="518.8" width="220" height="92.4" rx="6" fill="#f1f1f3" stroke="#b5b5ba" stroke-width="1.3" stroke-dasharray="5 4"/>
+<text x="200.0" y="549.8" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">En una construcción</text>
+<text x="200.0" y="570.6" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">nueva el sistema no</text>
+<text x="200.0" y="591.4" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">habilita el anteproyecto</text>
+<rect x="90.0" y="1538.9" width="220" height="113.2" rx="6" fill="#f1f1f3" stroke="#b5b5ba" stroke-width="1.3" stroke-dasharray="5 4"/>
+<text x="200.0" y="1569.9" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">El monto de los</text>
+<text x="200.0" y="1590.7" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">imprevistos se recalcula</text>
+<text x="200.0" y="1611.5" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">solo cuando cambia el</text>
+<text x="200.0" y="1632.3" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">rubro</text>
+</svg>

@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1581" viewBox="0 0 1200 1581" font-family="Arial, Helvetica, sans-serif">
+<defs>
+<marker id="arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#3a3a3a"/></marker>
+<marker id="arrowLoop" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#4b3b7d"/></marker>
+<marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12" fill="none" stroke="#7b4fc0" stroke-width="1.6"/></marker>
+<marker id="gen" viewBox="0 0 16 16" refX="15" refY="8" markerWidth="20" markerHeight="20" markerUnits="userSpaceOnUse" orient="auto"><path d="M1,1 L15,8 L1,15 z" fill="#ffffff" stroke="#3d1466" stroke-width="1.6"/></marker>
+</defs>
+<rect width="1200" height="1581" fill="#ffffff"/>
+<text x="600.0" y="52" font-size="34" font-weight="bold" fill="#2f2f2f" text-anchor="middle">Proceso de Presupuestación (parte 2 de 2)</text>
+<rect x="30" y="74" width="270" height="106" rx="7" fill="#fbfbfb" stroke="#dadada" stroke-width="1.2"/>
+<rect x="44" y="87" width="20" height="20" rx="4" fill="#e8e0f6" stroke="#9b86c9" stroke-width="1.2"/>
+<text x="74" y="102" font-size="15" fill="#444">Acción de una persona</text>
+<rect x="44" y="117" width="20" height="20" rx="4" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.2"/>
+<text x="74" y="132" font-size="15" fill="#444">Acción automática del sistema</text>
+<circle cx="54" cy="157" r="10" fill="#ffffff" stroke="#3a3a3a" stroke-width="1.6"/>
+<text x="54" y="161.5" font-size="12" font-weight="bold" fill="#2a2a2a" text-anchor="middle">A</text>
+<text x="74" y="162" font-size="15" fill="#444">Conector con la otra parte</text>
+<path d="M 345.0 718.0 L 312.0 718.0" fill="none" stroke="#a9a9ae" stroke-width="1.4" stroke-dasharray="3 4" stroke-linejoin="round"/>
+<path d="M 400.0 1039.0 L 312.0 1039.0" fill="none" stroke="#a9a9ae" stroke-width="1.4" stroke-dasharray="3 4" stroke-linejoin="round"/>
+<path d="M 345.0 1218.0 L 312.0 1218.0" fill="none" stroke="#a9a9ae" stroke-width="1.4" stroke-dasharray="3 4" stroke-linejoin="round"/>
+<path d="M 560.0 228.0 L 560.0 284.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 560.0 393.0 L 560.0 449.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 730.0 534.0 L 810.0 534.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="748.0" y="504.4" width="32.0" height="21.2" fill="#ffffff"/>
+<text x="764.0" y="523.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">No</text>
+<path d="M 975.0 491.0 L 975.0 338.5 L 775.0 338.5" fill="none" stroke="#4b3b7d" stroke-width="2.4" stroke-dasharray="9 7" marker-end="url(#arrowLoop)" stroke-linejoin="round"/>
+<path d="M 560.0 619.0 L 560.0 675.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="523.0" y="633.4" width="26.0" height="21.2" fill="#ffffff"/>
+<text x="536.0" y="652.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">Sí</text>
+<path d="M 560.0 761.0 L 560.0 817.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 560.0 903.0 L 560.0 959.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 560.0 1119.0 L 560.0 1175.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="523.0" y="1133.4" width="26.0" height="21.2" fill="#ffffff"/>
+<text x="536.0" y="1152.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">Sí</text>
+<path d="M 720.0 1039.0 L 845.0 1039.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="738.0" y="1009.4" width="32.0" height="21.2" fill="#ffffff"/>
+<text x="754.0" y="1028.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">No</text>
+<path d="M 975.0 969.0 L 975.0 903.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="938.0" y="922.4" width="26.0" height="21.2" fill="#ffffff"/>
+<text x="951.0" y="941.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">Sí</text>
+<path d="M 975.0 817.0 L 975.0 748.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 975.0 1109.0 L 975.0 1325.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<rect x="935.0" y="1129.4" width="32.0" height="21.2" fill="#ffffff"/>
+<text x="951.0" y="1148.1" font-size="17" text-anchor="middle" fill="#333333" font-weight="bold">No</text>
+<path d="M 975.0 1395.0 L 975.0 1500.0 L 670.0 1500.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 560.0 1261.0 L 560.0 1317.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<path d="M 560.0 1403.0 L 560.0 1459.0" fill="none" stroke="#3a3a3a" stroke-width="2.2" marker-end="url(#arrow)" stroke-linejoin="round"/>
+<circle cx="560" cy="198.0" r="30.0" fill="#ffffff" stroke="#3a3a3a" stroke-width="2.2"/>
+<text x="560.0" y="206.4" font-size="24" fill="#2a2a2a" text-anchor="middle" font-weight="bold">A</text>
+<rect x="345.0" y="284.0" width="430" height="109.0" rx="10" fill="#e8e0f6" stroke="#d6c9ef" stroke-width="1.2"/>
+<text x="560.0" y="320.5" font-size="20" fill="#1d1d1f" text-anchor="middle">El dueño define el porcentaje de</text>
+<text x="560.0" y="345.5" font-size="20" fill="#1d1d1f" text-anchor="middle">honorarios, el anticipo y la cantidad de</text>
+<text x="560.0" y="370.5" font-size="20" fill="#1d1d1f" text-anchor="middle">cuotas</text>
+<polygon points="560,449.0 730.0,534.0 560,619.0 390.0,534.0" fill="#ffffff" stroke="#8a8a8a" stroke-width="2.2"/>
+<text x="560.0" y="518.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">¿Anticipo y cuotas</text>
+<text x="560.0" y="540.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">cierran al 100% del</text>
+<text x="560.0" y="562.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">total?</text>
+<rect x="345.0" y="675.0" width="430" height="86.0" rx="10" fill="#e8e0f6" stroke="#d6c9ef" stroke-width="1.2"/>
+<text x="560.0" y="712.5" font-size="20" fill="#1d1d1f" text-anchor="middle">Descarga el PDF con membrete y se lo</text>
+<text x="560.0" y="737.5" font-size="20" fill="#1d1d1f" text-anchor="middle">manda al cliente por fuera del sistema</text>
+<rect x="345.0" y="817.0" width="430" height="86.0" rx="10" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.2"/>
+<text x="560.0" y="854.5" font-size="20" fill="#ffffff" text-anchor="middle">Al marcarlo enviado, el sistema verifica que</text>
+<text x="560.0" y="879.5" font-size="20" fill="#ffffff" text-anchor="middle">tenga ítems y lo bloquea para edición</text>
+<polygon points="560,959.0 720.0,1039.0 560,1119.0 400.0,1039.0" fill="#ffffff" stroke="#8a8a8a" stroke-width="2.2"/>
+<text x="560.0" y="1034.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">¿El cliente lo</text>
+<text x="560.0" y="1056.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">aprueba?</text>
+<rect x="345.0" y="1175.0" width="430" height="86.0" rx="10" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.2"/>
+<text x="560.0" y="1212.5" font-size="20" fill="#ffffff" text-anchor="middle">Queda &quot;Aprobado&quot;, se audita y la obra</text>
+<text x="560.0" y="1237.5" font-size="20" fill="#ffffff" text-anchor="middle">pasa sola a &quot;En ejecución&quot;</text>
+<rect x="345.0" y="1317.0" width="430" height="86.0" rx="10" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.2"/>
+<text x="560.0" y="1354.5" font-size="20" fill="#ffffff" text-anchor="middle">Se habilitan Gastos, Compras,</text>
+<text x="560.0" y="1379.5" font-size="20" fill="#ffffff" text-anchor="middle">Seguimiento y Cobros para la obra</text>
+<rect x="450.0" y="1459.0" width="220" height="82" rx="41.0" fill="#ffffff" stroke="#3a3a3a" stroke-width="1.8"/>
+<text x="560.0" y="1507.3" font-size="21" fill="#2a2a2a" text-anchor="middle" font-weight="bold">FIN</text>
+<rect x="810.0" y="491.0" width="330" height="86.0" rx="10" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.2"/>
+<text x="975.0" y="528.5" font-size="20" fill="#ffffff" text-anchor="middle">El sistema no lo guarda y pide</text>
+<text x="975.0" y="553.5" font-size="20" fill="#ffffff" text-anchor="middle">corregirlo</text>
+<circle cx="975" cy="718.0" r="30.0" fill="#ffffff" stroke="#3a3a3a" stroke-width="2.2"/>
+<text x="975.0" y="726.4" font-size="24" fill="#2a2a2a" text-anchor="middle" font-weight="bold">B</text>
+<rect x="810.0" y="817.0" width="330" height="86.0" rx="10" fill="#e8e0f6" stroke="#d6c9ef" stroke-width="1.2"/>
+<text x="975.0" y="854.5" font-size="20" fill="#1d1d1f" text-anchor="middle">Arma una versión nueva</text>
+<text x="975.0" y="879.5" font-size="20" fill="#1d1d1f" text-anchor="middle">tomando la anterior como base</text>
+<polygon points="975,969.0 1105.0,1039.0 975,1109.0 845.0,1039.0" fill="#ffffff" stroke="#8a8a8a" stroke-width="2.2"/>
+<text x="975.0" y="1045.3" font-size="18" fill="#2a2a2a" text-anchor="middle" font-weight="bold">¿Pide cambios?</text>
+<rect x="810.0" y="1325.0" width="330" height="70.0" rx="10" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.2"/>
+<text x="975.0" y="1367.0" font-size="20" fill="#ffffff" text-anchor="middle">Queda &quot;Rechazado&quot;</text>
+<rect x="52.0" y="671.8" width="260" height="92.4" rx="6" fill="#f1f1f3" stroke="#b5b5ba" stroke-width="1.3" stroke-dasharray="5 4"/>
+<text x="182.0" y="702.8" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">El PDF no muestra precios</text>
+<text x="182.0" y="723.6" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">unitarios: solo los subtotales</text>
+<text x="182.0" y="744.4" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">por rubro</text>
+<rect x="52.0" y="992.8" width="260" height="92.4" rx="6" fill="#f1f1f3" stroke="#b5b5ba" stroke-width="1.3" stroke-dasharray="5 4"/>
+<text x="182.0" y="1023.8" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">Pasarlo a aprobado es una</text>
+<text x="182.0" y="1044.6" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">acción que solo puede hacer el</text>
+<text x="182.0" y="1065.4" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">dueño</text>
+<rect x="52.0" y="1171.8" width="260" height="92.4" rx="6" fill="#f1f1f3" stroke="#b5b5ba" stroke-width="1.3" stroke-dasharray="5 4"/>
+<text x="182.0" y="1202.8" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">No puede haber dos definitivos</text>
+<text x="182.0" y="1223.6" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">aprobados: los cambios</text>
+<text x="182.0" y="1244.4" font-size="16" fill="#555559" text-anchor="middle" font-style="italic">posteriores van como adicional</text>
+</svg>

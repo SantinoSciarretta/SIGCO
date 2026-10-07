@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1260" height="900" viewBox="0 0 1260 900" font-family="Arial, Helvetica, sans-serif">
+<defs>
+<marker id="arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#3a3a3a"/></marker>
+<marker id="arrowLoop" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#4b3b7d"/></marker>
+<marker id="arrowDf" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#3a3a3a"/></marker>
+<marker id="arrowDfOut" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#7a7a80"/></marker>
+<marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12" fill="none" stroke="#7b4fc0" stroke-width="1.6"/></marker>
+<marker id="gen" viewBox="0 0 16 16" refX="15" refY="8" markerWidth="20" markerHeight="20" markerUnits="userSpaceOnUse" orient="auto"><path d="M1,1 L15,8 L1,15 z" fill="#ffffff" stroke="#3d1466" stroke-width="1.6"/></marker>
+</defs>
+<rect width="1260" height="900" fill="#ffffff"/>
+<text x="40" y="52" font-size="30" font-weight="bold" fill="#2f2f2f">Entidad-relación 5: Cobros y portfolio</text>
+<rect x="790" y="16" width="452" height="168" rx="7" fill="#fbfbfb" stroke="#dadada"/>
+<rect x="804" y="30" width="38" height="22" fill="#fff" stroke="#3d1a78" stroke-width="1.8"/><text x="854" y="46" font-size="14" fill="#444">Entidad</text>
+<rect x="940" y="30" width="38" height="22" fill="#fff" stroke="#9a9aa2" stroke-width="1.8"/><text x="990" y="46" font-size="14" fill="#444">Entidad de otra área</text>
+<polygon points="823,62 842,73 823,84 804,73" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.6"/><text x="854" y="78" font-size="14" fill="#444">Relación (1:N, M:N o 1:1)</text>
+<ellipse cx="823" cy="105" rx="19" ry="10" fill="#fff" stroke="#8a7fb0" stroke-width="1.5"/><text x="854" y="110" font-size="14" fill="#444">Atributo de una relación</text>
+<text x="804" y="140" font-size="14" font-weight="bold" fill="#3d1a78">(1,1) (0,N)</text><text x="894" y="140" font-size="14" fill="#444">Mínimo y máximo, junto a cada entidad.</text>
+<text x="804" y="166" font-size="13" fill="#6a6a72">Ej.: Cliente (1,1) — encarga — (0,N) Obra: cada obra tiene un</text>
+<text x="804" y="182" font-size="13" fill="#6a6a72">cliente, y cada cliente tiene de cero a muchas obras.</text>
+<path d="M 520.0 450.0 L 489.0 450.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 300.0 450.0 L 331.0 450.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 200.0 481.0 L 200.0 568.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 200.0 739.0 L 200.0 652.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 520.0 770.0 L 489.0 770.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 300.0 770.0 L 331.0 770.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 720.0 450.0 L 751.0 450.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 925.0 450.0 L 909.0 450.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 1040.0 481.0 L 1040.0 568.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 1040.0 739.0 L 1040.0 652.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 620.0 231.0 L 620.0 275.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M 620.0 419.0 L 620.0 375.0" fill="none" stroke="#3d1a78" stroke-width="1.8" stroke-linejoin="round"/>
+<rect x="520.0" y="419.0" width="200" height="62" fill="#ffffff" stroke="#9a9aa2" stroke-width="2.2"/>
+<text x="620" y="456.0" font-size="17" font-weight="bold" fill="#6a6a72" text-anchor="middle">Obra</text>
+<rect x="100.0" y="419.0" width="200" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="200" y="456.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Cuota</text>
+<rect x="100.0" y="739.0" width="200" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="200" y="776.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Pago</text>
+<rect x="520.0" y="739.0" width="200" height="62" fill="#ffffff" stroke="#9a9aa2" stroke-width="2.2"/>
+<text x="620" y="776.0" font-size="17" font-weight="bold" fill="#6a6a72" text-anchor="middle">Usuario</text>
+<rect x="925.0" y="419.0" width="230" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="1040" y="456.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Publicación de portfolio</text>
+<rect x="925.0" y="739.0" width="230" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="1040" y="776.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Imagen de portfolio</text>
+<rect x="520.0" y="169.0" width="200" height="62" fill="#ffffff" stroke="#3d1a78" stroke-width="2.2"/>
+<text x="620" y="206.0" font-size="17" font-weight="bold" fill="#2a1650" text-anchor="middle">Registro CAC</text>
+<polygon points="410,408.0 489.0,450 410,492.0 331.0,450" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="410" y="446.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">se cobra en</text>
+<text x="410" y="464.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="200,568.0 279.0,610 200,652.0 121.0,610" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="200" y="606.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">recibe</text>
+<text x="200" y="624.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="410,728.0 489.0,770 410,812.0 331.0,770" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="410" y="766.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">registra</text>
+<text x="410" y="784.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="830,408.0 909.0,450 830,492.0 751.0,450" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="830" y="446.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">se publica en</text>
+<text x="830" y="464.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:1</text>
+<polygon points="1040,568.0 1119.0,610 1040,652.0 961.0,610" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="1040" y="606.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">muestra</text>
+<text x="1040" y="624.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<polygon points="620,275.0 699.0,325 620,375.0 541.0,325" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.8"/>
+<text x="620" y="312.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">último</text>
+<text x="620" y="330.0" font-size="15" font-weight="bold" fill="#2a1650" text-anchor="middle">aplicado</text>
+<text x="620" y="348.0" font-size="13" fill="#6a4aa3" text-anchor="middle">1:N</text>
+<rect x="472.0" y="423.0" width="36.0" height="18" fill="#ffffff"/><text x="490.0" y="438.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(1,1)</text>
+<rect x="311.0" y="423.0" width="38.0" height="18" fill="#ffffff"/><text x="330.0" y="438.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="198.0" y="500.0" width="36.0" height="18" fill="#ffffff"/><text x="216.0" y="515.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(1,1)</text>
+<rect x="197.0" y="698.0" width="38.0" height="18" fill="#ffffff"/><text x="216.0" y="713.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="472.0" y="775.0" width="36.0" height="18" fill="#ffffff"/><text x="490.0" y="790.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,1)</text>
+<rect x="311.0" y="775.0" width="38.0" height="18" fill="#ffffff"/><text x="330.0" y="790.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="732.0" y="423.0" width="36.0" height="18" fill="#ffffff"/><text x="750.0" y="438.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(1,1)</text>
+<rect x="877.0" y="423.0" width="36.0" height="18" fill="#ffffff"/><text x="895.0" y="438.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,1)</text>
+<rect x="1038.0" y="500.0" width="36.0" height="18" fill="#ffffff"/><text x="1056.0" y="515.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(1,1)</text>
+<rect x="1037.0" y="698.0" width="38.0" height="18" fill="#ffffff"/><text x="1056.0" y="713.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+<rect x="618.0" y="250.0" width="36.0" height="18" fill="#ffffff"/><text x="636.0" y="265.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,1)</text>
+<rect x="617.0" y="378.0" width="38.0" height="18" fill="#ffffff"/><text x="636.0" y="393.0" font-size="14" font-weight="bold" fill="#3d1a78" text-anchor="middle">(0,N)</text>
+</svg>

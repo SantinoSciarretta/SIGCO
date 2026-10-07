@@ -1,0 +1,170 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1279" height="749" viewBox="0 0 1279 749" font-family="Arial, Helvetica, sans-serif">
+<rect width="1279" height="749" fill="#ffffff"/>
+<text x="40" y="54" font-size="30" font-weight="bold" fill="#2f2f2f">Modelo relacional 6: Usuarios y accesos</text>
+<rect x="859" y="18" width="400" height="196" rx="7" fill="#fbfbfb" stroke="#dadada"/>
+<rect x="873" y="32" width="26" height="15" rx="3" fill="#4b2a83" stroke="#4b2a83"/><text x="886" y="43.5" font-size="10.5" font-weight="bold" fill="#ffffff" text-anchor="middle">PK</text><text x="911" y="44" font-size="14" fill="#444">Clave primaria</text>
+<rect x="873" y="58" width="26" height="15" rx="3" fill="#e8e0f6" stroke="#b7a3e3"/><text x="886" y="69.5" font-size="10.5" font-weight="bold" fill="#4b2a83" text-anchor="middle">FK</text><text x="911" y="70" font-size="14" fill="#444">Clave foránea</text>
+<rect x="873" y="84" width="26" height="15" rx="3" fill="#ffffff" stroke="#a9a9b0"/><text x="886" y="95.5" font-size="10.5" font-weight="bold" fill="#6a6a72" text-anchor="middle">UQ</text><text x="911" y="96" font-size="14" fill="#444">Valor único</text>
+<text x="873" y="122" font-size="14" font-style="italic" fill="#6a6a72">en cursiva</text><text x="951" y="122" font-size="14" fill="#444">Admite valor nulo</text>
+<rect x="873" y="138" width="26" height="14" rx="3" fill="#9a9aa2"/><text x="911" y="150" font-size="14" fill="#444">Tabla de otra área (solo su clave)</text>
+<line x1="1064" y1="40" x2="1104" y2="40" stroke="#4a3d78" stroke-width="1.7"/>
+<line x1="1096" y1="33" x2="1096" y2="47" stroke="#4a3d78" stroke-width="1.8"/>
+<line x1="1090" y1="33" x2="1090" y2="47" stroke="#4a3d78" stroke-width="1.8"/>
+<text x="1116" y="45" font-size="14" fill="#444">Uno y solo uno</text>
+<line x1="1064" y1="66" x2="1104" y2="66" stroke="#4a3d78" stroke-width="1.7"/>
+<line x1="1096" y1="59" x2="1096" y2="73" stroke="#4a3d78" stroke-width="1.8"/>
+<circle cx="1087" cy="66" r="5" fill="#ffffff" stroke="#4a3d78" stroke-width="1.6"/>
+<text x="1116" y="71" font-size="14" fill="#444">Cero o uno</text>
+<line x1="1064" y1="92" x2="1104" y2="92" stroke="#4a3d78" stroke-width="1.7"/>
+<path d="M 1104 84 L 1090 92 L 1104 100 M 1104 92 L 1090 92" fill="none" stroke="#4a3d78" stroke-width="1.7"/>
+<circle cx="1083" cy="92" r="5" fill="#ffffff" stroke="#4a3d78" stroke-width="1.6"/>
+<text x="1116" y="97" font-size="14" fill="#444">Cero o muchos</text>
+<text x="873" y="198" font-size="13" fill="#6a6a72">La línea va de la clave foránea a la clave primaria.</text>
+<path d="M 1094.0 466.5 L 1180.0 466.5 L 1180.0 301.5 L 1102.0 301.5" fill="none" stroke="#4a3d78" stroke-width="1.7" stroke-linejoin="round"/>
+<path d="M 1094.0 493.5 L 1197.0 493.5 L 1197.0 604.5 L 1138.0 604.5" fill="none" stroke="#4a3d78" stroke-width="1.7" stroke-linejoin="round"/>
+<path d="M 757.0 382.5 L 799.0 382.5 L 799.0 301.5 L 867.0 301.5" fill="none" stroke="#4a3d78" stroke-width="1.7" stroke-linejoin="round"/>
+<path d="M 420.0 409.5 L 352.0 409.5 L 352.0 520.5 L 240.0 520.5" fill="none" stroke="#4a3d78" stroke-width="1.7" stroke-linejoin="round"/>
+<path d="M 310.0 328.5 L 369.0 328.5 L 369.0 301.5 L 420.0 301.5" fill="none" stroke="#4a3d78" stroke-width="1.7" stroke-linejoin="round"/>
+<rect x="40" y="250" width="270.0" height="173" rx="7" fill="#ffffff" stroke="#3d1a78" stroke-width="1.6"/>
+<path d="M 40 288 L 40 257 Q 40 250 47 250 L 303.0 250 Q 310.0 250 310.0 257 L 310.0 288 Z" fill="#4b2a83"/>
+<text x="54" y="275" font-size="17" font-weight="bold" fill="#ffffff">registro_auditoria</text>
+<rect x="48" y="294" width="26" height="15" rx="3" fill="#4b2a83" stroke="#4b2a83" stroke-width="1"/><text x="61" y="305.5" font-size="10.5" font-weight="bold" fill="#ffffff" text-anchor="middle">PK</text>
+<text x="88" y="306.5" font-size="15" fill="#1f1f24" font-weight="bold">id_auditoria</text>
+<text x="298.0" y="306" font-size="13" fill="#8a8a92" text-anchor="end">bigint</text>
+<rect x="41" y="315" width="268.0" height="27" fill="#f7f4fc"/>
+<line x1="40" y1="315" x2="310.0" y2="315" stroke="#ebe6f4" stroke-width="1"/>
+<rect x="48" y="321" width="26" height="15" rx="3" fill="#e8e0f6" stroke="#b7a3e3" stroke-width="1"/><text x="61" y="332.5" font-size="10.5" font-weight="bold" fill="#4b2a83" text-anchor="middle">FK</text>
+<text x="88" y="333.5" font-size="15" fill="#1f1f24">id_usuario</text>
+<text x="298.0" y="333" font-size="13" fill="#8a8a92" text-anchor="end">bigint</text>
+<line x1="40" y1="342" x2="310.0" y2="342" stroke="#ebe6f4" stroke-width="1"/>
+<text x="88" y="360.5" font-size="15" fill="#1f1f24">accion_realizada</text>
+<text x="298.0" y="360" font-size="13" fill="#8a8a92" text-anchor="end">varchar(150)</text>
+<rect x="41" y="369" width="268.0" height="27" fill="#f7f4fc"/>
+<line x1="40" y1="369" x2="310.0" y2="369" stroke="#ebe6f4" stroke-width="1"/>
+<text x="88" y="387.5" font-size="15" fill="#1f1f24">modulo_afectado</text>
+<text x="298.0" y="387" font-size="13" fill="#8a8a92" text-anchor="end">varchar(50)</text>
+<line x1="40" y1="396" x2="310.0" y2="396" stroke="#ebe6f4" stroke-width="1"/>
+<text x="88" y="414.5" font-size="15" fill="#1f1f24">fecha_hora</text>
+<text x="298.0" y="414" font-size="13" fill="#8a8a92" text-anchor="end">timestamp</text>
+<rect x="40" y="469" width="200" height="65" rx="7" fill="#ffffff" stroke="#9a9aa2" stroke-width="1.6"/>
+<path d="M 40 507 L 40 476 Q 40 469 47 469 L 233 469 Q 240 469 240 476 L 240 507 Z" fill="#9a9aa2"/>
+<text x="54" y="494" font-size="17" font-weight="bold" fill="#ffffff">operario</text>
+<text x="228" y="493" font-size="12.5" fill="#f0f0f2" text-anchor="end">ver Personal</text>
+<rect x="48" y="513" width="26" height="15" rx="3" fill="#4b2a83" stroke="#4b2a83" stroke-width="1"/><text x="61" y="524.5" font-size="10.5" font-weight="bold" fill="#ffffff" text-anchor="middle">PK</text>
+<text x="88" y="525.5" font-size="15" fill="#1f1f24" font-weight="bold">id_operario</text>
+<text x="228" y="525" font-size="13" fill="#8a8a92" text-anchor="end">bigint</text>
+<rect x="420.0" y="250" width="337.0" height="389" rx="7" fill="#ffffff" stroke="#3d1a78" stroke-width="1.6"/>
+<path d="M 420.0 288 L 420.0 257 Q 420.0 250 427.0 250 L 750.0 250 Q 757.0 250 757.0 257 L 757.0 288 Z" fill="#4b2a83"/>
+<text x="434.0" y="275" font-size="17" font-weight="bold" fill="#ffffff">usuario</text>
+<rect x="428.0" y="294" width="26" height="15" rx="3" fill="#4b2a83" stroke="#4b2a83" stroke-width="1"/><text x="441.0" y="305.5" font-size="10.5" font-weight="bold" fill="#ffffff" text-anchor="middle">PK</text>
+<text x="498.0" y="306.5" font-size="15" fill="#1f1f24" font-weight="bold">id_usuario</text>
+<text x="745.0" y="306" font-size="13" fill="#8a8a92" text-anchor="end">bigint</text>
+<rect x="421.0" y="315" width="335.0" height="27" fill="#f7f4fc"/>
+<line x1="420.0" y1="315" x2="757.0" y2="315" stroke="#ebe6f4" stroke-width="1"/>
+<text x="498.0" y="333.5" font-size="15" fill="#1f1f24">nombre_usuario</text>
+<text x="745.0" y="333" font-size="13" fill="#8a8a92" text-anchor="end">varchar(50)</text>
+<line x1="420.0" y1="342" x2="757.0" y2="342" stroke="#ebe6f4" stroke-width="1"/>
+<text x="498.0" y="360.5" font-size="15" fill="#1f1f24">contrasena_hash</text>
+<text x="745.0" y="360" font-size="13" fill="#8a8a92" text-anchor="end">varchar(255)</text>
+<rect x="421.0" y="369" width="335.0" height="27" fill="#f7f4fc"/>
+<line x1="420.0" y1="369" x2="757.0" y2="369" stroke="#ebe6f4" stroke-width="1"/>
+<rect x="428.0" y="375" width="26" height="15" rx="3" fill="#e8e0f6" stroke="#b7a3e3" stroke-width="1"/><text x="441.0" y="386.5" font-size="10.5" font-weight="bold" fill="#4b2a83" text-anchor="middle">FK</text>
+<text x="498.0" y="387.5" font-size="15" fill="#1f1f24">id_rol</text>
+<text x="745.0" y="387" font-size="13" fill="#8a8a92" text-anchor="end">bigint</text>
+<line x1="420.0" y1="396" x2="757.0" y2="396" stroke="#ebe6f4" stroke-width="1"/>
+<rect x="428.0" y="402" width="26" height="15" rx="3" fill="#e8e0f6" stroke="#b7a3e3" stroke-width="1"/><text x="441.0" y="413.5" font-size="10.5" font-weight="bold" fill="#4b2a83" text-anchor="middle">FK</text>
+<rect x="458.0" y="402" width="26" height="15" rx="3" fill="#ffffff" stroke="#a9a9b0" stroke-width="1"/><text x="471.0" y="413.5" font-size="10.5" font-weight="bold" fill="#6a6a72" text-anchor="middle">UQ</text>
+<text x="498.0" y="414.5" font-size="15" fill="#6a6a72" font-style="italic">id_operario</text>
+<text x="745.0" y="414" font-size="13" fill="#8a8a92" text-anchor="end">bigint</text>
+<rect x="421.0" y="423" width="335.0" height="27" fill="#f7f4fc"/>
+<line x1="420.0" y1="423" x2="757.0" y2="423" stroke="#ebe6f4" stroke-width="1"/>
+<text x="498.0" y="441.5" font-size="15" fill="#1f1f24">estado</text>
+<text x="745.0" y="441" font-size="13" fill="#8a8a92" text-anchor="end">varchar(10)</text>
+<line x1="420.0" y1="450" x2="757.0" y2="450" stroke="#ebe6f4" stroke-width="1"/>
+<text x="498.0" y="468.5" font-size="15" fill="#6a6a72" font-style="italic">ultima_fecha_acceso</text>
+<text x="745.0" y="468" font-size="13" fill="#8a8a92" text-anchor="end">timestamp</text>
+<rect x="421.0" y="477" width="335.0" height="27" fill="#f7f4fc"/>
+<line x1="420.0" y1="477" x2="757.0" y2="477" stroke="#ebe6f4" stroke-width="1"/>
+<text x="498.0" y="495.5" font-size="15" fill="#1f1f24">fecha_alta</text>
+<text x="745.0" y="495" font-size="13" fill="#8a8a92" text-anchor="end">timestamp</text>
+<line x1="420.0" y1="504" x2="757.0" y2="504" stroke="#ebe6f4" stroke-width="1"/>
+<text x="498.0" y="522.5" font-size="15" fill="#6a6a72" font-style="italic">motivo_baja</text>
+<text x="745.0" y="522" font-size="13" fill="#8a8a92" text-anchor="end">varchar(200)</text>
+<rect x="421.0" y="531" width="335.0" height="27" fill="#f7f4fc"/>
+<line x1="420.0" y1="531" x2="757.0" y2="531" stroke="#ebe6f4" stroke-width="1"/>
+<text x="498.0" y="549.5" font-size="15" fill="#1f1f24">intentos_fallidos</text>
+<text x="745.0" y="549" font-size="13" fill="#8a8a92" text-anchor="end">integer</text>
+<line x1="420.0" y1="558" x2="757.0" y2="558" stroke="#ebe6f4" stroke-width="1"/>
+<text x="498.0" y="576.5" font-size="15" fill="#6a6a72" font-style="italic">bloqueado_hasta</text>
+<text x="745.0" y="576" font-size="13" fill="#8a8a92" text-anchor="end">timestamp</text>
+<rect x="421.0" y="585" width="335.0" height="27" fill="#f7f4fc"/>
+<line x1="420.0" y1="585" x2="757.0" y2="585" stroke="#ebe6f4" stroke-width="1"/>
+<text x="498.0" y="603.5" font-size="15" fill="#1f1f24">debe_cambiar_contrasena</text>
+<text x="745.0" y="603" font-size="13" fill="#8a8a92" text-anchor="end">boolean</text>
+<line x1="420.0" y1="612" x2="757.0" y2="612" stroke="#ebe6f4" stroke-width="1"/>
+<text x="498.0" y="630.5" font-size="15" fill="#1f1f24">version_sesion</text>
+<text x="745.0" y="630" font-size="13" fill="#8a8a92" text-anchor="end">integer</text>
+<rect x="867.0" y="250" width="235.0" height="119" rx="7" fill="#ffffff" stroke="#3d1a78" stroke-width="1.6"/>
+<path d="M 867.0 288 L 867.0 257 Q 867.0 250 874.0 250 L 1095.0 250 Q 1102.0 250 1102.0 257 L 1102.0 288 Z" fill="#4b2a83"/>
+<text x="881.0" y="275" font-size="17" font-weight="bold" fill="#ffffff">rol</text>
+<rect x="875.0" y="294" width="26" height="15" rx="3" fill="#4b2a83" stroke="#4b2a83" stroke-width="1"/><text x="888.0" y="305.5" font-size="10.5" font-weight="bold" fill="#ffffff" text-anchor="middle">PK</text>
+<text x="915.0" y="306.5" font-size="15" fill="#1f1f24" font-weight="bold">id_rol</text>
+<text x="1090.0" y="306" font-size="13" fill="#8a8a92" text-anchor="end">bigint</text>
+<rect x="868.0" y="315" width="233.0" height="27" fill="#f7f4fc"/>
+<line x1="867.0" y1="315" x2="1102.0" y2="315" stroke="#ebe6f4" stroke-width="1"/>
+<text x="915.0" y="333.5" font-size="15" fill="#1f1f24">nombre_rol</text>
+<text x="1090.0" y="333" font-size="13" fill="#8a8a92" text-anchor="end">varchar(50)</text>
+<line x1="867.0" y1="342" x2="1102.0" y2="342" stroke="#ebe6f4" stroke-width="1"/>
+<text x="915.0" y="360.5" font-size="15" fill="#6a6a72" font-style="italic">descripcion</text>
+<text x="1090.0" y="360" font-size="13" fill="#8a8a92" text-anchor="end">varchar(200)</text>
+<rect x="867.0" y="415" width="227.0" height="92" rx="7" fill="#ffffff" stroke="#3d1a78" stroke-width="1.6"/>
+<path d="M 867.0 453 L 867.0 422 Q 867.0 415 874.0 415 L 1087.0 415 Q 1094.0 415 1094.0 422 L 1094.0 453 Z" fill="#4b2a83"/>
+<text x="881.0" y="440" font-size="17" font-weight="bold" fill="#ffffff">rol_permiso</text>
+<rect x="875.0" y="459" width="26" height="15" rx="3" fill="#4b2a83" stroke="#4b2a83" stroke-width="1"/><text x="888.0" y="470.5" font-size="10.5" font-weight="bold" fill="#ffffff" text-anchor="middle">PK</text>
+<rect x="905.0" y="459" width="26" height="15" rx="3" fill="#e8e0f6" stroke="#b7a3e3" stroke-width="1"/><text x="918.0" y="470.5" font-size="10.5" font-weight="bold" fill="#4b2a83" text-anchor="middle">FK</text>
+<text x="945.0" y="471.5" font-size="15" fill="#1f1f24" font-weight="bold">id_rol</text>
+<text x="1082.0" y="471" font-size="13" fill="#8a8a92" text-anchor="end">bigint</text>
+<rect x="868.0" y="480" width="225.0" height="27" fill="#f7f4fc"/>
+<line x1="867.0" y1="480" x2="1094.0" y2="480" stroke="#ebe6f4" stroke-width="1"/>
+<rect x="875.0" y="486" width="26" height="15" rx="3" fill="#4b2a83" stroke="#4b2a83" stroke-width="1"/><text x="888.0" y="497.5" font-size="10.5" font-weight="bold" fill="#ffffff" text-anchor="middle">PK</text>
+<rect x="905.0" y="486" width="26" height="15" rx="3" fill="#e8e0f6" stroke="#b7a3e3" stroke-width="1"/><text x="918.0" y="497.5" font-size="10.5" font-weight="bold" fill="#4b2a83" text-anchor="middle">FK</text>
+<text x="945.0" y="498.5" font-size="15" fill="#1f1f24" font-weight="bold">id_permiso</text>
+<text x="1082.0" y="498" font-size="13" fill="#8a8a92" text-anchor="end">bigint</text>
+<rect x="867.0" y="553" width="271.0" height="146" rx="7" fill="#ffffff" stroke="#3d1a78" stroke-width="1.6"/>
+<path d="M 867.0 591 L 867.0 560 Q 867.0 553 874.0 553 L 1131.0 553 Q 1138.0 553 1138.0 560 L 1138.0 591 Z" fill="#4b2a83"/>
+<text x="881.0" y="578" font-size="17" font-weight="bold" fill="#ffffff">permiso</text>
+<rect x="875.0" y="597" width="26" height="15" rx="3" fill="#4b2a83" stroke="#4b2a83" stroke-width="1"/><text x="888.0" y="608.5" font-size="10.5" font-weight="bold" fill="#ffffff" text-anchor="middle">PK</text>
+<text x="915.0" y="609.5" font-size="15" fill="#1f1f24" font-weight="bold">id_permiso</text>
+<text x="1126.0" y="609" font-size="13" fill="#8a8a92" text-anchor="end">bigint</text>
+<rect x="868.0" y="618" width="269.0" height="27" fill="#f7f4fc"/>
+<line x1="867.0" y1="618" x2="1138.0" y2="618" stroke="#ebe6f4" stroke-width="1"/>
+<text x="915.0" y="636.5" font-size="15" fill="#1f1f24">nombre_permiso</text>
+<text x="1126.0" y="636" font-size="13" fill="#8a8a92" text-anchor="end">varchar(100)</text>
+<line x1="867.0" y1="645" x2="1138.0" y2="645" stroke="#ebe6f4" stroke-width="1"/>
+<text x="915.0" y="663.5" font-size="15" fill="#1f1f24">modulo</text>
+<text x="1126.0" y="663" font-size="13" fill="#8a8a92" text-anchor="end">varchar(50)</text>
+<rect x="868.0" y="672" width="269.0" height="27" fill="#f7f4fc"/>
+<line x1="867.0" y1="672" x2="1138.0" y2="672" stroke="#ebe6f4" stroke-width="1"/>
+<text x="915.0" y="690.5" font-size="15" fill="#6a6a72" font-style="italic">descripcion</text>
+<text x="1126.0" y="690" font-size="13" fill="#8a8a92" text-anchor="end">varchar(200)</text>
+<path d="M 1094.0 458.5 L 1108.0 466.5 L 1094.0 474.5 M 1094.0 466.5 L 1108.0 466.5" fill="none" stroke="#4a3d78" stroke-width="1.7"/>
+<circle cx="1115.0" cy="466.5" r="5" fill="#ffffff" stroke="#4a3d78" stroke-width="1.6"/>
+<line x1="1110.0" y1="294.5" x2="1110.0" y2="308.5" stroke="#4a3d78" stroke-width="1.8"/>
+<line x1="1116.0" y1="294.5" x2="1116.0" y2="308.5" stroke="#4a3d78" stroke-width="1.8"/>
+<path d="M 1094.0 485.5 L 1108.0 493.5 L 1094.0 501.5 M 1094.0 493.5 L 1108.0 493.5" fill="none" stroke="#4a3d78" stroke-width="1.7"/>
+<circle cx="1115.0" cy="493.5" r="5" fill="#ffffff" stroke="#4a3d78" stroke-width="1.6"/>
+<line x1="1146.0" y1="597.5" x2="1146.0" y2="611.5" stroke="#4a3d78" stroke-width="1.8"/>
+<line x1="1152.0" y1="597.5" x2="1152.0" y2="611.5" stroke="#4a3d78" stroke-width="1.8"/>
+<path d="M 757.0 374.5 L 771.0 382.5 L 757.0 390.5 M 757.0 382.5 L 771.0 382.5" fill="none" stroke="#4a3d78" stroke-width="1.7"/>
+<circle cx="778.0" cy="382.5" r="5" fill="#ffffff" stroke="#4a3d78" stroke-width="1.6"/>
+<line x1="859.0" y1="294.5" x2="859.0" y2="308.5" stroke="#4a3d78" stroke-width="1.8"/>
+<line x1="853.0" y1="294.5" x2="853.0" y2="308.5" stroke="#4a3d78" stroke-width="1.8"/>
+<line x1="412.0" y1="402.5" x2="412.0" y2="416.5" stroke="#4a3d78" stroke-width="1.8"/>
+<circle cx="403.0" cy="409.5" r="5" fill="#ffffff" stroke="#4a3d78" stroke-width="1.6"/>
+<line x1="248" y1="513.5" x2="248" y2="527.5" stroke="#4a3d78" stroke-width="1.8"/>
+<circle cx="257" cy="520.5" r="5" fill="#ffffff" stroke="#4a3d78" stroke-width="1.6"/>
+<path d="M 310.0 320.5 L 324.0 328.5 L 310.0 336.5 M 310.0 328.5 L 324.0 328.5" fill="none" stroke="#4a3d78" stroke-width="1.7"/>
+<circle cx="331.0" cy="328.5" r="5" fill="#ffffff" stroke="#4a3d78" stroke-width="1.6"/>
+<line x1="412.0" y1="294.5" x2="412.0" y2="308.5" stroke="#4a3d78" stroke-width="1.8"/>
+<line x1="406.0" y1="294.5" x2="406.0" y2="308.5" stroke="#4a3d78" stroke-width="1.8"/>
+</svg>
