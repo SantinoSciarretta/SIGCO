@@ -80,53 +80,53 @@
 <rect x="1148.0" y="682.5" width="48.0" height="18" rx="3.5" fill="#2176b5"/>
 <rect x="1232.0" y="682.5" width="36.0" height="18" rx="3.5" fill="#2176b5"/>
 <text x="1468" y="697.5" font-size="16" fill="#444" text-anchor="end">22</text>
-<text x="372" y="728.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Usuarios</text>
-<rect x="1144.0" y="713.5" width="40.0" height="18" rx="3.5" fill="#2176b5"/>
+<text x="372" y="728.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Obras</text>
+<rect x="1064.0" y="713.5" width="44.0" height="18" rx="3.5" fill="#2176b5"/>
+<rect x="1152.0" y="713.5" width="44.0" height="18" rx="3.5" fill="#2176b5"/>
 <text x="1468" y="728.5" font-size="16" fill="#444" text-anchor="end">16</text>
-<text x="372" y="759.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Accesos</text>
-<rect x="1156.0" y="744.5" width="60.0" height="18" rx="3.5" fill="#2176b5"/>
-<text x="1468" y="759.5" font-size="16" fill="#444" text-anchor="end">28</text>
-<text x="372" y="790.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Obras</text>
-<rect x="1064.0" y="775.5" width="44.0" height="18" rx="3.5" fill="#2176b5"/>
-<rect x="1152.0" y="775.5" width="44.0" height="18" rx="3.5" fill="#2176b5"/>
-<text x="1468" y="790.5" font-size="16" fill="#444" text-anchor="end">16</text>
-<text x="372" y="821.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Personal</text>
-<rect x="1124.0" y="806.5" width="36.0" height="18" rx="3.5" fill="#2176b5"/>
-<text x="1468" y="821.5" font-size="16" fill="#444" text-anchor="end">13</text>
-<text x="372" y="852.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Clientes</text>
-<rect x="1064.0" y="837.5" width="40.0" height="18" rx="3.5" fill="#2176b5"/>
-<text x="1468" y="852.5" font-size="16" fill="#444" text-anchor="end">14</text>
-<text x="372" y="883.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Presupuestación</text>
-<rect x="1068.0" y="868.5" width="72.0" height="18" rx="3.5" fill="#2176b5"/>
-<rect x="1176.0" y="868.5" width="92.0" height="18" rx="3.5" fill="#2176b5"/>
-<text x="1468" y="883.5" font-size="16" fill="#444" text-anchor="end">42</text>
-<text x="372" y="914.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Gastos</text>
-<rect x="1124.0" y="899.5" width="44.0" height="18" rx="3.5" fill="#2176b5"/>
-<text x="1468" y="914.5" font-size="16" fill="#444" text-anchor="end">20</text>
-<text x="372" y="945.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Seguimiento de Obras</text>
-<rect x="1128.0" y="930.5" width="40.0" height="18" rx="3.5" fill="#2176b5"/>
-<rect x="1204.0" y="930.5" width="64.0" height="18" rx="3.5" fill="#2176b5"/>
-<text x="1468" y="945.5" font-size="16" fill="#444" text-anchor="end">24</text>
-<text x="372" y="976.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Proveedores</text>
-<rect x="1092.0" y="961.5" width="40.0" height="18" rx="3.5" fill="#2176b5"/>
-<text x="1468" y="976.5" font-size="16" fill="#444" text-anchor="end">12</text>
-<text x="372" y="1007.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Materiales</text>
-<rect x="1072.0" y="992.5" width="28.0" height="18" rx="3.5" fill="#2176b5"/>
-<text x="1468" y="1007.5" font-size="16" fill="#444" text-anchor="end">8</text>
-<text x="372" y="1038.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Compras</text>
-<rect x="1132.0" y="1023.5" width="60.0" height="18" rx="3.5" fill="#2176b5"/>
-<rect x="1212.0" y="1023.5" width="56.0" height="18" rx="3.5" fill="#2176b5"/>
-<text x="1468" y="1038.5" font-size="16" fill="#444" text-anchor="end">30</text>
-<text x="372" y="1069.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Cobros</text>
-<rect x="1136.0" y="1054.5" width="48.0" height="18" rx="3.5" fill="#2176b5"/>
-<rect x="1204.0" y="1054.5" width="44.0" height="18" rx="3.5" fill="#2176b5"/>
-<text x="1468" y="1069.5" font-size="16" fill="#444" text-anchor="end">26</text>
-<text x="372" y="1100.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Portfolio Web</text>
-<rect x="1136.0" y="1085.5" width="32.0" height="18" rx="3.5" fill="#2176b5"/>
-<text x="1468" y="1100.5" font-size="16" fill="#444" text-anchor="end">12</text>
-<text x="372" y="1131.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Dashboard</text>
-<rect x="1156.0" y="1116.5" width="64.0" height="18" rx="3.5" fill="#2176b5"/>
-<text x="1468" y="1131.5" font-size="16" fill="#444" text-anchor="end">14</text>
+<text x="372" y="759.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Personal</text>
+<rect x="1124.0" y="744.5" width="36.0" height="18" rx="3.5" fill="#2176b5"/>
+<text x="1468" y="759.5" font-size="16" fill="#444" text-anchor="end">13</text>
+<text x="372" y="790.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Clientes</text>
+<rect x="1064.0" y="775.5" width="40.0" height="18" rx="3.5" fill="#2176b5"/>
+<text x="1468" y="790.5" font-size="16" fill="#444" text-anchor="end">14</text>
+<text x="372" y="821.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Presupuestación</text>
+<rect x="1068.0" y="806.5" width="72.0" height="18" rx="3.5" fill="#2176b5"/>
+<rect x="1176.0" y="806.5" width="92.0" height="18" rx="3.5" fill="#2176b5"/>
+<text x="1468" y="821.5" font-size="16" fill="#444" text-anchor="end">42</text>
+<text x="372" y="852.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Gastos</text>
+<rect x="1124.0" y="837.5" width="44.0" height="18" rx="3.5" fill="#2176b5"/>
+<text x="1468" y="852.5" font-size="16" fill="#444" text-anchor="end">20</text>
+<text x="372" y="883.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Seguimiento de Obras</text>
+<rect x="1128.0" y="868.5" width="40.0" height="18" rx="3.5" fill="#2176b5"/>
+<rect x="1204.0" y="868.5" width="64.0" height="18" rx="3.5" fill="#2176b5"/>
+<text x="1468" y="883.5" font-size="16" fill="#444" text-anchor="end">24</text>
+<text x="372" y="914.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Proveedores</text>
+<rect x="1092.0" y="899.5" width="40.0" height="18" rx="3.5" fill="#2176b5"/>
+<text x="1468" y="914.5" font-size="16" fill="#444" text-anchor="end">12</text>
+<text x="372" y="945.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Materiales</text>
+<rect x="1072.0" y="930.5" width="28.0" height="18" rx="3.5" fill="#2176b5"/>
+<text x="1468" y="945.5" font-size="16" fill="#444" text-anchor="end">8</text>
+<text x="372" y="976.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Compras</text>
+<rect x="1132.0" y="961.5" width="60.0" height="18" rx="3.5" fill="#2176b5"/>
+<rect x="1212.0" y="961.5" width="56.0" height="18" rx="3.5" fill="#2176b5"/>
+<text x="1468" y="976.5" font-size="16" fill="#444" text-anchor="end">30</text>
+<text x="372" y="1007.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Cobros</text>
+<rect x="1136.0" y="992.5" width="48.0" height="18" rx="3.5" fill="#2176b5"/>
+<rect x="1204.0" y="992.5" width="44.0" height="18" rx="3.5" fill="#2176b5"/>
+<text x="1468" y="1007.5" font-size="16" fill="#444" text-anchor="end">26</text>
+<text x="372" y="1038.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Portfolio Web</text>
+<rect x="1136.0" y="1023.5" width="32.0" height="18" rx="3.5" fill="#2176b5"/>
+<text x="1468" y="1038.5" font-size="16" fill="#444" text-anchor="end">12</text>
+<text x="372" y="1069.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Dashboard</text>
+<rect x="1156.0" y="1054.5" width="40.0" height="18" rx="3.5" fill="#2176b5"/>
+<text x="1468" y="1069.5" font-size="16" fill="#444" text-anchor="end">14</text>
+<text x="372" y="1100.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Usuarios</text>
+<rect x="1196.0" y="1085.5" width="28.0" height="18" rx="3.5" fill="#2176b5"/>
+<text x="1468" y="1100.5" font-size="16" fill="#444" text-anchor="end">16</text>
+<text x="372" y="1131.5" font-size="16" fill="#2b2b2b" text-anchor="end">Módulo Accesos</text>
+<rect x="1216.0" y="1116.5" width="40.0" height="18" rx="3.5" fill="#2176b5"/>
+<text x="1468" y="1131.5" font-size="16" fill="#444" text-anchor="end">28</text>
 <text x="372" y="1162.5" font-size="16" fill="#2b2b2b" text-anchor="end">Integración de módulos y debugging</text>
 <rect x="1204.0" y="1147.5" width="64.0" height="18" rx="3.5" fill="#2176b5"/>
 <text x="1468" y="1162.5" font-size="16" fill="#444" text-anchor="end">24</text>

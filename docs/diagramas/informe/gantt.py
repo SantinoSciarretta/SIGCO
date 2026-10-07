@@ -31,8 +31,6 @@ ETAPAS = [
     ]),
     ('Desarrollo', '#2176b5', 321, [
         ('Implementación de la BD (PostgreSQL)', 22, [('08-17', '08-28'), ('09-07', '09-18'), ('09-28', '10-06')]),
-        ('Módulo Usuarios', 16, [('09-06', '09-15')]),
-        ('Módulo Accesos', 28, [('09-09', '09-23')]),
         ('Módulo Obras', 16, [('08-17', '08-27'), ('09-08', '09-18')]),
         ('Módulo Personal', 13, [('09-01', '09-09')]),
         ('Módulo Clientes', 14, [('08-17', '08-26')]),
@@ -44,7 +42,11 @@ ETAPAS = [
         ('Módulo Compras', 30, [('09-03', '09-17'), ('09-23', '10-06')]),
         ('Módulo Cobros', 26, [('09-04', '09-15'), ('09-21', '10-01')]),
         ('Módulo Portfolio Web', 12, [('09-04', '09-11')]),
-        ('Módulo Dashboard', 14, [('09-09', '09-24')]),
+        ('Módulo Dashboard', 14, [('09-09', '09-18')]),
+        # Usuarios y Accesos van al final: la seguridad se monta sobre los
+        # modulos ya terminados (orden de desarrollo del proyecto).
+        ('Módulo Usuarios', 16, [('09-19', '09-25')]),
+        ('Módulo Accesos', 28, [('09-24', '10-03')]),
         ('Integración de módulos y debugging', 24, [('09-21', '10-06')]),
     ]),
     ('Pruebas y Documentación', '#e07b10', 59, [
