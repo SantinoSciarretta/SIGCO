@@ -226,7 +226,10 @@ function colorDeEstado(estado) {
  * camino, falta confirmar la recepción".
  */
 function textoDeEstado(pedido) {
-  const cuantos = `${pedido.materiales?.length ?? 0} materiales`;
+  // El listado de pedidos trae el resumen, que tiene la cantidad de materiales
+  // pero no el detalle: contar 'materiales' daba siempre cero.
+  const n = pedido.cantidadMateriales ?? pedido.materiales?.length ?? 0;
+  const cuantos = `${n} ${n === 1 ? 'material' : 'materiales'}`;
   switch (pedido.estado) {
     case 'Pendiente de Aprobación': return `Pedido de ${cuantos} · esperando aprobación`;
     case 'Enviado al Proveedor': return `Pedido en camino · falta confirmar la recepción`;

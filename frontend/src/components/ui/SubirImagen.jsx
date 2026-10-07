@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import client from '../../api/client';
 import { comprimirImagen } from './comprimirImagen';
 import { urlDeArchivo } from './archivos';
@@ -52,11 +52,15 @@ export default function SubirImagen({ carpeta, valor, onSubida, etiqueta = 'Subi
       datos.append('archivo', liviano);
       datos.append('carpeta', carpeta);
 
-      // Sin Content-Type a mano: el navegador tiene que ponerlo él, porque
-      // multipart lleva un separador que genera al momento de enviar. Si se
-      // escribe la cabecera, ese separador falta y el backend no puede leerlo.
+      // El cliente manda 'application/json' por defecto, y con esa cabecera
+      // Axios convierte el FormData a JSON: el archivo no llega y el backend
+      // responde que no es un pedido multipart. Por eso se indica multipart
+      // acá. No hace falta escribir el separador: Axios quita la cabecera
+      // antes de enviar y el navegador la arma completa, con su separador.
       const anterior = valor;
-      const { data } = await client.post('/archivos', datos);
+      const { data } = await client.post('/archivos', datos, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
       onSubida(data.referencia);
 
       // Reemplazar una foto dejaba huérfana a la anterior. Se borra después de
@@ -151,9 +155,9 @@ export default function SubirImagen({ carpeta, valor, onSubida, etiqueta = 'Subi
  * bucket.
  */
 export function VistaPrevia({ referencia, className }) {
+  const url = useUrlDeArchivo(referencia);
   if (!referencia) return null;
 
-  const url = urlDeArchivo(referencia);
   const esPdf = referencia.toLowerCase().endsWith('.pdf');
 
   if (esPdf) {
@@ -169,4 +173,39 @@ export function VistaPrevia({ referencia, className }) {
     <img src={url} alt="Archivo adjunto"
          className={`${estilos.imagen} ${className ?? ''}`.trim()} />
   );
+}
+
+/**
+ * La dirección con la que la pantalla muestra un archivo subido.
+ *
+ * Los archivos públicos (las fotos del portfolio) se piden directo. Los
+ * privados (remitos y comprobantes) no: el backend exige la sesión, y una
+ * etiqueta <img> no manda el token, así que la imagen aparecía rota. Por eso
+ * se piden con el cliente, que sí adjunta el token, y se muestran desde una
+ * copia en memoria del navegador, que se libera al dejar de usarse.
+ */
+function useUrlDeArchivo(referencia) {
+  const privado = Boolean(referencia) && referencia.startsWith('privado/');
+  const [local, setLocal] = useState(null);
+
+  useEffect(() => {
+    if (!privado) return undefined;
+    let vigente = true;
+    let creada = null;
+    client.get(`/archivos/${referencia}`, { responseType: 'blob' })
+      .then(({ data }) => {
+        if (!vigente) return;
+        creada = URL.createObjectURL(data);
+        setLocal(creada);
+      })
+      .catch(() => {});
+    return () => {
+      vigente = false;
+      if (creada) URL.revokeObjectURL(creada);
+      setLocal(null);
+    };
+  }, [referencia, privado]);
+
+  if (!referencia) return null;
+  return privado ? local : urlDeArchivo(referencia);
 }
