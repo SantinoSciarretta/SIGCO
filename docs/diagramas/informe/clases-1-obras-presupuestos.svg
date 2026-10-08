@@ -1,0 +1,158 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1070" height="1580" viewBox="0 0 1070 1580" font-family="Arial, Helvetica, sans-serif"><rect width="1070" height="1580" fill="#ffffff"/><text x="40" y="52" font-size="30" font-weight="bold" fill="#2f2f2f">Diagrama de clases 1: Clientes, obras y presupuestos</text><rect x="40" y="100" width="226.0" height="280" fill="#ffffff" stroke="#3d1a78" stroke-width="2"/>
+<rect x="40" y="100" width="226.0" height="39" fill="#ece7fb" stroke="#3d1a78" stroke-width="2"/>
+<text x="153.0" y="125.5" font-size="17" font-weight="bold" fill="#3d1a78" text-anchor="middle">Cliente</text>
+<line x1="40" y1="307" x2="266.0" y2="307" stroke="#3d1a78" stroke-width="1.5"/>
+<text x="52" y="161" font-size="14.5" fill="#222">- idCliente: Long</text>
+<text x="52" y="180" font-size="14.5" fill="#222">- nombreApellido: String</text>
+<text x="52" y="199" font-size="14.5" fill="#222">- telefonoContacto: String</text>
+<text x="52" y="218" font-size="14.5" fill="#222">- emailContacto: String</text>
+<text x="52" y="237" font-size="14.5" fill="#222">- origenRecomendacion: String</text>
+<text x="52" y="256" font-size="14.5" fill="#222">- recomendadoPor: String</text>
+<text x="52" y="275" font-size="14.5" fill="#222">- estado: String</text>
+<text x="52" y="294" font-size="14.5" fill="#222">- fechaAlta: LocalDateTime</text>
+<text x="52" y="329" font-size="14.5" fill="#222">+ actualizarDatos(…): void</text>
+<text x="52" y="348" font-size="14.5" fill="#222">+ activar(): void</text>
+<text x="52" y="367" font-size="14.5" fill="#222">+ desactivar(): void</text>
+<rect x="600" y="100" width="287.0" height="489" fill="#ffffff" stroke="#3d1a78" stroke-width="2"/>
+<rect x="600" y="100" width="287.0" height="39" fill="#ece7fb" stroke="#3d1a78" stroke-width="2"/>
+<text x="743.5" y="125.5" font-size="17" font-weight="bold" fill="#3d1a78" text-anchor="middle">Obra</text>
+<line x1="600" y1="402" x2="887.0" y2="402" stroke="#3d1a78" stroke-width="1.5"/>
+<text x="612" y="161" font-size="14.5" fill="#222">- idObra: Long</text>
+<text x="612" y="180" font-size="14.5" fill="#222">- direccionObra: String</text>
+<text x="612" y="199" font-size="14.5" fill="#222">- tipoInmueble: String</text>
+<text x="612" y="218" font-size="14.5" fill="#222">- tipoObra: String</text>
+<text x="612" y="237" font-size="14.5" fill="#222">- fechaInicioReal: LocalDate</text>
+<text x="612" y="256" font-size="14.5" fill="#222">- fechaFinEstimada: LocalDate</text>
+<text x="612" y="275" font-size="14.5" fill="#222">- fechaInicioEstimada: LocalDate</text>
+<text x="612" y="294" font-size="14.5" fill="#222">- mesesEstimados: Integer</text>
+<text x="612" y="313" font-size="14.5" fill="#222">- notas: String</text>
+<text x="612" y="332" font-size="14.5" fill="#222">- estado: String</text>
+<text x="612" y="351" font-size="14.5" fill="#222">- motivoCancelacion: String</text>
+<text x="612" y="370" font-size="14.5" fill="#222">- idUltimoCacAplicado: Long</text>
+<text x="612" y="389" font-size="14.5" fill="#222">- fechaCreacion: LocalDateTime</text>
+<text x="612" y="424" font-size="14.5" fill="#222">+ actualizarDatos(…): void</text>
+<text x="612" y="443" font-size="14.5" fill="#222">+ corregirTipoObra(String): void</text>
+<text x="612" y="462" font-size="14.5" fill="#222">+ estimarPlazo(LocalDate, Integer): void</text>
+<text x="612" y="481" font-size="14.5" fill="#222">+ registrarInicioReal(LocalDate): void</text>
+<text x="612" y="500" font-size="14.5" fill="#222">+ pasarAEjecucion(): void</text>
+<text x="612" y="519" font-size="14.5" fill="#222">+ volverAPresupuestacion(): void</text>
+<text x="612" y="538" font-size="14.5" fill="#222">+ finalizar(): void</text>
+<text x="612" y="557" font-size="14.5" fill="#222">+ cancelar(String): void</text>
+<text x="612" y="576" font-size="14.5" fill="#222">+ registrarCacAplicado(Long): void</text>
+<rect x="40" y="470" width="132.0" height="43" fill="#f4f4f6" stroke="#9a9aa0" stroke-width="2" stroke-dasharray="7 4"/>
+<text x="106.0" y="497.5" font-size="17" font-weight="bold" fill="#77777c" text-anchor="middle">RegistroCac</text>
+<rect x="40" y="690" width="342.0" height="280" fill="#ffffff" stroke="#3d1a78" stroke-width="2"/>
+<rect x="40" y="690" width="342.0" height="39" fill="#ece7fb" stroke="#3d1a78" stroke-width="2"/>
+<text x="211.0" y="715.5" font-size="17" font-weight="bold" fill="#3d1a78" text-anchor="middle">ItemPresupuesto</text>
+<line x1="40" y1="878" x2="382.0" y2="878" stroke="#3d1a78" stroke-width="1.5"/>
+<text x="52" y="751" font-size="14.5" fill="#222">- idItem: Long</text>
+<text x="52" y="770" font-size="14.5" fill="#222">- descripcion: String</text>
+<text x="52" y="789" font-size="14.5" fill="#222">- unidadMedida: String</text>
+<text x="52" y="808" font-size="14.5" fill="#222">- cantidad: BigDecimal</text>
+<text x="52" y="827" font-size="14.5" fill="#222">- valorUnitario: BigDecimal</text>
+<text x="52" y="846" font-size="14.5" fill="#222">- subtotal: BigDecimal</text>
+<text x="52" y="865" font-size="14.5" fill="#222">- porcentaje: BigDecimal</text>
+<text x="52" y="900" font-size="14.5" fill="#222">+ actualizar(…): void</text>
+<text x="52" y="919" font-size="14.5" fill="#222">+ «static» deManoDeObra(…): ItemPresupuesto</text>
+<text x="52" y="938" font-size="14.5" fill="#222">+ «static» deImprevistos(…): ItemPresupuesto</text>
+<text x="52" y="957" font-size="14.5" fill="#222">+ copiarPara(Presupuesto): ItemPresupuesto</text>
+<rect x="560" y="690" width="397.0" height="508" fill="#ffffff" stroke="#3d1a78" stroke-width="2"/>
+<rect x="560" y="690" width="397.0" height="39" fill="#ece7fb" stroke="#3d1a78" stroke-width="2"/>
+<text x="758.5" y="715.5" font-size="17" font-weight="bold" fill="#3d1a78" text-anchor="middle">Presupuesto</text>
+<line x1="560" y1="973" x2="957.0" y2="973" stroke="#3d1a78" stroke-width="1.5"/>
+<text x="572" y="751" font-size="14.5" fill="#222">- idPresupuesto: Long</text>
+<text x="572" y="770" font-size="14.5" fill="#222">- tipoPresupuesto: String</text>
+<text x="572" y="789" font-size="14.5" fill="#222">- version: Integer</text>
+<text x="572" y="808" font-size="14.5" fill="#222">- estado: String</text>
+<text x="572" y="827" font-size="14.5" fill="#222">- metrosCuadrados: BigDecimal</text>
+<text x="572" y="846" font-size="14.5" fill="#222">- valorPorM2: BigDecimal</text>
+<text x="572" y="865" font-size="14.5" fill="#222">- totalPresupuesto: BigDecimal</text>
+<text x="572" y="884" font-size="14.5" fill="#222">- anticipoPorcentaje: BigDecimal</text>
+<text x="572" y="903" font-size="14.5" fill="#222">- cantidadCuotas: Integer</text>
+<text x="572" y="922" font-size="14.5" fill="#222">- honorariosPorcentaje: BigDecimal</text>
+<text x="572" y="941" font-size="14.5" fill="#222">- plazoEstimadoObra: String</text>
+<text x="572" y="960" font-size="14.5" fill="#222">- fechaCreacion: LocalDateTime</text>
+<text x="572" y="995" font-size="14.5" fill="#222">+ calcularCotizacionInicial(BigDecimal, BigDecimal): void</text>
+<text x="572" y="1014" font-size="14.5" fill="#222">+ definirHonorarios(BigDecimal): void</text>
+<text x="572" y="1033" font-size="14.5" fill="#222">+ recalcularTotal(): void</text>
+<text x="572" y="1052" font-size="14.5" fill="#222">+ agregarItem(ItemPresupuesto): void</text>
+<text x="572" y="1071" font-size="14.5" fill="#222">+ quitarItem(ItemPresupuesto): void</text>
+<text x="572" y="1090" font-size="14.5" fill="#222">+ definirPlanDePago(BigDecimal, Integer, String): void</text>
+<text x="572" y="1109" font-size="14.5" fill="#222">+ calcularAnticipo(): BigDecimal</text>
+<text x="572" y="1128" font-size="14.5" fill="#222">+ calcularMontoDeCuota(): BigDecimal</text>
+<text x="572" y="1147" font-size="14.5" fill="#222">+ enviar(): void</text>
+<text x="572" y="1166" font-size="14.5" fill="#222">+ aprobar(): void</text>
+<text x="572" y="1185" font-size="14.5" fill="#222">+ rechazar(): void</text>
+<rect x="40" y="1290" width="189.0" height="185" fill="#ffffff" stroke="#3d1a78" stroke-width="2"/>
+<rect x="40" y="1290" width="189.0" height="39" fill="#ece7fb" stroke="#3d1a78" stroke-width="2"/>
+<text x="134.5" y="1315.5" font-size="17" font-weight="bold" fill="#3d1a78" text-anchor="middle">Subrubro</text>
+<line x1="40" y1="1402" x2="229.0" y2="1402" stroke="#3d1a78" stroke-width="1.5"/>
+<text x="52" y="1351" font-size="14.5" fill="#222">- idSubrubro: Long</text>
+<text x="52" y="1370" font-size="14.5" fill="#222">- nombreSubrubro: String</text>
+<text x="52" y="1389" font-size="14.5" fill="#222">- estado: String</text>
+<text x="52" y="1424" font-size="14.5" fill="#222">+ renombrar(String): void</text>
+<text x="52" y="1443" font-size="14.5" fill="#222">+ activar(): void</text>
+<text x="52" y="1462" font-size="14.5" fill="#222">+ desactivar(): void</text>
+<rect x="290" y="1290" width="309.0" height="242" fill="#ffffff" stroke="#3d1a78" stroke-width="2"/>
+<rect x="290" y="1290" width="309.0" height="39" fill="#ece7fb" stroke="#3d1a78" stroke-width="2"/>
+<text x="444.5" y="1315.5" font-size="17" font-weight="bold" fill="#3d1a78" text-anchor="middle">Rubro</text>
+<line x1="290" y1="1440" x2="599.0" y2="1440" stroke="#3d1a78" stroke-width="1.5"/>
+<text x="302" y="1351" font-size="14.5" fill="#222">- idRubro: Long</text>
+<text x="302" y="1370" font-size="14.5" fill="#222">- nombreRubro: String</text>
+<text x="302" y="1389" font-size="14.5" fill="#222">- estado: String</text>
+<text x="302" y="1408" font-size="14.5" fill="#222">- esManoDeObra: boolean</text>
+<text x="302" y="1427" font-size="14.5" fill="#222">- esImprevistos: boolean</text>
+<text x="302" y="1462" font-size="14.5" fill="#222">+ marcarComoManoDeObra(boolean): void</text>
+<text x="302" y="1481" font-size="14.5" fill="#222">+ renombrar(String): void</text>
+<text x="302" y="1500" font-size="14.5" fill="#222">+ activar(): void</text>
+<text x="302" y="1519" font-size="14.5" fill="#222">+ desactivar(): void</text>
+<rect x="660" y="1290" width="316.0" height="223" fill="#ffffff" stroke="#3d1a78" stroke-width="2"/>
+<rect x="660" y="1290" width="316.0" height="39" fill="#ece7fb" stroke="#3d1a78" stroke-width="2"/>
+<text x="818.0" y="1315.5" font-size="17" font-weight="bold" fill="#3d1a78" text-anchor="middle">Material</text>
+<line x1="660" y1="1440" x2="976.0" y2="1440" stroke="#3d1a78" stroke-width="1.5"/>
+<text x="672" y="1351" font-size="14.5" fill="#222">- idMaterial: Long</text>
+<text x="672" y="1370" font-size="14.5" fill="#222">- nombreMaterial: String</text>
+<text x="672" y="1389" font-size="14.5" fill="#222">- unidadMedida: String</text>
+<text x="672" y="1408" font-size="14.5" fill="#222">- estado: String</text>
+<text x="672" y="1427" font-size="14.5" fill="#222">- fechaAlta: LocalDateTime</text>
+<text x="672" y="1462" font-size="14.5" fill="#222">+ actualizarDatos(String, Rubro, String): void</text>
+<text x="672" y="1481" font-size="14.5" fill="#222">+ activar(): void</text>
+<text x="672" y="1500" font-size="14.5" fill="#222">+ desactivar(): void</text>
+<polyline points="600.0,319.1 266.0,260.0" fill="none" stroke="#3a3a3a" stroke-width="1.8"/>
+<text x="584.7" y="307.2" font-size="15" font-weight="bold" fill="#3a3a3a" text-anchor="middle">*</text>
+<text x="281.3" y="281.9" font-size="15" font-weight="bold" fill="#3a3a3a" text-anchor="middle">1</text>
+<polyline points="600.0,377.6 172.0,476.3" fill="none" stroke="#3a3a3a" stroke-width="1.8" stroke-dasharray="8 5"/>
+<text x="579.3" y="373.0" font-size="15" font-weight="bold" fill="#3a3a3a" text-anchor="middle">*</text>
+<text x="192.7" y="490.9" font-size="15" font-weight="bold" fill="#3a3a3a" text-anchor="middle">0..1</text>
+<text x="390.0" y="458.0" font-size="14" font-style="italic" fill="#555" text-anchor="middle">último CAC aplicado</text>
+<polyline points="743.5,690.0 743.5,589.0" fill="none" stroke="#3a3a3a" stroke-width="1.8"/>
+<text x="757.5" y="677.0" font-size="15" font-weight="bold" fill="#3a3a3a" text-anchor="middle">*</text>
+<text x="729.5" y="612.0" font-size="15" font-weight="bold" fill="#3a3a3a" text-anchor="middle">1</text>
+<path d="M957.0,730 L1017.0,730 L1017.0,640 L907.0,640 L907.0,690" fill="none" stroke="#3a3a3a" stroke-width="1.8"/>
+<text x="977.0" y="722" font-size="15" font-weight="bold" fill="#3a3a3a">*</text>
+<text x="897.0" y="678" font-size="15" font-weight="bold" fill="#3a3a3a" text-anchor="end">0..1</text>
+<text x="962.0" y="632.0" font-size="14" font-style="italic" fill="#555" text-anchor="middle">presupuestoBase</text>
+<polyline points="382.0,865.6 560.0,902.7" fill="none" stroke="#3a3a3a" stroke-width="1.8"/>
+<polygon points="560.0,902.7 548.7,893.2 534.5,897.4 545.8,906.9" fill="#3a3a3a"/>
+<text x="396.8" y="888.0" font-size="15" font-weight="bold" fill="#3a3a3a" text-anchor="middle">*</text>
+<text x="529.6" y="887.0" font-size="15" font-weight="bold" fill="#3a3a3a" text-anchor="middle">1</text>
+<polyline points="310.0,970.0 310.0,1290.0" fill="none" stroke="#3a3a3a" stroke-width="1.8"/>
+<text x="296.0" y="993.0" font-size="15" font-weight="bold" fill="#3a3a3a" text-anchor="middle">*</text>
+<text x="324.0" y="1277.0" font-size="15" font-weight="bold" fill="#3a3a3a" text-anchor="middle">1</text>
+<text x="302.0" y="1130.0" font-size="14" font-style="italic" fill="#555" text-anchor="end">rubro</text>
+<polyline points="365.0,970.0 365.0,1290.0" fill="none" stroke="#3a3a3a" stroke-width="1.8"/>
+<text x="351.0" y="993.0" font-size="15" font-weight="bold" fill="#3a3a3a" text-anchor="middle">*</text>
+<text x="379.0" y="1277.0" font-size="15" font-weight="bold" fill="#3a3a3a" text-anchor="middle">0..1</text>
+<text x="373.0" y="1130.0" font-size="14" font-style="italic" fill="#555" text-anchor="start">rubroReferido</text>
+<polyline points="134.0,970.0 134.0,1290.0" fill="none" stroke="#3a3a3a" stroke-width="1.8"/>
+<text x="120.0" y="993.0" font-size="15" font-weight="bold" fill="#3a3a3a" text-anchor="middle">*</text>
+<text x="148.0" y="1277.0" font-size="15" font-weight="bold" fill="#3a3a3a" text-anchor="middle">0..1</text>
+<polyline points="382.0,940.0 480.0,940.0 480.0,1245.0 820.0,1245.0 820.0,1290.0" fill="none" stroke="#3a3a3a" stroke-width="1.8"/>
+<text x="400.0" y="959.0" font-size="15" font-weight="bold" fill="#3a3a3a" text-anchor="middle">*</text>
+<text x="834.0" y="1277.0" font-size="15" font-weight="bold" fill="#3a3a3a" text-anchor="middle">0..1</text>
+<polyline points="229.0,1391.2 290.0,1396.8" fill="none" stroke="#3a3a3a" stroke-width="1.8"/>
+<text x="245.6" y="1411.8" font-size="15" font-weight="bold" fill="#3a3a3a" text-anchor="middle">*</text>
+<text x="273.4" y="1386.2" font-size="15" font-weight="bold" fill="#3a3a3a" text-anchor="middle">1</text>
+<polyline points="660.0,1405.5 599.0,1407.1" fill="none" stroke="#3a3a3a" stroke-width="1.8"/>
+<text x="641.6" y="1397.0" font-size="15" font-weight="bold" fill="#3a3a3a" text-anchor="middle">*</text>
+<text x="617.4" y="1425.6" font-size="15" font-weight="bold" fill="#3a3a3a" text-anchor="middle">1</text></svg>

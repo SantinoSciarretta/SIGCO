@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="980" viewBox="0 0 900 980" font-family="Arial, Helvetica, sans-serif"><rect width="900" height="980" fill="#ffffff"/><text x="40" y="52" font-size="30" font-weight="bold" fill="#2f2f2f">Diagrama de clases 6: Usuarios y accesos</text><rect x="40" y="90" width="104.0" height="43" fill="#f4f4f6" stroke="#9a9aa0" stroke-width="2" stroke-dasharray="7 4"/>
+<text x="92.0" y="117.5" font-size="17" font-weight="bold" fill="#77777c" text-anchor="middle">Operario</text>
+<rect x="40" y="220" width="425.0" height="489" fill="#ffffff" stroke="#3d1a78" stroke-width="2"/>
+<rect x="40" y="220" width="425.0" height="39" fill="#ece7fb" stroke="#3d1a78" stroke-width="2"/>
+<text x="252.5" y="245.5" font-size="17" font-weight="bold" fill="#3d1a78" text-anchor="middle">Usuario</text>
+<line x1="40" y1="484" x2="465.0" y2="484" stroke="#3d1a78" stroke-width="1.5"/>
+<text x="52" y="281" font-size="14.5" fill="#222">- idUsuario: Long</text>
+<text x="52" y="300" font-size="14.5" fill="#222">- nombreUsuario: String</text>
+<text x="52" y="319" font-size="14.5" fill="#222">- contrasenaHash: String</text>
+<text x="52" y="338" font-size="14.5" fill="#222">- estado: String</text>
+<text x="52" y="357" font-size="14.5" fill="#222">- motivoBaja: String</text>
+<text x="52" y="376" font-size="14.5" fill="#222">- intentosFallidos: int</text>
+<text x="52" y="395" font-size="14.5" fill="#222">- bloqueadoHasta: LocalDateTime</text>
+<text x="52" y="414" font-size="14.5" fill="#222">- debeCambiarContrasena: boolean</text>
+<text x="52" y="433" font-size="14.5" fill="#222">- versionSesion: int</text>
+<text x="52" y="452" font-size="14.5" fill="#222">- ultimaFechaAcceso: LocalDateTime</text>
+<text x="52" y="471" font-size="14.5" fill="#222">- fechaAlta: LocalDateTime</text>
+<text x="52" y="506" font-size="14.5" fill="#222">+ verificarContra(String, BiPredicate&lt;String, String&gt;): boolean</text>
+<text x="52" y="525" font-size="14.5" fill="#222">+ cambiarContrasena(String): void</text>
+<text x="52" y="544" font-size="14.5" fill="#222">+ resetearContrasena(String): void</text>
+<text x="52" y="563" font-size="14.5" fill="#222">+ invalidarSesiones(): void</text>
+<text x="52" y="582" font-size="14.5" fill="#222">+ registrarIntentoFallido(int, int): boolean</text>
+<text x="52" y="601" font-size="14.5" fill="#222">+ limpiarIntentosFallidos(): void</text>
+<text x="52" y="620" font-size="14.5" fill="#222">+ cambiarRol(Rol): void</text>
+<text x="52" y="639" font-size="14.5" fill="#222">+ vincularOperario(Operario): void</text>
+<text x="52" y="658" font-size="14.5" fill="#222">+ registrarIngreso(): void</text>
+<text x="52" y="677" font-size="14.5" fill="#222">+ desactivar(String): void</text>
+<text x="52" y="696" font-size="14.5" fill="#222">+ reactivar(): void</text>
+<rect x="560" y="220" width="279.0" height="147" fill="#ffffff" stroke="#3d1a78" stroke-width="2"/>
+<rect x="560" y="220" width="279.0" height="39" fill="#ece7fb" stroke="#3d1a78" stroke-width="2"/>
+<text x="699.5" y="245.5" font-size="17" font-weight="bold" fill="#3d1a78" text-anchor="middle">Rol</text>
+<line x1="560" y1="332" x2="839.0" y2="332" stroke="#3d1a78" stroke-width="1.5"/>
+<text x="572" y="281" font-size="14.5" fill="#222">- idRol: Long</text>
+<text x="572" y="300" font-size="14.5" fill="#222">- nombreRol: String</text>
+<text x="572" y="319" font-size="14.5" fill="#222">- descripcion: String</text>
+<text x="572" y="354" font-size="14.5" fill="#222">+ definirPermisos(Set&lt;Permiso&gt;): void</text>
+<rect x="560" y="480" width="184.0" height="166" fill="#ffffff" stroke="#3d1a78" stroke-width="2"/>
+<rect x="560" y="480" width="184.0" height="39" fill="#ece7fb" stroke="#3d1a78" stroke-width="2"/>
+<text x="652.0" y="505.5" font-size="17" font-weight="bold" fill="#3d1a78" text-anchor="middle">Permiso</text>
+<line x1="560" y1="611" x2="744.0" y2="611" stroke="#3d1a78" stroke-width="1.5"/>
+<text x="572" y="541" font-size="14.5" fill="#222">- idPermiso: Long</text>
+<text x="572" y="560" font-size="14.5" fill="#222">- nombrePermiso: String</text>
+<text x="572" y="579" font-size="14.5" fill="#222">- modulo: String</text>
+<text x="572" y="598" font-size="14.5" fill="#222">- descripcion: String</text>
+<text x="572" y="633" font-size="14.5" fill="#222"> </text>
+<rect x="560" y="740" width="208.0" height="166" fill="#ffffff" stroke="#3d1a78" stroke-width="2"/>
+<rect x="560" y="740" width="208.0" height="39" fill="#ece7fb" stroke="#3d1a78" stroke-width="2"/>
+<text x="664.0" y="765.5" font-size="17" font-weight="bold" fill="#3d1a78" text-anchor="middle">RegistroAuditoria</text>
+<line x1="560" y1="871" x2="768.0" y2="871" stroke="#3d1a78" stroke-width="1.5"/>
+<text x="572" y="801" font-size="14.5" fill="#222">- idAuditoria: Long</text>
+<text x="572" y="820" font-size="14.5" fill="#222">- accionRealizada: String</text>
+<text x="572" y="839" font-size="14.5" fill="#222">- moduloAfectado: String</text>
+<text x="572" y="858" font-size="14.5" fill="#222">- fechaHora: LocalDateTime</text>
+<text x="572" y="893" font-size="14.5" fill="#222"> </text>
+<polyline points="141.3,220.0 101.8,133.0" fill="none" stroke="#3a3a3a" stroke-width="1.8"/>
+<text x="146.6" y="202.8" font-size="15" font-weight="bold" fill="#3a3a3a" text-anchor="middle">*</text>
+<text x="96.5" y="160.2" font-size="15" font-weight="bold" fill="#3a3a3a" text-anchor="middle">0..1</text>
+<polyline points="465.0,293.5 560.0,293.5" fill="none" stroke="#3a3a3a" stroke-width="1.8"/>
+<text x="483.0" y="312.5" font-size="15" font-weight="bold" fill="#3a3a3a" text-anchor="middle">*</text>
+<text x="542.0" y="284.5" font-size="15" font-weight="bold" fill="#3a3a3a" text-anchor="middle">1</text>
+<polyline points="686.5,367.0 666.6,480.0" fill="none" stroke="#3a3a3a" stroke-width="1.8"/>
+<text x="669.6" y="387.3" font-size="15" font-weight="bold" fill="#3a3a3a" text-anchor="middle">*</text>
+<text x="683.5" y="469.7" font-size="15" font-weight="bold" fill="#3a3a3a" text-anchor="middle">*</text>
+<polyline points="560.0,823.0 465.0,669.0" fill="none" stroke="#3a3a3a" stroke-width="1.8"/>
+<text x="562.5" y="805.3" font-size="15" font-weight="bold" fill="#3a3a3a" text-anchor="middle">*</text>
+<text x="462.5" y="696.7" font-size="15" font-weight="bold" fill="#3a3a3a" text-anchor="middle">1</text></svg>
