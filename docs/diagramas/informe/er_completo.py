@@ -1,5 +1,6 @@
 # Diagrama entidad-relacion COMPLETO de SIGCO (notacion de Chen), en una sola figura.
-# Uso: python er_completo.py
+# Uso: python er_completo.py            (busca una ubicacion nueva, tarda varios minutos)
+#      python er_completo.py guardado   (redibuja con la ubicacion del informe)
 #
 # Son 26 entidades y 43 relaciones. Ubicarlas a mano sin cruces es muy dificil
 # (Obra se relaciona con 10 entidades y Usuario con 9), asi que la ubicacion la
@@ -243,6 +244,14 @@ def dibujar(pos):
 
 
 if __name__ == '__main__':
+    if sys.argv[1:] == ['guardado']:
+        # Dibuja con la ubicacion guardada (la del informe), sin volver a optimizar:
+        # una corrida nueva da otra ubicacion.
+        import json
+        from pathlib import Path
+        datos = json.loads((Path(__file__).parent / 'er_completo_pos.json').read_text(encoding='utf-8'))
+        dibujar({k: tuple(v) for k, v in datos.items()}).save('er-completo')
+        sys.exit()
     semillas = [int(a) for a in sys.argv[1:]] or list(range(6))
     resultados = []
     for s in semillas:

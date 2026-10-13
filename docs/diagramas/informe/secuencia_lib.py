@@ -4,7 +4,7 @@
 # su origen, las llamadas son flechas llenas y las respuestas, punteadas. Los
 # bloques "alt" y "opt" marcan los caminos alternativos, como en UML.
 from html import escape
-from lucid import text_w, wrap, render
+from lucid import text_w, wrap, render, sin_leyenda
 
 ESTILO = {
     'ui':   dict(fill='#e8e0f6', stroke='#b7a3e3', text='#2a1650', sub='#5b4a85'),
@@ -15,6 +15,16 @@ LINEA, RETORNO, VIDA = '#3a3a3a', '#55555a', '#b3b3b8'
 MARCO, MARCO_TAG = '#8a7fb0', '#ede8f7'
 BW, BH = 176, 58          # caja de cada participante
 FS = 15                   # tamano del texto de los mensajes
+
+
+def leyenda(lx, ly):
+    ley = [('ui', 'Pantalla (frontend)'), ('srv', 'Servidor (backend)'), ('data', 'Datos y archivos')]
+    o = [f'<rect x="{lx}" y="{ly}" width="214" height="{len(ley)*24+12}" rx="7" fill="#fbfbfb" stroke="#dadada"/>']
+    for i, (t, txt) in enumerate(ley):
+        e = ESTILO[t]
+        o.append(f'<rect x="{lx+12}" y="{ly+8+i*24}" width="16" height="16" rx="3" fill="{e["fill"]}" stroke="{e["stroke"]}"/>'
+                 f'<text x="{lx+36}" y="{ly+21+i*24}" font-size="13" fill="#444">{txt}</text>')
+    return ''.join(o)
 
 
 class Secuencia:
@@ -221,14 +231,8 @@ class Secuencia:
         for k in self.orden:
             self._participante(k, top_cajas, o_cajas)
             self._participante(k, abajo, o_cajas)
-        # leyenda
-        ley = [('ui', 'Pantalla (frontend)'), ('srv', 'Servidor (backend)'), ('data', 'Datos y archivos')]
-        lx = self.W - 230
-        o_fondo.append(f'<rect x="{lx}" y="14" width="214" height="{len(ley)*24+12}" rx="7" fill="#fbfbfb" stroke="#dadada"/>')
-        for i, (t, txt) in enumerate(ley):
-            e = ESTILO[t]
-            o_fondo.append(f'<rect x="{lx+12}" y="{22+i*24}" width="16" height="16" rx="3" fill="{e["fill"]}" stroke="{e["stroke"]}"/>'
-                           f'<text x="{lx+36}" y="{35+i*24}" font-size="13" fill="#444">{txt}</text>')
+        if not sin_leyenda():
+            o_fondo.append(leyenda(self.W - 230, 14))
         defs = (f'<defs><marker id="call" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="{LINEA}"/></marker>'
                 f'<marker id="ret" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M1,1 L11,6 L1,11" fill="none" stroke="{RETORNO}" stroke-width="1.6"/></marker></defs>')
         titulo = '' if __import__('os').environ.get('SIN_TITULO') else f'<text x="40" y="52" font-size="30" font-weight="bold" fill="#2f2f2f">{escape(self.titulo)}</text>'

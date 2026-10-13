@@ -5,7 +5,7 @@
 # suya) y el Dueno hace todo lo del Capataz General. Asi cada caso de uso se une
 # a un solo actor, el que lo agrega, y las asociaciones salen en abanico sin cruzarse.
 from html import escape
-from lucid import Diagram, C
+from lucid import Diagram, C, sin_leyenda
 
 W, H = 1360, 100
 AX = 118                       # actores con cuenta
@@ -15,6 +15,14 @@ VX = 1240                      # visitante
 UH = 66
 PITCH = 88
 BAND_GAP = 46
+
+
+def leyenda(lx, ly):
+    return (f'<rect x="{lx}" y="{ly}" width="300" height="70" rx="7" fill="#fbfbfb" stroke="#dadada" stroke-width="1.2"/>'
+            f'<circle cx="{lx+24}" cy="{ly+22}" r="7" fill="none" stroke="{C["actor"]}" stroke-width="2.2"/>'
+            f'<text x="{lx+44}" y="{ly+27}" font-size="15" fill="#444">Actor con cuenta en el sistema</text>'
+            f'<circle cx="{lx+24}" cy="{ly+50}" r="7" fill="none" stroke="{C["ext"]}" stroke-width="2.2"/>'
+            f'<text x="{lx+44}" y="{ly+55}" font-size="15" fill="#444">Actor sin cuenta</text>')
 
 
 def actor(d, x, y, nombre, sub=None, color=None):
@@ -115,12 +123,8 @@ def build():
     d.line('Visitante', 'vid', (VX - 28, vy - 16), (C2 + C2W / 2, vy), color='#8b8b90')
 
     # leyenda y nota
-    lx, ly = 24, 70
-    d.extra.append(f'<rect x="{lx}" y="{ly}" width="300" height="70" rx="7" fill="#fbfbfb" stroke="#dadada" stroke-width="1.2"/>'
-                   f'<circle cx="{lx+24}" cy="{ly+22}" r="7" fill="none" stroke="{C["actor"]}" stroke-width="2.2"/>'
-                   f'<text x="{lx+44}" y="{ly+27}" font-size="15" fill="#444">Actor con cuenta en el sistema</text>'
-                   f'<circle cx="{lx+24}" cy="{ly+50}" r="7" fill="none" stroke="{C["ext"]}" stroke-width="2.2"/>'
-                   f'<text x="{lx+44}" y="{ly+55}" font-size="15" fill="#444">Actor sin cuenta</text>')
+    if not sin_leyenda():
+        d.extra.append(leyenda(24, 70))
     d.note('nota', VX, d.nodes['gap']['y'] + 40, 'El cliente y el proveedor no usan el sistema: reciben el PDF del presupuesto y el pedido de cotización que el dueño les manda por fuera', w=210, size=15)
     d.H = int(by1 + 30)
     extra = [(x0, y0, x1, y1, n) for x0, y0, x1, y1, n in cajas]

@@ -14,7 +14,7 @@ import os
 import subprocess
 import sys
 from html import escape
-from lucid import text_w, render
+from lucid import text_w, render, sin_leyenda
 
 PSQL = r'C:\Program Files\PostgreSQL\17\bin\psql.exe'
 HEAD, ROW = 38, 27
@@ -360,6 +360,8 @@ class Area:
             o.append(f'<circle cx="{x+d*17}" cy="{y}" r="5" fill="#ffffff" stroke="{LINEA}" stroke-width="1.6"/>')
 
     def _leyenda(self, o):
+        if sin_leyenda():
+            return
         x, y = self.W - 420, 18
         o.append(f'<rect x="{x}" y="{y}" width="400" height="196" rx="7" fill="#fbfbfb" stroke="#dadada"/>')
         filas = [('PK', 'Clave primaria'), ('FK', 'Clave foránea'), ('UQ', 'Valor único')]

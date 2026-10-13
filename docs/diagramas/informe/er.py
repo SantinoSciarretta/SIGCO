@@ -16,7 +16,7 @@
 import math
 import sys
 from html import escape
-from lucid import Diagram, C, text_w, wrap
+from lucid import Diagram, C, text_w, wrap, sin_leyenda
 
 EW, EH = 200, 62          # entidad
 RW, RH = 158, 84          # rombo de relacion
@@ -100,8 +100,10 @@ class ER(Diagram):
                                color='#8a7fb0', lpos=None, kind='er', width=1.4))
 
     def leyenda(self):
+        if sin_leyenda():
+            return
         x, y = self.W - 470, 16
-        o = [f'<rect x="{x}" y="{y}" width="452" height="168" rx="7" fill="#fbfbfb" stroke="#dadada"/>',
+        o = [f'<rect x="{x}" y="{y}" width="452" height="180" rx="7" fill="#fbfbfb" stroke="#dadada"/>',
              f'<rect x="{x+14}" y="{y+14}" width="38" height="22" fill="#fff" stroke="{VIOLETA}" stroke-width="1.8"/>'
              f'<text x="{x+64}" y="{y+30}" font-size="14" fill="#444">Entidad</text>',
              f'<rect x="{x+150}" y="{y+14}" width="38" height="22" fill="#fff" stroke="#9a9aa2" stroke-width="1.8"/>'

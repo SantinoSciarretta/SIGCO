@@ -12,7 +12,7 @@
 import sys
 from collections import Counter
 from html import escape
-from lucid import Diagram, C, text_w
+from lucid import Diagram, C, text_w, sin_leyenda
 
 XE, XP, XS = 155, 690, 1180          # columnas: entidades, procesos, almacenes
 WE, WP, WS = 210, 280, 240
@@ -37,6 +37,8 @@ D = {
 
 
 def leyenda(d, x, y):
+    if sin_leyenda():
+        return
     o = [f'<rect x="{x}" y="{y}" width="330" height="150" rx="7" fill="#fbfbfb" stroke="#dadada"/>']
     o.append(f'<rect x="{x+14}" y="{y+14}" width="30" height="20" fill="#fff" stroke="{C["actor"]}" stroke-width="1.8"/>'
              f'<text x="{x+56}" y="{y+29}" font-size="14" fill="#444">Entidad externa</text>')

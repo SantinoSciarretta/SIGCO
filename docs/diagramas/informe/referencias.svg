@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1260" height="1082" viewBox="0 0 1260 1082" font-family="Arial, Helvetica, sans-serif">
+<rect width="1260" height="1082" fill="#ffffff"/>
+<text x="50" y="64" font-size="34" font-weight="bold" fill="#2f2f2f">Referencias de los diagramas de SIGCO</text>
+<text x="50" y="96" font-size="17" fill="#666">Qué significa cada símbolo, según el tipo de diagrama</text>
+<text x="50" y="144" font-size="24" font-weight="bold" fill="#3d1a78">Diagrama de casos de uso</text>
+<g transform="translate(50,158)"><rect x="0" y="0" width="300" height="70" rx="7" fill="#fbfbfb" stroke="#dadada" stroke-width="1.2"/><circle cx="24" cy="22" r="7" fill="none" stroke="#3d1466" stroke-width="2.2"/><text x="44" y="27" font-size="15" fill="#444">Actor con cuenta en el sistema</text><circle cx="24" cy="50" r="7" fill="none" stroke="#6b6b70" stroke-width="2.2"/><text x="44" y="55" font-size="15" fill="#444">Actor sin cuenta</text></g>
+<text x="50" y="302" font-size="24" font-weight="bold" fill="#3d1a78">Diagrama de flujo de datos (DFD)</text>
+<g transform="translate(50,316)"><rect x="0" y="0" width="330" height="150" rx="7" fill="#fbfbfb" stroke="#dadada"/>
+<rect x="14" y="14" width="30" height="20" fill="#fff" stroke="#3d1466" stroke-width="1.8"/><text x="56" y="29" font-size="14" fill="#444">Entidad externa</text>
+<rect x="14" y="42" width="30" height="20" rx="5" fill="#4b2a83"/><text x="56" y="57" font-size="14" fill="#444">Proceso</text>
+<path d="M 14 74 L 14 88 A 15 5 0 0 0 44 88 L 44 74" fill="#f1f1f3" stroke="#8a8a90" stroke-width="1.5"/><ellipse cx="29" cy="74" rx="15" ry="5" fill="#fafafb" stroke="#8a8a90" stroke-width="1.5"/><text x="56" y="86" font-size="14" fill="#444">Almacén de datos</text>
+<line x1="12" y1="108" x2="44" y2="108" stroke="#7a7a80" stroke-width="1.8" stroke-dasharray="6 4"/><text x="56" y="113" font-size="14" fill="#444">Por fuera del sistema, vía el dueño</text>
+<text x="22" y="139" font-size="16" font-weight="bold" fill="#444">*</text><text x="56" y="137" font-size="14" fill="#444">Aparece más de una vez</text></g>
+<text x="50" y="540" font-size="24" font-weight="bold" fill="#3d1a78">Diagrama entidad-relación</text>
+<g transform="translate(50,554)"><g transform="translate(0,-16)"><rect x="0" y="16" width="452" height="180" rx="7" fill="#fbfbfb" stroke="#dadada"/>
+<rect x="14" y="30" width="38" height="22" fill="#fff" stroke="#3d1a78" stroke-width="1.8"/><text x="64" y="46" font-size="14" fill="#444">Entidad</text>
+<rect x="150" y="30" width="38" height="22" fill="#fff" stroke="#9a9aa2" stroke-width="1.8"/><text x="200" y="46" font-size="14" fill="#444">Entidad de otra área</text>
+<polygon points="33,62 52,73 33,84 14,73" fill="#ece6fb" stroke="#3d1a78" stroke-width="1.6"/><text x="64" y="78" font-size="14" fill="#444">Relación (1:N, M:N o 1:1)</text>
+<ellipse cx="33" cy="105" rx="19" ry="10" fill="#fff" stroke="#8a7fb0" stroke-width="1.5"/><text x="64" y="110" font-size="14" fill="#444">Atributo de una relación</text>
+<text x="14" y="140" font-size="14" font-weight="bold" fill="#3d1a78">(1,1) (0,N)</text><text x="104" y="140" font-size="14" fill="#444">Mínimo y máximo, junto a cada entidad.</text>
+<text x="14" y="166" font-size="13" fill="#6a6a72">Ej.: Cliente (1,1) — encarga — (0,N) Obra: cada obra tiene un</text>
+<text x="14" y="182" font-size="13" fill="#6a6a72">cliente, y cada cliente tiene de cero a muchas obras.</text></g></g>
+<text x="50" y="808" font-size="24" font-weight="bold" fill="#3d1a78">Modelo relacional</text>
+<g transform="translate(50,822)"><g transform="translate(0,-18)"><rect x="0" y="18" width="400" height="196" rx="7" fill="#fbfbfb" stroke="#dadada"/><rect x="14" y="32" width="26" height="15" rx="3" fill="#4b2a83" stroke="#4b2a83"/><text x="27" y="43.5" font-size="10.5" font-weight="bold" fill="#ffffff" text-anchor="middle">PK</text><text x="52" y="44" font-size="14" fill="#444">Clave primaria</text><rect x="14" y="58" width="26" height="15" rx="3" fill="#e8e0f6" stroke="#b7a3e3"/><text x="27" y="69.5" font-size="10.5" font-weight="bold" fill="#4b2a83" text-anchor="middle">FK</text><text x="52" y="70" font-size="14" fill="#444">Clave foránea</text><rect x="14" y="84" width="26" height="15" rx="3" fill="#ffffff" stroke="#a9a9b0"/><text x="27" y="95.5" font-size="10.5" font-weight="bold" fill="#6a6a72" text-anchor="middle">UQ</text><text x="52" y="96" font-size="14" fill="#444">Valor único</text><text x="14" y="122" font-size="14" font-style="italic" fill="#6a6a72">en cursiva</text><text x="92" y="122" font-size="14" fill="#444">Admite valor nulo</text><rect x="14" y="138" width="26" height="14" rx="3" fill="#9a9aa2"/><text x="52" y="150" font-size="14" fill="#444">Tabla de otra área (solo su clave)</text><line x1="205" y1="40" x2="245" y2="40" stroke="#4a3d78" stroke-width="1.7"/><line x1="237" y1="33" x2="237" y2="47" stroke="#4a3d78" stroke-width="1.8"/><line x1="231" y1="33" x2="231" y2="47" stroke="#4a3d78" stroke-width="1.8"/><text x="257" y="45" font-size="14" fill="#444">Uno y solo uno</text><line x1="205" y1="66" x2="245" y2="66" stroke="#4a3d78" stroke-width="1.7"/><line x1="237" y1="59" x2="237" y2="73" stroke="#4a3d78" stroke-width="1.8"/><circle cx="228" cy="66" r="5" fill="#ffffff" stroke="#4a3d78" stroke-width="1.6"/><text x="257" y="71" font-size="14" fill="#444">Cero o uno</text><line x1="205" y1="92" x2="245" y2="92" stroke="#4a3d78" stroke-width="1.7"/><path d="M 245 84 L 231 92 L 245 100 M 245 92 L 231 92" fill="none" stroke="#4a3d78" stroke-width="1.7"/><circle cx="224" cy="92" r="5" fill="#ffffff" stroke="#4a3d78" stroke-width="1.6"/><text x="257" y="97" font-size="14" fill="#444">Cero o muchos</text><text x="14" y="198" font-size="13" fill="#6a6a72">La línea va de la clave foránea a la clave primaria.</text></g></g>
+<text x="650" y="144" font-size="24" font-weight="bold" fill="#3d1a78">Diagrama de flujo</text>
+<g transform="translate(650,158)"><rect x="0" y="0" width="270" height="106" rx="7" fill="#fbfbfb" stroke="#dadada" stroke-width="1.2"/>
+<rect x="14" y="13" width="20" height="20" rx="4" fill="#e8e0f6" stroke="#9b86c9" stroke-width="1.2"/>
+<text x="44" y="28" font-size="15" fill="#444">Acción de una persona</text>
+<rect x="14" y="43" width="20" height="20" rx="4" fill="#4b2a83" stroke="#3c1f6e" stroke-width="1.2"/>
+<text x="44" y="58" font-size="15" fill="#444">Acción automática del sistema</text>
+<circle cx="24" cy="83" r="10" fill="#ffffff" stroke="#3a3a3a" stroke-width="1.6"/>
+<text x="24" y="87.5" font-size="12" font-weight="bold" fill="#2a2a2a" text-anchor="middle">A</text>
+<text x="44" y="88" font-size="15" fill="#444">Conector con la otra parte</text></g>
+<text x="650" y="338" font-size="24" font-weight="bold" fill="#3d1a78">Diagrama de secuencia</text>
+<g transform="translate(650,352)"><rect x="0" y="0" width="214" height="84" rx="7" fill="#fbfbfb" stroke="#dadada"/><rect x="12" y="8" width="16" height="16" rx="3" fill="#e8e0f6" stroke="#b7a3e3"/><text x="36" y="21" font-size="13" fill="#444">Pantalla (frontend)</text><rect x="12" y="32" width="16" height="16" rx="3" fill="#4b2a83" stroke="#3c1f6e"/><text x="36" y="45" font-size="13" fill="#444">Servidor (backend)</text><rect x="12" y="56" width="16" height="16" rx="3" fill="#f1f1f3" stroke="#9a9aa0"/><text x="36" y="69" font-size="13" fill="#444">Datos y archivos</text></g>
+<text x="650" y="510" font-size="24" font-weight="bold" fill="#3d1a78">Diagrama de clases</text>
+<g transform="translate(650,524)"><rect x="0" y="0" width="470" height="238" rx="7" fill="#fbfbfb" stroke="#dadada" stroke-width="1.2"/>
+<rect x="14" y="10" width="44" height="36" fill="#fff" stroke="#3d1a78" stroke-width="1.8"/><line x1="14" y1="22" x2="58" y2="22" stroke="#3d1a78" stroke-width="1.4"/><line x1="14" y1="34" x2="58" y2="34" stroke="#3d1a78" stroke-width="1.4"/>
+<text x="72" y="31" font-size="15" fill="#444">Clase: nombre, atributos (-) y métodos de negocio (+)</text>
+<rect x="14" y="58" width="44" height="28" fill="#f4f4f6" stroke="#9a9aa0" stroke-width="1.8" stroke-dasharray="6 3"/>
+<text x="72" y="77" font-size="15" fill="#444">Clase de otra área: solo su nombre</text>
+<line x1="14" y1="118" x2="58" y2="118" stroke="#3a3a3a" stroke-width="1.8"/><text x="14" y="112" font-size="11" font-weight="bold" fill="#3a3a3a">1</text><text x="58" y="112" font-size="11" font-weight="bold" fill="#3a3a3a" text-anchor="end">0..*</text>
+<text x="72" y="123" font-size="15" fill="#444">Asociación, con la multiplicidad en cada extremo</text>
+<polygon points="14,164 24,158 34,164 24,170" fill="#3a3a3a"/><line x1="34" y1="164" x2="58" y2="164" stroke="#3a3a3a" stroke-width="1.8"/>
+<text x="72" y="169" font-size="15" fill="#444">Composición: la clase del rombo es dueña de sus partes</text>
+<line x1="14" y1="210" x2="58" y2="210" stroke="#3a3a3a" stroke-width="1.8" stroke-dasharray="8 5"/>
+<text x="72" y="215" font-size="15" fill="#444">Referencia por identificador, sin relación entre clases</text></g>
+<text x="650" y="836" font-size="24" font-weight="bold" fill="#3d1a78">Diagrama de Gantt</text>
+<g transform="translate(650,850)"><rect x="0" y="0" width="286" height="166" rx="7" fill="#fbfbfb" stroke="#dadada" stroke-width="1.2"/>
+<rect x="14" y="15" width="20" height="20" rx="4" fill="#2e8b57"/><text x="44" y="30" font-size="15" fill="#444">Etapa Inicio y Análisis</text>
+<rect x="14" y="45" width="20" height="20" rx="4" fill="#15918a"/><text x="44" y="60" font-size="15" fill="#444">Etapa Diseño</text>
+<rect x="14" y="75" width="20" height="20" rx="4" fill="#2176b5"/><text x="44" y="90" font-size="15" fill="#444">Etapa Desarrollo</text>
+<rect x="14" y="105" width="20" height="20" rx="4" fill="#e07b10"/><text x="44" y="120" font-size="15" fill="#444">Etapa Pruebas y Documentación</text>
+<rect x="14" y="135" width="20" height="20" rx="4" fill="#c8205a"/><text x="44" y="150" font-size="15" fill="#444">Etapa Cierre</text></g>
+</svg>

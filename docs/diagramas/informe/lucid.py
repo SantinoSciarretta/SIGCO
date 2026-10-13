@@ -18,6 +18,11 @@ def _font(size, bold=False, italic=False):
 def text_w(t, size, bold=False, italic=False):
     return _font(size, bold, italic).getlength(t)
 
+def sin_leyenda():
+    """Con SIN_LEYENDA=1 los diagramas salen sin el recuadro de referencias: en el
+    informe va una sola hoja de referencias aparte (referencias.py)."""
+    return bool(os.environ.get('SIN_LEYENDA'))
+
 def wrap(text, size, maxw, bold=False, italic=False):
     lines = []
     for par in text.split('\n'):
@@ -257,6 +262,8 @@ class Diagram:
         """items: lista de (tipo, texto). tipo: 'user', 'sys', 'note' o un color."""
         w = w or max(text_w(t, size) for _, t in items) + 70
         h = len(items) * 30 + 16
+        if sin_leyenda():
+            return (x, y, w, h)
         out = [f'<rect x="{x}" y="{y}" width="{w:.0f}" height="{h}" rx="7" fill="#fbfbfb" stroke="#dadada" stroke-width="1.2"/>']
         for i, (k, t) in enumerate(items):
             cy = y + 23 + i * 30

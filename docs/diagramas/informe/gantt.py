@@ -3,7 +3,7 @@
 # sumo tres tramos por modulo para que el diagrama se lea de corrido.
 from datetime import date, timedelta
 from html import escape
-from lucid import render, text_w
+from lucid import render, text_w, sin_leyenda
 
 INICIO = date(2026, 3, 2)          # lunes de la semana 1
 SEMANAS = 35                       # hasta el domingo 1 de noviembre
@@ -71,6 +71,16 @@ def dia(s):
     return date(2026, int(m), int(d))
 
 
+def leyenda(lx, y):
+    """Una fila con el color de cada etapa."""
+    o = []
+    for nombre, col, _, _ in ETAPAS:
+        o.append(f'<rect x="{lx}" y="{y}" width="16" height="16" rx="3" fill="{col}"/>')
+        o.append(f'<text x="{lx+24}" y="{y+13}" font-size="15" fill="#333">{escape(nombre)}</text>')
+        lx += 24 + text_w(nombre, 15) + 26
+    return '\n'.join(o)
+
+
 def build():
     filas = sum(len(a) for _, _, _, a in ETAPAS)
     top = 214
@@ -78,12 +88,8 @@ def build():
     o = [f'<rect width="{W}" height="{H}" fill="#faf9f6"/>',
          ('' if __import__('os').environ.get('SIN_TITULO') else f'<text x="36" y="58" font-size="38" font-weight="bold" fill="#1f1f1f">Diagrama de Gantt</text>'),
          ('' if __import__('os').environ.get('SIN_TITULO') else f'<text x="36" y="90" font-size="17" fill="#666">Proyecto terminado. Horas reales de la planilla de tiempos: 485 hs (estimadas: 450 hs)</text>')]
-    # leyenda
-    lx = 36
-    for nombre, col, _, _ in ETAPAS:
-        o.append(f'<rect x="{lx}" y="112" width="16" height="16" rx="3" fill="{col}"/>')
-        o.append(f'<text x="{lx+24}" y="125" font-size="15" fill="#333">{escape(nombre)}</text>')
-        lx += 24 + text_w(nombre, 15) + 26
+    if not sin_leyenda():
+        o.append(leyenda(36, 112))
     # meses y semanas
     for nombre, m in MESES:
         a = date(2026, m, 1)
